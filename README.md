@@ -6,7 +6,7 @@ Here is a performance comparison between ForBES, the fast forward-backward split
 known as fast proximal gradient method) and ADMM (alternating direction method of multipliers),
 applied to a Lasso problem with 3K observations and 500K features, for a total of 7.5M nonzero coefficients.
 <p align="center">
-<img src="https://raw.githubusercontent.com/lostella/lostella.github.io/master/resources/lasso_random_3e3_5e5_lambda_3e-1.png?raw=true">
+<img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/lasso_random_3e3_5e5_lambda_3e-1.png">
 </p>
 
 ## How to use it
@@ -39,7 +39,7 @@ to do so, move with the MATLAB terminal to the ForBES directory, and simply hit
 
 We consider here problems in the form
 
-<p align="center"><img src="http://mathurl.com/n4fwcss.png" alt="Convex composite problem"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/minfbe_problem.png" alt="Convex composite problem"></p>
 
 where *f1* is convex quadratic, *l* is a linear term and *f2* is any convex, differentiable function
 with Lipschitz continuous gradient. Function *g* is a general proper, closed, convex function (possibly nonsmooth).
@@ -48,7 +48,7 @@ control, data analysis, machine learning, image and signal processing to name a 
 
 Since *f1* is quadratic, it is entirely specified by its Hessian and linear parts:
 
-<p align="center"><img src="http://mathurl.com/ojrc2rv.png" alt="Quadratic function"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/quad_fun.png" alt="Quadratic function"></p>
 
 The generic nonlinear term *f2* is described by an appropriate function returning its value and gradient
 (in this exact order) at any specified point.
@@ -56,7 +56,7 @@ The gradient may be computed only when the corresponding output argument is requ
 and this procedure can optionally return also the Hessian of *f2* at the specified point (as 3rd output, see table below).
 For example, the logistic function
 
-<p align="center"><img src="http://mathurl.com/qb2e8b6.png" alt="Logistic function"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/log_loss.png" alt="Logistic function"></p>
 
 can be defined in MATLAB as follows
 
@@ -73,7 +73,7 @@ end
 The nonsmooth term *g(x)* is defined through its proximal mapping and the value of
 *g* at the proximal point:
 
-<p align="center"><img src="http://mathurl.com/kzjmfyf.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/prox_definition.png"></p>
 
 For example, if *g(x) = r||x||_1* (the L1-norm) then it is described in MATLAB as the following soft-thresholding
 procedure:
@@ -108,7 +108,7 @@ Attribute | Type | Mandatory? | Default | What is it
 
 **Example**: using LogReg and L1Norm defined above, we can test the `minfbe` onto the sparse logistic regression problem
 
-<p align="center"><img src="http://mathurl.com/p4abmgm.png" alt="Equality constrained convex problem"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/log_reg.png" alt="Sparse logistic regression"></p>
 
 as follows:
 
@@ -127,7 +127,7 @@ and some additional information like the progress of the algorithm during the it
 
 We consider now problems with linear equality constraints, of the following form:
 
-<p align="center"><img src="http://mathurl.com/otqerly.png" alt="Equality constrained convex problem"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/miname_problem.png" alt="Equality constrained convex problem"></p>
 
 with *f1* (if present) is strongly convex and quadratic on its domain, *f2* (if present) is strongly convex and
 twice continuously differentiable in the interior of its domain, while *g* is proper, closed and convex. Matrices
@@ -136,7 +136,7 @@ twice continuously differentiable in the interior of its domain, while *g* is pr
 The problem is described by specifying the constraint and providing appropriate procedures for computing
 the primal iterates (and the corresponding objective values) given a dual variable. Specifically:
 
-<p align="center"><img src="http://mathurl.com/kpvfvpr.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/miname_primal_updates.png"></p>
 
 The following table summarizes the attributes defining problem (2). Again, notice that **many of them are optional**.
 
