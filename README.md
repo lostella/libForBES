@@ -1,13 +1,23 @@
 # ForBES
 
-This repository contains the **For**ward **B**ackward **E**nvelope **S**olvers
-MATLAB suite for solving convex nonsmooth problems.
+**ForBES** (standing for **For**ward-**B**ackward **E**nvelope **S**olver) is a MATLAB solver for convex nonsmooth problems.
+
 Here is a performance comparison between ForBES, the fast forward-backward splitting method (also
 known as fast proximal gradient method) and ADMM (alternating direction method of multipliers),
 applied to a Lasso problem with 3K observations and 500K features, for a total of 7.5M nonzero coefficients.
 <p align="center">
 <img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/lasso_random_3e3_5e5_lambda_3e-1.png">
 </p>
+
+## Installation
+
+Simply clone the git repository, or click on this [link](https://github.com/lostella/ForBES/archive/master.zip)
+to download it as a zip archive and decompress the archive. Then move with the MATLAB command line to
+the directory of ForBES. Compile all the *mex*-files required by simply hitting
+
+```
+> make
+```
 
 ## How to use it
 
@@ -20,28 +30,20 @@ out = minfbe(prob, opt);
 out = miname(prob, opt);
 ```
 
-Structure `prob` will contain attributes describing the details of the problem, such as objective
-terms and constraints, while the attributes of
-`opt` describe, e.g., details on the algorithm to use, termination criteria, the level
-of verbosity, and so on. In the following we describe more in details what problems
+Structure `prob` contains attributes describing the details of the problem, such as objective
+terms and constraints, while `opt` describes, e.g., details on the algorithm to use, termination
+criteria, the level of verbosity, and so on. Output `out` will contain the results of the optimization process. In the following we describe more in details what problems
 `minfbe` and `miname` solve, and how to specify the `prob` and `opt` structures to provide
 to the solvers.
 
-Examples on how to use `minfbe` and `miname` can be found in the [tests folder](https://github.com/lostella/ForBES/tree/master/tests). In any moment you can access the help file of the solvers directly from matlab with
+Examples on how to use `minfbe` and `miname` can be found in the [tests folder](https://github.com/lostella/ForBES/tree/master/tests). Furthermore, you can access the help file of the solvers directly from matlab with
 
 ```
 > help minfbe
 > help miname
 ```
 
-Before using the solvers make sure all the *mex*-files required are correctly compiled. In order
-to do so, move with the MATLAB terminal to the ForBES directory, and simply hit
-
-```
-> make
-```
-
-## minfbe
+## minfbe (convex composite problems)
 
 We consider here problems in the form
 
@@ -129,7 +131,7 @@ out = minfbe(prob);
 The `out` structure will contain the results of the optimization process, including the computed solution
 and some additional information like the progress of the algorithm during the iterations.
 
-## miname
+## miname (convex separable problems)
 
 We consider now problems with linear equality constraints, of the following form:
 
@@ -154,7 +156,7 @@ Attribute | Type | Mandatory? | Default | What is it
 `prob.x2step` | function | no | - | Procedure minimizing *f2(w)- y'w* with respect to *w*, given *y*.
 `prob.A2` | matrix or function | yes, if `prob.x2step` is defined | - | Matrix *A2* in the constraint.
 `prob.A2T` | function | yes, if `prob.A2` is defined as a function | - | Procedure computing the adjoint of *A2*.
-`prob.zstep` | function | yes | - | Procedure minimizing the augmented Lagrangian with respect to *z* and computing *g(z)*.
+`prob.zsetp` | function | yes | - | Procedure minimizing the augmented Lagrangian with respect to *z* and computing *g(z)*.
 `prob.B` | matrix | yes | - | Matrix *B* in the constraint.
 `prob.c` | vector | yes | - | The right hand side of the constraint.
 
@@ -171,10 +173,6 @@ Attribute | Type | Default | What is it
 `opt.variant` | string | 'global' | 'basic': Use the basic algorithm<br> 'global': Use the **global** variant<br> 'fast': Use the **fast** variant
 `opt.linesearch` | string | method dependant | Line search strategy to use. Can select between: <br> 'armijo' (default for 'sd') <br> 'nonmonotone-armijo' (default for 'bb') <br> 'hager-zhang' (default for the rest) <br> 'lemarechal' <br> 'fletcher'
 
-## Authors and contacts
+## Credits
 
-ForBES is currently developed by Lorenzo Stella (`lorenzo.stella -at- imtlucca.it`) and Panagiotis Patrinos (`panagiotis.patrinos -at- imtlucca.it`).
-
-Any feedback, bug report or suggestion for future improvements is more than welcome.
-
-
+ForBES is developed by Lorenzo Stella [`lorenzo.stella-at-imtlucca.it`] and Panos Patrinos [`panagiotis.patrinos -at- imtlucca.it`]. Any feedback, bug report or suggestion for future improvements is more than welcome. We recommend using the [issue tracker](https://github.com/lostella/ForBES/issues) to report bugs.
