@@ -2,7 +2,8 @@ function dualprob = ProcessDualProblem(prob)
     if isfield(prob, 'c')
         if norm(prob.c) > 0, dualprob.l = prob.c; end
         n = length(prob.c);
-        dualprob.x0 = zeros(n, 1);
+        if isfield(prob, 'y0'), dualprob.x0 = prob.y0;
+        else dualprob.x0 = zeros(n, 1); end
     else
         error('the number right hand side c of the constraint must be specified');
     end

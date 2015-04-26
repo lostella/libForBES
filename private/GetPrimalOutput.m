@@ -2,9 +2,9 @@ function out = GetPrimalOutput(prob, dualout)
     out.name = dualout.name;
     out.message = dualout.message;
     out.flag = dualout.flag;
+    out.gam = dualout.gam;
     Ax = 0;
     out.y = dualout.x;
-    gam = dualout.gam;
     if isfield(prob, 'x1step')
         if isa(prob.A1, 'function_handle')
             out.x1 = prob.x1step(-prob.A1T(out.y));
@@ -24,9 +24,9 @@ function out = GetPrimalOutput(prob, dualout)
         end
     end
     if isfield(prob, 'c')
-        [out.z, ~] = prob.zstep(out.y+gam*(Ax-prob.c), gam);
+        [out.z, ~] = prob.zstep(out.y+out.gam*(Ax-prob.c), out.gam);
     else
-        [out.z, ~] = prob.zstep(out.y+gam*Ax, gam);
+        [out.z, ~] = prob.zstep(out.y+out.gam*Ax, out.gam);
     end
     out.iterations = dualout.iterations;
     if isfield(dualout, 'operations'), out.operations = dualout.operations; end
@@ -34,4 +34,5 @@ function out = GetPrimalOutput(prob, dualout)
     out.ts = dualout.ts;
     out.preprocess = dualout.preprocess;
     out.prob = prob;
+    out.dual = dualout;
 end
