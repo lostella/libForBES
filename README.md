@@ -27,18 +27,18 @@ of verbosity, and so on. In the following we describe more in details what probl
 `minfbe` and `miname` solve, and how to specify the `prob` and `opt` structures to provide
 to the solvers.
 
+Examples on how to use `minfbe` and `miname` can be found in the [tests folder](https://github.com/lostella/ForBES/tree/master/tests). In any moment you can access the help file of the solvers directly from matlab with
+
+```
+> help minfbe
+> help miname
+```
+
 Before using the solvers make sure all the *mex*-files required are correctly compiled. In order
 to do so, move with the MATLAB terminal to the ForBES directory, and simply hit
 
 ```
 > make
-```
-
-Moreover, in any moment you can access the help file of the solvers directly from matlab with
-
-```
-> help minfbe
-> help miname
 ```
 
 ## minfbe
