@@ -154,6 +154,9 @@
 %       out = minfbe(prob);
 % 
 %   See also MINAME
+%
+% Authors: Lorenzo Stella (lorenzo.stella -at- imtlucca.it)
+%          Panagiotis Patrinos (panagiotis.patrinos -at- imtlucca.it)
 
 function out = minfbe(prob, opt)
 

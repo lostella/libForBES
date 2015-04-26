@@ -112,6 +112,9 @@
 %       OUT.ts: timestamp for each of the iterations.
 % 
 %   See also MINFBE
+%
+% Authors: Lorenzo Stella (lorenzo.stella -at- imtlucca.it)
+%          Panagiotis Patrinos (panagiotis.patrinos -at- imtlucca.it)
 
 function out = miname(prob, opt)
     dualprob = ProcessDualProblem(prob);

@@ -12,7 +12,7 @@ applied to a Lasso problem with 3K observations and 500K features, for a total o
 ## How to use it
 
 ForBES consists mainly of two MATLAB routines, `minfbe` and `miname`.
-In order to use them one must provide a description of the problem in a matlab
+In order to use them one must provide a description of the problem in a MATLAB
 structure and (optionally) a set of options:
 
 ```
@@ -173,7 +173,7 @@ Attribute | Type | Default | What is it
 
 ## Authors and contacts
 
-ForBES is currently developed by Lorenzo Stella (`lorenzo.stella (AT) imtlucca.it`) and Panagiotis Patrinos (`panagiotis.patrinos (AT) imtlucca.it`).
+ForBES is currently developed by Lorenzo Stella (`lorenzo.stella -at- imtlucca.it`) and Panagiotis Patrinos (`panagiotis.patrinos -at- imtlucca.it`).
 
 Any feedback, bug report or suggestion for future improvements is more than welcome.
 
