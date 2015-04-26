@@ -34,8 +34,14 @@ to do so, move with the MATLAB terminal to the ForBES directory, and simply hit
 > make
 ```
 
+Moreover, in any moment you can access the help file of the solvers directly from matlab with
 
-### Minfbe
+```
+> help minfbe
+> help miname
+```
+
+## minfbe
 
 We consider here problems in the form
 
@@ -123,7 +129,7 @@ out = minfbe(prob);
 The `out` structure will contain the results of the optimization process, including the computed solution
 and some additional information like the progress of the algorithm during the iterations.
 
-### Miname
+## miname
 
 We consider now problems with linear equality constraints, of the following form:
 
@@ -152,7 +158,7 @@ Attribute | Type | Mandatory? | Default | What is it
 `prob.B` | matrix | yes | - | Matrix *B* in the constraint.
 `prob.c` | vector | yes | - | The right hand side of the constraint.
 
-### Options
+## Options
 
 Optional settings may be enabled by specifying the correspondent fields in the `opt` structure passed
 as second argument to `minfbe` and `miname`.
@@ -164,4 +170,11 @@ Attribute | Type | Default | What is it
 `opt.method` | string | 'lbfgs' | Algorithm to use. Can select between: <br> 'sd' (steepest descent) <br> 'lbfgs' (limited memory BFGS) <br>  'cg-desc', 'cg-prp', 'cg-dyhs' (various CG algorithms) <br> 'bb' (Barzilai-Borwein).
 `opt.variant` | string | 'global' | 'basic': Use the basic algorithm<br> 'global': Use the **global** variant<br> 'fast': Use the **fast** variant
 `opt.linesearch` | string | method dependant | Line search strategy to use. Can select between: <br> 'armijo' (default for 'sd') <br> 'nonmonotone-armijo' (default for 'bb') <br> 'hager-zhang' (default for the rest) <br> 'lemarechal' <br> 'fletcher'
+
+## Authors and contacts
+
+ForBES is currently developed by Lorenzo Stella (`lorenzo.stella (AT) imtlucca.it`) and Panagiotis Patrinos (`panagiotis.patrinos (AT) imtlucca.it`).
+
+Any feedback, bug report or suggestion for future improvements is more than welcome.
+
 
