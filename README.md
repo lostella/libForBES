@@ -10,8 +10,8 @@ Here is a performance comparison between ForBES, the fast forward-backward split
 known as fast proximal gradient method) and ADMM (alternating direction method of multipliers),
 applied to a Lasso problem with 3K observations and 500K features, for a total of 7.5M nonzero coefficients.
 <p align="center">
-<img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/lasso_random_3e3_5e5_lambda_3e-1.png"
- width="640" height="349">
+<img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/lasso_random_3e3_5e5_lambda_3e-1_transparent.png"
+ width="640" height="404">
 </p>
 
 ## Installation
