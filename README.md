@@ -1,6 +1,7 @@
 # ForBES
 
-**ForBES** (standing for **For**ward-**B**ackward **E**nvelope **S**olver) is a MATLAB solver for convex nonsmooth problems.
+**ForBES** (standing for **For**ward-**B**ackward **E**nvelope **S**olver) is a MATLAB solver for
+nonsmooth convex optimization problems.
 
 Here is a performance comparison between ForBES, the fast forward-backward splitting method (also
 known as fast proximal gradient method) and ADMM (alternating direction method of multipliers),
@@ -32,11 +33,10 @@ out = miname(prob, opt);
 
 Structure `prob` contains attributes describing the details of the problem, such as objective
 terms and constraints, while `opt` describes, e.g., details on the algorithm to use, termination
-criteria, the level of verbosity, and so on. Output `out` will contain the results of the optimization process. In the following we describe more in details what problems
-`minfbe` and `miname` solve, and how to specify the `prob` and `opt` structures to provide
-to the solvers.
+criteria, the level of verbosity, and so on. In the following we describe more in detail how to define
+these structures. Output `out` will contain the results of the optimization process.
 
-Examples on how to use `minfbe` and `miname` can be found in the [tests folder](https://github.com/lostella/ForBES/tree/master/tests). Furthermore, you can access the help file of the solvers directly from matlab with
+Examples on how to use `minfbe` and `miname` can be found in the [tests folder](https://github.com/lostella/ForBES/tree/master/tests). Furthermore, you can access the help file of the solvers directly from MATLAB with
 
 ```
 > help minfbe
@@ -49,9 +49,11 @@ We consider here problems in the form
 
 <p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/minfbe_problem.png" alt="Convex composite problem"></p>
 
-where *f1* is convex quadratic, *l* is a linear term and *f2* is any convex, differentiable function
-with Lipschitz continuous gradient. Function *g* is a general proper, closed, convex function (possibly nonsmooth).
-This form includes many practical problems arising in several fields such as optimal
+where *f1* is convex quadratic, *l* is a linear term and *f2* is any convex, twice continuously
+differentiable function with Lipschitz continuous gradient. Any of these terms may be omitted in the
+problem definition, in which case it is assumed to be identically zero.
+Function *g* is a general proper, closed, convex function (possibly nonsmooth).
+This form of includes many practical problems arising in several fields such as optimal
 control, data analysis, machine learning, image and signal processing to name a few.
 
 Since *f1* is quadratic, it is entirely specified by its Hessian and linear parts:
@@ -60,8 +62,7 @@ Since *f1* is quadratic, it is entirely specified by its Hessian and linear part
 
 The generic nonlinear term *f2* is described by an appropriate function returning its value and gradient
 (in this exact order) at any specified point.
-The gradient may be computed only when the corresponding output argument is requested,
-and this procedure can optionally return also the Hessian of *f2* at the specified point (as 3rd output, see table below).
+The gradient may be computed only when the corresponding output argument is requested.
 For example, the logistic function
 
 <p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/log_loss.png" alt="Logistic function"></p>
@@ -137,9 +138,10 @@ We consider now problems with linear equality constraints, of the following form
 
 <p align="center"><img src="https://raw.githubusercontent.com/lostella/ForBES/master/figures/miname_problem.png" alt="Equality constrained convex problem"></p>
 
-with *f1* (if present) is strongly convex and quadratic on its domain, *f2* (if present) is strongly convex and
-twice continuously differentiable in the interior of its domain, while *g* is proper, closed and convex. Matrices
-*A1, A2, B* and vector *c* in the constraints have appropriate dimensions.
+with *f1* (if present) is strongly convex and quadratic on its domain, *f2* (if present) is strongly
+convex and twice continuously differentiable in the interior of its domain, while *g* is proper, closed
+and convex. Linear operators *A1, A2, B* need to be specified only if the corresponding term in the 
+objective is present, and they are of appropriate dimension along with vector *c* in the constraints.
 
 The problem is described by specifying the constraint and providing appropriate procedures for computing
 the primal iterates (and the corresponding objective values) given a dual variable. Specifically:
@@ -175,4 +177,4 @@ Attribute | Type | Default | What is it
 
 ## Credits
 
-ForBES is developed by Lorenzo Stella [`lorenzo.stella-at-imtlucca.it`] and Panos Patrinos [`panagiotis.patrinos -at- imtlucca.it`]. Any feedback, bug report or suggestion for future improvements is more than welcome. We recommend using the [issue tracker](https://github.com/lostella/ForBES/issues) to report bugs.
+ForBES is developed by Lorenzo Stella [`lorenzo.stella-at-imtlucca.it`] and Panos Patrinos [`panagiotis.patrinos-at-imtlucca.it`]. Any feedback, bug report or suggestion for future improvements is more than welcome. We recommend using the [issue tracker](https://github.com/lostella/ForBES/issues) to report bugs.
