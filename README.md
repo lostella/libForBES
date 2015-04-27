@@ -3,6 +3,9 @@
 **ForBES** (standing for **For**ward-**B**ackward **E**nvelope **S**olver) is a MATLAB solver for
 nonsmooth convex optimization problems.
 
+It is generic in the sense that the user can customize the problem to solve in an easy and flexible way.
+It is efficient since it features very efficient algorithms, suited for large scale applications.
+
 Here is a performance comparison between ForBES, the fast forward-backward splitting method (also
 known as fast proximal gradient method) and ADMM (alternating direction method of multipliers),
 applied to a Lasso problem with 3K observations and 500K features, for a total of 7.5M nonzero coefficients.
