@@ -172,7 +172,7 @@ Attribute | Type | Default | What is it
 ----- | ---- | ------- | ----------
 `opt.tolOpt` | scalar | 1e-5 | Tolerance on the optimality condition.
 `opt.maxit` | integer | 100*n* | Maximum number of iterations.
-`opt.method` | string | 'lbfgs' | Algorithm to use. Can select between: <br> 'sd' (steepest descent) <br> 'lbfgs' (limited memory BFGS) <br>  'cg-desc', 'cg-prp', 'cg-dyhs' (various CG algorithms) <br> 'bb' (Barzilai-Borwein).
+`opt.method` | string | 'lbfgs' | Algorithm to use for computing descent steps. Can select between: <br> 'sd' (steepest descent) <br> 'lbfgs' (limited memory BFGS) <br>  'cg-desc', 'cg-prp', 'cg-dyhs' (various nonlinear CG algorithms) <br> 'bb' (Barzilai-Borwein).
 `opt.variant` | string | 'global' | 'basic': Use the basic algorithm<br> 'global': Use the **global** variant<br> 'fast': Use the **fast** variant
 `opt.linesearch` | string | method dependant | Line search strategy to use. Can select between: <br> 'armijo' (default for 'sd') <br> 'nonmonotone-armijo' (default for 'bb') <br> 'hager-zhang' (default for the rest) <br> 'lemarechal' <br> 'fletcher'
 
