@@ -44,4 +44,7 @@ Furthermore, you can access the help file of the solvers directly from MATLAB wi
 
 ## Credits
 
-ForBES is developed by Lorenzo Stella [`lorenzo.stella-at-imtlucca.it`] and Panos Patrinos [`panagiotis.patrinos-at-imtlucca.it`]. Any feedback, bug report or suggestion for future improvements is more than welcome. We recommend using the [issue tracker](https://github.com/lostella/ForBES/issues) to report bugs.
+ForBES is developed by Lorenzo Stella [`lorenzo.stella-at-imtlucca.it`] and Panos Patrinos [`panagiotis.patrinos-at-imtlucca.it`]
+at [IMT Lucca](http://www.imtlucca.it).
+Any feedback, bug report or suggestion for future improvements is more than welcome.
+We recommend using the [issue tracker](https://github.com/lostella/ForBES/issues) to report bugs.

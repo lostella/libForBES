@@ -207,6 +207,7 @@ function out = minfbe(prob, opt)
     flagChangedGamma = 0;
     
     preprocess = toc(t0);
+    t0 = tic();
     
     %% main iteration
     for it = 1:opt.maxit
@@ -513,8 +514,8 @@ function out = minfbe(prob, opt)
     out.objective = objective(1, 1:it);
     out.ts = ts(1, 1:it);
     out.prob = prob;
-    out.opt = opt;
     out.preprocess = preprocess;
+    out.opt = opt;
 end
 
 function gam = SelectGamma(prob, opt)

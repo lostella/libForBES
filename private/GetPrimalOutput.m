@@ -32,7 +32,6 @@ function out = GetPrimalOutput(prob, dualout)
     if isfield(dualout, 'operations'), out.operations = dualout.operations; end
     out.residual = dualout.residual;
     out.ts = dualout.ts;
-    out.preprocess = dualout.preprocess;
     out.prob = prob;
-    out.dual = dualout;
+    out.preprocess = dualout.preprocess;
 end
