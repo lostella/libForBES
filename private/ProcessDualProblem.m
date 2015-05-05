@@ -5,7 +5,7 @@ function dualprob = ProcessDualProblem(prob)
         if isfield(prob, 'y0'), dualprob.x0 = prob.y0;
         else dualprob.x0 = zeros(n, 1); end
     else
-        error('the number right hand side c of the constraint must be specified');
+        error('the right hand side c of the constraint must be specified');
     end
     if not(isfield(prob, 'x1step') || isfield(prob, 'x2step'))
         error('both smooth terms f1 and f2 are missing');
