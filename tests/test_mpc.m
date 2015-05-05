@@ -17,7 +17,7 @@ cond_Q = 1e-2;
 cond_R = 1e-2;
 Q = diag([rand(n-1,1)+cond_Q; cond_Q]);
 R = diag([rand(m-1,1)+cond_R; cond_R]);
-[~, Qf] = dlqr(A,B,Q,R);
+[~, Q_f] = dlqr(A,B,Q,R);
 
 % Constraints (boxes)
 F = [-speye(n); speye(n); sparse(2*m, n)];
@@ -26,8 +26,8 @@ xmin = -ones(n, 1); xmax = ones(n, 1);
 umin = -ones(m, 1); umax = ones(m, 1);
 xminf = -ones(n, 1); xmaxf = ones(n, 1);
 c = [-xmin; xmax;  -umin; umax];
-Ff = [-speye(n); speye(n)];
-cf = [-xminf; xmaxf];
+F_f = [-speye(n); speye(n)];
+c_f = [-xminf; xmaxf];
 
 weights = +inf; % > 0 for soft constraints, +inf for hard constraints
 
@@ -37,10 +37,20 @@ for i=1:N
     HessBlocks{2*i-1} = sparse(Q);
     HessBlocks{2*i} = sparse(R);
 end
-HessBlocks{2*N+1} = Qf;
+HessBlocks{2*N+1} = Q_f;
 Hess = blkdiag(HessBlocks{:});
 
-% Setup constraints (except the initial one)
+% Make big (sparse) constraint matrix blocks
+FG = sparse([F, G]);
+constrBlocks = cell(N+1,1);
+for i=1:N
+    constrBlocks{i} = FG;
+end
+constrBlocks{N+1} = sparse(F_f);
+C = blkdiag(constrBlocks{:});
+d = [repmat(c, N, 1); c_f];
+
+% Setup dynamics constraints (except the initial one)
 Aaff = sparse(n+N*n,n+(N-1)*(n+m));
 baff = zeros(n+N*n,1);
 for i=1:N
@@ -64,7 +74,10 @@ t0 = tic;
     quadprog(Hess, zeros(size(Hess,2),1), [], [], Aaff, baff, ...
     [repmat([xmin; umin], N, 1); xminf], [repmat([xmax; umax], N, 1); xmaxf], []);
 time_quadprog = toc(t0);
-fprintf('%15s: %7.4e seconds\n', 'QUADPROG', time_quadprog);
+fprintf('\nQUADPROG\n');
+fprintf('%15s: %7.4e seconds\n', 'time', time_quadprog);
+fprintf('%15s: %7.4e\n', 'obj value', fval);
+fprintf('%15s: %7.4e\n', 'infeasibility', max(max(0,C*xu_quadprog-d)));
 
 %% ---------------------------------------------------- GUROBI
 
@@ -87,6 +100,9 @@ fprintf('%15s: %7.4e seconds\n', 'QUADPROG', time_quadprog);
 opt_forbes.display = 0;
 opt_forbes.tolOpt = 1e-3; % this means: norm(residual,inf) <= 1e-3
 opt_forbes.maxit = 10000;
-res_forbes = solve_mpc(Q, R, Qf, A, B, F, G, Ff, c, cf, weights, N, x0, opt_forbes);
+res_forbes = solve_mpc(Q, R, Q_f, A, B, F, G, F_f, c, c_f, weights, N, x0, opt_forbes);
 time_forbes = res_forbes.time;
-fprintf('%15s: %7.4e seconds\n', 'ForBES', time_forbes);
+fprintf('\nForBES\n');
+fprintf('%15s: %7.4e seconds\n', 'time', time_forbes);
+fprintf('%15s: %7.4e\n', 'obj value', 0.5*(res_forbes.x'*(Hess*res_forbes.x)));
+fprintf('%15s: %7.4e\n', 'infeasibility', max(max(0,C*res_forbes.x-d)));

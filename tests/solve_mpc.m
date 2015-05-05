@@ -1,6 +1,8 @@
-function out = solve_mpc(Q, R, Qf, A, B, F, G, Ff, c, cf, weights, N, x0, opt, solver)
-%SOLVE_MPC Sets up the QP associated with the specified MPC problem and
-%   solves it using MINAME/MINFBE. The arguments refer to the following MPC
+%SOLVE_MPC Solves MPC problems using MINAME/MINFBE
+%   
+%   out = SOLVE_MPC(Q, R, Q_f, A, B, F, G, F_f, c, c_f, weights, N, x0, opt, solver)
+%
+%   The arguments refer to the following MPC
 %   problem formulation:
 %
 %       minimize sum{ 0.5 x_i'Q x_i + 0.5 u_i'R u_i, i=0,...,N-1 }
@@ -21,6 +23,8 @@ function out = solve_mpc(Q, R, Qf, A, B, F, G, Ff, c, cf, weights, N, x0, opt, s
 %   are the same. If some weight equals +inf then the corresponding constraint
 %   is a (hard) nonnegativity constraint.
 %
+
+function out = solve_mpc(Q, R, Q_f, A, B, F, G, F_f, c, c_f, weights, N, x0, opt, solver)
     t0 = tic;
     
     if nargin < 14
@@ -40,14 +44,14 @@ function out = solve_mpc(Q, R, Qf, A, B, F, G, Ff, c, cf, weights, N, x0, opt, s
     for i=1:N
         constrBlocks{i} = FG;
     end
-    constrBlocks{N+1} = sparse(Ff);
+    constrBlocks{N+1} = sparse(F_f);
     
     % pack up problem
     prob.A1 = blkdiag(constrBlocks{:});
-    [LRs, Ks, Ms, Ls] = RiccatiFactor(Q, R, Qf, A, B, N);
+    [LRs, Ks, Ms, Ls] = RiccatiFactor(Q, R, Q_f, A, B, N);
     prob.x1step = @(w) RiccatiSolve(w, x0, A, B, LRs, Ks, Ms, Ls, int32(n), int32(m), int32(N));
     prob.B = 1;
-    prob.c = [repmat(c, N, 1); cf];
+    prob.c = [repmat(c, N, 1); c_f];
     prob.zstep = @(y, gam) SoftNonnegativeIndicator(-y/gam, weights, 1/gam);
     
     preprocess = toc(t0);
