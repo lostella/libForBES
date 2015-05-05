@@ -10,11 +10,13 @@ function [LRs, Ks, Ms, Ls] = RiccatiFactor(Q, R, Qf, A, B, N)
     Ls = zeros(n, n, N);
     for k = N:-1:1
         Rbar = R+B'*(Ps(:,:,k+1)*B);
+        Rbar = (Rbar+Rbar')/2;
         LR = chol(Rbar, 'lower');
         LRs(:,:,k) = LR;
         Ss(:,:,k) = B'*(Ps(:,:,k+1)*A);
         Ks(:,:,k) = -(LR'\(LR\Ss(:,:,k)));
         Ps(:,:,k) = Q + A'*(Ps(:,:,k+1)*A) + Ss(:,:,k)'*Ks(:,:,k);
+        Ps(:,:,k) = (Ps(:,:,k)+Ps(:,:,k)')/2;
     end
     for k = 1:N
         LR = LRs(:,:,k);
