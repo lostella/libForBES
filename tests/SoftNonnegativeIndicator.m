@@ -1,5 +1,5 @@
 function [prox, gprox] = SoftNonnegativeIndicator(x, gam, weights)
-% Proximal mapping of function g(x) = -weights.*max{0,z}
+% Proximal mapping of function g(x) = -weights.*min{0,z}
     prox = x;
     neg = prox < 0;
     infw = weights == +inf;

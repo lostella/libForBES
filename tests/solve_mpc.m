@@ -16,7 +16,7 @@
 %   Here variables z, z_N have the role of slack variables, and they are
 %   penalized in the g term of the cost through some weights:
 %
-%       g(z,z_N) = -w.*max{0,z}-w_N.*max{0,z_N}
+%       g(z,z_N) = -w.*min{0,z}-w_N.*min{0,z_N}
 %
 %   and w, w_N are provided in the weights = [w; w_N] vector. If weights is
 %   a scalar s then it is assumed that w = w_N = [s; ...; s], i.e., all weights
