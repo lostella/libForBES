@@ -12,11 +12,13 @@ For the documentation refer to the [ForBES webpage](http://lostella.github.io/Fo
 
 Simply clone the git repository, or click on this [link](https://github.com/lostella/ForBES/archive/master.zip)
 to download it as a zip archive and decompress the archive. Then move with the MATLAB command line to
-the directory of ForBES. Compile all the *mex*-files required by simply hitting
+the directory of ForBES, and execute the following command:
 
 ```
-> make
+> setup_forbes
 ```
+
+This will compile all the necessary source files and install the directory into MATLAB's path.
 
 ## How to use it
 
