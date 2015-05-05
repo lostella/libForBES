@@ -757,7 +757,7 @@ function [opt, name] = ProcessOptions(prob, opt)
     end
     if ~isfield(opt, 'variant'), opt.variant = 'global'; end
     if ~isfield(opt, 'recache'), opt.recache = 100; end
-    if ~isfield(opt, 'memory'), opt.memory = 5; end
+    if ~isfield(opt, 'memory'), opt.memory = 11; end
     if ~isfield(opt, 'adaptive'), opt.adaptive = 0; end
     if ~isfield(opt, 'display'), opt.display = 0; end
     name = [opt.method,', ', opt.linesearch, ', ', opt.variant];
