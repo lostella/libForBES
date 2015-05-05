@@ -1,6 +1,9 @@
 close all;
 clear;
 
+% Uncomment the following to control the random number generation
+% rng(0);
+
 N = 50; % prediction horizon
 n = 12; % no. states
 m = 4; % no. inputs
@@ -23,7 +26,7 @@ R = diag([rand(m-1,1)+cond_R; cond_R]);
 F = [-speye(n); speye(n); sparse(2*m, n)];
 G = [sparse(2*n, m); -speye(m); speye(m)];
 xmin = -ones(n, 1); xmax = ones(n, 1);
-umin = -ones(m, 1); umax = ones(m, 1);
+umin = -0.2*ones(m, 1); umax = 0.2*ones(m, 1);
 xminf = -ones(n, 1); xmaxf = ones(n, 1);
 c = [-xmin; xmax;  -umin; umax];
 F_f = [-speye(n); speye(n)];
@@ -98,11 +101,12 @@ fprintf('%15s: %7.4e\n', 'infeasibility', max(max(0,C*xu_quadprog-d)));
 %% ---------------------------------------------------- ForBES
 
 opt_forbes.display = 0;
-opt_forbes.tolOpt = 1e-3; % this means: norm(residual,inf) <= 1e-3
+opt_forbes.tolOpt = 1e-8; % this means: norm(residual,inf) <= 1e-3
 opt_forbes.maxit = 10000;
 res_forbes = solve_mpc(Q, R, Q_f, A, B, F, G, F_f, c, c_f, weights, N, x0, opt_forbes);
 time_forbes = res_forbes.time;
 fprintf('\nForBES\n');
 fprintf('%15s: %7.4e seconds\n', 'time', time_forbes);
+fprintf('%15s: %d\n', 'iterations', res_forbes.iterations);
 fprintf('%15s: %7.4e\n', 'obj value', 0.5*(res_forbes.x'*(Hess*res_forbes.x)));
 fprintf('%15s: %7.4e\n', 'infeasibility', max(max(0,C*res_forbes.x-d)));
