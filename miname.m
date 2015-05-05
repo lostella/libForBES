@@ -6,9 +6,11 @@
 %           subject to A1x1 + A2x2 + Bz = c.
 %
 %   Moreover, f1 and f2 are strongly convex and twice continuously
-%   differentiable, with f1 being quadratic, that is 
+%   differentiable, with f1 being quadratic the indicator of an affine
+%   subspace S (which may be the whole R^n), that is 
 %
-%       f1(x1) = 1/2 x1'Qx1 + q'x1.
+%       f1(x1) = 1/2 x1'Qx1 + q'x1, if x1 in S
+%              = +infinity, otherwise
 %
 %   OUT = MINAME(PROB) solves problem (1) specified by the structure PROB,
 %   using the default options, and putting the results of the optimization
