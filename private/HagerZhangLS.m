@@ -371,8 +371,8 @@ function [a,fa,da,b,fb,db,alpha,info,lsopt,cachet,cnt] = HagerZhangUpdate(a,fa,d
             da = df ;
         else                     %/* update b using alpha */
             old = b ;
-    %         fold = fb;
-    %         dold = db;
+            fold = fb;
+            dold = db;
             b = alpha ;
             fb = f ;
             db = df ;
