@@ -24,4 +24,3 @@ function [prox, val] = call_l2Norm_prox(x, gam, mu)
         val = mu*scal*normx;
     end
 end
-
