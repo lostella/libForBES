@@ -1,3 +1,10 @@
+%LOGLOGISTIC Allocates the log-logistic function.
+%
+%   LOGLOGISTIC(mu) builds the function
+%       
+%       f(x) = sum_i log(1+exp(-x_i))
+%
+
 function obj = logLogistic(mu)
     obj.makef = @() @(x) call_logLogistic_f(x, mu);
     obj.L = mu; % Lipschitz constant of the gradient of f

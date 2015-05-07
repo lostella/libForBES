@@ -1,4 +1,19 @@
+%HUBERLOSS Allocates the Huber loss function.
+%
+%   HUBERLOSS(del) builds the function
+%       
+%       f(x) = sum_i l(x_i)
+%
+%   where
+%
+%       l(x_i) = 0.5/del*x_i^2      if |x_i| <= del
+%                |x_i|-0.5*del      otherwise 
+%
+
 function obj = huberLoss(del)
+    %
+    % Only f available for this function
+    %
     obj.makef = @() @(x) call_huberLoss_f(x, del);
     obj.L = 1/del;
 end

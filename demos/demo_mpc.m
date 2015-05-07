@@ -26,7 +26,7 @@ R = diag([rand(m-1,1)+cond_R; cond_R]);
 F = [-speye(n); speye(n); sparse(2*m, n)];
 G = [sparse(2*n, m); -speye(m); speye(m)];
 xmin = -ones(n, 1); xmax = ones(n, 1);
-umin = -0.2*ones(m, 1); umax = 0.2*ones(m, 1);
+umin = -0.1*ones(m, 1); umax = 0.1*ones(m, 1);
 xminf = -ones(n, 1); xmaxf = ones(n, 1);
 c = [-xmin; xmax;  -umin; umax];
 F_f = [-speye(n); speye(n)];
@@ -70,8 +70,7 @@ Aaff(1:n,1:n) = speye(n);
 baff(1:n,1) = x0; 
 
 % pack up problem
-[LRs, Ks, Ms, Ls] = RiccatiFactor(Q, R, Q_f, A, B, N);
-prob.f1 = lqrCost(x0, A, B, LRs, Ks, Ms, Ls, N);
+prob.f1 = lqrCost(x0, Q, R, Q_f, A, B, N);
 prob.g = softPositiveOrthant(weights);
 prob.A1 = C;
 prob.B = 1;
@@ -80,6 +79,10 @@ prob.b = [repmat(c, N, 1); c_f];
 opt.display = 2;
 opt.method = 'lbfgs';
 opt.tolOpt = 1e-3;
-out = forbes(prob, opt);
-opt.method = 'cg-dyhs';
-out = forbes(prob, opt);
+out0 = forbes(prob, opt);
+% opt.method = 'cg-dyhs';
+% out = forbes(prob, opt);
+
+x0 = A*x0 + B*out0.x1(n+1:n+m);
+prob.f1 = lqrCost(x0, prob.f1);
+out1 = forbes(prob, opt);

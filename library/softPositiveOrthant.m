@@ -3,7 +3,7 @@ function obj = softPositiveOrthant(weights)
 end
 
 function [prox, val] = call_softPositiveOrthant_prox(x, gam, weights)
-% Proximal mapping of function g(x) = -weights.*min{0,z}
+% Proximal mapping of function g(x) = -sum(weights.*min{0,x})
     prox = x;
     neg = prox < 0;
     infw = weights == +inf;
@@ -23,3 +23,4 @@ function [prox, val] = call_softPositiveOrthant_prox(x, gam, weights)
         val = -sum(weights(toshrink).*prox(toshrink));
     end
 end
+

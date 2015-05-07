@@ -1,3 +1,10 @@
+%L1NORM Allocates the L1 norm function.
+%
+%   L1NORM(mu) builds the function
+%       
+%       g(x) = mu*||x||_1
+%
+
 function obj = l1Norm(mu)
     obj.makeprox = @() @(x, gam) call_l1Norm_prox(x, gam, mu);
 end
@@ -10,3 +17,4 @@ function [prox, g] = call_l1Norm_prox(x, gam, mu)
     end
     prox = sign(x).*uz;
 end
+
