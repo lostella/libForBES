@@ -1,6 +1,6 @@
 function obj = huberLoss(del)
     obj.makef = @() @(x) call_huberLoss_f(x, del);
-%     obj.L = 1/del;
+    obj.L = 1/del;
 end
 
 function [val, grad] = call_huberLoss_f(x, del)
