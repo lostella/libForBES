@@ -163,7 +163,7 @@ function out = minfbe(prob, opt)
     t0 = tic();
     
     if nargin < 1, error('the PROB structure must be provided as first argument'); end
-    prob = ProcessProblem(prob);
+    prob = ProcessCompositeProblem(prob);
 
     if nargin < 2, opt = []; end
     [opt, name] = ProcessOptions(prob, opt);
@@ -176,7 +176,7 @@ function out = minfbe(prob, opt)
     residual = zeros(1, opt.maxit);
     msgTerm = '';
     
-    %      Q, A, C, f2, g
+    %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
 
     %% initialize stuff
@@ -233,7 +233,7 @@ function out = minfbe(prob, opt)
             cnt = cnt+cnt1;
             % increase Lf until a candidate Lipschitz constant is found
             while fz + cache_current.gz > cache_current.FBE
-                prob.Lf = prob.Lf*2;
+                prob.Lf = prob.Lf*5;
                 gam = SelectGamma(prob, opt);
                 flagChangedGamma = 1;
                 [cache_current, cnt1] = CacheFBE(prob, gam, cache_current.x);
@@ -505,8 +505,8 @@ function out = minfbe(prob, opt)
     if prob.istheref2, out.res2 = cache_current.res2x; end
     out.iterations = it;
     out.operations.cnt_Q = cnt(1);
-    out.operations.cnt_A = cnt(2);
-    out.operations.cnt_C = cnt(3);
+    out.operations.cnt_C1 = cnt(2);
+    out.operations.cnt_C2 = cnt(3);
     out.operations.cnt_f2 = cnt(4);
     out.operations.cnt_g = cnt(5);
     out.operations.rej_extr = rejCount;
@@ -527,19 +527,19 @@ function gam = SelectGamma(prob, opt)
 end
 
 function [v, cnt] = Evaluatef(prob, x)
-    %      Q, A, C, f2, g
+    %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
     f1x = 0; f2x = 0;
     if prob.istheref1
-        if prob.isthereA
-            if prob.isAfun, Ax = prob.A(x);
-            else Ax = prob.A*x; end
-            res1x = Ax - prob.b;
+        if prob.isthereC1
+            if prob.isAfun, C1x = prob.C1(x);
+            else C1x = prob.C1*x; end
+            res1x = C1x - prob.d1;
             if prob.isQfun, Qres1x = prob.Q(res1x);
             else Qres1x = prob.Q*res1x; end
             cnt(2) = cnt(2)+1;
         else
-            res1x = x - prob.b;
+            res1x = x - prob.d1;
             if prob.isQfun, Qres1x = prob.Q(res1x);
             else Qres1x = prob.Q*res1x; end
         end
@@ -547,22 +547,22 @@ function [v, cnt] = Evaluatef(prob, x)
         f1x = 0.5*(res1x'*Qres1x) + prob.q'*res1x;
     end
     if prob.istheref2
-        if prob.isthereC
-            if prob.isCfun, Cx = prob.C(x);
-            else Cx = prob.C*x; end
-            res2x = Cx - prob.d;
+        if prob.isthereC2
+            if prob.isC2fun, C2x = prob.C2(x);
+            else C2x = prob.C2*x; end
+            res2x = C2x - prob.d2;
             if prob.useHessian
-                [f2x] = prob.f2(res2x);
+                [f2x] = prob.callf2(res2x);
             else
-                [f2x] = prob.f2(res2x);
+                [f2x] = prob.callf2(res2x);
             end
             cnt(3) = cnt(3)+1;
         else
-            res2x = x - prob.d;
+            res2x = x - prob.d2;
             if prob.useHessian
-                [f2x] = prob.f2(res2x);
+                [f2x] = prob.callf2(res2x);
             else
-                [f2x] = prob.f2(res2x);
+                [f2x] = prob.callf2(res2x);
             end
         end
         cnt(4) = cnt(4)+1;
@@ -576,23 +576,23 @@ end
 
 %% compute the FBE value and store reusable quantities
 function [cache, cnt] = CacheFBE(prob, gam, x)
-    %      Q, A, C, f2, g
+    %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
     f1x = 0; gradf1x = 0;
     f2x = 0; gradf2x = 0;
     cache.x = x;
     if prob.istheref1
-        if prob.isthereA
-            if prob.isAfun, Ax = prob.A(cache.x);
-            else Ax = prob.A*cache.x; end
-            cache.res1x = Ax - prob.b;
+        if prob.isthereC1
+            if prob.isC1fun, C1x = prob.C1(cache.x);
+            else C1x = prob.C1*cache.x; end
+            cache.res1x = C1x - prob.d1;
             if prob.isQfun, cache.Qres1x = prob.Q(cache.res1x);
             else cache.Qres1x = prob.Q*cache.res1x; end
-            if prob.isAfun, gradf1x = prob.AT(cache.Qres1x + prob.q);
-            else gradf1x = prob.A'*(cache.Qres1x + prob.q); end
+            if prob.isC1fun, gradf1x = prob.C1t(cache.Qres1x + prob.q);
+            else gradf1x = prob.C1'*(cache.Qres1x + prob.q); end
             cnt(2) = cnt(2)+2;
         else
-            cache.res1x = cache.x - prob.b;
+            cache.res1x = cache.x - prob.d1;
             if prob.isQfun, cache.Qres1x = prob.Q(cache.res1x);
             else cache.Qres1x = prob.Q*cache.res1x; end
             gradf1x = cache.Qres1x + prob.q;
@@ -603,24 +603,24 @@ function [cache, cnt] = CacheFBE(prob, gam, x)
         cache.f1x = f1x;
     end
     if prob.istheref2
-        if prob.isthereC
-            if prob.isCfun, Cx = prob.C(cache.x);
-            else Cx = prob.C*cache.x; end
-            cache.res2x = Cx - prob.d;
+        if prob.isthereC2
+            if prob.isC2fun, C2x = prob.C2(cache.x);
+            else C2x = prob.C2*cache.x; end
+            cache.res2x = C2x - prob.d2;
             if prob.useHessian
-                [f2x, gradf2res2x, cache.Hessf2res2x] = prob.f2(cache.res2x);
+                [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
             else
-                [f2x, gradf2res2x] = prob.f2(cache.res2x);
+                [f2x, gradf2res2x] = prob.callf2(cache.res2x);
             end
-            if prob.isCfun, gradf2x = prob.CT(gradf2res2x);
-            else gradf2x = prob.C'*gradf2res2x; end
+            if prob.isC2fun, gradf2x = prob.C2t(gradf2res2x);
+            else gradf2x = prob.C2'*gradf2res2x; end
             cnt(3) = cnt(3)+2;
         else
-            cache.res2x = cache.x - prob.d;
+            cache.res2x = cache.x - prob.d2;
             if prob.useHessian
-                [f2x, gradf2res2x, cache.Hessf2res2x] = prob.f2(cache.res2x);
+                [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
             else
-                [f2x, gradf2res2x] = prob.f2(cache.res2x);
+                [f2x, gradf2res2x] = prob.callf2(cache.res2x);
             end
             gradf2x = gradf2res2x;
         end
@@ -636,7 +636,7 @@ function [cache, cnt] = CacheFBE(prob, gam, x)
         cache.gradfx = gradf1x + gradf2x;
     end
     y = cache.x - gam*cache.gradfx;
-    [cache.z, cache.gz] = prob.g(y, gam);
+    [cache.z, cache.gz] = prob.callg(y, gam);
     cnt(5) = cnt(5)+1;
     cache.diff = cache.z-cache.x;
     sqnormdiff = cache.diff'*cache.diff;
@@ -648,47 +648,47 @@ end
 
 %% compute the gradient of the FBE and store reusable quantities
 function [cache, cnt] = CacheGradFBE(prob, gam, cache)
-    %      Q, A, C, f2, g
+    %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
     Hdiff = 0;
     if prob.istheref1
-        if prob.isthereA
-            if prob.isAfun, Adiff = prob.A(cache.diff);
-            else Adiff = prob.A*cache.diff; end
-            if prob.isQfun, QAdiff = prob.Q(Adiff);
-            else QAdiff = prob.Q*Adiff; end
-            if prob.isAfun, ATQAdiff = prob.AT(QAdiff);
-            else ATQAdiff = prob.A'*QAdiff; end
+        if prob.isthereC1
+            if prob.isC1fun, C1diff = prob.C1(cache.diff);
+            else C1diff = prob.C1*cache.diff; end
+            if prob.isQfun, QC1diff = prob.Q(C1diff);
+            else QC1diff = prob.Q*C1diff; end
+            if prob.isC1fun, C1tQC1diff = prob.C1t(QC1diff);
+            else C1tQC1diff = prob.C1'*QC1diff; end
             cnt(2) = cnt(2)+2;
         else
-            if prob.isQfun, ATQAdiff = prob.Q(cache.diff);
-            else ATQAdiff = prob.Q*cache.diff; end
+            if prob.isQfun, C1tQC1diff = prob.Q(cache.diff);
+            else C1tQC1diff = prob.Q*cache.diff; end
         end
         cnt(1) = cnt(1)+1;
-        Hdiff = Hdiff + ATQAdiff;
+        Hdiff = Hdiff + C1tQC1diff;
     end
     if prob.istheref2
-        if prob.isthereC
-            if prob.isCfun, Cdiff = prob.C(cache.diff);
-            else Cdiff = prob.C*cache.diff; end
+        if prob.isthereC2
+            if prob.isC2fun, C2diff = prob.C2(cache.diff);
+            else C2diff = prob.C2*cache.diff; end
             cnt(3) = cnt(3)+1;
         else
-            Cdiff = cache.diff;
+            C2diff = cache.diff;
         end
         if prob.useHessian
-            HCdiff = cache.Hessf2res2x(Cdiff);
+            HC2diff = cache.Hessf2res2x(C2diff);
         else
-            res2xepsdiff = cache.res2x + 1e-100i*Cdiff;
-            [~, gradf2res2xepsd] = prob.f2(res2xepsdiff);
+            res2xepsdiff = cache.res2x + 1e-100i*C2diff;
+            [~, gradf2res2xepsd] = prob.callf2(res2xepsdiff);
             cnt(4) = cnt(4)+1;
-            HCdiff = imag(gradf2res2xepsd)/1e-100;
+            HC2diff = imag(gradf2res2xepsd)/1e-100;
         end
-        if prob.isthereC
-            if prob.isCfun, Hdiff = Hdiff + prob.CT(HCdiff);
-            else Hdiff = Hdiff + (prob.C'*HCdiff); end
+        if prob.isthereC2
+            if prob.isC2fun, Hdiff = Hdiff + prob.C2t(HC2diff);
+            else Hdiff = Hdiff + (prob.C2'*HC2diff); end
             cnt(3) = cnt(3)+1;
         else
-            Hdiff = Hdiff + HCdiff;
+            Hdiff = Hdiff + HC2diff;
         end
     end
     cache.gradFBE = (Hdiff - cache.diff/gam);
@@ -696,35 +696,35 @@ end
 
 %% precompute quantities needed for the line search procedures
 function [cache, cnt] = CacheLSData(prob, dir, cache)
-    %      Q, A, C, f2, g
+    %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
     cache.dir = dir;
     if prob.istheref1
-        if prob.isthereA
-            if prob.isAfun, cache.Adir = prob.A(dir);
-            else cache.Adir = prob.A*dir; end
-            if prob.isQfun, cache.QAdir = prob.Q(cache.Adir);
-            else cache.QAdir = prob.Q*cache.Adir; end
-            if prob.isAfun, cache.ATQAdir = prob.AT(cache.QAdir);
-            else cache.ATQAdir = prob.A'*cache.QAdir; end
+        if prob.isthereC1
+            if prob.isC1fun, cache.C1dir = prob.C1(dir);
+            else cache.C1dir = prob.C1*dir; end
+            if prob.isQfun, cache.QC1dir = prob.Q(cache.C1dir);
+            else cache.QC1dir = prob.Q*cache.C1dir; end
+            if prob.isC1fun, cache.C1tQC1dir = prob.C1t(cache.QC1dir);
+            else cache.C1tQC1dir = prob.C1'*cache.QC1dir; end
             cnt(2) = cnt(2)+2;
         else
-            cache.Adir = dir;
-            if prob.isQfun, cache.QAdir = prob.Q(cache.Adir);
-            else cache.QAdir = prob.Q*cache.Adir; end
-            cache.ATQAdir = cache.QAdir;
+            cache.C1dir = dir;
+            if prob.isQfun, cache.QC1dir = prob.Q(cache.C1dir);
+            else cache.QC1dir = prob.Q*cache.C1dir; end
+            cache.C1tQC1dir = cache.QC1dir;
         end
         cnt(1) = cnt(1)+1;
         cache.f1linear = cache.gradf1x'*dir;
-        cache.f1quad = cache.Adir'*cache.QAdir;
+        cache.f1quad = cache.C1dir'*cache.QC1dir;
     end
     if prob.istheref2
-        if prob.isthereC
-            if prob.isCfun, cache.Cdir = prob.C(dir);
-            else cache.Cdir = prob.C*dir; end
+        if prob.isthereC2
+            if prob.isC2fun, cache.C2dir = prob.C2(dir);
+            else cache.C2dir = prob.C2*dir; end
             cnt(3) = cnt(3)+1;
         else
-            cache.Cdir = dir;
+            cache.C2dir = dir;
         end
     end
     if prob.istherelin
