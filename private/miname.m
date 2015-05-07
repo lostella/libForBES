@@ -120,7 +120,7 @@
 
 function out = miname(prob, opt)
     t0 = tic();
-    dualprob = ProcessDualProblem(prob);
+    [prob, dualprob] = ProcessSeparableProblem(prob);
     preprocess = toc(t0);
     if nargin > 1
         dualout = minfbe(dualprob, opt);

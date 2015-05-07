@@ -8,31 +8,31 @@ function [cachet, cnt] = DirFBE(prob, gam, tau, cache, mode, cachet)
 % If mode == 2, compute only dFBE(x+tau*d), the directional derivative.
 % If mode == 3, compute both FBE and dFBE at x+tau*d.
     
-    %      Q, A, C, f2, g
+    %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
 
     if nargin < 6
         fxt = 0;
         gradfxt = 0;
         if prob.istheref1
-            cachet.res1x = cache.res1x + tau*cache.Adir;
-            cachet.Qres1x = cache.Qres1x + tau*cache.QAdir;
-            cachet.gradf1x = cache.gradf1x + tau*cache.ATQAdir;
+            cachet.res1x = cache.res1x + tau*cache.C1dir;
+            cachet.Qres1x = cache.Qres1x + tau*cache.QC1dir;
+            cachet.gradf1x = cache.gradf1x + tau*cache.C1tQC1dir;
             cachet.f1x = cache.f1x + tau*cache.f1linear + (0.5*tau^2)*cache.f1quad;
             fxt = fxt + cachet.f1x;
             gradfxt = gradfxt + cachet.gradf1x;
         end
         if prob.istheref2
-            cachet.res2x = cache.res2x + tau*cache.Cdir;
+            cachet.res2x = cache.res2x + tau*cache.C2dir;
             if prob.useHessian
-                [f2xt, gradf2res2xt, cachet.Hessf2res2x] = prob.f2(cachet.res2x);
+                [f2xt, gradf2res2xt, cachet.Hessf2res2x] = prob.callf2(cachet.res2x);
             else
-                [f2xt, gradf2res2xt] = prob.f2(cachet.res2x);
+                [f2xt, gradf2res2xt] = prob.callf2(cachet.res2x);
             end
             cnt(4) = cnt(4)+1;
-            if prob.isthereC
-                if prob.isCfun, gradf2xt = prob.CT(gradf2res2xt);
-                else gradf2xt = prob.C'*gradf2res2xt; end
+            if prob.isthereC2
+                if prob.isC2fun, gradf2xt = prob.C2t(gradf2res2xt);
+                else gradf2xt = prob.C2'*gradf2res2xt; end
                 cnt(3) = cnt(3)+1;
             else
                 gradf2xt = gradf2res2xt;
@@ -50,7 +50,7 @@ function [cachet, cnt] = DirFBE(prob, gam, tau, cache, mode, cachet)
         cachet.fx = fxt;
         cachet.gradfx = gradfxt;
         yt = cachet.x - gam*gradfxt;
-        [cachet.z, cachet.gz] = prob.g(yt, gam);
+        [cachet.z, cachet.gz] = prob.callg(yt, gam);
         cnt(5) = cnt(5)+1;
         cachet.diff = cachet.z-cachet.x;
     end
@@ -66,23 +66,23 @@ function [cachet, cnt] = DirFBE(prob, gam, tau, cache, mode, cachet)
     if mode >= 2
         Hdir = 0;
         if prob.istheref1
-            Hdir = Hdir + cache.ATQAdir;
+            Hdir = Hdir + cache.C1tQC1dir;
         end
         if prob.istheref2
             if prob.useHessian
-                HCdir = cachet.Hessf2res2x(cache.Cdir);
+                HC2dir = cachet.Hessf2res2x(cache.C2dir);
             else
-                res2xtepsdir = cachet.res2x + 1e-100i*cache.Cdir;
-                [~, gradf2res2xtepsdir] = prob.f2(res2xtepsdir);
+                res2xtepsdir = cachet.res2x + 1e-100i*cache.C2dir;
+                [~, gradf2res2xtepsdir] = prob.callf2(res2xtepsdir);
                 cnt(4) = cnt(4)+1;
-                HCdir = imag(gradf2res2xtepsdir)/1e-100;
+                HC2dir = imag(gradf2res2xtepsdir)/1e-100;
             end
-            if prob.isthereC
-                if prob.isCfun, Hdir = Hdir + prob.CTfun(HCdir);
-                else Hdir = Hdir + (prob.C'*HCdir); end
+            if prob.isthereC2
+                if prob.isC2fun, Hdir = Hdir + prob.C2t(HC2dir);
+                else Hdir = Hdir + (prob.C2'*HC2dir); end
                 cnt(3) = cnt(3)+1;
             else
-                Hdir = Hdir + HCdir;
+                Hdir = Hdir + HC2dir;
             end
         end
         cachet.dFBE = cachet.diff'*Hdir-(cachet.diff'*cache.dir)/gam;
