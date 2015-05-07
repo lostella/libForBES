@@ -71,14 +71,14 @@ baff(1:n,1) = x0;
 
 % pack up problem
 prob.f1 = lqrCost(x0, Q, R, Q_f, A, B, N);
-prob.g = softPositiveOrthant(weights);
+prob.g = distPos(weights);
 prob.A1 = C;
 prob.B = 1;
 prob.b = [repmat(c, N, 1); c_f];
 
 opt.display = 2;
 opt.method = 'lbfgs';
-opt.tolOpt = 1e-3;
+opt.tolOpt = 1e-5;
 out0 = forbes(prob, opt);
 % opt.method = 'cg-dyhs';
 % out = forbes(prob, opt);
