@@ -15,7 +15,7 @@ end
 function [prox, val] = call_l2Norm_prox(x, gam, mu)
     normx = sqrt(x'*x);
     mugam = mu*gam;
-    if normx > mugam
+    if normx <= mugam
         prox = zeros(length(x),1);
         val = 0;
     else
