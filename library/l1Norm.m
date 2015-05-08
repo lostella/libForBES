@@ -20,4 +20,3 @@ function [prox, g] = call_l1Norm_prox(x, gam, mu)
     end
     prox = sign(x).*uz;
 end
-
