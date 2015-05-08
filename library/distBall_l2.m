@@ -19,9 +19,9 @@ nxc = norm(xc);
 if nxc <= rho
     proj = x;
 else
-    proj = c+(rho/nxc)*xc;
+    proj = c + (rho/nxc)*xc;
 end
-diff = proj-x;
+diff = proj - x;
 dist = norm(diff);
 prox = proj;
 val = 0;
