@@ -1,8 +1,8 @@
 %LOGLOGISTIC Allocates the log-logistic function.
 %
-%   LOGLOGISTIC(mu) builds the function
+%   LOGLOGISTIC(mu) builds the log-logistic function
 %       
-%       f(x) = sum_i log(1+exp(-x_i))
+%       f(x) = mu*(sum_i log(1+exp(-x_i)))
 %
 
 function obj = logLogistic(mu)
