@@ -7,6 +7,7 @@ savepath;
 % Compile necessary C source files
 private_path = fullfile(forbes_path, 'private');
 library_path = fullfile(forbes_path, 'library');
+addpath(library_path);
 LBFGS_path = fullfile(forbes_path, 'private', 'LBFGS.c');
 Riccati_path = fullfile(forbes_path, 'library', 'RiccatiSolve.c');
 error_msg = 'The C compiler could not succesfully compile ';
