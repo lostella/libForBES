@@ -14,8 +14,8 @@
 %   Defining the problem
 %   --------------------
 %
-%   If A1, A2, B and b are specified then C1 = d1 = C2 = d2 = 0, and the
-%   problem has the form
+%   If A1, A2, B and b are specified then C1 = C2 = Id and d1 = d2 = 0,
+%   and the problem has the form
 %
 %       (1) minimize    f1(x1) + f2(x2) + g(z)
 %           subject to  A1*x1 + A2*x2 + B*z = b
