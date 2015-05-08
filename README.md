@@ -22,13 +22,12 @@ This will compile all the necessary source files and install the directory into 
 
 ## How to use it
 
-ForBES consists mainly of two MATLAB functions, `minfbe` and `miname`.
-In order to use them one must provide a structure containing a description
+ForBES consists mainly of one MATLAB routine, `forbes`.
+In order to use it one must provide a structure containing a description
 of the problem and (optionally) a set of options:
 
 ```
-out = minfbe(prob, opt);
-out = miname(prob, opt);
+out = forbes(prob, opt);
 ```
 
 Structure `prob` contains attributes describing the details of the problem, such as objective
@@ -36,12 +35,11 @@ terms and constraints, while `opt` describes, e.g., details on the algorithm to 
 criteria, the level of verbosity, and so on. Output `out` will contain the results of the optimization process.
 Details on how to specify these structures can be found in the [ForBES webpage](http://lostella.github.io/ForBES/).
 
-Examples on how to use `minfbe` and `miname` can be found in the [tests folder](https://github.com/lostella/ForBES/tree/master/tests).
+Examples on how to use `forbes` can be found in the [demos folder](https://github.com/lostella/ForBES/tree/master/demos).
 Furthermore, you can access the help file of the solvers directly from MATLAB with
 
 ```
-> help minfbe
-> help miname
+> help forbes
 ```
 
 ## Credits
