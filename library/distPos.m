@@ -21,6 +21,7 @@ if all(wInf)
 else
     diff = proj-x;
     prox = proj;
+    gam = gam*weights;
     dist = weights.*abs(diff);
     iLarge = (dist > gam) & ~wInf;
     if any(iLarge)
