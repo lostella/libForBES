@@ -26,10 +26,8 @@ function out = GetPrimalOutput(prob, dualout)
     mugam = prob.muB*out.gam;
     if isfield(prob, 'b')
         [out.z, ~] = prob.callg(-prob.B'*(y+out.gam*(Ax-prob.b))/mugam, 1/mugam);
-%         [out.z, ~] = prob.callg(out.y/out.gam + (Ax-prob.c), 1/out.gam);
     else
         [out.z, ~] = prob.callg(-prob.B'*(y+out.gam*Ax)/mugam, 1/mugam);
-%         [out.z, ~] = prob.callg(out.y/out.gam + Ax, 1/out.gam);
     end
     out.y = y;
     out.iterations = dualout.iterations;
