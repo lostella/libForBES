@@ -1,23 +1,14 @@
-function obj = distBox(lb,ub,weights)
+function obj = distBox(n,lb,ub,weights)
 % Proximal mapping for (weighted) distance from a box [lb,ub]
 if nargin<3 || isempty(weights)
-    weights = 1;
+    weights = ones(n,1);
 end
 if nargin<2 || isempty(ub)
-    ub = +inf;
+    ub = +inf*ones(n,1);
 end
 if nargin<1 || isempty(lb)
-    lb = -inf;
+    lb = -inf*ones(n,1);
 end
-
-obj.makeprox = @() @(x, gam) call_distBox_prox(x, gam, lb, ub, weights);
-end
-
-function [prox, val] = call_distBox_prox(x, gam, lb, ub, weights)
-% Proximal mapping of function g(x) = -weights.*min{0,z}
-% project on the box
-proj = max(min(x,ub),lb);
-n = length(x);
 if isscalar(weights)
     weights = weights*ones(n,1);
 end
@@ -30,12 +21,21 @@ if isscalar(ub)
     ub = ub*ones(n,1);
 end
 
+
+obj.makeprox = @() @(x, gam) call_distBox_prox(x, gam, n, lb, ub, weights);
+end
+
+function [prox, val] = call_distBox_prox(x, gam, n, lb, ub, weights)
+% Proximal mapping of function g(x) = -weights.*min{0,z}
+% project on the box
+proj = max(min(x,ub),lb);
+
 wInf = (weights == inf);
 if all(wInf)
     prox = proj;
     val = 0;
 else
-    diff = proj-x;
+    diff = proj - x;
     prox = proj;
     gam = gam*weights;
     dist = weights.*abs(diff);
