@@ -22,10 +22,10 @@ if isscalar(ub)
 end
 
 
-obj.makeprox = @() @(x, gam) call_distBox_prox(x, gam, n, lb, ub, weights);
+obj.makeprox = @() @(x, gam) call_distBox_prox(x, gam, lb, ub, weights);
 end
 
-function [prox, val] = call_distBox_prox(x, gam, n, lb, ub, weights)
+function [prox, val] = call_distBox_prox(x, gam, lb, ub, weights)
 % Proximal mapping of function g(x) = -weights.*min{0,z}
 % project on the box
 proj = max(min(x,ub),lb);
