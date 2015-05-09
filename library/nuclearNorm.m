@@ -1,11 +1,12 @@
 function obj = nuclearNorm(m, n, lam)
+% proximal mapping of the nuclear norm (times lam) of an m by n matrix
     if nargin < 2
         error('you must provide the number of rows and columns, m and n, as arguments');
     end
     if nargin < 3
         lam = 1;
     end
-    obj = @() @(x, gam) call_nuclearNorm_prox(x, gam, m, n, lam);
+    obj.makeprox = @() @(x, gam) call_nuclearNorm_prox(x, gam, m, n, lam);
 end
 
 function [prox, val] = call_nuclearNorm_prox(x, gam, m, n, lam)
