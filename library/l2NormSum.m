@@ -2,7 +2,7 @@ function obj = l2NormSum(m)
     if nargin < 1
         m = 1;
     end
-    obj = @() @(x, gam) call_l2NormSum_prox(x, gam, m);
+    obj.makeprox = @() @(x, gam) call_l2NormSum_prox(x, gam, m);
 end
 
 function [z, v] = call_l2NormSum_prox(x, gam, m)
