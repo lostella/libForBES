@@ -18,22 +18,22 @@ gam = weight*gam;
 xc = x-c;
 nxc = norm(xc);
 if nxc <= rho
-    proj = x;
+    prox = x;
+    val = 0;
 else
-    proj = c + (rho/nxc)*xc;
-end
-diff = proj - x;
-dist = norm(diff);
-prox = proj;
-val = 0;
-if dist > gam
-    prox = x+gam*(diff/dist);
-    xc = prox-c;
-    nxc = norm(xc);
-    if nxc <= rho
-        val = 0;
+    scale = rho/nxc;
+    if nxc > gam/(1-scale);
+        prox = x-(gam/nxc)*xc;
+        xc = prox-c;
+        nxc = norm(xc);
+        if nxc <= rho
+            val = 0;
+        else
+            val = weight*(1-rho/nxc)*nxc;
+        end
     else
-        val = weight*(1-rho/nxc)*norm(xc);
-    end    
+        prox = c + scale*xc;
+        val = 0;
+    end
 end
 end
