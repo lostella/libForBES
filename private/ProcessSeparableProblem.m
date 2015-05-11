@@ -74,7 +74,7 @@ end
 
 function [proxpoint, proxval] = call_prox_conj(y, gam, prox, B, mu)
     mugam = mu*gam;
-    [z, v] = prox((-B'*y)/mugam, 1/mugam);
+    [z, v] = prox(-(B'*y)/mugam, 1/mugam);% changed from (-B'*y): much faster
     Bz = B*z;
     proxpoint = y+gam*Bz;
     proxval = -proxpoint'*Bz - v;
