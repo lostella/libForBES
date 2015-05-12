@@ -19,7 +19,7 @@ function prob = ProcessCompositeProblem(prob)
         if isfield(prob, 'C1')
             if isa(prob.C1, 'function_handle')
                 prob.m1 = length(prob.C1(prob.x0));
-                if ~isfield(prob, 'C1t') || ~isa(prob.AT, 'function_handle')
+                if ~isfield(prob, 'C1t') || ~isa(prob.C1t, 'function_handle')
                     error('must specify both C1 and C1t as function handles');
                 end
                 prob.isC1fun = true;

@@ -44,7 +44,7 @@ prob.f1 = lqrCost(x0, Q, R, Q_f, A, B, N);
 % one block
 lb = [repmat([xmin;umin],N,1);xmin];
 ub = [repmat([xmax;umax],N,1);xmax];
-weights = [repmat([1e5*ones(n,1);inf*ones(m,1)],N,1);1e5*ones(n,1)];
+weights = [repmat([1e2*ones(n,1);inf*ones(m,1)],N,1);1e2*ones(n,1)];
 prob.g = distBox(lb,ub,weights);
 
 prob.A1 = 1;
