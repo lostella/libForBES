@@ -71,7 +71,12 @@ function prob = ProcessCompositeProblem(prob)
             prob.Lf = prob.Lf + prob.f2.L*prob.normC2^2;
             prob.unknownLf = 0;
         elseif ~isfield(prob.f2, 'L')
-            prob.Lf = prob.Lf + 1e-3;
+            x1 = prob.x0+1e-6;
+            if prob.isC2fun, C2x0 = prob.C2(prob.x0); else C2x0 = prob.C2*prob.x0; end
+            if prob.isC2fun, C2x1 = prob.C2(x1); else C2x1 = prob.C2*x1; end
+            [~, gradf0] = prob.callf2(C2x0);
+            [~, gradf1] = prob.callf2(C2x1);
+            prob.Lf = prob.Lf + norm(gradf0-gradf1)/1e-6;
             prob.unknownLf = 1;
         else
             prob.Lf = prob.Lf + prob.f2.L*eigs(funC2tC2, prob.n, 1, 'LM', eigsOpt);
