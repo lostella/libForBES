@@ -1,13 +1,14 @@
 % Add ForBES directory to MATLAB's path
 forbes_path = fileparts(mfilename('fullpath'));
+library_path = fullfile(forbes_path, 'library');
+private_path = fullfile(forbes_path, 'private');
 display(['Adding ForBES directory to MATLAB path: ', forbes_path]);
 addpath(forbes_path);
+display(['Adding ForBES library to MATLAB path: ', library_path]);
+addpath(library_path);
 savepath;
 
 % Compile necessary C source files
-private_path = fullfile(forbes_path, 'private');
-library_path = fullfile(forbes_path, 'library');
-addpath(library_path);
 LBFGS_path = fullfile(forbes_path, 'private', 'LBFGS.c');
 Riccati_path = fullfile(forbes_path, 'library', 'RiccatiSolve.c');
 error_msg = 'The C compiler could not succesfully compile ';
