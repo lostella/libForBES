@@ -548,7 +548,7 @@ function [v, cnt] = Evaluatef(prob, x)
     f1x = 0; f2x = 0;
     if prob.istheref1
         if prob.isthereC1
-            if prob.isAfun, C1x = prob.C1(x);
+            if prob.isC1fun, C1x = prob.C1(x);
             else C1x = prob.C1*x; end
             res1x = C1x - prob.d1;
             if prob.isQfun, Qres1x = prob.Q(res1x);

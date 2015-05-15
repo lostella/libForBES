@@ -56,7 +56,7 @@ function prob = ProcessCompositeProblem(prob)
                 if ~isfield(prob, 'C2t') || ~isa(prob.C2t, 'function_handle')
                     error('must specify both C2 and C2t as function handles');
                 end
-                prob.isCfun = true;
+                prob.isC2fun = true;
                 funC2tC2 = @(x) prob.C2t(prob.C2(x));
             else
                 prob.m2 = size(prob.C2, 1);
