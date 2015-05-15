@@ -11,6 +11,7 @@ if nargin<1 || isempty(lb)
 end
 
 obj.makef = @() @(x) call_dist2Box_f(x, lb ,ub, weights);
+obj.L = max(weights);
 end
 
 function [val, grad] = call_dist2Box_f(x,lb ,ub, weights)
