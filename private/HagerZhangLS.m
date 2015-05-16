@@ -14,10 +14,17 @@ function [cachet, alpha, cnt, info] = HagerZhangLS(prob, gam, cache, df0, lsopt)
     f0 = cache.FBE;
     %      Q, A, C, f2, proxg
     cnt = [0, 0, 0, 0, 0];
+    
+    if lsopt.PertRule
+        epsilon = lsopt.eps*abs(f0);
+    else
+        epsilon = lsopt.eps;
+    end
+    
     lsopt.wolfe_hi  = lsopt.delta*df0;
     lsopt.wolfe_lo  = lsopt.sigma*df0;
     lsopt.awolfe_hi = (2*lsopt.delta - 1)*df0;
-    lsopt.fpert     = f0 + lsopt.epsilon;
+    lsopt.fpert     = f0 + epsilon;
 
     % evaluate function or gradient at alpha (starting guess)
     if ( lsopt.QuadOK )

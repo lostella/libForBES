@@ -39,7 +39,7 @@ function out = minfbe(prob, opt)
     
     %% display stuff
     if opt.display >= 2
-        fprintf('%6s%11s%11s%11s%11s%11s\n', 'iter', 'gamma', 'optim.', '||dir||', 'slope', 'tau');
+        fprintf('%6s%11s%11s%11s%11s%11s%11s\n', 'iter', 'gamma', 'optim.', 'object.', '||dir||', 'slope', 'tau');
     end
     
     rejCount = 0;
@@ -87,31 +87,33 @@ function out = minfbe(prob, opt)
         objective(1, it) = cache_current.FBE;
         
         %% check for termination
-        if opt.customTerm
+        if ~opt.customTerm
+            % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
+            absFBE = abs(cache_current.FBE);
+            if residual(1, it) <= 10*sqrt(eps) || ...
+                    (it > 1 && residual(1, it) <= nthroot(opt.tolOpt, 3)*(1+absFBE) && ...
+                    norm(cache_previous.x-cache_current.x, inf) < sqrt(opt.tolOpt)*(1+norm(cache_current.x, inf)) && ...
+                    cache_previous.FBE-cache_current.FBE < opt.tolOpt*(1+absFBE))
+                msgTerm = [msgTerm, 'reached optimum up to tolOpt'];
+                flagTerm = 0;
+                break;
+            end
+        else
             if opt.term(cache_current)
                 msgTerm = [msgTerm, 'reached optimum (custom criterion)'];
                 flagTerm = 0;
                 break;
             end
-        else
-            if residual(1, it) <= opt.tolOpt
-                msgTerm = [msgTerm, 'reached optimum up to tolOpt'];
-                flagTerm = 0;
-                break;
-            end
         end
         
-        %% compute gradient of the FBE (not needed by FBS)
-        if opt.method > 0
-            [cache_current, cnt1] = CacheGradFBE(prob, gam, cache_current);
-            cnt = cnt+cnt1;
-        end
+        %% compute gradient of the FBE
+        [cache_current, cnt1] = CacheGradFBE(prob, gam, cache_current);
+        cnt = cnt+cnt1;
         
         %% compute search direction and slope
         switch opt.method
             case {1, 6}
                 dir = -cache_current.gradFBE;
-                slope = cache_current.gradFBE'*dir;
             case 2
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % use steepest descent direction initially
@@ -135,7 +137,6 @@ function out = minfbe(prob, opt)
                         dir = -cache_current.gradFBE;
                     end
                 end
-                slope = cache_current.gradFBE'*dir;
             case 3 % CG-DESCENT
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % Initially use steepest descent direction
@@ -149,7 +150,6 @@ function out = minfbe(prob, opt)
                     beta = max(beta,etak);
                     dir = -cache_current.gradFBE + beta*dir;
                 end
-                slope = cache_current.gradFBE'*dir;
             case 4 % PRP-CG
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % Initially use steepest descent direction
@@ -158,7 +158,6 @@ function out = minfbe(prob, opt)
                     beta = max((cache_current.gradFBE'*yy)/(cache_previous.gradFBE'*cache_previous.gradFBE),0);
                     dir = -cache_current.gradFBE + beta*dir;
                 end
-                slope = cache_current.gradFBE'*dir;
             case 5 % DYHS-CG
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % Initially use steepest descent direction
@@ -169,15 +168,14 @@ function out = minfbe(prob, opt)
                     beta = max(0,min(betaHS,betaDY));
                     dir = -cache_current.gradFBE + beta*dir;
                 end
-                slope = cache_current.gradFBE'*dir;
         end
+        slope = cache_current.gradFBE'*dir;
         
-        %% perform line search
-        % precompute other stuff for the line search
+        %% precompute stuff for the line search
         [cache_current, cnt1] = CacheLSData(prob, dir, cache_current);
         cnt = cnt+cnt1;
 
-        % set initial guess for the step length
+        %% set initial guess for the step length
         switch opt.method
             case 2
                 lsopt.tau0 = 1.0;
@@ -221,6 +219,7 @@ function out = minfbe(prob, opt)
                 end
         end
 
+        %% perform the line search
         switch opt.linesearch
             case 1 % backtracking until Armijo condition is met
                 [cache_tau, tau, cntLS, info] = ArmijoLS(prob, gam, cache_current, slope, lsopt);
@@ -232,14 +231,8 @@ function out = minfbe(prob, opt)
             case 4 % Hager-Zhang line search
                 Q = 1 + Q*lsopt.Delta;
                 C = C + (abs(cache_current.FBE) - C)/Q;
-                % test wether we enforce the Wolfe or approximate Wolfe
-                if lsopt.PertRule
-                    lsopt.epsilon = lsopt.eps*abs(cache_current.FBE);
-                else
-                    lsopt.epsilon = lsopt.eps;
-                end
                 [cache_tau, tau, cntLS, info] = HagerZhangLS(prob, gam, cache_current, slope, lsopt);   
-                if ~opt.global && info ~= 0
+                if ~opt.global && ~opt.fast && info ~= 0
                     flagTerm = 2;
                     msgTerm = [msgTerm, 'hager-zhang line search failed at it. ', num2str(it)];
                     break;
@@ -256,18 +249,13 @@ function out = minfbe(prob, opt)
         end
         cnt = cnt+cntLS;
 
-        % check for line search fails
+        %% check for line search fails
         if ~opt.global && ~opt.fast && info ~= 0 && opt.linesearch ~= 4
             msgTerm = ['line search failed at it. ', num2str(it), '; '];
             opt.linesearch = 4;
             tau0 = lsopt.tau0;
             lsopt = ProcessLineSearchOptions(opt);
             lsopt.tau0 = tau0;
-            if lsopt.PertRule
-                lsopt.epsilon = lsopt.eps*abs(cache_current.FBE);
-            else
-                lsopt.epsilon = lsopt.eps;
-            end
             [cache_tau, tau, cntLS, info] = HagerZhangLS(prob, gam, cache_current, slope, lsopt);
             cnt = cnt+cntLS;
             if info ~= 0
@@ -315,7 +303,7 @@ function out = minfbe(prob, opt)
                 fprintf('\n');
             end
         elseif opt.display >= 2
-            fprintf('%6d %7.4e %7.4e %7.4e %7.4e %7.4e\n', it, gam, residual(1,it), norm(dir), slope, tau);
+            fprintf('%6d %7.4e %7.4e %7.4e %7.4e %7.4e %7.4e %d\n', it, gam, residual(1,it), cache_current.FBE, norm(dir), slope, tau, info);
         end
         
     end
@@ -346,192 +334,6 @@ function out = minfbe(prob, opt)
     out.prob = prob;
     out.preprocess = preprocess;
     out.opt = opt;
-end
-
-function [opt, name] = ProcessOptions(prob, opt)
-    % fill in missing options with defaults
-    if ~isfield(opt, 'tolOpt'), opt.tolOpt = 1e-5; end
-    if ~isfield(opt, 'term'), opt.customTerm = false;
-    else opt.customTerm = true; end
-    if ~isfield(opt, 'maxit'), opt.maxit = 10*prob.n; end
-    if ~isfield(opt, 'method'), opt.method = 'lbfgs'; end
-    if ~isfield(opt, 'linesearch')
-        switch opt.method
-            case 'sd'
-                opt.linesearch = 'armijo';
-            case 'lbfgs'
-                opt.linesearch = 'hager-zhang';
-            case 'cg-desc'
-                opt.linesearch = 'hager-zhang';
-            case 'cg-prp'
-                opt.linesearch = 'hager-zhang';
-            case 'cg-dyhs'
-                opt.linesearch = 'hager-zhang';
-            case 'bb'
-                opt.linesearch = 'nonmonotone-armijo';
-        end
-    end
-    if ~isfield(opt, 'variant'), opt.variant = 'global'; end
-    if ~isfield(opt, 'recache'), opt.recache = 100; end
-    if ~isfield(opt, 'memory'), opt.memory = 11; end
-    if ~isfield(opt, 'adaptive'), opt.adaptive = 0; end
-    if ~isfield(opt, 'display'), opt.display = 0; end
-    name = [opt.method,', ', opt.linesearch, ', ', opt.variant];
-    % translate labels into integer codes
-    switch opt.method
-        case 'sd'
-            opt.method = 1;
-        case 'lbfgs'
-            opt.method = 2;
-        case 'cg-desc'
-            opt.method = 3;
-        case 'cg-prp'
-            opt.method = 4;
-        case 'cg-dyhs'
-            opt.method = 5;
-        case 'bb'
-            opt.method = 6;
-        otherwise
-            error('unknown method');
-    end
-    switch opt.linesearch
-        case 'armijo'
-            opt.linesearch = 1;
-        case 'nonmonotone-armijo'
-            opt.linesearch = 2;
-        case 'lemarechal'
-            opt.linesearch = 3;
-        case 'hager-zhang'
-            opt.linesearch = 4;
-        case 'more-thuente'
-            opt.linesearch = 5;
-        case 'fletcher'
-            opt.linesearch = 6;
-        otherwise
-            error('unknown line search');
-    end
-    switch opt.variant
-        case 'basic'
-            opt.fast = 0;
-            opt.global = 0;
-            opt.monotone = 0;
-        case 'global'
-            opt.fast = 0;
-            opt.global = 1;
-            opt.monotone = 0;
-        case 'fast'
-            opt.fast = 1;
-            opt.global = 0;
-            opt.monotone = 1;
-        otherwise
-            error('unknown variant');
-    end
-end
-
-function lsopt = ProcessLineSearchOptions(opt)
-    %  factor in [0, 1] used to compute average cost magnitude C_k as follows:
-    % Q_k = 1 + (Delta)Q_k-1, Q_0 = 0,  C_k = C_k-1 + (|f_k| - C_k-1)/Q_k
-    lsopt.Delta = 0.7;% this goes here to include Hager-Zhang line search as a backup
-    % Wolfe line search parameter delta, range [0, .5]
-    % phi (a) - phi (0) <= delta phi'(0)
-    lsopt.delta = 0.1;
-    switch opt.linesearch
-        case 1 % armijo backtracking
-%         lsopt.str = 'Armijo Backtracking';
-            lsopt.progTol = 0;
-            lsopt.nLS = 50;
-        case 2 % Nonmonotone Armijo
-%         lsopt.str = 'Nonmonotone Armijo Backtracking';
-            lsopt.progTol = 0;
-            lsopt.nLS = 50;
-            lsopt.M = 5;
-        case 3 % Lemarechal line search
-            lsopt.sigma = 0.9;
-            % maximum number of iterations
-            lsopt.nbracket = 100;
-            % type of interpolation - 0 [bisection], 1 [quadratick
-            % interpolation], 2 [cubic interpolation when possible]
-            lsopt.interp = 1;
-            if isfield(opt, 'interp'), lsopt.interp = opt.interp; end
-            % stop when length of interval is below progTol
-            lsopt.progTol = 0;
-            %  growth factor in search for initial bracket interval
-            lsopt.rho = 5;
-            % parameter for safe-guarding (must be in (0,1/2])
-            lsopt.theta = 0.49;
-        case 4 % HagerZhang
-            lsopt.sigma = 0.9;
-            %  maximum number of times the bracketing interval grows during expansion
-            lsopt.nexpand = 50;
-            % maximum number of secant steps
-            lsopt.nsecant = 50;
-            % maximum number of times the bracketing interval contracts
-            lsopt.ncontract = 10;
-            % factor by which eps grows when line search fails during contraction
-            lsopt.egrow = 10;
-            lsopt.QuadOK = true;
-            % T => when possible, use a cubic step in the line search
-            lsopt.UseCubic = true;
-            % true => estimated error in function value is eps*Ck,
-            % false => estimated error in function value is eps */
-            lsopt.PertRule = true;
-            lsopt.eps = 1e-6;
-            % |f| < SmallCost*starting cost => skip QuadStep and set PertRule = FALSE*/
-            lsopt.SmallCost = 1e-30;
-            % T => use approximate Wolfe line search
-            % F => use ordinary Wolfe line search, switch to approximate Wolfe when
-            % |f_k+1-f_k| < omega*C_k, C_k = average size of cost */
-            lsopt.AWolfe = false;
-            lsopt.omega = 1e-3;
-            % factor by which secant step is amplified during expansion phase where minimizer is bracketed
-            lsopt.SecantAmp = 1.05;
-            % factor by which rho grows during expansion phase where minimizer is bracketed
-            lsopt.RhoGrow = 2.0;
-            %  maximum number of times that eps is updated
-            lsopt.neps = 5;
-            % maximum factor secant step increases stepsize in expansion phase
-            lsopt.ExpandSafe = 200;
-            % value of the parameter theta in the cg_descent update formula:
-            % W. W. Hager and H. Zhang, A survey of nonlinear conjugate gradient
-            % methods, Pacific Journal of Optimization, 2 (2006), pp. 35-58.
-            lsopt.theta = 0.5;
-            %  growth factor in search for initial bracket interval
-            lsopt.rho = 5;
-            % decay factor for bracket interval width in line search, range (0, 1)
-            lsopt.gamma = 0.66;
-        case 5 % More Thuente
-            lsopt.sigma = 0.9;
-            lsopt.progTol = 0;
-            lsopt.tmin = 0;
-            lsopt.tmax = 1e15;
-            lsopt.maxfev = 100;
-        case 6 % Fletcher
-            lsopt.sigma = 0.9;
-            %  maximum number of times the bracketing interval grows during expansion
-            lsopt.nbracket = 50;
-            % maximum number of section steps
-            lsopt.nsection = 50;
-            % stop when progress is below progTol
-            lsopt.progTol = 0;
-            % estimate of minimum value of the function
-            lsopt.fmin = -inf;
-    end
-
-    % if method is not FBS or L-BFGS then initial stepsize is selected
-    % according to Hager-Zhang
-    if opt.method ~= 2
-        lsopt.quadStep = true;
-        % starting guess for line search =
-        % psi0 ||x_0||_infty over ||g_0||_infty if x_0 != 0
-        % psi0 |f(x_0)|/||g_0||_2               otherwise */
-        lsopt.psi0 = 0.01;
-        % when the function is approximately quadratic, use gradient at
-        % psi1*psi2*previous step for estimating initial stepsize */
-        lsopt.psi1 = 1.0 ;
-        % when starting a new cg iteration, our initial guess for the line
-        % search stepsize is psi2*previous step */
-        lsopt.psi2 = 2;
-    end
 end
 
 function gam = SelectGamma(prob, opt)
