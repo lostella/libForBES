@@ -1,7 +1,29 @@
-function obj = squaredNorm(lam,p)
-% constructs (lam/2)||x-p||^2 and its conjugate
-% arguments lam p are optional. if omitted then
-% lam = 1 and p=0;
+%SQUAREDNORM Allocates the squared norm function.
+%
+%   SQUAREDNORM(lam, p) builds the function
+%       
+%       f(x) = (lam/2)*||x-p||^2
+%   
+%   If the arguments are omitted, it is assumed that lam = 1, p = 0.
+%
+% Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
+%
+% This file is part of ForBES.
+% 
+% ForBES is free software: you can redistribute it and/or modify
+% it under the terms of the GNU Lesser General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% ForBES is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+% GNU Lesser General Public License for more details.
+% 
+% You should have received a copy of the GNU Lesser General Public License
+% along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+
+function obj = squaredNorm(lam, p)
     if nargin < 1
         lam = 1;
     end
