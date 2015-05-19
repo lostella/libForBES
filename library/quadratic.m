@@ -4,6 +4,9 @@
 %       
 %       f(x) = 0.5*x'*Q*x+q'*x
 %
+%   With one argument, it is assumed q = 0.
+%   With no arguments, it is assumed Q = Id, q = 0;
+%
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -22,6 +25,14 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = quadratic(Q, q)
+    obj.isquadratic = 1;
+    obj.isconjquadratic = 1;
+    if nargin < 2
+        q = 0;
+        if nargin < 1, Q = 1; end
+    end
+    obj.Q = Q;
+    obj.q = q;
     obj.makef = @() @(x) call_quadratic(Q, q, x);
     obj.makefconj = @() make_quadratic_conj(Q, q);
 end
@@ -31,19 +42,19 @@ function [v, g] = call_quadratic(Q, q, x)
     v = 0.5*(g+q)'*x;   
 end
 
-function fc = make_quadratic_conj(Q, q)
+function fun = make_quadratic_conj(Q, q)
     if issparse(Q)
         [L,flag,p] = chol(Q,'lower','vector');
         if flag~=0
             error('Q is not positive definite')
         end
-        fc = @(y) call_quadratic_sparse_conj(L, p, q, y);
+        fun = @(y) call_quadratic_sparse_conj(L, p, q, y);
     else
         [L,flag] = chol(Q,'lower');
         if flag~=0
             error('Q is not positive definite')
         end
-        fc = @(y) call_quadratic_dense_conj(L, q, y);
+        fun = @(y) call_quadratic_dense_conj(L, q, y);
     end
 end
 
