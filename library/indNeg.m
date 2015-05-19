@@ -1,9 +1,12 @@
 %INDNEG Indicator function of the negative orthant.
 %
-%   INDNEG() builds the function
+%   INDNEG(ub) builds the function
 %       
-%       g(x) = 0    if x <= 0
+%       g(x) = 0    if x <= ub
 %            = +inf otherwise
+%
+%   where ub is either a scalar or a vector of the same size of x. If
+%   argument ub is not given, then ub = 0.
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -22,11 +25,14 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = indNeg()
-    obj.makeprox = @() @(x, gam) call_indNeg_prox(x);
+function obj = indNeg(ub)
+    if nargin < 1 || isempty(ub)
+        ub = 0;
+    end
+    obj.makeprox = @() @(x, gam) call_indNeg_prox(x, ub);
 end
 
-function [prox, val] = call_indNeg_prox(x)
-    prox = min(0, x);
+function [prox, val] = call_indNeg_prox(x, ub)
+    prox = min(ub, x);
     val = 0;
 end

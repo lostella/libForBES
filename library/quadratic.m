@@ -37,22 +37,22 @@ function fc = make_quadratic_conj(Q, q)
         if flag~=0
             error('Q is not positive definite')
         end
-        fc = @(y) eval_quadratic_sparse_conj(L, p, q, y);
+        fc = @(y) call_quadratic_sparse_conj(L, p, q, y);
     else
         [L,flag] = chol(Q,'lower');
         if flag~=0
             error('Q is not positive definite')
         end
-        fc = @(y) eval_quadratic_dense_conj(L, q, y);
+        fc = @(y) call_quadratic_dense_conj(L, q, y);
     end
 end
 
-function [v, g] = eval_quadratic_dense_conj(L, q, y)
+function [v, g] = call_quadratic_dense_conj(L, q, y)
     g = L'\(L\(y-q));
     v = (y-q)'*g;
 end
 
-function [v, g] = eval_quadratic_sparse_conj(L, p, q, y)
+function [v, g] = call_quadratic_sparse_conj(L, p, q, y)
     rhs = y-q;
     g(p,1) = L'\(L\rhs(p));
     v = (y-q)'*g;

@@ -155,13 +155,15 @@ function out = forbes(prob, opt)
     switch prob.identified
         case 1
             if nargin > 1
-                out = minfbe(prob, opt);
+                if isfield(opt, 'method') && strcmp(opt.method, 'fbs'), out = fbs(prob, opt);
+                else out = minfbe(prob, opt); end
             else
                 out = minfbe(prob);
             end
         case 2
             if nargin > 1
-                out = miname(prob, opt);
+                if isfield(opt, 'method') && strcmp(opt.method, 'fbs'), out = amm(prob, opt);
+                else out = miname(prob, opt); end
             else
                 out = miname(prob);
             end

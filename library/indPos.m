@@ -1,9 +1,12 @@
 %INDPOS Indicator function of the positive orthant.
 %
-%   INDPOS() builds the function
+%   INDPOS(lb) builds the function
 %       
-%       g(x) = 0    if x >= 0
+%       g(x) = 0    if x >= lb
 %            = +inf otherwise
+%
+%   where lb is either a scalar or a vector of the same size of x. If
+%   argument lb is not given, then lb = 0.
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -22,11 +25,14 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = indPos()
-    obj.makeprox = @() @(x, gam) call_indPos_prox(x);
+function obj = indPos(lb)
+    if nargin < 1 || isempty(lb)
+        lb = 0;
+    end
+    obj.makeprox = @() @(x, gam) call_indPos_prox(x, lb);
 end
 
-function [prox, val] = call_indPos_prox(x)
-    prox = max(0, x);
+function [prox, val] = call_indPos_prox(x, lb)
+    prox = max(lb, x);
     val = 0;
 end

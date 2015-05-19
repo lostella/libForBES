@@ -1,3 +1,9 @@
+%DIST2_OVER_AFFINE Allocates the squared distance function over an affine subspace.
+%
+%   DIST2_OVER_AFFINE(p, A, b) returns the function
+%       
+%       f(x) = 0.5*||x-p||^2 subject to A*x = b
+%
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -15,30 +21,18 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = dist2Ball_l2(rho,c,weight)
-    % Function value and gradient of (w/2)*dist^2(x,C) where C is the l2 ball ||x-c||<=rho
-    if nargin<3 || isempty(weight)
-        weight = 1;
-    end
-    if nargin<2 || isempty(c)
-        c = 0;
-    end
-    if nargin<1 || isempty(rho)
-        rho = 1;
-    end
-
-    obj.makef = @() @(x) call_dist2Ball_l2_f(x, rho, c, weight);
+function obj = dist2_over_affine(p, A, b)
+    obj.makefconj = @() make_dist2_over_affine_conj(p, A, b);
 end
 
-function [val, grad] = call_dist2Ball_l2_f(x, rho, c, weight)
-    xc = x-c;
-    nxc = norm(xc);
-    if nxc <= rho
-        proj = x;
-    else
-        proj = c + (rho/nxc)*xc;
-    end
-    diff = x-proj;
-    val = (0.5*w)*(diff'*diff);
-    grad = weight*diff;
+
+function fc = make_dist2_over_affine_conj(p, A, b)
+    LD = ldlchol(A,1e-12);
+    fc = @(y) call_dist2_over_affine_conj(y, LD, p, A, b);
+end
+
+function [val,grad] = call_dist2_over_affine_conj(y, LD, p, A, b)
+    yp = y+p;
+    grad = yp-A'*ldlsolve(LD,A*yp-b);
+    val = y'*grad-0.5*norm(grad-p)^2;
 end

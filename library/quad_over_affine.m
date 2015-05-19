@@ -2,7 +2,7 @@
 %
 %   QUADRATIC(Q, q, A, b) builds the function
 %       
-%       f(x) = 0.5*x'*Q*x+q'*x subject to A*x = b
+%       f(x) = 0.5*(x'*Q*x)+q'*x subject to A*x = b
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
