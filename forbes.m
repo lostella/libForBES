@@ -2,8 +2,8 @@
 % 
 %   We assume the problem at hand has the form
 %
-%           minimize    f1(C1*x1-d1) + f2(C2*x2-d2) + g(z),
-%           subject to  A1*x1 + A2*x2 + B*z = b
+%           minimize    f(Cx-d) + g(z),
+%           subject to  Ax + Bz = b
 %
 %   out = FORBES(prob) solves problem (1) specified by the structure prob,
 %   using the default options, and store the results in out.
@@ -14,86 +14,55 @@
 %   Defining the problem
 %   --------------------
 %
-%   If A1, A2, B and b are specified then C1 = C2 = Id and d1 = d2 = 0,
-%   and the problem has the form
+%   If the constraint is not specified, it is assumed to be x = z, in which
+%   case the problem takes the unconstrained form
 %
-%       (1) minimize    f1(x1) + f2(x2) + g(z)
-%           subject to  A1*x1 + A2*x2 + B*z = b
+%       (1) minimize    f(Cx-d) + g(x)
 %
-%   In this case we assume that f1 is strongly convex and quadratic plus
-%   (at most) the indicator of an affine subspace, while f2 is strongly
-%   convex in the interior of its domain. Function g is any closed, proper,
-%   convex function.
+%   If A, B and b are specified then C = Id and d = 0, and the problem has
+%   the form
 %
-%   In case (1) the problem is defined through the following attributes of
-%   structure prob.
-%
-%       prob.f1, prob.f2, prob.g: functions f1, f2, g in the cost, if present.
-%           See section "Functions" below for details on how to select these
-%           functions.
-% 
-%       prob.A1, prob.A2: matrices (or procedures computing matvecs)
-%           defining the constraint.
-% 
-%       prob.A1t, prob.A2t: procedures computing the adjoint of
-%           A1, A2, B. (Required only if A1 or A2 or B are specified as
-%           function handles).
-%
-%       prob.B: matrix B in the equality constraint.
-% 
-%       prob.b: right hand side vector in the constraint.
-%
-%   If the constraint is not specified, it is assumed to be x1 = x2 = z,
-%   in which case the problem takes the unconstrained form
-%
-%       (2) minimize    f1(C1*x-d1) + f2(C2*x-d2) + g(x)
-%
-%   and we assume that f1 is convex quadratic, f2 is convex, smooth (has
-%   Lipschitz continuous gradient) and twice continuously differentiable,
-%   while g is any closed, proper, convex function.
-%
-%   In case (2) the structure prob describing the problem should contain the
-%   following attributes.
+%       (2) minimize    f(x) + g(z)
+%           subject to  Ax + Bz = b
+%   
+%   The problem is defined through the following attributes of the
+%   structure prob provided as first argument to FORBES.
 %
 %       prob.x0: The starting point for the algorithm.
 % 
-%       prob.Q, prob.q: Hessian and linear parts of the quadratic term f1.
-%           Q may be a function handle instead of a matrix. (Required only
-%           if the quadratic term is present; default: Q = 0, q = 0).
+%       prob.f, prob.g: functions f and g in the cost. See section "Functions"
+%           below for details on how to select this. (Required).
+%
+%       prob.C, prob.d: Matrix (or function handle) and vector with which
+%           f is composed. (Both are optional; default: C = Id, d = 0).
 % 
-%       prob.C1, prob.d1: Matrix (or function handle) and vector with which
-%           f1 is composed. (Both are optional; default: C1 = Id, d1 = 0).
+%       prob.Ct: Function computing the adjoint of C.
+%           (Required if C is specified as a function handle).
 % 
-%       prob.C1t: Function computing the adjoint of C1. (Required if C1 is
-%           specified as a function handle).
+%       prob.A: matrix (or procedures computing matvecs) defining the
+%           constraint. (Optional; default: A = Id).
 % 
-%       prob.f2: function f2 in the cost, if present. See section "Functions"
-%           below for details on how to select this.
+%       prob.A1t: procedures computing the adjoint of A.
+%           (Required only if A is specified as a function handle).
+%
+%       prob.B: matrix B in the equality constraint.
+%           (Optional; default: B = -Id).
 % 
-%       prob.C2, prob.d2: Matrix (or function handle) and vector with which
-%           f2 is composed. (Both are optional; default: C2 = Id, d2 = 0).
-% 
-%       prob.C2t: Function computing the adjoint of C2. (Required if C2 is
-%           specified as a function handle).
-% 
-%       prob.normC2: The 2-norm of matrix C2. (Optional)
-% 
-%       prob.g: function g in the cost. See section "Functions" below for
-%           details on how to select this. (Required).
+%       prob.b: right hand side vector in the constraint.
+%           (Optional; default: b = 0).
 %
 %   Functions
 %   ---------
 %
-%   Functions f1, f2 and g in the cost can be selected in a library of
-%   functions available in the "library" directory inside of FORBES
-%   directory. All these functions return a structure containing all that
-%   is needed by the solver, and may accept parameters defining the
-%   function. For example
+%   Functions f and g in the cost can be selected in a library of functions
+%   available in the "library" directory inside of FORBES directory. All
+%   these functions return a structure containing all that is needed by the
+%   solver, and may accept parameters defining the function. For example
 %
-%       prob.f2 = logLogistic(mu)
+%       prob.f = logLogistic(mu)
 %       prob.g = l1Norm(mu)
 %
-%   puts in prob.f2 the log-logistic loss function
+%   puts in prob.f the log-logistic loss function
 %
 %       f(x) = mu*(sum_i log(1+exp(-x_i)))
 %
@@ -151,8 +120,11 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function out = forbes(prob, opt)
-    prob = IdentifyProblem(prob);
-    switch prob.identified
+    t0 = tic();
+    prob.id = IdentifyProblem(prob);
+    prob = ProcessProblem(prob);
+    preprocess = toc(t0);
+    switch prob.id
         case 1
             if nargin > 1
                 if isfield(opt, 'method') && strcmp(opt.method, 'fbs'), out = fbs(prob, opt);
@@ -168,30 +140,80 @@ function out = forbes(prob, opt)
                 out = miname(prob);
             end
     end
+    out = ProcessOutput(out);
+    out.preprocess = preprocess + out.preprocess;
 end
 
-function prob = IdentifyProblem(prob)
-    % Check whether we are given equality constraints or not
-    if any(isfield(prob, {'A1', 'A1t', 'A2', 'A2t', 'B', 'b'}))
-        flagEQ = true;
+function id = IdentifyProblem(prob)
+    % simply check for the presence of linear equality constraints.
+    if any(isfield(prob, {'A', 'At', 'B', 'b'}))
+        flagEq = true;
     else
-        flagEQ = false;
+        flagEq = false;
     end
-    % Check whether we are given affine mappings composed with f1 and f2
-    if any(isfield(prob, {'C1', 'C1t', 'd1', 'C2', 'C2t', 'd2'}))
-        flagAFF = true;
+    if flagEq
+        id = 2;
     else
-        flagAFF = false;
+        id = 1;
     end
-    % Check for uncertain situations
-    if (flagEQ && flagAFF)
-        error('you cannot provide both equality constraints and affine mappings composed with f1, f2');
+end
+
+function obj = ProcessFunction(obj)
+    % fill in all fields describing the function with default values
+    % (in case they are missing).
+    if ~isfield(obj, 'isQuadratic'), obj.isQuadratic = 0; end
+    if ~isfield(obj, 'isConjQuadratic'), obj.isConjQuadratic = 0; end
+    if ~isfield(obj, 'hasHessian'), obj.hasHessian = 0; end
+    if ~isfield(obj, 'hasConjHessian'), obj.hasConjHessian = 0; end
+end
+
+function prob = ProcessProblem(prob)
+    % assign problem attributes to the ones required by minfbe and miname.
+    % split the f terms into quadratic and non-quadratic.
+    % since we only consider one term for now, assign f to f1 or f2.
+    f = ProcessFunction(prob.f);
+    prob.g = ProcessFunction(prob.g);
+    switch prob.id
+        case 1
+            if f.isQuadratic
+                prob.f1 = f;
+                if isfield(prob, 'C'), prob.C1 = prob.C; end
+                if isfield(prob, 'Ct'), prob.C1t = prob.Ct; end
+                if isfield(prob, 'd'), prob.d1 = prob.d; end
+            else
+                prob.f2 = f;
+                if isfield(prob, 'C'), prob.C2 = prob.C; end
+                if isfield(prob, 'Ct'), prob.C2t = prob.Ct; end
+                if isfield(prob, 'd'), prob.d2 = prob.d; end
+            end
+        case 2
+            if any(isfield(prob, {'C', 'Ct', 'd'}))
+                error('you cannot provide both equality constraints and affine mappings composed with f');
+            end
+            if f.isConjQuadratic
+                prob.f1 = f;
+                if isfield(prob, 'A'), prob.A1 = prob.A; end
+                if isfield(prob, 'At'), prob.A1t = prob.At; end
+            else
+                prob.f2 = f;
+                if isfield(prob, 'A'), prob.A2 = prob.A; end
+                if isfield(prob, 'At'), prob.A2t = prob.At; end
+            end
     end
-    if flagEQ
-        % If equality constraints are provided, solve the dual
-        prob.identified = 2;
-    else
-        % Otherwise solve the primal
-        prob.identified = 1;
+end
+
+function out = ProcessOutput(out)
+    % not much to do if id=1.
+    % if id=2 must take x1 and x2 and merge them.
+    % so far we assume that either f1 or f2 is present (see ProcessProblem)
+    % so the output of miname only has either x1 or x2, not both.
+    if out.prob.id == 2
+        if isfield(out, 'x1')
+            out.x = out.x1;
+            out = rmfield(out, 'x1');
+        elseif isfield(out, 'x2')
+            out.x = out.x2;
+            out = rmfield(out, 'x2');
+        end
     end
 end

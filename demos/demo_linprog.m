@@ -34,36 +34,38 @@ y = lambda.lower;
 
 %%              run primal-dual LP ForBES solver
 % dual problem is
-%           maximize b'y subject to A'y+s = b, s >= 0
+%           maximize b'y subject to A'y+s = c, s >= 0
 % Matrix K and vector d describe the affine subspace
-% A*x = b, A'*y+s = 0, c'*x = b'*y
+% A*x = b, A'*y+s = c, c'*x = b'*y
 K = [sparse(n, n), A', speye(n); A, sparse(m, m+n); c', -b', sparse(1, n)];
 d = [c; b; 0];
 % setup forbes problem
 % f1 is the sum of the squared norm plus the indicator of the affine
 % subspace
-prob.f1 = dist2_over_affine(sparse(2*n+m,1),K,d);
+prob.f = dist2OverAffine(sparse(2*n+m,1),K,d);
 % g is indicator of x>= 0, s>=0 
 prob.g = indFreePos([1:n,n+m+1:2*n+m]);
-prob.A1 = 1;
+prob.A = 1;
 prob.B = -1;
 prob.b = zeros(2*n+m,1);
 % run forbes
-tic;out = forbes(prob);timef = toc;
-xf = out.x1(1:n);
-yf = out.x1(n+1:n+m);
+opt.method = 'lbfgs';
+tic; out = forbes(prob, opt); timef = toc;
+xf = out.x(1:n);
+yf = out.x(n+1:n+m);
+sf = out.x(n+m+1:end);
 costf = c'*xf;
 % run fast dual proximal gradient method (fast amm)
-opt.method = 'fbs'; opt.fast = 1; opt.display = 0;
-tic;outg = forbes(prob,opt);timeg = toc;
-xg = outg.x1(1:n);
-yg = outg.x1(n+1:n+m);
-costg = c'*xg;
+% opt.method = 'fbs'; opt.fast = 1; opt.maxit = 1000;
+% tic; outg = forbes(prob,opt); timeg = toc;
+% xg = outg.x(1:n);
+% yg = outg.x(n+1:n+m);
+% sg = outg.x(n+m+1:end);
+% costg = c'*xg;
 
 fprintf('linprog  time elapsed (sec) : %.2f\n', timem);
 fprintf('ForBES   time elapsed (sec) : %.2f\n', timef);
-fprintf('Fast AMM time elapsed (sec) : %.2f\n\n', timeg);
+% fprintf('Fast AMM time elapsed (sec) : %.2f\n\n', timeg);
 
 fprintf('ForBES iterations   : %.0f\n', out.iterations);
-fprintf('Fast AMM iterations : %.0f\n', outg.iterations);
-
+% fprintf('Fast AMM iterations : %.0f\n', outg.iterations);

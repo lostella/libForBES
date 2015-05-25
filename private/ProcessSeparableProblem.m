@@ -17,59 +17,76 @@
 
 function [prob, dualprob] = ProcessSeparableProblem(prob)
     if isfield(prob, 'b')
-        if norm(prob.b) > 0, dualprob.l = prob.b; end
+        if norm(prob.b) > 0,
+            dualprob.l = prob.b;
+        else
+            dualprob.istherelin = false;
+        end
         n = length(prob.b);
         if isfield(prob, 'y0'), dualprob.x0 = prob.y0;
         else dualprob.x0 = zeros(n, 1); end
+        dualprob.n = n;
     else
         error('you must specify the right hand side b of the equality constraint');
     end
     if ~any(isfield(prob, {'f1', 'f2'}))
-        error('both smooth terms f1 and f2 are missing');
+        error('missing f1 and f2');
     end
     if isfield(prob, 'f1')
+        dualprob.istheref1 = true;
         if ~isfield(prob.f1, 'makefconj'), error('conjugate function of f1 is not defined'); end
-        prob.callf1conj = prob.f1.makefconj();
+        dualprob.isQfun = true;
         if isfield(prob, 'A1')
+            dualprob.isthereC1 = true;
             if isa(prob.A1, 'function_handle')
                 if ~isfield(prob, 'A1t') || ~isa(prob.A1t, 'function_handle')
                     error('you must specify both A1 and A1t as function handles');
                 end
-                prob.isA1fun = true;
+                dualprob.isC1fun = true;
                 [dualprob.Q, dualprob.q] = make_quad_conj(prob.f1, prob.A1t(zeros(n, 1)));
                 dualprob.C1 = @(x) -prob.A1t(x);
                 dualprob.C1t = @(y) -prob.A1(y);
+                dualprob.m1 = length(dualprob.C1(dualprob.x0));
             else
-                prob.isA1fun = false;
+                dualprob.isC1fun = false;
                 [dualprob.Q, dualprob.q] = make_quad_conj(prob.f1, prob.A1'*zeros(n, 1));
                 dualprob.C1 = -prob.A1';
+                dualprob.m1 = size(dualprob.C1, 1);
             end
+            dualprob.d1 = zeros(dualprob.m1, 1);
         else
             error('you must specify matrix A1 in the constraint');
         end
-        if isfield(prob, 'muf1'), dualprob.Lf1 = 1/prob.muf1; end
+    else
+        dualprob.istheref1 = false;
     end
     if isfield(prob, 'f2')
+        dualprob.istheref2 = true;
         if ~isfield(prob.f2, 'makefconj'), error('conjugate function of f2 is not defined'); end
-        prob.callf2conj = prob.f2.makefconj();
-        dualprob.f2.makef = @() prob.f2.makefconj();
+        dualprob.callf2 = prob.f2.makefconj();
         if isfield(prob, 'A2')
+            dualprob.isthereC2 = true;
             if isa(prob.A2, 'function_handle')
+                dualprob.isthereC2 = true;
                 if ~isfield(prob, 'A2t') || ~isa(prob.A2T, 'function_handle')
                     error('you must specify both A2 and A2t as function handles');
                 end
-                prob.isA2fun = true;
-                dualprob.C2 = -prob.A2t;
-                dualprob.C2t = -prob.A2;
+                dualprob.isC2fun = true;
+                dualprob.C2 = @(x) -prob.A2t(x);
+                dualprob.C2t = @(y) -prob.A2(y);
+                dualprob.m2 = length(dualprob.C2(dualprob.x0));
             else
-                prob.isA2fun = false;
+                dualprob.isC2fun = false;
                 dualprob.C2 = -prob.A2';
+                dualprob.m2 = size(dualprob.C2, 1);
             end
+            dualprob.d2 = zeros(dualprob.m2, 1);
         else
             error('yout must specify matrix A2 in the constraint');
         end
-        if isfield(prob, 'muf2'), dualprob.Lf2 = 1/prob.muf2; end
-        if isfield(prob, 'normA2'), dualprob.normC2 = prob.normA2; end
+        if isfield(prob.f2, 'mu'), dualprob.Lf2 = 1/prob.f2.mu; end
+    else
+        dualprob.istheref2 = false;
     end
     if isfield(prob, 'B')
         if isa(prob.B, 'function_handle'), error('you must specify matrix B as a matrix in the constraint'); end
@@ -81,11 +98,14 @@ function [prob, dualprob] = ProcessSeparableProblem(prob)
     prob.muB = mus(1);
     if ~isfield(prob, 'g'), error('you must specify term g'); end
     if ~isfield(prob.g, 'makeprox'), error('the prox for the term g you specified is not available'); end
-    prob.callg = prob.g.makeprox();
-    dualprob.g.makeprox = @() make_prox_conj(prob.callg, prob.B, prob.muB);
+    dualprob.callg = make_prox_conj(prob.g, prob.B, prob.muB);
+    [dualprob.Lf, dualprob.unknownLf] = EstimateLipschitzConstant(dualprob);
+    dualprob.muf = 0;
+    dualprob.processed = true;
 end
 
-function op = make_prox_conj(prox, B, mu)
+function op = make_prox_conj(g, B, mu)
+    prox = g.makeprox();
     op = @(y, gam) call_prox_conj(y, gam, prox, B, mu);
 end
 
@@ -100,10 +120,10 @@ end
 function [Q, q] = make_quad_conj(obj, zero)
     fconj = obj.makefconj();
     [~, q] = fconj(zero);
-    Q = @(x) call_quad_conj(x, fconj, q);
+    Q = @(x) hessvec_quad_conj(x, fconj, q);
 end
  
-function y = call_quad_conj(x, fconj, gradfconj0)
+function y = hessvec_quad_conj(x, fconj, gradfconj0)
     [~, gradfconjx] = fconj(x);
     y = gradfconjx-gradfconj0;
 end

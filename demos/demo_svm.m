@@ -24,15 +24,15 @@ lam = 0.1 * norm((1-ratio)*sum(A(b==1,:),1) + ratio*sum(A(b==-1,:),1), 'inf');
 
 fprintf('%d instances, %d features, nnz(A) = %d\n', size(A, 1), size(A, 2), nnz(A));
 
-prob.f1 = squaredNorm(lam);
+prob.f = squaredNorm(lam);
 prob.g = hingeLoss(1, b);
-prob.A1 = A;
+prob.A = A;
 prob.B = -1;
 prob.b = zeros(m,1);
 % run forbes
-tic;out = forbes(prob);toc
+opt.tol = 1e-12;
+tic;out = forbes(prob, opt);toc
 % run acceleated dual proximal gradient
-opt.fast = 1;
-tic;out2 = amm(prob,opt);toc
-
-
+opt_amm.method = 'fbs';
+opt_amm.tol = 1e-12;
+tic;out_amm = forbes(prob,opt_amm);toc

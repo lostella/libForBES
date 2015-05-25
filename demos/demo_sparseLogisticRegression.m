@@ -11,8 +11,8 @@ b = 2*(rand(m,1) <= 1./(1+exp(-A*x_orig))) - 1;
 lam_max = norm(0.5*(A'*b),'inf')/m;
 lam = 0.5*lam_max;
 
-prob.f2 = logLogistic(1/m);
-prob.C2 = diag(sparse(b))*A;
+prob.f = logLogistic(1/m);
+prob.C = diag(sparse(b))*A;
 prob.g = l1Norm(lam);
 prob.x0 = zeros(n, 1);
 
@@ -20,8 +20,11 @@ opt.display = 1;
 opt.maxit = 1000;
 opt.tolOpt = 1e-8;
 opt.method = 'lbfgs';
-tic; out = forbes(prob, opt); toc
-out
+tic; out_lbfgs = forbes(prob, opt); toc
+out_lbfgs
 opt.method = 'cg-dyhs';
-tic; out = forbes(prob, opt); toc
-out
+tic; out_cg = forbes(prob, opt); toc
+out_cg
+opt.method = 'fbs';
+tic; out_fbs = forbes(prob, opt); toc
+out_fbs

@@ -24,7 +24,13 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = zeroFunction()
+    obj.makef = @() @(x) call_zeroFunction_fun(x);
     obj.makeprox = @() @(x, gam) call_zeroFunction_prox(x);
+end
+
+function [val, grad] = call_zeroFunction_fun(x)
+    val = 0;
+    grad = zeros(length(x), 1);
 end
 
 function [prox, val] = call_zeroFunction_prox(x)

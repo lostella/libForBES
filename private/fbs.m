@@ -2,17 +2,17 @@ function out = fbs(prob, opt)
 
     t0 = tic();
     
-    if nargin < 1, error('the PROB structure must be provided as first argument'); end
-    prob = ProcessCompositeProblem(prob);
+    if nargin < 1, error('the problem structure must be provided as first argument'); end
+    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob); end
     
     if nargin < 2, opt = []; end
-    if ~isfield(opt, 'tolOpt'), opt.tolOpt = 1e-8; end
+    if ~isfield(opt, 'tol'), opt.tol = 1e-8; end
     if ~isfield(opt, 'term'), opt.customTerm = false;
     else opt.customTerm = true; end
     if ~isfield(opt, 'maxit'), opt.maxit = 100*prob.n; end
     if ~isfield(opt, 'fast'), opt.fast = 1; end
     if ~isfield(opt, 'monotone'), opt.monotone = 0; end
-    if ~isfield(opt, 'display'), opt.display = 1; end
+    if ~isfield(opt, 'display'), opt.display = 0; end
     
     %% initialize output stuff
     residual = zeros(1, opt.maxit);
@@ -56,10 +56,10 @@ function out = fbs(prob, opt)
             % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
             absFBE = abs(objective(1, it));
             if residual(1, it) <= 10*sqrt(eps) || ...
-                    (it > 1 && residual(1, it) <= nthroot(opt.tolOpt, 3)*(1+absFBE) && ...
-                    norm(cache_yk1.z-cache_yk.z, inf) < sqrt(opt.tolOpt)*(1+norm(cache_yk.z, inf)) && ...
-                    abs(objective(1, it-1)-objective(1, it)) < opt.tolOpt*(1+absFBE))
-                msgTerm = [msgTerm, 'reached optimum up to tolOpt'];
+                    (it > 1 && residual(1, it) <= nthroot(opt.tol, 3)*(1+absFBE) && ...
+                    norm(cache_yk1.z-cache_yk.z, inf) < sqrt(opt.tol)*(1+norm(cache_yk.z, inf)) && ...
+                    abs(objective(1, it-1)-objective(1, it)) < opt.tol*(1+absFBE))
+                msgTerm = [msgTerm, 'reached optimum (up to tolerance)'];
                 flagTerm = 0;
                 break;
             end
@@ -187,21 +187,21 @@ function [cache, cnt] = ForwardBackwardStep(prob, gam, x, cache)
                 if prob.isC2fun, C2x = prob.C2(cache.x);
                 else C2x = prob.C2*cache.x; end
                 cache.res2x = C2x - prob.d2;
-                if prob.useHessian
-                    [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
-                else
+%                 if prob.useHessian
+%                     [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
+%                 else
                     [f2x, gradf2res2x] = prob.callf2(cache.res2x);
-                end
+%                 end
                 if prob.isC2fun, gradf2x = prob.C2t(gradf2res2x);
                 else gradf2x = prob.C2'*gradf2res2x; end
                 cnt(3) = cnt(3)+2;
             else
                 cache.res2x = cache.x - prob.d2;
-                if prob.useHessian
-                    [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
-                else
+%                 if prob.useHessian
+%                     [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
+%                 else
                     [f2x, gradf2res2x] = prob.callf2(cache.res2x);
-                end
+%                 end
                 gradf2x = gradf2res2x;
             end
             cnt(4) = cnt(4)+1;

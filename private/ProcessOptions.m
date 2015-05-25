@@ -17,7 +17,7 @@
 
 function [opt, name] = ProcessOptions(prob, opt)
     % fill in missing options with defaults
-    if ~isfield(opt, 'tolOpt'), opt.tolOpt = 1e-8; end
+    if ~isfield(opt, 'tol'), opt.tol = 1e-8; end
     if ~isfield(opt, 'term'), opt.customTerm = false;
     else opt.customTerm = true; end
     if ~isfield(opt, 'maxit'), opt.maxit = 10*prob.n; end
