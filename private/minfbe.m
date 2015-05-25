@@ -154,6 +154,29 @@ function out = minfbe(prob, opt)
                         dir = -cache_current.gradFBE;
                     end
                 end
+            case 7 % BFGS
+                if it == 1 || flagChangedGamma
+                    dir = - cache_current.gradFBE;
+                elseif it==2
+                    % Compute difference vectors
+                    Sk = cache_current.x - cache_previous.x;
+                    Yk = cache_current.gradFBE - cache_previous.gradFBE;
+                    YSk = Yk'*Sk;
+                    R = sqrt((Yk'*Yk)/(YSk))*eye(prob.n);
+                    %                     dir = -R\(R'\cache_current.gradFBE);
+                    dir = -cache_current.gradFBE./(diag(R).^2);
+                else
+                    Sk = cache_current.x - cache_previous.x;
+                    Yk = cache_current.gradFBE - cache_previous.gradFBE;
+                    YSk = Yk'*Sk;
+                    Bs = R'*(R*Sk);
+                    sBs = Sk'*Bs;
+                    if YSk > 0
+                        R = cholupdate(cholupdate(R,Yk/sqrt(YSk)),Bs/sqrt(sBs),'-');
+                    end
+                    dir = -linsolve(R,linsolve(R,cache_current.gradFBE,opt.optsL),opt.optsU);
+                    %                     dir = -R\(R'\cache_current.gradFBE);
+                end
             case 3 % CG-DESCENT
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % Initially use steepest descent direction

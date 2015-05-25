@@ -28,6 +28,8 @@ function [opt, name] = ProcessOptions(prob, opt)
                 opt.linesearch = 'armijo';
             case 'lbfgs'
                 opt.linesearch = 'hager-zhang';
+            case 'bfgs'
+                opt.linesearch = 'hager-zhang';
             case 'cg-desc'
                 opt.linesearch = 'hager-zhang';
             case 'cg-prp'
@@ -58,6 +60,10 @@ function [opt, name] = ProcessOptions(prob, opt)
             opt.method = 5;
         case 'bb'
             opt.method = 6;
+        case 'bfgs'
+            opt.method = 7;
+            opt.optsL.UT = true; opt.optsL.TRANSA = true;
+            opt.optsU.UT = true;
         otherwise
             error('unknown method');
     end
