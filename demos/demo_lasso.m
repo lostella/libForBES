@@ -1,7 +1,7 @@
 close all;
 clear;
 
-% rng(0, 'twister'); % uncomment this to control the random number generator
+rng(0, 'twister'); % uncomment this to control the random number generator
 
 m = 300; % number of observations
 n = 5000; % number of features
@@ -19,16 +19,19 @@ lam = 0.1*lam_max;
 % setup problem
 prob.C = A;
 prob.d = b;
-prob.f = quadratic();
+prob.f = squaredNorm();
 prob.g = l1Norm(lam);
 prob.x0 = zeros(n, 1);
 
 opt.display = 1;
 opt.maxit = 1000;
-opt.tolOpt = 1e-8;
+opt.tol = 1e-9;
 opt.method = 'lbfgs';
 tic; out = forbes(prob, opt); toc
 out
 opt.method = 'cg-dyhs';
+tic; out = forbes(prob, opt); toc
+out
+opt.method = 'fbs';
 tic; out = forbes(prob, opt); toc
 out
