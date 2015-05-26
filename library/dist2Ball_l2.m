@@ -15,15 +15,15 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = dist2Ball_l2(rho,c,weight)
+function obj = dist2Ball_l2(rho, c, weight)
     % Function value and gradient of (w/2)*dist^2(x,C) where C is the l2 ball ||x-c||<=rho
-    if nargin<3 || isempty(weight)
+    if nargin < 3 || isempty(weight)
         weight = 1;
     end
-    if nargin<2 || isempty(c)
+    if nargin < 2 || isempty(c)
         c = 0;
     end
-    if nargin<1 || isempty(rho)
+    if nargin < 1 || isempty(rho)
         rho = 1;
     end
 

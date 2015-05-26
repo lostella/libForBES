@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function out = GetPrimalOutput(prob, dualout)
+function out = GetPrimalOutput(prob, dualprob, dualout)
     out.name = dualout.name;
     out.message = dualout.message;
     out.flag = dualout.flag;
@@ -24,27 +24,27 @@ function out = GetPrimalOutput(prob, dualout)
     y = dualout.x;
     if isfield(prob, 'f1')
         if isa(prob.A1, 'function_handle')
-            [~, out.x1] = prob.callf1conj(-prob.A1t(y));
+            out.x1 = dualprob.Q(-prob.A1t(y))+dualprob.q;
             Ax = Ax+prob.A1(out.x1);
         else
-            [~, out.x1] = prob.callf1conj(-prob.A1'*y);
+            out.x1 = dualprob.Q(-prob.A1'*y)+dualprob.q;
             Ax = Ax+prob.A1*out.x1;
         end
     end
     if isfield(prob, 'f2')
         if isa(prob.A2, 'function_handle')
-            [~, out.x2] = prob.callf2conj(-prob.A2t(y));
+            [~, out.x2] = dualprob.callf2(-prob.A2t(y));
             Ax = Ax+prob.A2(out.x2);
         else
-            [~, out.x2] = prob.callf2conj(-prob.A2'*y);
+            [~, out.x2] = dualprob.callf2(-prob.A2'*y);
             Ax = Ax+prob.A2*out.x2;
         end
     end
     mugam = prob.muB*out.gam;
     if isfield(prob, 'b')
-        [out.z, ~] = prob.callg(-prob.B'*(y+out.gam*(Ax-prob.b))/mugam, 1/mugam);
+        [out.z, ~] = dualprob.callg(-prob.B'*(y+out.gam*(Ax-prob.b))/mugam, 1/mugam);
     else
-        [out.z, ~] = prob.callg(-prob.B'*(y+out.gam*Ax)/mugam, 1/mugam);
+        [out.z, ~] = dualprob.callg(-prob.B'*(y+out.gam*Ax)/mugam, 1/mugam);
     end
     out.y = y;
     out.iterations = dualout.iterations;

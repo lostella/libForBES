@@ -18,8 +18,8 @@
 function out = minfbe(prob, opt)
     t0 = tic();
     
-    if nargin < 1, error('the PROB structure must be provided as first argument'); end
-    prob = ProcessCompositeProblem(prob);
+    if nargin < 1, error('the problem structure must be provided as first argument'); end
+    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob); end
 
     if nargin < 2, opt = []; end
     [opt, name] = ProcessOptions(prob, opt);
@@ -108,10 +108,10 @@ function out = minfbe(prob, opt)
             % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
             absFBE = abs(cache_current.FBE);
             if residual(1, it) <= 10*sqrt(eps) || ...
-                    (it > 1 && residual(1, it) <= nthroot(opt.tolOpt, 3)*(1+absFBE) && ...
-                    norm(cache_previous.x-cache_current.x, inf) < sqrt(opt.tolOpt)*(1+norm(cache_current.x, inf)) && ...
-                    cache_previous.FBE-cache_current.FBE < opt.tolOpt*(1+absFBE))
-                msgTerm = [msgTerm, 'reached optimum up to tolOpt'];
+                    (it > 1 && residual(1, it) <= nthroot(opt.tol, 3)*(1+absFBE) && ...
+                    norm(cache_previous.x-cache_current.x, inf) < sqrt(opt.tol)*(1+norm(cache_current.x, inf)) && ...
+                    cache_previous.FBE-cache_current.FBE < opt.tol*(1+absFBE))
+                msgTerm = [msgTerm, 'reached optimum (up to tolerance)'];
                 flagTerm = 0;
                 break;
             end
@@ -456,21 +456,21 @@ function [cache, cnt] = CacheFBE(prob, gam, x, cache)
                 if prob.isC2fun, C2x = prob.C2(cache.x);
                 else C2x = prob.C2*cache.x; end
                 cache.res2x = C2x - prob.d2;
-                if prob.useHessian
-                    [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
-                else
+%                 if prob.useHessian
+%                     [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
+%                 else
                     [f2x, gradf2res2x] = prob.callf2(cache.res2x);
-                end
+%                 end
                 if prob.isC2fun, gradf2x = prob.C2t(gradf2res2x);
                 else gradf2x = prob.C2'*gradf2res2x; end
                 cnt(3) = cnt(3)+2;
             else
                 cache.res2x = cache.x - prob.d2;
-                if prob.useHessian
-                    [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
-                else
+%                 if prob.useHessian
+%                     [f2x, gradf2res2x, cache.Hessf2res2x] = prob.callf2(cache.res2x);
+%                 else
                     [f2x, gradf2res2x] = prob.callf2(cache.res2x);
-                end
+%                 end
                 gradf2x = gradf2res2x;
             end
             cnt(4) = cnt(4)+1;
@@ -525,14 +525,14 @@ function [cache, cnt] = CacheGradFBE(prob, gam, cache)
         else
             C2diff = cache.diff;
         end
-        if prob.useHessian
-            HC2diff = cache.Hessf2res2x(C2diff);
-        else
+%         if prob.useHessian
+%             HC2diff = cache.Hessf2res2x(C2diff);
+%         else
             res2xepsdiff = cache.res2x + 1e-100i*C2diff;
             [~, gradf2res2xepsd] = prob.callf2(res2xepsdiff);
             cnt(4) = cnt(4)+1;
             HC2diff = imag(gradf2res2xepsd)/1e-100;
-        end
+%         end
         if prob.isthereC2
             if prob.isC2fun, Hdiff = Hdiff + prob.C2t(HC2diff);
             else Hdiff = Hdiff + (prob.C2'*HC2diff); end

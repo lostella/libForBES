@@ -25,18 +25,22 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = quadratic(Q, q)
-    obj.isquadratic = 1;
-    obj.isconjquadratic = 1;
-    if nargin < 2
-        q = 0;
-        if nargin < 1, Q = 1; end
+    if nargin < 1,
+        Q = 1;
     end
     obj.Q = Q;
-    obj.q = q;
-    obj.makef = @() @(x) call_quadratic(Q, q, x);
+    if nargin >= 2,
+        obj.q = q;
+    else
+        q = 0;
+    end
+    obj.isQuadratic = 1;
+    obj.isConjQuadratic = 1;
+    obj.makef = @() @(x) call_quadratic(Q, q, x); % do we need to keep this?
     obj.makefconj = @() make_quadratic_conj(Q, q);
 end
 
+% % do we need to keep this?
 function [v, g] = call_quadratic(Q, q, x)
     g = Q*x+q;
     v = 0.5*(g+q)'*x;   

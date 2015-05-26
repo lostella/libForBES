@@ -1,6 +1,6 @@
-%QUAD_OVER_AFFINE Allocates a quadratic function over an affine subspace.
+%QUADRATICOVERAFFINE Allocates a quadratic function over an affine subspace.
 %
-%   QUADRATIC(Q, q, A, b) builds the function
+%   QUADRATICOVERAFFINE(Q, q, A, b) builds the function
 %       
 %       f(x) = 0.5*(x'*Q*x)+q'*x subject to A*x = b
 %
@@ -21,18 +21,20 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = quad_over_affine(Q, q, A, b)
-    obj.makefconj = @() make_quad_over_affine_conj(Q, q, A, b);
+function obj = quadraticOverAffine(Q, q, A, b)
+    obj.isQuadratic = 0;
+    obj.isConjQuadratic = 1;
+    obj.makefconj = @() make_quadraticOverAffine_conj(Q, q, A, b);
 end
 
 
-function fc = make_quad_over_affine_conj(Q, q, A, b)
+function fc = make_quadraticOverAffine_conj(Q, q, A, b)
     m = size(A,1);
     [L,D,P] = ldl([Q A';A sparse(m,m)]);
-    fc = @(y) eval_quad_over_affine_conj(y, L, D, P, Q, q, b);
+    fc = @(y) eval_quadraticOverAffine_conj(y, L, D, P, Q, q, b);
 end
 
-function [val, grad] = eval_quad_over_affine_conj(y, L, D, P, Q, q, b)
+function [val, grad] = eval_quadraticOverAffine_conj(y, L, D, P, Q, q, b)
     grad = P*(L'\(D\(L\(P'*[y-q; b]))));
     grad = grad(1:length(q),1);
     val = -(0.5*grad'*(Q*grad)+(q-y)'*grad);

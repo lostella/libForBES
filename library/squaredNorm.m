@@ -27,6 +27,8 @@ function obj = squaredNorm(lam, p)
     if nargin < 1
         lam = 1;
     end
+    obj.isQuadratic = 1;
+    obj.isConjQuadratic = 1;
     if nargin==2 && ~isempty(p)
         obj.makef = @() @(x) call_squaredDist(x, lam, p);
         obj.makefconj = @() @(x) call_squaredDist_conj(x, 1/lam, p);
@@ -49,5 +51,5 @@ end
 
 function [val, grad] = call_squaredDist_conj(y, lam, p)
     grad = p + lam*y;
-    val =0.5*(y'*(grad + p));
+    val = 0.5*(y'*(grad + p));
 end

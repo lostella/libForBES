@@ -3,8 +3,8 @@ clear;
 
 % rng(0, 'twister'); % uncomment this to control the random number generator
 
-m = 600;
-n = 5000;
+m = 6000;
+n = 50000;
 x_orig = sprandn(n, 1, 30/n);
 A = sprandn(m, n, 50/n);
 b = 2*(rand(m,1) <= 1./(1+exp(-A*x_orig))) - 1;
@@ -20,8 +20,12 @@ opt.display = 1;
 opt.maxit = 1000;
 opt.tolOpt = 1e-8;
 opt.method = 'lbfgs';
-tic; out = forbes(prob, opt); toc
-out
+opt.memory = 10;
+tic; out_lbfgs = forbes(prob, opt); toc
+out_lbfgs
 opt.method = 'cg-dyhs';
-tic; out = forbes(prob, opt); toc
-out
+tic; out_cg = forbes(prob, opt); toc
+out_cg
+opt.method = 'fbs';
+tic; out_fbs = forbes(prob, opt); toc
+out_fbs

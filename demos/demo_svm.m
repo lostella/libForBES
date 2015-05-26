@@ -30,9 +30,9 @@ prob.A1 = A;
 prob.B = -1;
 prob.b = zeros(m,1);
 % run forbes
-tic;out = forbes(prob);toc
+opt.tol = 1e-10;
+tic;out = forbes(prob, opt);toc
 % run acceleated dual proximal gradient
-opt.fast = 1;
-tic;out2 = amm(prob,opt);toc
-
-
+opt_amm.method = 'fbs';
+opt_amm.tol = 1e-10;
+tic;out_amm = forbes(prob,opt_amm);toc

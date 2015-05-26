@@ -53,4 +53,10 @@ prob.b = zeros(n*(N+1)+m*N,1);
 
 % Call solver
 opt.display = 1;
+opt.tol = 1e-8;
 tic;out = forbes(prob,opt);toc
+% Call fast AMM
+opt_amm.display = 1;
+opt_amm.tol = 1e-8;
+opt_amm.method = 'fbs';
+tic;out_amm = forbes(prob,opt_amm);toc

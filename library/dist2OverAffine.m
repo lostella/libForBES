@@ -1,8 +1,11 @@
-%DIST2_OVER_AFFINE Allocates the squared distance function over an affine subspace.
+%DIST2OVERAFFINE Allocates the squared distance function over an affine subspace.
 %
-%   DIST2_OVER_AFFINE(p, A, b) returns the function
+%   DIST2OVERAFFINE(p, A, b) returns the function
 %       
 %       f(x) = 0.5*||x-p||^2 subject to A*x = b
+%
+%   Requires LDLCHOL and LDLSOLVE from SuiteSparse by Tim Davis.
+%   See: http://faculty.cse.tamu.edu/davis/suitesparse.html
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -21,18 +24,18 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = dist2_over_affine(p, A, b)
-    obj.makefconj = @() make_dist2_over_affine_conj(p, A, b);
+function obj = dist2OverAffine(p, A, b)
+    obj.isConjQuadratic = 1;
+    obj.makefconj = @() make_dist2OverAffine_conj(p, A, b);
 end
 
-
-function fc = make_dist2_over_affine_conj(p, A, b)
-    LD = ldlchol(A,1e-12);
-    fc = @(y) call_dist2_over_affine_conj(y, LD, p, A, b);
+function fun = make_dist2OverAffine_conj(p, A, b)
+    LD = ldlchol(A, 1e-12);
+    fun = @(y) call_dist2OverAffine_conj(y, LD, p, A, b);
 end
 
-function [val,grad] = call_dist2_over_affine_conj(y, LD, p, A, b)
+function [val, grad] = call_dist2OverAffine_conj(y, LD, p, A, b)
     yp = y+p;
-    grad = yp-A'*ldlsolve(LD,A*yp-b);
+    grad = yp-A'*ldlsolve(LD, A*yp-b);
     val = y'*grad-0.5*norm(grad-p)^2;
 end

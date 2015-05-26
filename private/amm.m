@@ -12,7 +12,7 @@ function out = amm(prob, opt)
     else
         dualout = fbs(dualprob);
     end
-    out = GetPrimalOutput(prob, dualout);
+    out = GetPrimalOutput(prob, dualprob, dualout);
     out.preprocess = preprocess + dualout.preprocess;
     if nargin > 1
         out.opt = opt;
