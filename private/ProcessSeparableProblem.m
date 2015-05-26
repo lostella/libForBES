@@ -33,6 +33,9 @@ function [prob, dualprob] = ProcessSeparableProblem(prob)
         error('missing f1 and f2');
     end
     if isfield(prob, 'f1')
+        if ~isfield(prob.f1, 'isConjQuadratic') || ~prob.f1.isConjQuadratic
+            error('the conjugate function f1 must be quadratic');
+        end
         dualprob.istheref1 = true;
         if ~isfield(prob.f1, 'makefconj'), error('conjugate function of f1 is not defined'); end
         dualprob.isQfun = true;
@@ -61,6 +64,9 @@ function [prob, dualprob] = ProcessSeparableProblem(prob)
         dualprob.istheref1 = false;
     end
     if isfield(prob, 'f2')
+        if isfield(prob.f2, 'isConjQuadratic') && prob.f2.isConjQuadratic
+            error('consider providing f2 as f1, since its conjugate is quadratic');
+        end
         dualprob.istheref2 = true;
         if ~isfield(prob.f2, 'makefconj'), error('conjugate function of f2 is not defined'); end
         dualprob.callf2 = prob.f2.makefconj();

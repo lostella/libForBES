@@ -42,18 +42,18 @@ d = [c; b; 0];
 % setup forbes problem
 % f1 is the sum of the squared norm plus the indicator of the affine
 % subspace
-prob.f = dist2OverAffine(sparse(2*n+m,1),K,d);
+prob.f1 = dist2OverAffine(sparse(2*n+m,1),K,d);
 % g is indicator of x>= 0, s>=0 
 prob.g = indFreePos([1:n,n+m+1:2*n+m]);
-prob.A = 1;
+prob.A1 = 1;
 prob.B = -1;
 prob.b = zeros(2*n+m,1);
 % run forbes
 opt.method = 'lbfgs';
 tic; out = forbes(prob, opt); timef = toc;
-xf = out.x(1:n);
-yf = out.x(n+1:n+m);
-sf = out.x(n+m+1:end);
+xf = out.x1(1:n);
+yf = out.x1(n+1:n+m);
+sf = out.x1(n+m+1:end);
 costf = c'*xf;
 % run fast dual proximal gradient method (fast amm)
 % opt.method = 'fbs'; opt.fast = 1; opt.maxit = 1000;

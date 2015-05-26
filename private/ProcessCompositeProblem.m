@@ -23,6 +23,9 @@ function prob = ProcessCompositeProblem(prob)
         error('missing f1 and f2');
     end
     if isfield(prob, 'f1')
+        if ~isfield(prob.f1, 'isQuadratic') || ~prob.f1.isQuadratic
+            error('function f1 must be quadratic');
+        end
         prob.istheref1 = true;
         prob.isC1fun = false;
         prob.isQfun = false;
@@ -58,6 +61,9 @@ function prob = ProcessCompositeProblem(prob)
         prob.isQfun = false;
     end
     if isfield(prob, 'f2')
+        if isfield(prob.f2, 'isQuadratic') && prob.f2.isQuadratic
+            error('consider providing f2 as f1, since it is quadratic');
+        end
         if ~isfield(prob.f2, 'makef'), error('function of f2 is not defined'); end
         prob.callf2 = prob.f2.makef();
         prob.istheref2 = true;

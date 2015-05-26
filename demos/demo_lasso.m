@@ -17,9 +17,9 @@ lam_max = norm(A'*b,'inf');
 lam = 0.1*lam_max;
 
 % setup problem
-prob.C = A;
-prob.d = b;
-prob.f = squaredNorm();
+prob.C1 = A;
+prob.d1 = b;
+prob.f1 = squaredNorm();
 prob.g = l1Norm(lam);
 prob.x0 = zeros(n, 1);
 

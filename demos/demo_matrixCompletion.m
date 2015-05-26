@@ -19,8 +19,12 @@ B = full(M.*P);
 
 lam = 1e0;
 
-prob.f = quadratic(diag(P(:)));
-prob.d = B(:);
+prob.f1 = quadratic(diag(P(:)));
+prob.d1 = B(:);
 prob.g = nuclearNorm(m, n, lam);
 prob.x0 = zeros(m*n, 1);
-tic; out = forbes(prob); toc
+opt.method = 'lbfgs';
+opt.tol = 1e-12;
+out = forbes(prob, opt); out.ts(end)
+opt.method = 'fbs';
+out = forbes(prob, opt); out.ts(end)

@@ -15,17 +15,23 @@ lam = 0.1*lam_max;
 % since we know what small/large noise means, would do cross-validation otherwise I guess
 del = 1;
 
-prob.f = huberLoss(del);
-prob.C = A;
-prob.d = b;
+prob.f2 = huberLoss(del);
+prob.C2 = A;
+prob.d2 = b;
 prob.g = l1Norm(lam);
 prob.x0 = zeros(n, 1);
 
 opt.display = 1;
-opt.tol = 1e-14;
+opt.tol = 1e-8;
 opt.method = 'lbfgs';
 tic; out = forbes(prob, opt); toc
+out.ts(end)
 out
 opt.method = 'cg-dyhs';
 tic; out = forbes(prob, opt); toc
+out.ts(end)
+out
+opt.method = 'fbs';
+tic; out = forbes(prob, opt); toc
+out.ts(end)
 out
