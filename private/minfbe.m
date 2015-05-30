@@ -310,8 +310,7 @@ function out = minfbe(prob, opt)
             end
         end
         
-        %% update the iterate
-        if opt.method == 0
+        if info ~= 0
             y = cache_current.z;
             cache_previous = cache_current;
             recache = true;
