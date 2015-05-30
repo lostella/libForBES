@@ -105,7 +105,7 @@ function [prob, dualprob] = ProcessSeparableProblem(prob)
     if ~isfield(prob, 'g'), error('you must specify term g'); end
     if ~isfield(prob.g, 'makeprox'), error('the prox for the term g you specified is not available'); end
     dualprob.callg = make_prox_conj(prob.g, prob.B, prob.muB);
-    [dualprob.Lf, dualprob.unknownLf] = EstimateLipschitzConstant(dualprob);
+    [dualprob.Lf, dualprob.unknownLf] = EstimateLipschitzConstant(dualprob, opt);
     dualprob.muf = 0;
     dualprob.processed = true;
 end

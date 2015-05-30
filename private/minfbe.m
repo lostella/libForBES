@@ -18,11 +18,11 @@
 function out = minfbe(prob, opt)
     t0 = tic();
     
-    if nargin < 1, error('the problem structure must be provided as first argument'); end
-    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob); end
-
     if nargin < 2, opt = []; end
-    [opt, name] = ProcessOptions(prob, opt);
+    opt = ProcessOptions(opt);
+    
+    if nargin < 1, error('the problem structure must be provided as first argument'); end
+    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob, opt); end
     
     lsopt = ProcessLineSearchOptions(opt);
     
@@ -271,7 +271,7 @@ function out = minfbe(prob, opt)
             case 4 % Hager-Zhang line search
                 Q = 1 + Q*lsopt.Delta;
                 C = C + (abs(cache_current.FBE) - C)/Q;
-                [cache_tau, tau, cntLS, info] = HagerZhangLS(prob, gam, cache_current, slope, lsopt);   
+                [cache_tau, tau, cntLS, info] = HagerZhangLS(prob, gam, cache_current, slope, lsopt);
                 if ~opt.global && ~opt.fast && info ~= 0
                     flagTerm = 2;
                     msgTerm = [msgTerm, 'hager-zhang line search failed at it. ', num2str(it)];
@@ -343,7 +343,7 @@ function out = minfbe(prob, opt)
                 fprintf('\n');
             end
         elseif opt.display >= 2
-            fprintf('%6d %7.4e %7.4e %7.4e %7.4e %7.4e %7.4e %d\n', it, gam, residual(1,it), cache_current.FBE, norm(dir), slope, tau, info);
+            fprintf('%6d %7.4e %7.4e %7.4e %7.4e %7.4e %7.4e %d\n', it, gam, residual(1,it), objective(1,it), norm(dir), slope, tau, info);
         end
         
     end
@@ -354,7 +354,6 @@ function out = minfbe(prob, opt)
     end
     
     %% pack up results
-    out.name = name;
     out.message = msgTerm;
     out.flag = flagTerm;
     out.gam = gam;

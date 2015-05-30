@@ -15,12 +15,12 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function [opt, name] = ProcessOptions(prob, opt)
+function opt = ProcessOptions(opt)
     % fill in missing options with defaults
     if ~isfield(opt, 'tol'), opt.tol = 1e-8; end
     if ~isfield(opt, 'term'), opt.customTerm = false;
     else opt.customTerm = true; end
-    if ~isfield(opt, 'maxit'), opt.maxit = 10*prob.n; end
+    if ~isfield(opt, 'maxit'), opt.maxit = 10000; end
     if ~isfield(opt, 'method'), opt.method = 'lbfgs'; end
     if ~isfield(opt, 'linesearch')
         switch opt.method
@@ -38,6 +38,8 @@ function [opt, name] = ProcessOptions(prob, opt)
                 opt.linesearch = 'hager-zhang';
             case 'bb'
                 opt.linesearch = 'nonmonotone-armijo';
+            case 'fbs'
+                opt.linesearch = 'none';
         end
     end
     if ~isfield(opt, 'variant'), opt.variant = 'global'; end
@@ -45,7 +47,7 @@ function [opt, name] = ProcessOptions(prob, opt)
     if ~isfield(opt, 'memory'), opt.memory = 11; end
     if ~isfield(opt, 'adaptive'), opt.adaptive = 0; end
     if ~isfield(opt, 'display'), opt.display = 0; end
-    name = [opt.method,', ', opt.linesearch, ', ', opt.variant];
+    
     % translate labels into integer codes
     switch opt.method
         case 'sd'
@@ -64,6 +66,8 @@ function [opt, name] = ProcessOptions(prob, opt)
             opt.method = 7;
             opt.optsL.UT = true; opt.optsL.TRANSA = true;
             opt.optsU.UT = true;
+        case 'fbs'
+            opt.method = 0;
         otherwise
             error('unknown method');
     end
@@ -80,6 +84,8 @@ function [opt, name] = ProcessOptions(prob, opt)
             opt.linesearch = 5;
         case 'fletcher'
             opt.linesearch = 6;
+        case 'none'
+            opt.linesearch = 0;
         otherwise
             error('unknown line search');
     end

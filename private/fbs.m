@@ -2,23 +2,22 @@ function out = fbs(prob, opt)
 
     t0 = tic();
     
-    if nargin < 1, error('the problem structure must be provided as first argument'); end
-    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob); end
-    
     if nargin < 2, opt = []; end
-    if ~isfield(opt, 'tol'), opt.tol = 1e-8; end
-    if ~isfield(opt, 'term'), opt.customTerm = false;
-    else opt.customTerm = true; end
-    if ~isfield(opt, 'maxit'), opt.maxit = 100*prob.n; end
-    if ~isfield(opt, 'fast'), opt.fast = 1; end
-    if ~isfield(opt, 'monotone'), opt.monotone = 0; end
-    if ~isfield(opt, 'display'), opt.display = 0; end
+    opt = ProcessOptions(opt);
+    
+    if nargin < 1, error('the problem structure must be provided as first argument'); end
+    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob, opt); end
     
     %% initialize output stuff
     residual = zeros(1, opt.maxit);
     ts = zeros(1, opt.maxit);
     objective = zeros(1, opt.maxit);
     msgTerm = '';
+    
+    %% display stuff
+    if opt.display >= 2
+        fprintf('%6s%11s%11s%11s\n', 'iter', 'gamma', 'optim.', 'object.');
+    end
     
     %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
@@ -46,11 +45,23 @@ function out = fbs(prob, opt)
         u = cache_yk.z;
         cnt = cnt+cnt1;
         
+        if opt.adaptive || prob.unknownLf
+            [fz, cnt1] = Evaluatef(prob, u);
+            cnt = cnt+cnt1;
+            % increase Lf until a candidate Lipschitz constant is found
+            while fz + cache_yk.gz > cache_yk.FBE
+                prob.Lf = prob.Lf*2;
+                gam = 1/prob.Lf;
+                [cache_yk, cnt1] = ForwardBackwardStep(prob, gam, yk, cache_yk);
+                u = cache_yk.z;
+                [fz, cnt2] = Evaluatef(prob, cache_yk.z);
+                cnt = cnt+cnt1+cnt2;
+            end
+        end
+        
         ts(1, it) = toc(t0);
         residual(1, it) = norm(cache_yk.diff, inf)/gam;
-        objective(1, it) = cache_yk.fx + cache_yk.gz + ...
-            cache_yk.gradfx'*cache_yk.diff + ...
-            (0.5/gam)*cache_yk.normdiff^2;
+        objective(1, it) = cache_yk.FBE;
 
         if ~opt.customTerm
             % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
@@ -79,6 +90,7 @@ function out = fbs(prob, opt)
         xk = xknew;
         cache_yk1 = cache_yk;
         
+        %% display stuff
         if opt.display == 1
             if mod(it, 100) == 0
                 fprintf('.');
@@ -86,6 +98,8 @@ function out = fbs(prob, opt)
             if mod(it, 4000) == 0
                 fprintf('\n');
             end
+        elseif opt.display >= 2
+            fprintf('%6d %7.4e %7.4e %7.4e\n', it, gam, residual(1,it), objective(1,it));
         end
     end
     
@@ -94,7 +108,6 @@ function out = fbs(prob, opt)
         msgTerm = [msgTerm, 'exceeded maximum iterations'];
     end
     
-    out.name = ['FBS, fast=', num2str(opt.fast), ', mon=', num2str(opt.monotone)'];
     out.message = msgTerm;
     out.flag = flagTerm;
     out.gam = gam;
@@ -113,45 +126,45 @@ function out = fbs(prob, opt)
     out.opt = opt;
 end
 
-% function [v, cnt] = Evalf(prob, x)
-%     %      Q,C1,C2,f2, g
-%     cnt = [0, 0, 0, 0, 0];
-%     f1x = 0; f2x = 0;
-%     if prob.istheref1
-%         if prob.isthereC1
-%             if prob.isAfun, C1x = prob.C1(x);
-%             else C1x = prob.C1*x; end
-%             res1x = C1x - prob.d1;
-%             if prob.isQfun, Qres1x = prob.Q(res1x);
-%             else Qres1x = prob.Q*res1x; end
-%             cnt(2) = cnt(2)+1;
-%         else
-%             res1x = x - prob.d1;
-%             if prob.isQfun, Qres1x = prob.Q(res1x);
-%             else Qres1x = prob.Q*res1x; end
-%         end
-%         cnt(1) = cnt(1)+1;
-%         f1x = 0.5*(res1x'*Qres1x) + prob.q'*res1x;
-%     end
-%     if prob.istheref2
-%         if prob.isthereC2
-%             if prob.isC2fun, C2x = prob.C2(x);
-%             else C2x = prob.C2*x; end
-%             res2x = C2x - prob.d2;
-%             f2x = prob.callf2(res2x);
-%             cnt(3) = cnt(3)+1;
-%         else
-%             res2x = x - prob.d2;
-%             f2x = prob.callf2(res2x);
-%         end
-%         cnt(4) = cnt(4)+1;
-%     end
-%     if prob.istherelin
-%         v = f1x + f2x + prob.l'*x;
-%     else
-%         v = f1x + f2x;
-%     end
-% end
+function [v, cnt] = Evaluatef(prob, x)
+    %      Q,C1,C2,f2, g
+    cnt = [0, 0, 0, 0, 0];
+    f1x = 0; f2x = 0;
+    if prob.istheref1
+        if prob.isthereC1
+            if prob.isC1fun, C1x = prob.C1(x);
+            else C1x = prob.C1*x; end
+            res1x = C1x - prob.d1;
+            if prob.isQfun, Qres1x = prob.Q(res1x);
+            else Qres1x = prob.Q*res1x; end
+            cnt(2) = cnt(2)+1;
+        else
+            res1x = x - prob.d1;
+            if prob.isQfun, Qres1x = prob.Q(res1x);
+            else Qres1x = prob.Q*res1x; end
+        end
+        cnt(1) = cnt(1)+1;
+        f1x = 0.5*(res1x'*Qres1x) + prob.q'*res1x;
+    end
+    if prob.istheref2
+        if prob.isthereC2
+            if prob.isC2fun, C2x = prob.C2(x);
+            else C2x = prob.C2*x; end
+            res2x = C2x - prob.d2;
+            f2x = prob.callf2(res2x);
+            cnt(3) = cnt(3)+1;
+        else
+            res2x = x - prob.d2;
+            f2x = prob.callf2(res2x);
+        end
+        cnt(4) = cnt(4)+1;
+    end
+    if prob.istherelin
+        v = f1x + f2x + prob.l'*x;
+    else
+        v = f1x + f2x;
+    end
+end
 
 %% compute the FBE value and store reusable quantities
 function [cache, cnt] = ForwardBackwardStep(prob, gam, x, cache)
@@ -222,5 +235,8 @@ function [cache, cnt] = ForwardBackwardStep(prob, gam, x, cache)
     cache.diff = cache.z-cache.x;
     sqnormdiff = cache.diff'*cache.diff;
     cache.normdiff = sqrt(sqnormdiff);
+    cache.FBE = cache.fx + cache.gz + ...
+        cache.gradfx'*cache.diff + ...
+        (0.5/gam)*sqnormdiff;
 end
 

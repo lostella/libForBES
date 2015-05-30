@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function prob = ProcessCompositeProblem(prob)
+function prob = ProcessCompositeProblem(prob, opt)
     if ~isfield(prob, 'x0'), error('the starting point x0 must be specified'); end
     prob.x0 = prob.x0;
     prob.n = length(prob.x0);
@@ -98,7 +98,7 @@ function prob = ProcessCompositeProblem(prob)
     if ~isfield(prob, 'g'), error('missing g'); end
     if ~isfield(prob.g, 'makeprox'), error('the prox for the term g you specified is not available'); end
     prob.callg = prob.g.makeprox();
-    [prob.Lf, prob.unknownLf] = EstimateLipschitzConstant(prob);
+    [prob.Lf, prob.unknownLf] = EstimateLipschitzConstant(prob, opt);
     prob.muf = 0;
     prob.processed = true;
 end
