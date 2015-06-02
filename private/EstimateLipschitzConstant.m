@@ -34,20 +34,6 @@ function [L, lowerbound] = EstimateLipschitzConstant(prob, opt)
             else funHessian = @(x) prob.Q*x; end
         end
     end
-    if prob.istheref2
-        if prob.isthereC2
-            if prob.isC2fun
-                funC2tC2 = @(x) prob.C2t(prob.C2(x));
-            else
-                funC2tC2 = @(x) prob.C2'*(prob.C2*x);
-            end
-        end
-        if isfield(prob, 'Lf2')
-            L = L + prob.Lf2*sqnormC2;
-        else
-            
-        end
-    end
     if prob.istheref1
         if opt.adaptive
             % compute lower bound for Lipschitz constant
@@ -75,7 +61,16 @@ function [L, lowerbound] = EstimateLipschitzConstant(prob, opt)
             L = L + norm(gradf0-gradf1)/norm(delta);
             lowerbound = 1;
         else
-            sqnormC2 = eigs(funC2tC2, prob.n, 1, 'LM', eigsOpt);
+            if prob.isthereC2
+                if prob.isC2fun
+                    funC2tC2 = @(x) prob.C2t(prob.C2(x));
+                else
+                    funC2tC2 = @(x) prob.C2'*(prob.C2*x);
+                end
+                sqnormC2 = eigs(funC2tC2, prob.n, 1, 'LM', eigsOpt);
+            else
+                sqnormC2 = 1;
+            end
             L = L + prob.Lf2*sqnormC2;
         end
     end
