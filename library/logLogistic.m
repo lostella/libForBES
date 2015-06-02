@@ -23,6 +23,9 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = logLogistic(mu)
+    if nargin < 1
+        mu = 1;
+    end
     obj.makef = @() @(x) call_logLogistic_f(x, mu);
     obj.L = mu; % Lipschitz constant of the gradient of f
 end
