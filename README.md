@@ -6,7 +6,7 @@ nonsmooth convex optimization problems.
 It is generic in the sense that the user can customize the problem to solve in an easy and flexible way.
 It is efficient since it features very efficient algorithms, suited for large scale applications.
 
-For the documentation refer to the [ForBES webpage](http://lostella.github.io/ForBES/).
+For full documentation refer to the [ForBES webpage](http://lostella.github.io/ForBES/).
 
 ## Installation
 
@@ -29,7 +29,7 @@ must provide a description of the problem and (optionally) a set of options:
 out = forbes(f, g, init, aff, constr, opt);
 ```
 
-Full documentation of ForBES, explaining how to specify these arguments, can be
+Full documentation, explaining how to specify these arguments, can be
 found at the [ForBES webpage](http://lostella.github.io/ForBES/).
 
 Examples on how to use `forbes` can be found in the [demos folder](https://github.com/lostella/ForBES/tree/master/demos).
