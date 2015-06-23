@@ -27,5 +27,5 @@ model.A = A;
 model.sense = ['='];
 model.rhs = b;
 params.outputflag = 0; % quiet
-tic;out_gurobi = gurobi(model, params);toc
+% tic;out_gurobi = gurobi(model, params);toc
 tic;[x,y,fval, out] = solve_lp(c,A,b);toc
