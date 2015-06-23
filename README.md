@@ -22,15 +22,15 @@ This will compile all the necessary source files and install the directory into 
 
 ## How to use it
 
-ForBES consists mainly of one MATLAB routine, `forbes`.
-In order to use it one must provide a structure containing a description
-of the problem and (optionally) a set of options:
+ForBES consists mainly of one MATLAB routine, `forbes`. In order to use it one
+must provide a description of the problem and (optionally) a set of options:
 
 ```
 out = forbes(f, g, init, aff, constr, opt);
 ```
 
-Details on how to specify these structures can be found in the [ForBES webpage](http://lostella.github.io/ForBES/).
+Full documentation of ForBES, explaining how to specify these arguments, can be
+found at the [ForBES webpage](http://lostella.github.io/ForBES/).
 
 Examples on how to use `forbes` can be found in the [demos folder](https://github.com/lostella/ForBES/tree/master/demos).
 Furthermore, you can access the help file of the solvers directly from MATLAB with
