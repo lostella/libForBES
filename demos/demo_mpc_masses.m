@@ -25,7 +25,7 @@ x0 = randn(n, 1);
 N = 20;
 
 % Define ForBES problem
-prob.f1 = lqrCost(x0, Q, R, Q_f, A, B, N);
+f = lqrCost(x0, Q, R, Q_f, A, B, N);
 
 % % many blocks
 % prob.g = separableSum(  {distBox(xmin,xmax,1e5*ones(n,1)),...
@@ -45,18 +45,19 @@ prob.f1 = lqrCost(x0, Q, R, Q_f, A, B, N);
 lb = [repmat([xmin;umin],N,1);xmin];
 ub = [repmat([xmax;umax],N,1);xmax];
 weights = [repmat([1e2*ones(n,1);inf*ones(m,1)],N,1);1e2*ones(n,1)];
-prob.g = distBox(lb,ub,weights);
+g = distBox(lb,ub,weights);
 
-prob.A1 = 1;
-prob.B = -1;
-prob.b = zeros(n*(N+1)+m*N,1);
+% A1 = 1;
+% B = -1;
+b = zeros(n*(N+1)+m*N,1);
+y0 = zeros(n*(N+1)+m*N,1);
 
 % Call solver
 opt.display = 1;
 opt.tol = 1e-8;
-tic;out = forbes(prob,opt);toc
+tic; out = forbes(f, g, y0, [], {1, -1, b}, opt); toc
 % Call fast AMM
-opt_amm.display = 1;
-opt_amm.tol = 1e-8;
-opt_amm.method = 'fbs';
-tic;out_amm = forbes(prob,opt_amm);toc
+% opt_amm.display = 1;
+% opt_amm.tol = 1e-8;
+% opt_amm.method = 'fbs';
+% tic;out_amm = forbes(prob,opt_amm);toc
