@@ -27,12 +27,9 @@ In order to use it one must provide a structure containing a description
 of the problem and (optionally) a set of options:
 
 ```
-out = forbes(prob, opt);
+out = forbes(f, g, init, aff, constr, opt);
 ```
 
-Structure `prob` contains attributes describing the details of the problem, such as objective
-terms and constraints, while `opt` describes, e.g., details on the algorithm to use, termination
-criteria, the level of verbosity, and so on. Output `out` will contain the results of the optimization process.
 Details on how to specify these structures can be found in the [ForBES webpage](http://lostella.github.io/ForBES/).
 
 Examples on how to use `forbes` can be found in the [demos folder](https://github.com/lostella/ForBES/tree/master/demos).
