@@ -33,7 +33,7 @@ function obj = nuclearNorm(m, n, lam)
     if nargin < 3
         lam = 1;
     end
-    obj.makeprox = @() @(x, gam) call_nuclearNorm_prox(x, gam, m, n, lam);
+    obj.makeprox = @(gam0) @(x, gam) call_nuclearNorm_prox(x, gam, m, n, lam);
 end
 
 function [prox, val] = call_nuclearNorm_prox(x, gam, m, n, lam)

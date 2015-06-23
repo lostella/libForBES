@@ -26,7 +26,7 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = indBox(lower, upper)
-    obj.makeprox = @() @(x, gam) call_indBox_prox(x, lower, upper);
+    obj.makeprox = @(gam0) @(x, gam) call_indBox_prox(x, lower, upper);
 end
 
 function [prox, val] = call_indBox_prox(x, lower, upper)

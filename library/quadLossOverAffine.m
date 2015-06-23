@@ -1,10 +1,12 @@
-%LOGLOGISTIC Allocates the log-logistic function.
+%QUADLOSSOVERAFFINE Allocates the squared distance function over an affine subspace.
 %
-%   LOGLOGISTIC(mu) builds the log-logistic function
+%   QUADLOSSOVERAFFINE(p, A, b) returns the function
 %       
-%       f(x) = mu*(sum_i log(1+exp(-x_i)))
+%       f(x) = 0.5*||x-p||^2 subject to A*x = b
 %
-
+%   Requires LDLCHOL and LDLSOLVE from SuiteSparse by Tim Davis.
+%   See: http://faculty.cse.tamu.edu/davis/suitesparse.html
+%
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -22,19 +24,18 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = logLogistic(mu)
-    if nargin < 1
-        mu = 1;
-    end
-    obj.makef = @() @(x) call_logLogistic_f(x, mu);
-    obj.L = mu; % Lipschitz constant of the gradient of f
+function obj = quadLossOverAffine(p, A, b)
+    obj.isConjQuadratic = 1;
+    obj.makefconj = @() make_quadLossOverAffine_conj(p, A, b);
 end
 
-function [val, grad] = call_logLogistic_f(x, mu)
-% value and gradient of f(x) = mu*sum(log(1+exp(-x)))
-    px = 1./(1+exp(-x));
-    val = -sum(log(px))*mu;
-    if nargout >= 2
-        grad = (px-1)*mu;
-    end
+function fun = make_quadLossOverAffine_conj(p, A, b)
+    LD = ldlchol(A, 1e-12);
+    fun = @(y) call_quadLossOverAffine_conj(y, LD, p, A, b);
+end
+
+function [val, grad] = call_quadLossOverAffine_conj(y, LD, p, A, b)
+    yp = y+p;
+    grad = yp-A'*ldlsolve(LD, A*yp-b);
+    val = y'*grad-0.5*norm(grad-p)^2;
 end

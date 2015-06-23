@@ -31,20 +31,18 @@ function obj = quadratic(Q, q)
     obj.Q = Q;
     if nargin >= 2,
         obj.q = q;
-    else
-        q = 0;
     end
     obj.isQuadratic = 1;
     obj.isConjQuadratic = 1;
-    obj.makef = @() @(x) call_quadratic(Q, q, x); % do we need to keep this?
+%     obj.makef = @() @(x) call_quadratic(Q, q, x); % do we need to keep this?
     obj.makefconj = @() make_quadratic_conj(Q, q);
 end
 
 % % do we need to keep this?
-function [v, g] = call_quadratic(Q, q, x)
-    g = Q*x+q;
-    v = 0.5*(g+q)'*x;   
-end
+% function [v, g] = call_quadratic(Q, q, x)
+%     g = Q*x+q;
+%     v = 0.5*(g+q)'*x;   
+% end
 
 function fun = make_quadratic_conj(Q, q)
     if issparse(Q)

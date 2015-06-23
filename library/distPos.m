@@ -24,7 +24,7 @@ if nargin<1 || isempty(weights)
     weights = 1;
 end
 
-obj.makeprox = @() @(x, gam) call_distPos_prox(x, gam, lb, weights);
+obj.makeprox = @(gam0) @(x, gam) call_distPos_prox(x, gam, lb, weights);
 end
 
 function [prox, val] = call_distPos_prox(x, gam, lb, weights)

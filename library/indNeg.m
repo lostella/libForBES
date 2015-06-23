@@ -29,7 +29,7 @@ function obj = indNeg(ub)
     if nargin < 1 || isempty(ub)
         ub = 0;
     end
-    obj.makeprox = @() @(x, gam) call_indNeg_prox(x, ub);
+    obj.makeprox = @(gam0) @(x, gam) call_indNeg_prox(x, ub);
 end
 
 function [prox, val] = call_indNeg_prox(x, ub)

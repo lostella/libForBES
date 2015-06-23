@@ -27,14 +27,18 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = separableSum(objs, idx, sizes)
-    obj.makeprox = @() make_separableSum_prox(objs, idx, sizes);
+function obj = separableSum(objs, sizes, idx)
+    l = length(objs);
+    if nargin < 3
+        idx = 1:l;
+    end
+    obj.makeprox = @(gam0) make_separableSum_prox(objs, idx, sizes, gam0);
 end
 
-function op = make_separableSum_prox(objs, idx, sizes)
+function op = make_separableSum_prox(objs, idx, sizes, gam0)
     proxes = {};
     for i=1:length(objs)
-        proxes{end+1} = objs{i}.makeprox();
+        proxes{end+1} = objs{i}.makeprox(gam0);
     end
     op = @(x, gam) call_separableSum_prox(x, gam, proxes, idx, sizes);
 end

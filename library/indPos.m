@@ -29,7 +29,7 @@ function obj = indPos(lb)
     if nargin < 1 || isempty(lb)
         lb = 0;
     end
-    obj.makeprox = @() @(x, gam) call_indPos_prox(x, lb);
+    obj.makeprox = @(gam0) @(x, gam) call_indPos_prox(x, lb);
 end
 
 function [prox, val] = call_indPos_prox(x, lb)

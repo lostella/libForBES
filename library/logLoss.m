@@ -1,12 +1,10 @@
-%DIST2OVERAFFINE Allocates the squared distance function over an affine subspace.
+%LOGLOSS Allocates the log-logistic loss function.
 %
-%   DIST2OVERAFFINE(p, A, b) returns the function
+%   LOGLOSS(mu) builds the log-logistic loss function
 %       
-%       f(x) = 0.5*||x-p||^2 subject to A*x = b
+%       f(x) = mu*(sum_i log(1+exp(-x_i)))
 %
-%   Requires LDLCHOL and LDLSOLVE from SuiteSparse by Tim Davis.
-%   See: http://faculty.cse.tamu.edu/davis/suitesparse.html
-%
+
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -24,18 +22,26 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = dist2OverAffine(p, A, b)
-    obj.isConjQuadratic = 1;
-    obj.makefconj = @() make_dist2OverAffine_conj(p, A, b);
+function obj = logLoss(mu)
+    if nargin < 1
+        mu = 1;
+    end
+    obj.makef = @() @(x) call_logLoss_f(x, mu);
+    obj.L = mu; % Lipschitz constant of the gradient of f
+%     obj.hasHessian = 1;
 end
 
-function fun = make_dist2OverAffine_conj(p, A, b)
-    LD = ldlchol(A, 1e-12);
-    fun = @(y) call_dist2OverAffine_conj(y, LD, p, A, b);
-end
-
-function [val, grad] = call_dist2OverAffine_conj(y, LD, p, A, b)
-    yp = y+p;
-    grad = yp-A'*ldlsolve(LD, A*yp-b);
-    val = y'*grad-0.5*norm(grad-p)^2;
+function [val, grad, hess] = call_logLoss_f(x, mu)
+% value and gradient of f(x) = mu*sum(log(1+exp(-x)))
+    ex = exp(-x);
+    px = 1./(1+ex);
+    val = -sum(log(px))*mu;
+    if nargout >= 2
+        grad = (px-1)*mu;
+    end
+%     if nargout >= 3
+%         h = (mu*ex)./(px.*px);
+%         hess = @(y) h.*y;
+%         hess = diag(sparse(h));
+%     end
 end

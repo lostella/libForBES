@@ -25,7 +25,7 @@ function obj = hingeLoss(mu, b)
     %
     % Only the proximal mapping is available for this function
     %
-    obj.makeprox = @() @(x, gam) call_hingeLoss_prox(x, gam, mu, b);
+    obj.makeprox = @(gam0) @(x, gam) call_hingeLoss_prox(x, gam, mu, b);
 end
 
 function [prox, g] = call_hingeLoss_prox(x, gam, mu, b)

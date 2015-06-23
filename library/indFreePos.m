@@ -25,7 +25,7 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = indFreePos(iPos)
-    obj.makeprox = @() @(x, gam) call_indFreePos_prox(x, iPos);
+    obj.makeprox = @(gam0) @(x, gam) call_indFreePos_prox(x, iPos);
 end
 
 function [prox, val] = call_indFreePos_prox(x, iPos)

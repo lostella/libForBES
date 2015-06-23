@@ -1,10 +1,12 @@
-%SQUAREDNORM Allocates the squared norm function.
+%QUADLOSS Allocates the squared norm function.
 %
-%   SQUAREDNORM(lam, p) builds the function
+%   QUADLOSS(w, p) builds the function
 %       
-%       f(x) = (lam/2)*||x-p||^2
+%       f(x) = (1/2)*||x-p||_Q^2
 %   
-%   If the arguments are omitted, it is assumed that lam = 1, p = 0.
+%   If the arguments are omitted, it is assumed that w = 1, p = 0.
+%   If w is a positive scalar then Q = w*Id; if w is a nonnegative vector
+%   then Q = diag(w).
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -23,33 +25,27 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = squaredNorm(lam, p)
-    if nargin < 1
-        lam = 1;
+function obj = quadLoss(w, p)
+    if nargin < 1, w = 1; end
+    if nargin < 2, p = 0;
+    else obj.q = -p; end
+    if any(w < 0)
+        error('second argument should be a nonnegative');
+    end
+    if isscalar(w)
+        obj.Q = w;
+    elseif isvector(w)
+        n = length(w);
+        obj.Q = spdiags(w,0,n,n);
     end
     obj.isQuadratic = 1;
     obj.isConjQuadratic = 1;
-    if nargin==2 && ~isempty(p)
-        obj.makef = @() @(x) call_squaredDist(x, lam, p);
-        obj.makefconj = @() @(x) call_squaredDist_conj(x, 1/lam, p);
-    else
-        obj.makef = @() @(x) call_squaredNorm(x, lam);
-        obj.makefconj = @() @(x) call_squaredNorm(x, 1/lam);
+    if all(w > 0)
+        obj.makefconj = @() @(x) call_squaredWeightedDistance_conj(x, w, p);
     end
 end
 
-function [val, grad] = call_squaredNorm(x, lam)
-    grad = lam*x;
-    val = 0.5*(grad'*x);
-end
-
-function [val, grad] = call_squaredDist(x, lam, p)
-    xp = x - p;
-    grad = lam*xp;
-    val = 0.5*(grad'*xp);
-end
-
-function [val, grad] = call_squaredDist_conj(y, lam, p)
-    grad = p + lam*y;
+function [val, grad] = call_squaredWeightedDistance_conj(y, w, p)
+    grad = p + (y./w);
     val = 0.5*(y'*(grad + p));
 end

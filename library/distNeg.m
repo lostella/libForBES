@@ -23,7 +23,7 @@ function obj = distNeg(weights,ub)
             weights = 1;
         end
     end
-    obj.makeprox = @() @(x, gam) call_distNeg_prox(x, gam, ub, weights);
+    obj.makeprox = @(gam0) @(x, gam) call_distNeg_prox(x, gam, ub, weights);
 end
 
 function [prox, val] = call_distNeg_prox(x, gam, ub, weights)

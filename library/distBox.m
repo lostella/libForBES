@@ -17,7 +17,7 @@
 
 function obj = distBox(lb,ub,weights)
     % Proximal mapping for (weighted) distance from a box [lb,ub]
-    obj.makeprox = @() @(x, gam) call_distBox_prox(x, gam, lb, ub, weights);
+    obj.makeprox = @(gam0) @(x, gam) call_distBox_prox(x, gam, lb, ub, weights);
 end
 
 function [prox, val] = call_distBox_prox(x, gam, lb, ub, weights)

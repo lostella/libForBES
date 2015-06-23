@@ -32,7 +32,7 @@ function obj = indBall_l2(rho, c)
             rho = 1;
         end
     end
-    obj.makeprox = @() @(x, gam) call_indBall_l2_prox(x, rho, c);
+    obj.makeprox = @(gam0) @(x, gam) call_indBall_l2_prox(x, rho, c);
 end
 
 function [prox, val] = call_indBall_l2_prox(x, rho, c)
