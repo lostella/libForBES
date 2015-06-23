@@ -22,6 +22,7 @@ function opt = ProcessOptions(opt)
     else opt.customTerm = true; end
     if ~isfield(opt, 'maxit'), opt.maxit = 10000; end
     if ~isfield(opt, 'method'), opt.method = 'lbfgs'; end
+    
     if ~isfield(opt, 'linesearch')
         switch opt.method
             case 'sd'
@@ -42,7 +43,16 @@ function opt = ProcessOptions(opt)
                 opt.linesearch = 'none';
         end
     end
-    if ~isfield(opt, 'variant'), opt.variant = 'global'; end
+    
+    if ~isfield(opt, 'variant')
+        switch opt.method
+            case 'fbs'
+                opt.variant = 'fast';
+            otherwise
+                opt.variant = 'global';
+        end
+    end
+    
     if ~isfield(opt, 'recache'), opt.recache = 100; end
     if ~isfield(opt, 'memory'), opt.memory = 11; end
     if ~isfield(opt, 'adaptive'), opt.adaptive = 0; end
@@ -71,6 +81,7 @@ function opt = ProcessOptions(opt)
         otherwise
             error('unknown method');
     end
+    
     switch opt.linesearch
         case 'armijo'
             opt.linesearch = 1;
@@ -89,6 +100,7 @@ function opt = ProcessOptions(opt)
         otherwise
             error('unknown line search');
     end
+    
     switch opt.variant
         case 'basic'
             opt.fast = 0;
@@ -105,4 +117,6 @@ function opt = ProcessOptions(opt)
         otherwise
             error('unknown variant');
     end
+    
+    opt.processed = true;
 end

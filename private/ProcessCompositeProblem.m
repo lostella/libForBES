@@ -53,7 +53,8 @@ function prob = ProcessCompositeProblem(prob, opt)
             prob.isthereC1 = false;
         end
         if ~isfield(prob, 'd1'), prob.d1 = zeros(prob.m1, 1); end
-        if ~isfield(prob.f1, 'q'), prob.q = zeros(prob.m1, 1); end
+        if ~isfield(prob.f1, 'q'), prob.q = zeros(prob.m1, 1);
+        else prob.q = prob.f1.q; end
     else
         prob.istheref1 = false;
         prob.isthereC1 = false;
@@ -85,6 +86,8 @@ function prob = ProcessCompositeProblem(prob, opt)
         end
         if ~isfield(prob, 'd2'), prob.d2 = zeros(prob.m2, 1); end
         if isfield(prob.f2, 'L'), prob.Lf2 = prob.f2.L; end
+        if isfield(prob.f2, 'hasHessian') && prob.f2.hasHessian, prob.useHessian = 1;
+        else prob.useHessian = 0; end
     else
         prob.istheref2 = false;
         prob.isthereC2 = false;

@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function [prob, dualprob] = ProcessSeparableProblem(prob)
+function [prob, dualprob] = ProcessSeparableProblem(prob, opt)
     if isfield(prob, 'b')
         if norm(prob.b) > 0,
             dualprob.l = prob.b;
@@ -117,7 +117,7 @@ end
 
 function [proxpoint, proxval] = call_prox_conj(y, gam, prox, B, mu)
     mugam = mu*gam;
-    [z, v] = prox(-(B'*y)/mugam, 1/mugam);% changed from (-B'*y): much faster
+    [z, v] = prox(-(B'*y)/mugam, 1/mugam);
     Bz = B*z;
     proxpoint = y+gam*Bz;
     proxval = -proxpoint'*Bz - v;

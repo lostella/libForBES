@@ -16,7 +16,6 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function out = GetPrimalOutput(prob, dualprob, dualout)
-    out.name = dualout.name;
     out.message = dualout.message;
     out.flag = dualout.flag;
     out.gam = dualout.gam;

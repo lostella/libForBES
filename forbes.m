@@ -1,86 +1,52 @@
 %FORBES Solver for nonsmooth convex optimization problems.
-% 
-%   We assume the problem at hand has the form
 %
-%           minimize    f1(C1 x1 - d1) + f2(C2 x2 - d2) + g(z),
-%           subject to  A1 x1 + A2 x2 + Bz = b
+%   Composite problems
+%   ------------------
 %
-%   out = FORBES(prob) solves problem (1) specified by the structure prob,
-%   using the default options, and store the results in out.
+%   (1)    minimize f(Cx + d) + g(x)
 %
-%   out = FORBES(prob, opt) like the previous, but uses the options specified
-%   in the opt structure instead of the defaults.
+%   We assume that f is convex smooth with Lipschitz continuous gradient,
+%   and that g is closed, proper, convex. C is a linear mapping of the
+%   appropriate dimension.
 %
-%   Defining the problem
-%   --------------------
+%   out = FORBES(f, g, init, aff, [], opt) solves the problem with the
+%   specified f and g. init is the initial value for x, aff is a cell array
+%   containing {C, d} (in this order). opt is a structure defining the
+%   options for the solver (more on this later).
 %
-%   If the constraint is not specified, it is assumed to be x1 = x2 = z, in
-%   which case the problem takes the unconstrained form
+%   Separable problems
+%   ------------------
 %
-%       (1) minimize    f1(C1 x - d1) + f2(C2 x - d2) + g(x)
+%   (2)    minimize    f(x) + g(z)
+%          subject to  Ax + Bz = b
 %
-%   and we assume that both f1 and f2 are smooth, and f1 is quadratic.
-%   If A, B and b are specified then C = Id and d = 0, and the problem has
-%   the form
+%   We assume that f is strongly convex, and that g is closed, proper,
+%   convex. 
 %
-%       (2) minimize    f1(x1) + f2(x2) + g(z)
-%           subject to  A1 x1 + A2 x2 + Bz = b
+%   out = FORBES(f, g, init, [], constr) solves the specified problem.
+%   init is the initial *dual* variable, constr is a cell array defining
+%   the constraint, i.e., constr = {A, B, b}. the options are specified in
+%   the opt structure (more on this later).
 %
-%   And we assume that f1 and f2 are strongly convex, f1 being quadratic
-%   plus (at most) the indicator of an affine subspace (so that its
-%   conjugate is quadratic).
-%
-%   The problem is defined through the following attributes of the
-%   structure prob provided as first argument to FORBES.
-%
-%       prob.x0: The starting point for the algorithm.
-% 
-%       prob.f1, prob.f2, prob.g: functions f and g in the cost. See section
-%           "Functions" below for details on how to select this.
-%           (One of f1 and f2 is required, g is required).
-%
-%       prob.C1, prob.d1: Matrix (or function handle) and vector with which
-%           f1 is composed. (Both are optional; default: C1 = Id, d1 = 0).
-%
-%       prob.C2, prob.d2: Matrix (or function handle) and vector with which
-%           f2 is composed. (Both are optional; default: C2 = Id, d2 = 0).
-% 
-%       prob.C1t, prob.C2t: Function computing the adjoint of C1 and C2.
-%           (Required if C1 and C2 are specified as function handles).
-% 
-%       prob.A1, prob.A2: matrix (or procedures computing matvecs) defining
-%           the constraint. (Optional).
-% 
-%       prob.A1t, prob.A2t: procedures computing the adjoint of A1 and A2.
-%           (Required only if A1 or A2 are specified as function handles).
-%
-%       prob.B: matrix B in the equality constraint.
-%           (Optional).
-% 
-%       prob.b: right hand side vector in the constraint.
-%           (Optional).
-%
-%   Functions
-%   ---------
+%   Functions and linear mappings
+%   -----------------------------
 %
 %   Functions f and g in the cost can be selected in a library of functions
-%   available in the "library" directory inside of FORBES directory. All
-%   these functions return a structure containing all that is needed by the
-%   solver, and may accept parameters defining the function. For example
+%   available in the "library" directory inside of FORBES directory. Linear
+%   mappings (C in problem (1) and A, B in problem (2) above) can either be
+%   MATLAB's matrices or can themselves be picked from a library of
+%   standard linear operators.
 %
-%       prob.f = logLogistic(mu)
-%       prob.g = l1Norm(mu)
+%   For example, to define f and g:
 %
-%   puts in prob.f the log-logistic loss function
+%       f = logLoss() % logistic loss function
+%       g = l1Norm() % l1 regularization term
 %
-%       f(x) = mu*(sum_i log(1+exp(-x_i)))
-%
-%   while prob.g will contain the l1 regularization term mu*||x||_1.
 %   Consider looking into the "library" directory for specific information
 %   any of the functions.
 %
-%   The options structure opt
-%   -------------------------
+%   Options
+%   -------
 %
 %   In opt the user can specify the behaviour of the algorithm to be used.
 %   The following options can be set:
@@ -128,19 +94,23 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function out = forbes(prob, opt)
-    prob.id = IdentifyProblem(prob);
+function out = forbes(fs, gs, init, aff, constr, opt)
+    if nargin < 4, aff = []; end
+    if nargin < 5, constr = []; end
+    if nargin < 6, opt = []; end
+    prob = MakeProb(fs, gs, init, aff, constr);
+    opt = ProcessOptions(opt);
     switch prob.id
         case 1
-            if nargin > 1
-                if isfield(opt, 'method') && strcmp(opt.method, 'fbs'), out = fbs(prob, opt);
+            if nargin > 5
+                if opt.method == 0, out = fbs(prob, opt);
                 else out = minfbe(prob, opt); end
             else
                 out = minfbe(prob);
             end
         case 2
             if nargin > 1
-                if isfield(opt, 'method') && strcmp(opt.method, 'fbs'), out = amm(prob, opt);
+                if opt.method == 0, out = amm(prob, opt);
                 else out = miname(prob, opt); end
             else
                 out = miname(prob);
@@ -148,16 +118,100 @@ function out = forbes(prob, opt)
     end
 end
 
-function id = IdentifyProblem(prob)
-    % simply check for the presence of linear equality constraints.
-    if any(isfield(prob, {'A', 'At', 'B', 'b'}))
-        flagEq = true;
-    else
-        flagEq = false;
+function prob = MakeProb(fs, gs, init, aff, constr)
+    M = length(fs);
+    N = length(gs);
+    if M > 2
+        error('only the sum of two functions is currently supported');
     end
-    if flagEq
-        id = 2;
+    if ~isa(fs, 'cell'), fs = {fs}; end
+    if isempty(constr)
+        flagconstr = 0;
     else
-        id = 1;
+        if ~isa(constr, 'cell')
+            error('the constraint must be a cell array');
+        end
+        flagconstr = 1;
+        if length(constr) ~= N+M+1
+            error('must have as many terms in the constraints as f and g functions');
+        end
+    end
+    if isempty(aff)
+        flagaff = 0;
+        flagd = 0;
+        ns = length(init);
+    else
+        if ~isa(aff, 'cell')
+            error('the list of affine maps must be a cell array');
+        end
+        flagaff = 1;
+        if length(aff) == N, flagd = 0;
+        elseif length(aff) == N+1, flagd = 1;
+        else error('must have as many blocks of variables as g functions, if any');
+        end
+        ns = zeros(1,N);
+        for i=1:N
+            if ismatrix(aff{1,i}), ns(i) = size(aff{1,i},2);
+            else ns(i) = aff{1,i}.n; end
+        end
+    end
+    prob.id = flagconstr+1;
+    prob.x0 = init;
+    switch prob.id
+        case 1
+            for i = 1:M
+                if isfield(fs{i}, 'isQuadratic') && fs{i}.isQuadratic
+                    prob.f1 = fs{i};
+                    if flagaff
+                        prob.C1 = horzcat(aff{i,1:N});
+                        if flagd, prob.d1 = -aff{i,N+1}; end
+                    end
+                end
+                if ~isfield(fs{i}, 'isQuadratic') || ~fs{i}.isQuadratic
+                    prob.f2 = fs{i};
+                    if flagaff
+                        prob.C2 = horzcat(aff{i,1:N});
+                        if flagd, prob.d2 = -aff{i,N+1}; end
+                    end
+                end
+            end
+            if N == 1
+                if isa(gs, 'cell'), prob.g = gs{1};
+                else prob.g = gs; end
+            elseif N > 1
+                prob.g = separableSum(gs, ns);
+            end
+        case 2
+            if flagaff
+                error('cannot have both constraints and affine mappings');
+            end
+            for i = 1:M
+                if isfield(fs{i}, 'isConjQuadratic') && fs{i}.isConjQuadratic
+                    prob.f1 = fs{1};
+                    if isstruct(constr{i})
+                        prob.A1 = constr{i}.makeop();
+                        prob.A1t = constr{i}.makeadj();
+                    else
+                        prob.A1 = constr{i};
+                    end
+                end
+                if ~isfield(fs{i}, 'isConjQuadratic') || ~fs{i}.isConjQuadratic
+                    prob.f2 = fs{i};
+                    if isstruct(constr{i})
+                        prob.A2 = constr{i}.makeop();
+                        prob.A2t = constr{i}.makeadj();
+                    else
+                        prob.A2 = constr{i};
+                    end
+                end
+            end
+            if N == 1
+                if isa(gs, 'cell'), prob.g = gs{1};
+                else prob.g = gs; end
+            elseif N > 1
+                prob.g = separableSum(gs, ns);
+            end
+            prob.B = horzcat(constr{M+1:M+N});
+            prob.b = constr{M+N+1};
     end
 end

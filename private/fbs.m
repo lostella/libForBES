@@ -1,11 +1,6 @@
 function out = fbs(prob, opt)
-
     t0 = tic();
-    
-    if nargin < 2, opt = []; end
-    opt = ProcessOptions(opt);
-    
-    if nargin < 1, error('the problem structure must be provided as first argument'); end
+
     if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob, opt); end
     
     %% initialize output stuff
@@ -75,7 +70,7 @@ function out = fbs(prob, opt)
                 break;
             end
         else
-            if opt.term(cache_yk)
+            if opt.term(cache_yk, gam)
                 msgTerm = [msgTerm, 'reached optimum (custom criterion)'];
                 flagTerm = 0;
                 break;
