@@ -2,11 +2,10 @@
 %
 %   QUADLOSS(w, p) builds the function
 %       
-%       f(x) = (1/2)*||x-p||_Q^2
+%       f(x) = 0.5*sum_i w_i(x_i-p_i)^2
 %   
 %   If the arguments are omitted, it is assumed that w = 1, p = 0.
-%   If w is a positive scalar then Q = w*Id; if w is a nonnegative vector
-%   then Q = diag(w).
+%   If w (resp. p) is a positive scalar then w_i = w (resp. p_i = p).
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %

@@ -1,6 +1,6 @@
 %QUADRATICOVERAFFINE Allocates a quadratic function over an affine subspace.
 %
-%   QUADRATICOVERAFFINE(Q, q, A, b) builds the function
+%   QUADRATICOVERAFFINE(A, b, Q, q) builds the function
 %       
 %       f(x) = 0.5*(x'*Q*x)+q'*x subject to A*x = b
 %
@@ -21,7 +21,10 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = quadraticOverAffine(Q, q, A, b)
+function obj = quadraticOverAffine(A, b, Q, q)
+    if nargin < 4, q = zeros(size(A, 2)); end
+    if nargin < 3, Q = 1; end
+    if isscalar(Q), Q = Q*speye(size(A, 2)); end
     obj.isQuadratic = 0;
     obj.isConjQuadratic = 1;
     obj.makefconj = @() make_quadraticOverAffine_conj(Q, q, A, b);

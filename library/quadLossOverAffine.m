@@ -1,8 +1,8 @@
 %QUADLOSSOVERAFFINE Allocates the squared distance function over an affine subspace.
 %
-%   QUADLOSSOVERAFFINE(p, A, b) returns the function
+%   QUADLOSSOVERAFFINE(A, b, w, p) returns the function
 %       
-%       f(x) = 0.5*||x-p||^2 subject to A*x = b
+%       f(x) = 0.5*sum_i w_i(x_i-p_i)^2 subject to A*x = b
 %
 %   Requires LDLCHOL and LDLSOLVE from SuiteSparse by Tim Davis.
 %   See: http://faculty.cse.tamu.edu/davis/suitesparse.html
@@ -24,18 +24,23 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = quadLossOverAffine(p, A, b)
+function obj = quadLossOverAffine(A, b, w, p)
+    if nargin < 4, p = 0; end
+    if nargin < 3, w = 1; end
+    if isscalar(w), w = repmat(w, size(A,2), 1); end
     obj.isConjQuadratic = 1;
-    obj.makefconj = @() make_quadLossOverAffine_conj(p, A, b);
+    obj.makefconj = @() make_quadLossOverAffine_conj(w, p, A, b);
 end
 
-function fun = make_quadLossOverAffine_conj(p, A, b)
-    LD = ldlchol(A, 1e-12);
-    fun = @(y) call_quadLossOverAffine_conj(y, LD, p, A, b);
+function fun = make_quadLossOverAffine_conj(w, p, A, b)
+    LD = ldlchol(A*diag(sparse(1./sqrt(w))), 1e-12);
+    fun = @(y) call_quadLossOverAffine_conj(y, LD, w, p, A, b);
 end
 
-function [val, grad] = call_quadLossOverAffine_conj(y, LD, p, A, b)
-    yp = y+p;
-    grad = yp-A'*ldlsolve(LD, A*yp-b);
-    val = y'*grad-0.5*norm(grad-p)^2;
+function [val, grad] = call_quadLossOverAffine_conj(y, LD, w, p, A, b)
+    wyp = (y./w)+p;
+    grad = wyp-(A'*ldlsolve(LD, A*wyp-b))./w;
+    gradp = grad-p;
+    val = y'*grad-0.5*(gradp'*(w.*gradp));
 end
+
