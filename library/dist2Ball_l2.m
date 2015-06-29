@@ -1,3 +1,12 @@
+%DIST2BALL_L2 Squared distance from a Euclidean ball of given center and radius
+%
+%   DIST2BALL_L2(rho, c, w) builds the function
+%       
+%       f(x) = (w/2)*dist^2(x,B) where B is the ball ||x-c|| <= rho
+%
+%   If c is not provided, c = 0. If also rho is not provided, rho = 1.
+%   Default weight is w = 1.
+%
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -16,18 +25,20 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = dist2Ball_l2(rho, c, weight)
-    % Function value and gradient of (w/2)*dist^2(x,C) where C is the l2 ball ||x-c||<=rho
-    if nargin < 3 || isempty(weight)
-        weight = 1;
+    if nargin < 1 || isempty(rho)
+        rho = 1;
     end
     if nargin < 2 || isempty(c)
         c = 0;
     end
-    if nargin < 1 || isempty(rho)
-        rho = 1;
+    if nargin < 3 || isempty(weight)
+        weight = 1;
     end
-
+    if ~isscalar(weight) || weight <= 0
+        error('third argument (weight) must be a positive scalar');
+    end
     obj.makef = @() @(x) call_dist2Ball_l2_f(x, rho, c, weight);
+    obj.L = weight;
 end
 
 function [val, grad] = call_dist2Ball_l2_f(x, rho, c, weight)

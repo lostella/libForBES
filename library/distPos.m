@@ -1,3 +1,16 @@
+%DISTPOS Distance from a box
+%
+%   DISTPOS(w, l) builds the function
+%       
+%       g(x) = sum(w_i*(x_i - max{l_i, x_i}))
+%
+%   Boundaries l_i can take the value -inf, in which case the corresponding
+%   halfline is lower unbounded.
+%
+%   Weights w_i are assumed to be 1 if not provided. They can take the
+%   value +inf, in which case the distance from the corresponding halfline
+%   [l_i,+inf] becomes the indicator function.
+%
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -15,47 +28,24 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = distPos(weights,lb)
-% Proximal mapping for (weighted) distance from a box [lb,ub]
-if nargin<2 || isempty(lb)
-    lb = 0;
-end
-if nargin<1 || isempty(weights)
-    weights = 1;
-end
-
-obj.makeprox = @(gam0) @(x, gam) call_distPos_prox(x, gam, lb, weights);
+function obj = distPos(weights, lb)
+    if nargin < 1 || isempty(weights)
+        weights = 1;
+    end
+    if nargin < 2 || isempty(lb)
+        lb = 0;
+    end
+    if any(weights < 0)
+        error('all weights must be nonnegative');
+    end
+    obj.makeprox = @() @(x, gam) call_distPos_prox(x, gam, lb, weights);
 end
 
 function [prox, val] = call_distPos_prox(x, gam, lb, weights)
-% Proximal mapping of function g(x) = -weights.*min{0,z}
-% project on the box
-proj = max(x,lb);
-n = length(x);
-if isscalar(weights)
-    weights = weights*ones(n,1);
-end
-
-if isscalar(lb)
-    lb = lb*ones(n,1);
-end
-
-
-wInf = (weights == inf);
-if all(wInf)
-    prox = proj;
-    val = 0;
-else
-    diff = proj-x;
-    prox = proj;
-    gam = gam*weights;
-    dist = weights.*abs(diff);
-    iLarge = (dist > gam) & ~wInf;
-    if any(iLarge)
-        prox(iLarge,1) = x(iLarge,1)+gam(iLarge,1).*(diff(iLarge,1)./dist(iLarge,1));
-        val = sum(weights(iLarge,1).*abs(max(prox(iLarge,1),lb(iLarge,1))-prox(iLarge,1)));
-    else
-        val = 0;
+    mu = gam*weights;
+    prox = max(min(x+mu,lb),x);
+    if nargout > 1
+        finw = ~isinf(weights);
+        val = sum(weights(finw).*max(lb(finw)-prox(finw),0));
     end
-end
 end

@@ -1,12 +1,13 @@
 %INDNEG Indicator function of the negative orthant.
 %
-%   INDNEG(ub) builds the function
+%   INDNEG(u) builds the function
 %       
-%       g(x) = 0    if x <= ub
+%       g(x) = 0    if x_i <= u_i for all i
 %            = +inf otherwise
 %
-%   where ub is either a scalar or a vector of the same size of x. If
-%   argument ub is not given, then ub = 0.
+%   Argument u is either a scalar or a vector of the same size of x. If
+%   argument u is not given, then u = 0. If any u_i is +inf then the
+%   corresponding halfline [-inf, u_i] is unbounded.
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -29,7 +30,7 @@ function obj = indNeg(ub)
     if nargin < 1 || isempty(ub)
         ub = 0;
     end
-    obj.makeprox = @(gam0) @(x, gam) call_indNeg_prox(x, ub);
+    obj.makeprox = @() @(x, gam) call_indNeg_prox(x, ub);
 end
 
 function [prox, val] = call_indNeg_prox(x, ub)

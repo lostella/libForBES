@@ -32,7 +32,7 @@ function obj = separableSum(objs, sizes, idx)
     if nargin < 3
         idx = 1:l;
     end
-    obj.makeprox = @(gam0) make_separableSum_prox(objs, idx, sizes, gam0);
+    obj.makeprox = @() make_separableSum_prox(objs, idx, sizes, gam0);
 end
 
 function op = make_separableSum_prox(objs, idx, sizes, gam0)

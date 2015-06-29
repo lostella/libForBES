@@ -32,7 +32,7 @@ function obj = l2NormSum(m, mu)
             m = 1;
         end
     end
-    obj.makeprox = @(gam0) @(x, gam) call_l2NormSum_prox(x, gam, m, mu);
+    obj.makeprox = @() @(x, gam) call_l2NormSum_prox(x, gam, m, mu);
 end
 
 function [z, v] = call_l2NormSum_prox(x, gam, m, mu)

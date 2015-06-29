@@ -1,12 +1,13 @@
 %INDPOS Indicator function of the positive orthant.
 %
-%   INDPOS(lb) builds the function
+%   INDPOS(l) builds the function
 %       
-%       g(x) = 0    if x >= lb
+%       g(x) = 0    if x_i >= l_i for all i
 %            = +inf otherwise
 %
-%   where lb is either a scalar or a vector of the same size of x. If
-%   argument lb is not given, then lb = 0.
+%   Argument l is either a scalar or a vector of the same size of x. If
+%   argument l is not given, then l = 0. If any l_i is +inf then the
+%   corresponding halfline [l_i, +inf] is unbounded.
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -29,7 +30,7 @@ function obj = indPos(lb)
     if nargin < 1 || isempty(lb)
         lb = 0;
     end
-    obj.makeprox = @(gam0) @(x, gam) call_indPos_prox(x, lb);
+    obj.makeprox = @() @(x, gam) call_indPos_prox(x, lb);
 end
 
 function [prox, val] = call_indPos_prox(x, lb)

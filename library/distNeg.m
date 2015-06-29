@@ -1,3 +1,16 @@
+%DISTNEG Distance from a box
+%
+%   DISTNEG(w, u) builds the function
+%       
+%       g(x) = sum(w_i*(x_i - min{u_i, x_i}))
+%
+%   Boundaries u_i can take the value +inf, in which case the corresponding
+%   halfline is upper unbounded.
+%
+%   Weights w_i are assumed to be 1 if not provided. They can take the
+%   value +inf, in which case the distance from the corresponding halfline
+%   [-inf,u_i] becomes the indicator function.
+%
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
 % This file is part of ForBES.
@@ -15,21 +28,23 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function obj = distNeg(weights,ub)
-    % Proximal mapping for (weighted) distance from a box [lb,ub]
-    if nargin<2 || isempty(ub)
-        ub = 0;
-        if nargin<1 || isempty(weights)
-            weights = 1;
-        end
+function obj = distNeg(weights, ub)
+    if nargin < 1 || isempty(weights)
+        weights = 1;
     end
-    obj.makeprox = @(gam0) @(x, gam) call_distNeg_prox(x, gam, ub, weights);
+    if nargin < 2 || isempty(ub)
+        ub = 0;
+    end
+    if any(weights < 0)
+        error('all weights must be nonnegative');
+    end
+    obj.makeprox = @() @(x, gam) call_distNeg_prox(x, gam, ub, weights);
 end
 
 function [prox, val] = call_distNeg_prox(x, gam, ub, weights)
     mu = gam*weights;
     prox = min(max(x-mu,ub),x);
-    if nargin>1
+    if nargout > 1
         finw = ~isinf(weights);
         val = sum(weights(finw).*max(prox(finw)-ub(finw),0));
     end

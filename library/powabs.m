@@ -37,7 +37,7 @@ function obj = powabs(p, c)
     if all((p == pows) == 0)
         error('Prox is not computable')
     end
-    obj.makeprox = @(gam0) @(x, gam) call_powabs_prox(x, gam, p, c);
+    obj.makeprox = @() @(x, gam) call_powabs_prox(x, gam, p, c);
 end
 
 function [prox, val] = call_powabs_prox(x, gam, p, c)

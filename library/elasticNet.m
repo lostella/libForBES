@@ -26,7 +26,7 @@ function obj = elasticNet(mu, lam)
         lam = 1;
         if nargin < 1, mu = 1; end
     end
-    obj.makeprox = @(gam0) @(x, gam) call_elasticNet_prox(x, gam, mu, lam);
+    obj.makeprox = @() @(x, gam) call_elasticNet_prox(x, gam, mu, lam);
 end
 
 function [prox, g] = call_elasticNet_prox(x, gam, mu, lam)

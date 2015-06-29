@@ -1,12 +1,13 @@
 %INDBOX Indicator function of a box.
 %
-%   INDBOX(lower, upper) builds the function
+%   INDBOX(l, u) builds the function
 %       
-%       g(x) = 0    if lower <= x <= upper
+%       g(x) = 0    if l_i <= x_i <= u_i for all i
 %            = +inf otherwise
 %
-%   Arguments lower and upper can be either vectors of the same size of x
-%   or scalars.
+%   Arguments l and u can be either vectors of the same size of x
+%   or scalars. If any l_i (u_i) has value -inf (+inf) then the
+%   corresponding segment [l_i, u_i] is lower (upper) unbounded.
 %
 % Copyright (C) 2015, Lorenzo Stella and Panagiotis Patrinos
 %
@@ -26,7 +27,7 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function obj = indBox(lower, upper)
-    obj.makeprox = @(gam0) @(x, gam) call_indBox_prox(x, lower, upper);
+    obj.makeprox = @() @(x, gam) call_indBox_prox(x, lower, upper);
 end
 
 function [prox, val] = call_indBox_prox(x, lower, upper)

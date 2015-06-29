@@ -25,7 +25,7 @@ function obj = l2Norm(mu)
     if nargin < 1
         mu = 1;
     end
-    obj.makeprox = @(gam0) @(x, gam) call_l2Norm_prox(x, gam, mu);
+    obj.makeprox = @() @(x, gam) call_l2Norm_prox(x, gam, mu);
 end
 
 function [prox, val] = call_l2Norm_prox(x, gam, mu)

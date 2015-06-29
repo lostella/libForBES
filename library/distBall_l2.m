@@ -27,7 +27,7 @@ function obj = distBall_l2(rho,c,weight)
         rho = 1;
     end
 
-    obj.makeprox = @(gam0) @(x, gam) call_distBall_l2_prox(x, gam, rho, c, weight);
+    obj.makeprox = @() @(x, gam) call_distBall_l2_prox(x, gam, rho, c, weight);
 end
 
 function [prox, val] = call_distBall_l2_prox(x, gam, rho, c, weight)
