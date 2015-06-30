@@ -141,8 +141,11 @@ function prob = MakeProb(fs, gs, init, aff, constr)
         flagd = 0;
         ns = length(init);
     else
+        if isa(aff, 'double') || isa(aff, 'struct')
+            aff = {aff};
+        end
         if ~isa(aff, 'cell')
-            error('the list of affine maps must be a cell array');
+            error('the list of affine maps must be a cell array, a matrix or a structure');
         end
         flagaff = 1;
         if length(aff) == N, flagd = 0;
