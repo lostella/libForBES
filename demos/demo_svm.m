@@ -1,7 +1,7 @@
 close all;
 clear;
 
-% rng(0, 'twister');
+rng(0, 'twister');
 
 % customize the path in the next line
 n = 5000;
