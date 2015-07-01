@@ -19,6 +19,7 @@ function [prob, dualprob] = ProcessSeparableProblem(prob, opt)
     if isfield(prob, 'b')
         if norm(prob.b) > 0,
             dualprob.l = prob.b;
+            dualprob.istherelin = true;
         else
             dualprob.istherelin = false;
         end
