@@ -102,19 +102,11 @@ function out = forbes(fs, gs, init, aff, constr, opt)
     opt = ProcessOptions(opt);
     switch prob.id
         case 1
-            if nargin > 5
-                if opt.method == 0, out = fbs(prob, opt);
-                else out = minfbe(prob, opt); end
-            else
-                out = minfbe(prob);
-            end
+            if opt.method == 0, out = fbs(prob, opt);
+            else out = minfbe(prob, opt); end
         case 2
-            if nargin > 1
-                if opt.method == 0, out = amm(prob, opt);
-                else out = miname(prob, opt); end
-            else
-                out = miname(prob);
-            end
+            if opt.method == 0, out = amm(prob, opt);
+            else out = miname(prob, opt); end
     end
 end
 
