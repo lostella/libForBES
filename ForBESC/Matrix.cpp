@@ -207,7 +207,7 @@ void Matrix::set(int i, int j, float v) {
 
 }
 
-float Matrix::quad(const Matrix& x) const {
+float Matrix::quad(Matrix& x) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -239,7 +239,7 @@ float Matrix::quad(const Matrix& x) const {
     return result;
 }
 
-float Matrix::quad(const Matrix& x, const Matrix& q) const {
+float Matrix::quad(Matrix& x, Matrix& q) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -419,7 +419,7 @@ Matrix Matrix::operator-(const Matrix & right) const {
     return result;
 }
 
-Matrix Matrix::operator*(const Matrix & right) const {
+Matrix Matrix::operator*(Matrix & right) {
     float t = 0.0f;
     if (isColumnVector() && right.isColumnVector() && length() == right.length()) {
         // multiplication of two column vectors = dot product
@@ -443,6 +443,9 @@ Matrix Matrix::operator*(const Matrix & right) const {
             break;
         case MATRIX_SYMMETRIC:
             result = multiplyLeftSymmetric(right);
+            break;
+        case MATRIX_SPARSE:
+            result = multiplyLeftSparse(right);
             break;
     }
     return result;
@@ -500,7 +503,7 @@ void Matrix::domm(const Matrix &right, Matrix &result) const {
     }
 }
 
-Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
+Matrix Matrix::multiplyLeftDense(const Matrix & right) const{
     if (MATRIX_DENSE == right.m_type) { // RHS is also dense
         Matrix result(m_nrows, right.m_ncols);
 #ifdef USE_LIBS
@@ -547,7 +550,7 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix& right) const {
     return result;
 }
 
-Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const {
+Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const{
     // multiply when the LHS is diagonal
     Matrix result(m_nrows, right.m_ncols, right.m_type);
     for (int i = 0; i < m_nrows; i++) {
@@ -568,6 +571,43 @@ Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const {
         }
     }
     return result;
+}
+
+Matrix Matrix::multiplyLeftSparse(Matrix& right) {
+    if (right.m_type == MATRIX_SPARSE) {
+        // RHS is sparse
+        throw std::logic_error("S*S not implemented yet!");
+    } else {
+        // RHS is dense
+        Matrix result(m_nrows, right.m_ncols);
+
+        if (m_triplet != NULL && m_sparse == NULL)
+            createSparseFromTriplet();
+
+        double alpha[2] = {1.0, 0.0};
+        double beta[2] = {0.0, 0.0};
+
+        if (right.m_dense == NULL) {
+            right.m_dense = cholmod_allocate_dense(right.m_nrows, right.m_ncols, right.m_nrows, CHOLMOD_REAL, m_cholmod_common);
+            for (int k = 0; k < right.length(); k++) {
+                ((double*) right.m_dense->x)[k] = right.m_data[k];
+            }
+        }
+        result.m_dense = cholmod_allocate_dense(result.m_nrows, result.m_ncols, result.m_nrows, CHOLMOD_REAL, m_cholmod_common);
+        cholmod_sdmult(
+                m_sparse,
+                m_transpose ? 1 : 0,
+                alpha,
+                beta,
+                right.m_dense,
+                result.m_dense,
+                m_cholmod_common
+                );
+        for (int k = 0; k < result.length(); k++) {
+            result.m_data[k] = ((double*)result.m_dense->x)[k];
+        }
+        return result;
+    }
 }
 
 bool Matrix::indexWithinBounds(int i, int j) {

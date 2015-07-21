@@ -56,7 +56,7 @@ Quadratic::~Quadratic() {
     }
 }
 
-int Quadratic::call(const Matrix& x, float& f) const {
+int Quadratic::call( Matrix& x, float& f)  {
     if (!is_Q_eye) {
         if (is_q_zero) {
             f = Q->quad(x);
@@ -80,10 +80,10 @@ int Quadratic::callConj(const Matrix& y, float& f_star) {
             return STATUS_NUMERICAL_PROBLEMS;
         }
     }
-    Matrix z = y - *q;
-    Matrix g; // g = Q \ z
-    L->solveCholeskySystem(g, z);
-    f_star = (z * g)[0];
+    Matrix z = y - *q;                      // z = y - q
+    Matrix g; 
+    L->solveCholeskySystem(g, z);           // g = Q \ z 
+    f_star = (z * g)[0];                    // fstar = z' *g 
     return STATUS_OK;
 }
 
@@ -95,7 +95,7 @@ int Quadratic::callProx(const Matrix& x, float gamma, Matrix& prox) {
     return STATUS_UNDEFINED_FUNCTION;
 }
 
-int Quadratic::computeGradient(const Matrix& x, Matrix& grad) const {
+int Quadratic::computeGradient(Matrix& x, Matrix& grad) {
     if (is_Q_eye) {
         grad = x;
     } else {

@@ -952,13 +952,13 @@ void TestMatrix::testSparseCholesky() {
     int n = 3;
     int m = 3;
     int max_nnz = 4;
-    
+
     Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L, &c);
     A.set(0, 0, 4.0f);
     A.set(1, 0, 1.0f); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
     A.set(1, 1, 5.0f);
     A.set(2, 2, 10.0f);
-    
+
     Matrix L;
     A.cholesky(L);
 
@@ -971,17 +971,49 @@ void TestMatrix::testSparseCholesky() {
     L.solveCholeskySystem(xsol, rhs);
 
     const double tol = 1e-6;
-    CPPUNIT_ASSERT(std::abs(0.210526 - xsol.get(0,0)) < tol);
+    CPPUNIT_ASSERT(std::abs(0.210526 - xsol.get(0, 0)) < tol);
     CPPUNIT_ASSERT(std::abs(0.157895 - xsol[1]) < tol);
     CPPUNIT_ASSERT(std::abs(0.1 - xsol[2]) < tol);
-   
-    CPPUNIT_ASSERT_EQUAL(0, c.status);   
+
+    CPPUNIT_ASSERT_EQUAL(0, c.status);
 
     cholmod_finish(&c);
 
 }
 
+void TestMatrix::testSparseDenseMultiply() {
+    cholmod_common c;
 
+    int n = 3;
+    int m = 3;
+    int max_nnz = 4;
 
+    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC, &c);
+    A.set(0, 0, 4.0f);
+    A.set(1, 0, 1.0f); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
+    A.set(1, 1, 5.0f);
+    A.set(2, 2, 10.0f);
 
+    Matrix B(m, n);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            B.set(i, j, 3.0 * i + 4.23 * j + 1.10);
+        }
+    }
 
+    CPPUNIT_ASSERT_EQUAL(m, B.getNrows());
+    CPPUNIT_ASSERT_EQUAL(n, B.getNcols());
+
+    Matrix C;
+    CPPUNIT_ASSERT_NO_THROW(C = A*B);
+
+    float correctData[9] = {
+        4.4000, 21.6000, 71.0000,
+        21.3200, 46.9800, 113.3000,
+        38.2400, 72.3600, 155.6000
+    };
+
+    Matrix C_correct(n, n, correctData, Matrix::MATRIX_DENSE);
+
+    CPPUNIT_ASSERT_EQUAL(C_correct, C);
+}

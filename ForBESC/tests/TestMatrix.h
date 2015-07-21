@@ -72,6 +72,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSparse2);
     CPPUNIT_TEST(testSparseGetSet);
     CPPUNIT_TEST(testSparseCholesky);
+    CPPUNIT_TEST(testSparseDenseMultiply);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -127,6 +128,7 @@ private:
     void testSparse2();
     void testSparseGetSet();
     void testSparseCholesky();
+    void testSparseDenseMultiply();
 };
 
 #endif	/* TESTMATRIX_H */

@@ -78,7 +78,7 @@ public:
      * status codes.
      * 
      */
-    virtual int call(const Matrix& x, float& f) const =0; 
+    virtual int call(Matrix& x, float& f) =0; 
     
     /**
      * Same as <code>call(const Matrix& x, float& f)</code>, but this function returns
@@ -98,7 +98,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int call(const Matrix& x, float& f, Matrix& grad) const; // returns also the gradient
+    virtual int call( Matrix& x, float& f, Matrix& grad) ; // returns also the gradient
     
     /**
      * 
@@ -117,7 +117,7 @@ public:
 private:
 
 protected:
-    virtual int computeGradient(const Matrix& x, Matrix& grad) const =0; 
+    virtual int computeGradient( Matrix& x, Matrix& grad)  =0; 
     
     //virtual int computeFunctionAtProx(const Matrix& x, float gamma, const Matrix& prox, float f_at_prox) const =0;
 

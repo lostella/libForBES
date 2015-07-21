@@ -18,9 +18,9 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO Implement packed storage for symmetric and lower/upper triangular matrices
-//TODO Implement multiplication with such matrices
-//TODO Use CSparse to introduce sparse matrices
+//TODO Implement packed storage for symmetric and lower/upper triangular matrices [done]
+//TODO Implement multiplication with such matrices [almost done]
+//TODO Use CSparse to introduce sparse matrices [ongoing]
 
 #ifndef MATRIX_H
 #define	MATRIX_H
@@ -145,6 +145,7 @@ public:
 
 
     /* Getters */
+
     /**
      * Get the number of columns of the current matrix.
      * @return columns as <code>int</code>.
@@ -224,7 +225,7 @@ public:
      * @param x The vector x.
      * @return Scalar x'*Q*x as <code>float</code>.
      */
-    float quad(const Matrix& x) const;
+    float quad(Matrix& x);
 
     /**
      * Computes the quadratic form x'*Q*x + q'*x, where x is a given vector
@@ -238,17 +239,17 @@ public:
      * @param q The parameter vector x.
      * @return 
      */
-    float quad(const Matrix& x, const Matrix& q) const;
+    float quad(Matrix& x, Matrix& q);
 
     /**
-     * Computes the Cholesky factorization of this matrix. If this is a <code>DENSE<code>
+     * Computes the Cholesky factorization of this matrix. If this is a <code>MATRIX_DENSE<code>
      * matrix, then it is assumed it is symmetric (but there is no verification) and
      * only its lower triangular part is considered. Notice that the Cholesky factorization
      * can only be applied to symmetric and poisitive definite matrices.
      * 
-     * This method, when applied on a <code>DENSE<code> matrix, the produced matrix <code>L</code>
-     * will be of type <code>DENSE<code>. It is advisable to apply this method only
-     * on matrices of type <code>SYMMETRIC</code>.
+     * This method, when applied on a <code>MATRIX_DENSE<code> matrix, the produced matrix <code>L</code>
+     * will be of type <code>MATRIX_DENSE<code>. It is advisable to apply this method only
+     * on matrices of type <code>MATRIX_SYMMETRIC</code>.
      * 
      * @param L the cholesky factor of this matrix. 
      * @return status code. Returns <code>0</code> if the factorization succeeded.
@@ -261,7 +262,7 @@ public:
      * (given as an instance of <code>Martrix</code>) and <code>x</code> is the
      * solution which is returned by this method.
      * 
-     * Note that if this is a <code>DENSE<code> matrix, then it is assumed it is 
+     * Note that if this is a <code>MATRIX_DENSE<code> matrix, then it is assumed it is 
      * lower triangular (but there is no verification) and only its lower triangular 
      * part is considered.
      * 
@@ -318,7 +319,7 @@ public:
      * @param right is the right-hand side matrix
      * @return 
      */
-    Matrix operator*(const Matrix& right) const;
+    Matrix operator*(Matrix& right);
 
     /**
      * Assignment operator.
@@ -343,25 +344,36 @@ public:
      */
     friend std::ostream& operator<<(std::ostream& os, const Matrix& obj);
 
-    cholmod_common  *m_cholmod_common = NULL;
-    cholmod_triplet *m_triplet = NULL;
-    cholmod_sparse  *m_sparse = NULL;
-    cholmod_factor  *m_cholesky_factor = NULL;
-    
+
+
 private:
     /*
      * MatrixFactory is allowed to access these private fields!
      */
     friend class MatrixFactory;
-    
+
     int m_nrows; /*< Number of rows */
     int m_ncols; /*< Number of columns */
+    bool m_transpose; /*< Whether this matrix is transposed */
+    MatrixType m_type; /*< Matrix type */
+
+    /* For dense matrices: */
+
     int m_dataLength; /*< Length of data */
     float *m_data = NULL; /*< Data */
-    bool m_transpose;
-    MatrixType m_type; /*< Matrix type */
-    
-    
+
+    /* CSparse members */
+
+    cholmod_common *m_cholmod_common = NULL; /*< Common handler for CHOLMOD operations */
+    cholmod_triplet *m_triplet = NULL; /*< Sparse triplets */
+    cholmod_sparse *m_sparse = NULL; /*< A sparse matrix */
+    cholmod_factor *m_cholesky_factor = NULL; /*< Cholesky factor */
+    cholmod_dense *m_dense = NULL; /*< A dense CHOLMOD matrix */
+
+    /**
+     * Instantiates <code>m_sparse</code> from <code>m_triplet</code>
+     * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>.
+     */
     void createSparseFromTriplet();
 
     /**
@@ -384,28 +396,49 @@ private:
     /**
      * Multiply with a matrix when the left-hand side matrix is dense
      * @param right any right-hand side matrix
-     * @return 
+     * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
     Matrix multiplyLeftDense(const Matrix& right) const;
 
     /**
      * Multiply with a matrix when the left-hand side matrix is diagonal.
      * @param right any right-hand side matrix
-     * @return 
+     * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
     Matrix multiplyLeftDiagonal(const Matrix& right) const;
 
+    /**
+     * Multiply with a matrix when the left-hand side matrix is symmetric.
+     * @param right any right-hand side matrix
+     * @return the result of the multiplication (this)*(right) as a new Matrix.
+     */
     Matrix multiplyLeftSymmetric(const Matrix& right) const;
+
+    /**
+     * Multiply with a matrix when the left-hand side matrix is sparse.
+     * @param right any right-hand side matrix
+     * @return the result of the multiplication (this)*(right) as a new Matrix.
+     */
+    Matrix multiplyLeftSparse(Matrix& right);
+    
 
     void domm(const Matrix &right, Matrix &result) const;
 
+    /**
+     * Storage types for sparse matrix data.
+     */
     enum SparseMatrixStorageType {
         CHOLMOD_TYPE_TRIPLET = 444,
         CHOLMOD_TYPE_SPARSE = 555,
         CHOLMOD_TYPE_DENSE = 666,
         CHOLMOD_TYPE_FACTOR = 777
     };
-    
+
+    /**
+     * When the matrix is <code>MATRIX_SPARSE</code> this field points to 
+     * a CHOLMOD implementation (e.g., <code>cholmod_sparse</code> or
+     * <code>cholmod_factor</code>).
+     */
     SparseMatrixStorageType m_sparseStorageType;
 };
 

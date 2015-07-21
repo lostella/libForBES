@@ -36,7 +36,7 @@ public:
 
     int category();
 
-    virtual int call(const Matrix& x, float& f) const;
+    virtual int call( Matrix& x, float& f);
     virtual int callConj(const Matrix& x, float& f_star);
     virtual int callProx(const Matrix& x, float gamma, Matrix& prox, float f_at_prox);
     virtual int callProx(const Matrix& x, float gamma, Matrix& prox);   
@@ -49,7 +49,7 @@ protected:
     bool is_Q_eye;
     bool is_q_zero;
     
-    virtual int computeGradient(const Matrix& x, Matrix& grad) const;
+    virtual int computeGradient( Matrix& x, Matrix& grad);
 
 
 };
