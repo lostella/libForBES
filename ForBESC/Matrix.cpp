@@ -162,9 +162,9 @@ float Matrix::get(const int i, const int j) const {
         if (m_sparseStorageType == CHOLMOD_TYPE_TRIPLET) {
             float val = 0.0f;
             for (int k = 0; k < m_triplet->nnz; k++) {
-                if (i == ((int*) m_triplet->i)[k]) {
-                    if (j == ((int*) m_triplet->j)[k]) {
-                        val = ((double*) m_triplet->x)[k];
+                if (i == (static_cast<int*> (m_triplet->i))[k]) {
+                    if (j == (static_cast<int*> (m_triplet->j))[k]) {
+                        val = (static_cast<double*> (m_triplet->x))[k];
                         break;
                     }
                 }
@@ -197,9 +197,9 @@ void Matrix::set(int i, int j, float v) {
             oss << "Cannot add more elements to this matrix; nnz_max = " << m_triplet->nzmax;
             throw std::out_of_range(oss.str());
         }
-        ((int*) m_triplet->i)[m_triplet->nnz] = i;
-        ((int*) m_triplet->j)[m_triplet->nnz] = j;
-        ((double*) m_triplet->x)[m_triplet->nnz] = v;
+        (static_cast<int*> (m_triplet->i))[m_triplet->nnz] = i;
+        (static_cast<int*> (m_triplet->j))[m_triplet->nnz] = j;
+        (static_cast<double*> (m_triplet->x))[m_triplet->nnz] = v;
         (m_triplet->nnz)++;
     } else {
         throw std::invalid_argument("Illegal operation");
@@ -503,7 +503,7 @@ void Matrix::domm(const Matrix &right, Matrix &result) const {
     }
 }
 
-Matrix Matrix::multiplyLeftDense(const Matrix & right) const{
+Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
     if (MATRIX_DENSE == right.m_type) { // RHS is also dense
         Matrix result(m_nrows, right.m_ncols);
 #ifdef USE_LIBS
@@ -530,7 +530,7 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const{
         domm(right, result);
         return result;
     } else {
-        throw std::logic_error("Sorry... this is not implemented yet!");
+        throw std::logic_error("We apologize for not having implemented this functionality yet (Dense * Sparse)!");
     }
 }
 
@@ -550,7 +550,7 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix& right) const {
     return result;
 }
 
-Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const{
+Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const {
     // multiply when the LHS is diagonal
     Matrix result(m_nrows, right.m_ncols, right.m_type);
     for (int i = 0; i < m_nrows; i++) {
@@ -596,7 +596,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix& right) {
         result.m_dense = cholmod_allocate_dense(result.m_nrows, result.m_ncols, result.m_nrows, CHOLMOD_REAL, m_cholmod_common);
         cholmod_sdmult(
                 m_sparse,
-                m_transpose ? 1 : 0,
+                m_transpose,
                 alpha,
                 beta,
                 right.m_dense,
@@ -604,7 +604,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix& right) {
                 m_cholmod_common
                 );
         for (int k = 0; k < result.length(); k++) {
-            result.m_data[k] = ((double*)result.m_dense->x)[k];
+            result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         }
         return result;
     }

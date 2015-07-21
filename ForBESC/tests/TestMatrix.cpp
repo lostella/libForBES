@@ -1008,7 +1008,7 @@ void TestMatrix::testSparseDenseMultiply() {
     CPPUNIT_ASSERT_NO_THROW(C = A*B);
 
     float correctData[9] = {
-        4.4000, 21.6000, 71.0000,
+        4.4000,  21.6000,  71.0000,
         21.3200, 46.9800, 113.3000,
         38.2400, 72.3600, 155.6000
     };
@@ -1016,4 +1016,7 @@ void TestMatrix::testSparseDenseMultiply() {
     Matrix C_correct(n, n, correctData, Matrix::MATRIX_DENSE);
 
     CPPUNIT_ASSERT_EQUAL(C_correct, C);
+    CPPUNIT_ASSERT_EQUAL(0, c.status);
+    cholmod_finish(&c);
+    
 }

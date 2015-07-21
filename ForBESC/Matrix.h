@@ -352,27 +352,28 @@ private:
      */
     friend class MatrixFactory;
 
-    int m_nrows; /*< Number of rows */
-    int m_ncols; /*< Number of columns */
-    bool m_transpose; /*< Whether this matrix is transposed */
-    MatrixType m_type; /*< Matrix type */
+    int m_nrows;        /*< Number of rows */
+    int m_ncols;        /*< Number of columns */
+    bool m_transpose;   /*< Whether this matrix is transposed */
+    MatrixType m_type;  /*< Matrix type */
 
     /* For dense matrices: */
 
-    int m_dataLength; /*< Length of data */
-    float *m_data = NULL; /*< Data */
+    int m_dataLength;       /*< Length of data */
+    float *m_data = NULL;   /*< Data */
 
     /* CSparse members */
 
-    cholmod_common *m_cholmod_common = NULL; /*< Common handler for CHOLMOD operations */
-    cholmod_triplet *m_triplet = NULL; /*< Sparse triplets */
-    cholmod_sparse *m_sparse = NULL; /*< A sparse matrix */
-    cholmod_factor *m_cholesky_factor = NULL; /*< Cholesky factor */
-    cholmod_dense *m_dense = NULL; /*< A dense CHOLMOD matrix */
+    cholmod_common *m_cholmod_common = NULL;    /*< Common handler for CHOLMOD operations */
+    cholmod_triplet *m_triplet = NULL;          /*< Sparse triplets */
+    cholmod_sparse *m_sparse = NULL;            /*< A sparse matrix */
+    cholmod_factor *m_cholesky_factor = NULL;   /*< Cholesky factor */
+    cholmod_dense *m_dense = NULL;              /*< A dense CHOLMOD matrix */
 
     /**
      * Instantiates <code>m_sparse</code> from <code>m_triplet</code>
-     * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>.
+     * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>. Can only be
+     * applied to sparse matrices.
      */
     void createSparseFromTriplet();
 
