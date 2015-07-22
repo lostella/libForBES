@@ -21,6 +21,19 @@
 #include "Matrix.h"
 #include "MatrixFactory.h"
 
+/* STATIC MEMBERS */
+
+cholmod_common* Matrix::ms_singleton = NULL;
+
+cholmod_common* Matrix::cholmod_handle() {
+    if (ms_singleton == NULL) {
+        ms_singleton = new cholmod_common;
+        cholmod_start(ms_singleton);
+    }
+    return ms_singleton;
+}
+
+
 /********* CONSTRUCTORS ************/
 Matrix::Matrix() {
     m_nrows = 0;
@@ -71,19 +84,17 @@ Matrix::Matrix(const Matrix& orig) {
     }
     m_type = orig.m_type;
     if (m_type == MATRIX_SPARSE) {
-        m_cholmod_common = new cholmod_common;
-        cholmod_start(m_cholmod_common);
         if (orig.m_triplet != NULL) {
-            m_triplet = cholmod_copy_triplet(orig.m_triplet, m_cholmod_common);
+            m_triplet = cholmod_copy_triplet(orig.m_triplet, Matrix::cholmod_handle());
         }
-        if (orig.m_sparse != NULL){
-            m_sparse = cholmod_copy_sparse(orig.m_sparse, m_cholmod_common);
+        if (orig.m_sparse != NULL) {
+            m_sparse = cholmod_copy_sparse(orig.m_sparse, Matrix::cholmod_handle());
         }
         if (orig.m_dense != NULL) {
-            m_dense = cholmod_copy_dense(orig.m_dense, m_cholmod_common);
+            m_dense = cholmod_copy_dense(orig.m_dense, Matrix::cholmod_handle());
         }
-        if (orig.m_cholesky_factor != NULL){
-            m_cholesky_factor = cholmod_copy_factor(orig.m_cholesky_factor, m_cholmod_common);
+        if (orig.m_cholesky_factor != NULL) {
+            m_cholesky_factor = cholmod_copy_factor(orig.m_cholesky_factor, Matrix::cholmod_handle());
         }
     }
 }
@@ -279,9 +290,9 @@ int Matrix::cholesky(Matrix & L) {
     if (m_type == MATRIX_SPARSE) {
         // Cholesky decomposition of a SPARSE matrix:
         L = *this;
-        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, m_cholmod_common);
-        L.m_cholesky_factor = cholmod_analyze(m_sparse, m_cholmod_common); // analyze
-        int status = cholmod_factorize(m_sparse, L.m_cholesky_factor, m_cholmod_common); // factorize        
+        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
+        L.m_cholesky_factor = cholmod_analyze(m_sparse, Matrix::cholmod_handle()); // analyze
+        int status = cholmod_factorize(m_sparse, L.m_cholesky_factor, Matrix::cholmod_handle()); // factorize        
         L.m_sparseStorageType = CHOLMOD_TYPE_FACTOR;
         return status;
     } else { // If this is any non-sparse matrix:
@@ -332,16 +343,16 @@ int Matrix::solveCholeskySystem(Matrix& solution, const Matrix & rhs) const {
     if (getType() == MATRIX_SPARSE) {
         cholmod_dense *x;
         cholmod_dense *b;
-        b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, m_cholmod_common);
+        b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
         for (int k = 0; k < rhs.length(); k++) {
             ((double*) b->x)[k] = rhs[k];
         }
-        x = cholmod_solve(CHOLMOD_A, m_cholesky_factor, b, m_cholmod_common);
+        x = cholmod_solve(CHOLMOD_A, m_cholesky_factor, b, Matrix::cholmod_handle());
         solution = Matrix(rhs.m_nrows, rhs.m_ncols);
         for (int k = 0; k < x->nzmax; k++) {
             solution.m_data[k] = ((double*) x->x)[k];
         }
-        cholmod_free_dense(&x, m_cholmod_common);
+        cholmod_free_dense(&x, Matrix::cholmod_handle());
         return 0;
     } else {
         int info = 1;
@@ -410,7 +421,7 @@ float &Matrix::operator[](int sub) const {
     return m_data[sub];
 }
 
-Matrix & Matrix::operator+=(const Matrix & right) {
+Matrix & Matrix::operator+=(Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
@@ -439,8 +450,16 @@ Matrix & Matrix::operator+=(const Matrix & right) {
                 }
             }
             return *this;
-        } else {
-            throw std::logic_error("Addition of sparse matrices is not implemented yet!");
+        } else { // right summand is SPARSE (Sparse + Sparse)                             
+
+            double alpha[1] = {1};
+            double beta[1] = {1};
+
+            cholmod_sparse *RESULT;
+            RESULT = cholmod_add(m_sparse, right.m_sparse, alpha, beta, true, true, Matrix::cholmod_handle());
+            m_sparse = cholmod_copy_sparse(RESULT, Matrix::cholmod_handle());
+            m_triplet = cholmod_sparse_to_triplet(m_sparse, Matrix::cholmod_handle());
+            return *this;
         }
 
     } else if (m_data != NULL) { /* Not sparse & m_data is not NULL */
@@ -468,7 +487,7 @@ Matrix & Matrix::operator-=(const Matrix & right) {
     return *this;
 }
 
-Matrix Matrix::operator+(const Matrix & right) const {
+Matrix Matrix::operator+(Matrix & right) const {
     if (this->getNrows() != right.getNrows() || this->getNcols() != right.getNcols()) {
         throw std::invalid_argument("Addition of matrices of incompatible dimensions!");
     }
@@ -534,11 +553,23 @@ Matrix & Matrix::operator=(const Matrix & right) {
         m_data = new float[m_dataLength];
     }
     m_transpose = right.m_transpose;
-    m_triplet = right.m_triplet;
-    m_sparse = right.m_sparse;
     m_sparseStorageType = right.m_sparseStorageType;
-    m_cholmod_common = right.m_cholmod_common;
-    m_cholesky_factor = right.m_cholesky_factor;
+
+    if (m_type == MATRIX_SPARSE) {
+        if (right.m_triplet != NULL) {
+            m_triplet = cholmod_copy_triplet(right.m_triplet, Matrix::cholmod_handle());
+        }
+        if (right.m_sparse != NULL) {
+            m_sparse = cholmod_copy_sparse(right.m_sparse, Matrix::cholmod_handle());
+        }
+        if (right.m_dense != NULL) {
+            m_dense = cholmod_copy_dense(right.m_dense, Matrix::cholmod_handle());
+        }
+        if (right.m_cholesky_factor != NULL) {
+            m_cholesky_factor = cholmod_copy_factor(right.m_cholesky_factor, Matrix::cholmod_handle());
+        }
+    }
+
 
 #ifdef USE_LIBS
     cblas_scopy(m_dataLength, right.m_data, 1, m_data, 1);
@@ -655,12 +686,12 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
         double beta[2] = {0.0, 0.0};
 
         if (right.m_dense == NULL) {
-            right.m_dense = cholmod_allocate_dense(right.m_nrows, right.m_ncols, right.m_nrows, CHOLMOD_REAL, m_cholmod_common);
+            right.m_dense = cholmod_allocate_dense(right.m_nrows, right.m_ncols, right.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
             for (int k = 0; k < right.length(); k++) {
                 ((double*) right.m_dense->x)[k] = right.m_data[k];
             }
         }
-        result.m_dense = cholmod_allocate_dense(result.m_nrows, result.m_ncols, result.m_nrows, CHOLMOD_REAL, m_cholmod_common);
+        result.m_dense = cholmod_allocate_dense(result.m_nrows, result.m_ncols, result.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
         cholmod_sdmult(
                 m_sparse,
                 m_transpose,
@@ -668,7 +699,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 beta,
                 right.m_dense,
                 result.m_dense,
-                m_cholmod_common
+                Matrix::cholmod_handle()
                 );
         for (int k = 0; k < result.length(); k++) {
             result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
@@ -718,6 +749,6 @@ void Matrix::init(int nr, int nc, MatrixType mType) {
 
 void Matrix::createSparseFromTriplet() {
     if (m_type == MATRIX_SPARSE && m_triplet != NULL) {
-        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, m_cholmod_common);
+        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
     }
 }

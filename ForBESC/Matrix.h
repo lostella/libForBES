@@ -54,7 +54,24 @@
  * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.</p>
  */
 class Matrix {
+    
 public:
+    
+    /* STATIC */
+    
+    /**
+     * This is the single access method to the singleton <code>cholmod_common</code>
+     * used in this project. Typically clients will not be interested in using this
+     * <code>cholmod_common</code> to perform any matrix-matrix operations or factorization,
+     * however, it can be used to check the status of computations, get the overall
+     * flop count and more. 
+     * 
+     * This method will construct and store internally an instance of <code>cholmod_common</code>
+     * if one does not exist.
+     * 
+     * @return The singleton <code>cholmod_common</code> object.
+     */
+    static cholmod_common* cholmod_handle();
 
     /**
      * Types of matrices.
@@ -177,7 +194,7 @@ public:
 
     /**
      * Getter for the matrix data. Provides direct access to the matrix data which
-     * are stored as <code>float *</code>.
+     * are stored as an array of <code>float</code> (datatype <code>float*</code>).
      * 
      * @return Pointer to the matrix data
      */
@@ -274,7 +291,7 @@ public:
      * <p>If this is a <code>MATRIX_DENSE</code>
      * matrix, then it is assumed it is symmetric (but there is no verification) and
      * only its lower triangular part is considered. Notice that the Cholesky factorization
-     * can only be applied to symmetric and poisitive definite matrices.</p>
+     * can only be applied to symmetric and positive definite matrices.</p>
      * 
      * <p>This method, when applied on a <code>MATRIX_DENSE</code> matrix, the produced matrix <code>L</code>
      * will be of type <code>MATRIX_DENSE</code>. It is advisable to apply this method only
@@ -284,7 +301,7 @@ public:
      * case of sparse matrices, it may update the internal state of the matrix to 
      * facilitate and speed-up computations</p>
      * 
-     * @param L the cholesky factor of this matrix. 
+     * @param L the Cholesky factor of this matrix. 
      * @return status code. Returns <code>0</code> if the factorization succeeded.
      * 
      */
@@ -314,21 +331,28 @@ public:
     /* Operators */
 
     /**
+     * Direct access to the matrix data.
+     * Shorthand for <code>matrix.getData()[]</code>; it is however safer to access
+     * the matrix entries using <code>get</code> and <code>set</code>.
      * 
      * @param sub index
-     * @return 
+     * @return reference to matrix data
      */
     float &operator[](const int sub) const; //overloading []    
 
     /**
+     * Summation operator.
      * 
+     * Matrices must have compatible dimensions. 
      * @param right is the right-hand side matrix
      * @return 
      */
-    Matrix operator+(const Matrix& right) const;
+    Matrix operator+(Matrix& right) const;
 
     /**
+     * Subtraction operator. 
      * 
+     * Matrices must have compatible dimensions. 
      * @param right is the right-hand side matrix
      * @return 
      */
@@ -337,21 +361,21 @@ public:
     /**
      * 
      * @param right is the right-hand side matrix
-     * @return 
+     * @return updated instance of <code>Matrix</code> 
      */
-    Matrix& operator+=(const Matrix& right);
+    Matrix& operator+=(Matrix& right);
 
     /**
      * 
      * @param right is the right-hand side matrix
-     * @return 
+     * @return updated instance of <code>Matrix</code>
      */
     Matrix& operator-=(const Matrix& right);
 
     /**
      * Overloaded multiplication operator for <code>Matrix</code>.
      * @param right is the right-hand side matrix
-     * @return 
+     * @return the result of the multiplication of two matrices
      */
     Matrix operator*(Matrix& right);
 
@@ -367,7 +391,7 @@ public:
      * are equal. Two matrices are equal if they are of the same type, have equal
      * dimensions and equal values.
      * @param right
-     * @return 
+     * @return <code>true</code> if the two objects are equal.
      */
     bool operator==(const Matrix& right) const;
 
@@ -398,12 +422,14 @@ private:
     float *m_data = NULL;   /*< Data */
 
     /* CSparse members */
-
-    cholmod_common *m_cholmod_common = NULL;    /*< Common handler for CHOLMOD operations */
     cholmod_triplet *m_triplet = NULL;          /*< Sparse triplets */
     cholmod_sparse *m_sparse = NULL;            /*< A sparse matrix */
     cholmod_factor *m_cholesky_factor = NULL;   /*< Cholesky factor */
     cholmod_dense *m_dense = NULL;              /*< A dense CHOLMOD matrix */
+    
+    /* SINGLETON CHOLMOD HANDLE */
+    
+    static cholmod_common *ms_singleton;    /**< Singleton instance of cholmod_common */
 
     /**
      * Instantiates <code>m_sparse</code> from <code>m_triplet</code>
@@ -456,7 +482,7 @@ private:
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
     Matrix multiplyLeftSparse(Matrix& right);
-    
+
 
     void domm(const Matrix &right, Matrix &result) const;
 

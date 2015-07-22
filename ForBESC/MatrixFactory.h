@@ -30,6 +30,8 @@
 class MatrixFactory {
 public:
     
+    cholmod_common COMMON;
+    
 
     /**
      * Returns a random matrix as an instance of <code>Matrix</code>.
@@ -54,19 +56,7 @@ public:
      * is a given scalar.
      */
     static Matrix MakeIdentity(int n, float alpha);
-    
-    /**
-     * Creates a sparse matrix of given dimensions, maximum number of non-zero 
-     * elements and sparsity pattern (symmetric or not) using a given <code>cholmod_common</code>
-     * handler.
-     * @param nrows number of rows
-     * @param ncols number of columns.
-     * @param max_nnz maximum number of non-zero elements
-     * @param stype symmetry type
-     * @param c pointer to a <code>cholmod_common</code> handler
-     * @return Allocated sparse matrix
-     */
-    static Matrix MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype, cholmod_common *c);
+        
     
     /**
      * Creates a sparse matrix of given dimensions, maximum number of non-zero 

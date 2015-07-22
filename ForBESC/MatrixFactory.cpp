@@ -79,35 +79,28 @@ Matrix MatrixFactory::MakeRandomMatrix(int nrows, int ncols, float offset, float
     return mat;
 }
 
-Matrix MatrixFactory::MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype, cholmod_common* c) {
-    Matrix matrix(nrows, ncols, Matrix::MATRIX_SPARSE);
-    matrix.m_cholmod_common = c;
-    cholmod_start(c);
-    matrix.m_triplet = cholmod_allocate_triplet(nrows, ncols, max_nnz, stype, CHOLMOD_REAL, matrix.m_cholmod_common);
-    matrix.m_sparseStorageType = Matrix::CHOLMOD_TYPE_TRIPLET;
-    return matrix;
-}
 
 Matrix MatrixFactory::MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype) {
-    cholmod_common c;
-    return MakeSparse(nrows, ncols, max_nnz, stype, &c);
+    Matrix matrix(nrows, ncols, Matrix::MATRIX_SPARSE);
+    matrix.m_triplet = cholmod_allocate_triplet(nrows, ncols, max_nnz, stype, CHOLMOD_REAL, Matrix::cholmod_handle());
+    matrix.m_sparseStorageType = Matrix::CHOLMOD_TYPE_TRIPLET;
+    return matrix;
 }
 
 Matrix MatrixFactory::MakeSparseSymmetric(int nrows, int ncols, int max_nnz) {
     return MakeSparse(nrows, ncols, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
 }
 
+
+
 Matrix MatrixFactory::ReadSparse(FILE* fp) {
-    cholmod_common c;
     cholmod_sparse *sp;
-    cholmod_start(&c);
-    sp = cholmod_read_sparse(fp, &c);
+    sp = cholmod_read_sparse(fp, Matrix::cholmod_handle());
 
     Matrix mat(sp->nrow, sp->ncol, Matrix::MATRIX_SPARSE);
-    mat.m_cholmod_common = &c;
     mat.m_sparse = sp;
     mat.m_sparseStorageType = Matrix::CHOLMOD_TYPE_SPARSE;
-    mat.m_triplet = cholmod_sparse_to_triplet(sp, &c);    
+    mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());    
     
     return mat;
 }

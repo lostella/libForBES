@@ -104,15 +104,14 @@ void TestMatrixFactory::testMakeSparse() {
 
 void TestMatrixFactory::testReadSparseFromFile() {
     FILE *fp;
-    fp = fopen("sparse1.mx", "r");
+    fp = fopen("matrices/sparse1.mx", "r");
 
-    if (fp == NULL) {
-        fprintf(stderr, "Can't open input file in.list!\n");
-        exit(1);
-    }
+    CPPUNIT_ASSERT_MESSAGE("File not found or cannot open", fp != NULL);
 
     Matrix A;
     CPPUNIT_ASSERT_NO_THROW(A = MatrixFactory::ReadSparse(fp));
+    
+    CPPUNIT_ASSERT_EQUAL(0, fclose(fp));
 
     int n = 6;
     int m = 9;
@@ -125,10 +124,9 @@ void TestMatrixFactory::testReadSparseFromFile() {
     A_correct.set(3, 5, 1.23);
     A_correct.set(5, 1, 0.95);
     A_correct.set(5, 5, 2.68);
-    
+
     CPPUNIT_ASSERT_EQUAL(A_correct, A);
 }
-
 
 void TestMatrixFactory::testSparse() {
     int n = 5;
@@ -139,13 +137,13 @@ void TestMatrixFactory::testSparse() {
 }
 
 void TestMatrixFactory::testSparse2() {
-    cholmod_common c;
-    Matrix N = MatrixFactory::MakeSparse(20, 40, 6, Matrix::SPARSE_UNSYMMETRIC, &c);
+    Matrix N = MatrixFactory::MakeSparse(20, 40, 6, Matrix::SPARSE_UNSYMMETRIC);
     Matrix *M;
     CPPUNIT_ASSERT_NO_THROW(M = new Matrix(N));
     CPPUNIT_ASSERT_NO_THROW(delete M);
-    CPPUNIT_ASSERT_EQUAL(0, c.status);
-    CPPUNIT_ASSERT(c.memory_usage > 0);
+    
     CPPUNIT_ASSERT_EQUAL(20, N.getNrows());
     CPPUNIT_ASSERT_EQUAL(40, N.getNcols());
+    CPPUNIT_ASSERT_EQUAL(0, Matrix::cholmod_handle()->status);
+    CPPUNIT_ASSERT(Matrix::cholmod_handle()->memory_usage > 0);
 }

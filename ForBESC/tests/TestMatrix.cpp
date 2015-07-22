@@ -926,13 +926,12 @@ void TestMatrix::testSparseGetSet() {
 }
 
 void TestMatrix::testSparseCholesky() {
-    cholmod_common c;
 
     int n = 3;
     int m = 3;
     int max_nnz = 4;
 
-    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L, &c);
+    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
     A.set(0, 0, 4.0f);
     A.set(1, 0, 1.0f); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
     A.set(1, 1, 5.0f);
@@ -954,20 +953,17 @@ void TestMatrix::testSparseCholesky() {
     CPPUNIT_ASSERT(std::abs(0.157895 - xsol[1]) < tol);
     CPPUNIT_ASSERT(std::abs(0.1 - xsol[2]) < tol);
 
-    CPPUNIT_ASSERT_EQUAL(0, c.status);
-
-    cholmod_finish(&c);
+    CPPUNIT_ASSERT_EQUAL(0, Matrix::cholmod_handle()->status);
 
 }
 
 void TestMatrix::testSparseDenseMultiply() {
-    cholmod_common c;
 
     int n = 3;
     int m = 3;
     int max_nnz = 4;
 
-    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC, &c);
+    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
     A.set(0, 0, 4.0f);
     A.set(1, 0, 1.0f); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
     A.set(1, 1, 5.0f);
@@ -998,12 +994,11 @@ void TestMatrix::testSparseDenseMultiply() {
 
 
     CPPUNIT_ASSERT_EQUAL(C_correct, C);
-    CPPUNIT_ASSERT_EQUAL(0, c.status);
-    cholmod_finish(&c);
+    CPPUNIT_ASSERT_EQUAL(0, Matrix::cholmod_handle()->status);
 
 }
 
-void TestMatrix::testSparseAdd() {
+void TestMatrix::testSparseAddDense() {
     int n = 5;
     int m = 7;
     int nnz = 6;
@@ -1014,8 +1009,6 @@ void TestMatrix::testSparseAdd() {
     A.set(1, 1, 3.6);
     A.set(4, 5, 6.2);
     A.set(3, 6, 9.9);
-
-
 
     Matrix B(n, m, Matrix::MATRIX_DENSE);
     for (int i = 0; i < n; i++) {
@@ -1036,5 +1029,31 @@ void TestMatrix::testSparseAdd() {
 
 }
 
+void TestMatrix::testSparseAddSparse() {
+    FILE *fp_A, *fp_B;
+    fp_A = fopen("matrices/sparse2.mx", "r");
+    fp_B = fopen("matrices/sparse3.mx", "r");
+
+    CPPUNIT_ASSERT_MESSAGE("Can't open sparse2.mx", fp_A != NULL);
+    CPPUNIT_ASSERT_MESSAGE("Can't open sparse3.mx", fp_B != NULL);
+
+    Matrix A = MatrixFactory::ReadSparse(fp_A);
+    Matrix B = MatrixFactory::ReadSparse(fp_B);
+
+    /* close file handlers */
+    CPPUNIT_ASSERT_EQUAL(0, fclose(fp_A)); 
+    CPPUNIT_ASSERT_EQUAL(0, fclose(fp_B));
+
+    Matrix A0 = A;
+    A += B;
+
+    for (int i = 0; i < A.getNrows(); i++) {
+        for (int j = 0; j < A.getNcols(); j++) {
+            CPPUNIT_ASSERT_EQUAL(A0.get(i, j) + B.get(i, j), A.get(i, j));
+        }
+    }
+
+
+}
 
 
