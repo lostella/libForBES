@@ -24,6 +24,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#include "ForBES.h"
+
 class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrix);
 
@@ -68,11 +70,11 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testRightTransposeMultiply);
     CPPUNIT_TEST(testLowerTriangularTraspose_getSet);
     CPPUNIT_TEST(testLeftSymmetricMultiply);
-    CPPUNIT_TEST(testSparse);
-    CPPUNIT_TEST(testSparse2);
     CPPUNIT_TEST(testSparseGetSet);
     CPPUNIT_TEST(testSparseCholesky);
     CPPUNIT_TEST(testSparseDenseMultiply);
+    CPPUNIT_TEST(testSparseAdd);
+    
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -123,12 +125,12 @@ private:
     void testTranspose();
     void testLeftTransposeMultiply();
     void testRightTransposeMultiply();    
-    void testLeftSymmetricMultiply();
-    void testSparse();
-    void testSparse2();
+    void testLeftSymmetricMultiply();   
     void testSparseGetSet();
     void testSparseCholesky();
     void testSparseDenseMultiply();
+    void testSparseAdd();
+    
 };
 
 #endif	/* TESTMATRIX_H */

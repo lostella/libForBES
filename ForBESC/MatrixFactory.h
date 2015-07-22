@@ -22,14 +22,14 @@
 #define	MATRIXFACTORY_H
 
 #include "Matrix.h"
+#include <vector>       // std::vector
+#include <algorithm>    // std::random_shuffle
+#include <ctime>        // std::time
+#include <functional>
 
 class MatrixFactory {
-    
-
 public:
-    MatrixFactory();
-    MatrixFactory(const MatrixFactory& orig);
-    virtual ~MatrixFactory();
+    
 
     /**
      * Returns a random matrix as an instance of <code>Matrix</code>.
@@ -42,12 +42,86 @@ public:
      * @param type matrix type.
      * @return A random matrix object.
      */
-
     static Matrix MakeRandomMatrix(int nrows, int ncols, float offset, float scale, Matrix::MatrixType type);
+    
+    
+    /**
+     * Constructs an identity matrix of type <code>Matrix::MATRIX_DIAGONAL</code>.
+     * 
+     * @param n number of diagonal elements
+     * @param alpha scaling factor
+     * @return Diagonal matrix of the form <code>alpha*I</code>, where <code>alpha</code>
+     * is a given scalar.
+     */
     static Matrix MakeIdentity(int n, float alpha);
+    
+    /**
+     * Creates a sparse matrix of given dimensions, maximum number of non-zero 
+     * elements and sparsity pattern (symmetric or not) using a given <code>cholmod_common</code>
+     * handler.
+     * @param nrows number of rows
+     * @param ncols number of columns.
+     * @param max_nnz maximum number of non-zero elements
+     * @param stype symmetry type
+     * @param c pointer to a <code>cholmod_common</code> handler
+     * @return Allocated sparse matrix
+     */
     static Matrix MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype, cholmod_common *c);
+    
+    /**
+     * Creates a sparse matrix of given dimensions, maximum number of non-zero 
+     * elements and sparsity pattern (symmetric or not).
+     * @param nrows number of rows
+     * @param ncols number of columns.
+     * @param max_nnz maximum number of non-zero elements
+     * @param stype symmetry type
+     * @return Allocated sparse matrix
+     */
     static Matrix MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype);
+    
+    /**
+     * Creates a sparse symmetric matrix of given dimensions.
+     * @param nrows number of rows
+     * @param ncols number of columns.
+     * @param max_nnz maximum number of non-zero elements
+     * @return Allocated sparse matrix
+     */
     static Matrix MakeSparseSymmetric(int nrows, int ncols, int max_nnz);
+    
+    /**
+     * Allocates a sparse matrix of given dimensions and instantiates it with
+     * random entries at random positions. The client needs to specify the
+     * number of non-zero elements of the matrix.
+     * 
+     * Random data follow a statistical distribution of the form 
+     * <code>offset + scale * r</code>, where <code>r</code> is a random
+     * variable in [0,1]. Parameters <code>offset</code> and <code>scale</code> 
+     * are provided as input arguments.
+     * 
+     * @param nrows number of rows
+     * @param ncols number of columns.
+     * @param nnz number of non-zero elements (must be less than <code>nrows*ncols</code>)
+     * @param offset random number offset
+     * @param scale random number scaling factor
+     * @return Allocated random sparse matrix
+     */
+    static Matrix MakeRandomSparse(int nrows, int ncols, int nnz, float offset, float scale);
+    
+    /**
+     * Reads a sparse matrix from a file and returns a <code>Matrix</code> object.
+     * 
+     * The caller provides a pointer to a <code>FILE</code> which can be 
+     * created using <code>fopen</code>. The matrix file is an ASCII text file
+     * with space-separated values (triplets). The first triplet defines the
+     * matrix dimensions as <code>(n_rows, n_columns, n_non_zero)</code>.
+     * Subsequent triplets are in the form <code>(i, j, value)</code> where
+     * i: [0,..., n_rows - 1] and j: [0, ..., n_columns - 1].
+     * 
+     * @param fp A pointer to a file object
+     * @return Sparse matrix constructed from a file
+     * @throw cholmod_error an exception is thrown when the file format is wrong.
+     */
+    static Matrix ReadSparse(FILE *fp);
 
 private:
 

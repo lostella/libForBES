@@ -18,17 +18,11 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <set>
+
 #include "MatrixFactory.h"
 #include "Matrix.h"
 
-MatrixFactory::MatrixFactory() {
-}
-
-MatrixFactory::MatrixFactory(const MatrixFactory& orig) {
-}
-
-MatrixFactory::~MatrixFactory() {
-}
 
 Matrix MatrixFactory::MakeIdentity(int n, float alpha) {
     Matrix mat(n, n, Matrix::MATRIX_DIAGONAL);
@@ -36,6 +30,29 @@ Matrix MatrixFactory::MakeIdentity(int n, float alpha) {
         mat[i] = alpha;
     }
     return mat;
+}
+
+typedef std::pair<int, int> nice_pair;
+
+Matrix MatrixFactory::MakeRandomSparse(int nrows, int ncols, int nnz, float offset, float scale) {
+    Matrix R = MakeSparse(nrows, ncols, nnz, Matrix::SPARSE_UNSYMMETRIC);
+    std::srand(unsigned ( std::time(0)));
+    std::set<nice_pair> s;
+    nice_pair p;
+    while (true) { // construct pairs
+        p.first = (std::rand() % (int) (nrows));
+        p.second = (std::rand() % (int) (ncols));
+        s.insert(p);
+        if (s.size() == nnz) {
+            break;
+        }
+    }
+    float rand;
+    for (std::set<nice_pair>::iterator it = s.begin(); it != s.end(); it++) {
+        rand = offset + scale * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        R.set(it->first, it->second, rand);
+    }
+    return R;
 }
 
 Matrix MatrixFactory::MakeRandomMatrix(int nrows, int ncols, float offset, float scale, Matrix::MatrixType type) {
@@ -50,6 +67,9 @@ Matrix MatrixFactory::MakeRandomMatrix(int nrows, int ncols, float offset, float
             break;
         case Matrix::MATRIX_DIAGONAL:
             len = nrows;
+            break;
+        case Matrix::MATRIX_SPARSE:
+            
             break;
     }
     Matrix mat(nrows, ncols, type);
@@ -69,12 +89,29 @@ Matrix MatrixFactory::MakeSparse(int nrows, int ncols, int max_nnz, Matrix::Spar
 }
 
 Matrix MatrixFactory::MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype) {
-    return MakeSparse(nrows, ncols, max_nnz, stype, new cholmod_common);
+    cholmod_common c;
+    return MakeSparse(nrows, ncols, max_nnz, stype, &c);
 }
 
 Matrix MatrixFactory::MakeSparseSymmetric(int nrows, int ncols, int max_nnz) {
     return MakeSparse(nrows, ncols, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
 }
+
+Matrix MatrixFactory::ReadSparse(FILE* fp) {
+    cholmod_common c;
+    cholmod_sparse *sp;
+    cholmod_start(&c);
+    sp = cholmod_read_sparse(fp, &c);
+
+    Matrix mat(sp->nrow, sp->ncol, Matrix::MATRIX_SPARSE);
+    mat.m_cholmod_common = &c;
+    mat.m_sparse = sp;
+    mat.m_sparseStorageType = Matrix::CHOLMOD_TYPE_SPARSE;
+    mat.m_triplet = cholmod_sparse_to_triplet(sp, &c);    
+    
+    return mat;
+}
+
 
 
 

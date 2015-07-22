@@ -18,11 +18,17 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+
+
 #ifndef FUNCTION_H
 #define	FUNCTION_H
 
 #include "Matrix.h"
 
+/**
+ * A ForBES function.
+ */
 class Function {
 public:
     /**
@@ -37,20 +43,17 @@ public:
      * The result is unreliable, or could not be computed because
      * of numerical errors.
      */
-    const static int STATUS_NUMERICAL_PROBLEMS;        
-    
+    const static int STATUS_NUMERICAL_PROBLEMS;
+
     /**
      * A quadratic function.
      */
     const static int CAT_QUADRATIC;
-    
-    
-    
-    
-    Function();
-    Function(const Function& orig);
+
+    Function(); /**< Default constructor */
+    Function(const Function& orig); /**< Default copy-constructor */
     virtual ~Function();
-    
+
     /**
      * The function category. Functions may define a function category so that
      * the caller can know what type of function this is. For instance quadratic
@@ -61,7 +64,7 @@ public:
      * @return Function category as <code>int</code>
      */
     virtual int category() = 0; // abstract method
-    
+
     /**
      * Returns the value of function f.
      * 
@@ -78,8 +81,8 @@ public:
      * status codes.
      * 
      */
-    virtual int call(Matrix& x, float& f) =0; 
-    
+    virtual int call(Matrix& x, float& f) = 0;
+
     /**
      * Same as <code>call(const Matrix& x, float& f)</code>, but this function returns
      * also the gradient of f at x.
@@ -98,8 +101,8 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int call( Matrix& x, float& f, Matrix& grad) ; // returns also the gradient
-    
+    virtual int call(Matrix& x, float& f, Matrix& grad); // returns also the gradient
+
     /**
      * 
      * @param x
@@ -107,18 +110,18 @@ public:
      * @param prox
      * @return 
      */
-    virtual int callProx(const Matrix& x, float gamma, Matrix& prox) =0; // returns the value of prox_{gamma f}
-       
-    virtual int callProx(const Matrix& x, float gamma, Matrix& prox, float f_at_prox) =0; // prox_{gamma f} and value-at-prox
-    
-    virtual int callConj(const Matrix& x, float& f_star) =0; // conjugate of f at x: f*(x)
+    virtual int callProx(const Matrix& x, float gamma, Matrix& prox) = 0; // returns the value of prox_{gamma f}
+
+    virtual int callProx(const Matrix& x, float gamma, Matrix& prox, float f_at_prox) = 0; // prox_{gamma f} and value-at-prox
+
+    virtual int callConj(const Matrix& x, float& f_star) = 0; // conjugate of f at x: f*(x)
 
 
 private:
 
 protected:
-    virtual int computeGradient( Matrix& x, Matrix& grad)  =0; 
-    
+    virtual int computeGradient(Matrix& x, Matrix& grad) = 0;
+
     //virtual int computeFunctionAtProx(const Matrix& x, float gamma, const Matrix& prox, float f_at_prox) const =0;
 
 };

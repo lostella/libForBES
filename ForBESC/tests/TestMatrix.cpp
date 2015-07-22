@@ -19,7 +19,6 @@
  */
 
 #include "TestMatrix.h"
-#include "MatrixFactory.h"
 
 #include <cstdlib>
 #include <stdlib.h>
@@ -906,26 +905,6 @@ void TestMatrix::testLeftSymmetricMultiply() {
     }
 }
 
-void TestMatrix::testSparse() {
-    int n = 5;
-    int m = 10;
-    int max_nnz = 5;
-    Matrix M = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SPARSE, M.getType());
-}
-
-void TestMatrix::testSparse2() {
-    cholmod_common c;
-    Matrix N = MatrixFactory::MakeSparse(20, 40, 6, Matrix::SPARSE_UNSYMMETRIC, &c);
-    Matrix *M;
-    CPPUNIT_ASSERT_NO_THROW(M = new Matrix(N));
-    CPPUNIT_ASSERT_NO_THROW(delete M);
-    CPPUNIT_ASSERT_EQUAL(0, c.status);
-    CPPUNIT_ASSERT(c.memory_usage > 0);
-    CPPUNIT_ASSERT_EQUAL(20, N.getNrows());
-    CPPUNIT_ASSERT_EQUAL(40, N.getNcols());
-}
-
 void TestMatrix::testSparseGetSet() {
     int n = 5;
     int m = 10;
@@ -994,6 +973,7 @@ void TestMatrix::testSparseDenseMultiply() {
     A.set(1, 1, 5.0f);
     A.set(2, 2, 10.0f);
 
+
     Matrix B(m, n);
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
@@ -1001,22 +981,60 @@ void TestMatrix::testSparseDenseMultiply() {
         }
     }
 
+
     CPPUNIT_ASSERT_EQUAL(m, B.getNrows());
     CPPUNIT_ASSERT_EQUAL(n, B.getNcols());
 
     Matrix C;
-    CPPUNIT_ASSERT_NO_THROW(C = A*B);
+    CPPUNIT_ASSERT_NO_THROW(C = A * B);
 
     float correctData[9] = {
-        4.4000,  21.6000,  71.0000,
+        4.4000, 21.6000, 71.0000,
         21.3200, 46.9800, 113.3000,
         38.2400, 72.3600, 155.6000
     };
 
     Matrix C_correct(n, n, correctData, Matrix::MATRIX_DENSE);
 
+
     CPPUNIT_ASSERT_EQUAL(C_correct, C);
     CPPUNIT_ASSERT_EQUAL(0, c.status);
     cholmod_finish(&c);
-    
+
 }
+
+void TestMatrix::testSparseAdd() {
+    int n = 5;
+    int m = 7;
+    int nnz = 6;
+    Matrix A = MatrixFactory::MakeSparse(n, m, nnz, Matrix::SPARSE_UNSYMMETRIC);
+    A.set(0, 0, 0.5);
+    A.set(0, 1, 0.2);
+    A.set(1, 0, 1.2);
+    A.set(1, 1, 3.6);
+    A.set(4, 5, 6.2);
+    A.set(3, 6, 9.9);
+
+
+
+    Matrix B(n, m, Matrix::MATRIX_DENSE);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            B.set(i, j, -i - 3 * j - 1.5f);
+        }
+    }
+
+    Matrix A_init(A);
+    A += B;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            CPPUNIT_ASSERT_EQUAL(A.get(i, j), A_init.get(i, j) + B.get(i, j));
+        }
+    }
+
+
+}
+
+
+

@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <iomanip>
 #include <cmath>
+#include <cstring>
 
 #include "cholmod.h"
 
@@ -41,7 +42,16 @@
 #endif
 
 /**
- * A m-by-n matrix (or a vector).
+ * A generic matrix API.
+ * 
+ * <p>A generic matrix which can be an unstructured dense, a structured dense (e.g.,
+ * symmetric or lower triangular, stored in packed form) or a dense matrix. 
+ * This class provides a uniform access framework (an API) to matrix-matrix
+ * operations (e.g., addition and multiplication), factorizations and other useful 
+ * operations.</p>
+ * 
+ * <p>To construct a Matrix you can use one of this class's constructors. However,
+ * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.</p>
  */
 class Matrix {
 public:
@@ -50,20 +60,20 @@ public:
      * Types of matrices.
      */
     enum MatrixType {
-        MATRIX_DENSE,
-        MATRIX_SPARSE,
-        MATRIX_DIAGONAL,
-        MATRIX_LOWERTR,
-        MATRIX_SYMMETRIC
+        MATRIX_DENSE,       /**< A dense matrix */
+        MATRIX_SPARSE,      /**< A sparse matrix (powered by SuiteSparse) */
+        MATRIX_DIAGONAL,    /**< A diagonal matrix */
+        MATRIX_LOWERTR,     /**< A lower-triangular matrix */
+        MATRIX_SYMMETRIC    /**< A symmetric matrix */
     };
 
     /**
      * Sparse type of matrix
      */
     enum SparseMatrixType {
-        SPARSE_UNSYMMETRIC = 0,
-        SPARSE_SYMMETRIC_L = 1,
-        SPARSE_SYMMETRIC_R = -1
+        SPARSE_UNSYMMETRIC = 0, /**< Not symmetric sparse */
+        SPARSE_SYMMETRIC_L = 1, /**< Symmetric sparse (lower-triangular part is used) */
+        SPARSE_SYMMETRIC_R = -1 /**< Symmetric sparse (upper-triangular part is used) */
     };
 
     /* Constructors and destructors */
@@ -74,34 +84,41 @@ public:
     Matrix();
 
     /**
+     * Allocates an empty dense matrix of given dimensions
      * 
-     * @param nr
-     * @param nc
+     * @param nr number of rows
+     * @param nc number of columns
      */
     Matrix(int nr, int nc);
 
     /**
+     * Allocates a matrix of given dimensions and given type.
      * 
-     * @param nr
-     * @param nc
-     * @param matrixType
+     * @param nr number of rows
+     * @param nc number of columns
+     * @param matrixType type of matrix
      */
     Matrix(int nr, int nc, MatrixType matrixType);
 
     /**
+     * Allocates a new dense matrix.
      * 
-     * @param nr
-     * @param nc
-     * @param data
+     * @param nr number of rows
+     * @param nc number of columns
+     * @param data float values (data will be copied)
      */
     Matrix(int nr, int nc, const float * data);
 
     /**
+     * Allocates a new matrix of given dimensions, given data and given 
+     * matrix type. Use this constructor only for non-sparse matrices; it is
+     * recommended to use the factory class <code>MatrixFactory</code> to 
+     * construct instances of sparse matrices.
      * 
-     * @param nr
-     * @param nc
-     * @param data
-     * @param matrixType
+     * @param nr number of rows
+     * @param nc number of columns
+     * @param data float values (data will be copied)
+     * @param matrixType a non-sparse matrix type.
      */
     Matrix(int nr, int nc, const float * data, MatrixType matrixType);
 
@@ -174,8 +191,10 @@ public:
 
     /**
      * Reshape the matrix.
+     * 
      * @param nrows new number of rows
      * @param ncols new number of columns
+     * 
      * @return status code: <code>0</code> if reshaping succeeded, <code>-1</code>
      * if some of the new dimensions is 0, <code>-2</code> if reshaping is 
      * impossible.
@@ -187,6 +206,7 @@ public:
     /* Utilities */
 
     /**
+     * Checks whether this is a column vector. 
      * 
      * @return <code>true</code> if this is a column-vector and <code>false</code>
      * otherwise. 
@@ -194,6 +214,7 @@ public:
     bool isColumnVector() const;
 
     /**
+     * Checks whether this is a row vector.
      * 
      * @return <code>true</code> if this is a row-vector and <code>false</code>
      * otherwise.
@@ -201,6 +222,7 @@ public:
     bool isRowVector() const;
 
     /**
+     * Checks whether this is an empty matrix.
      * 
      * @return <code>true</code> if this is an empty vector.
      */
@@ -210,17 +232,20 @@ public:
      * Length of data of this matrix (e.g., if this is a diagonal matrix, only its
      * diagonal elements are stored, so the data length equals the row-dimension 
      * of the matrix).
+     * 
      * @return Data length.
      */
     int length() const;
 
     /**
-     * Computes the quadratic form x'*Q*x, where x is a given vector
-     * as <code>Matrix</code>, where Q is the current instance of 
-     * <code>Matrix</code>.
+     * Computes the quadratic form x'*Q*x.
      * 
-     * This method can only be applied on square matrices Q while x 
-     * needs to be of appropriate dimension.
+     * <p>Here x is a given vector
+     * as <code>Matrix</code>, where Q is the current instance of 
+     * <code>Matrix</code>.</p>
+     * 
+     * <p>This method can only be applied on square matrices Q while x and q 
+     * need to be of combatible dimensions.</p>
      * 
      * @param x The vector x.
      * @return Scalar x'*Q*x as <code>float</code>.
@@ -228,31 +253,40 @@ public:
     float quad(Matrix& x);
 
     /**
-     * Computes the quadratic form x'*Q*x + q'*x, where x is a given vector
-     * as <code>Matrix</code>, where Q is the current instance of 
-     * <code>Matrix</code>. Computes x'*Q*x.
+     * Computes the quadratic form x'*Q*x + q'*x.
      * 
-     * This method can only be applied on square matrices Q while x and q 
-     * need to be of appropriate dimensions.
+     * <p>Here x is a given vector
+     * as <code>Matrix</code>, where Q is the current instance of 
+     * <code>Matrix</code>. Computes x'*Q*x.</p>
+     * 
+     * <p>This method can only be applied on square matrices Q while x and q 
+     * need to be of combatible dimensions.</p>
      * 
      * @param x The vector x.
      * @param q The parameter vector x.
-     * @return 
+     * @return The result of x'*Q*x + q'*x.
      */
     float quad(Matrix& x, Matrix& q);
 
     /**
-     * Computes the Cholesky factorization of this matrix. If this is a <code>MATRIX_DENSE<code>
+     * Computes the Cholesky factorization of this matrix. 
+     * 
+     * <p>If this is a <code>MATRIX_DENSE</code>
      * matrix, then it is assumed it is symmetric (but there is no verification) and
      * only its lower triangular part is considered. Notice that the Cholesky factorization
-     * can only be applied to symmetric and poisitive definite matrices.
+     * can only be applied to symmetric and poisitive definite matrices.</p>
      * 
-     * This method, when applied on a <code>MATRIX_DENSE<code> matrix, the produced matrix <code>L</code>
-     * will be of type <code>MATRIX_DENSE<code>. It is advisable to apply this method only
-     * on matrices of type <code>MATRIX_SYMMETRIC</code>.
+     * <p>This method, when applied on a <code>MATRIX_DENSE</code> matrix, the produced matrix <code>L</code>
+     * will be of type <code>MATRIX_DENSE</code>. It is advisable to apply this method only
+     * on matrices of type <code>MATRIX_SYMMETRIC</code>.</p>
+     * 
+     * <p>Note that this is not a <code>const</code> method since, especially in the
+     * case of sparse matrices, it may update the internal state of the matrix to 
+     * facilitate and speed-up computations</p>
      * 
      * @param L the cholesky factor of this matrix. 
      * @return status code. Returns <code>0</code> if the factorization succeeded.
+     * 
      */
     int cholesky(Matrix& L);
 
@@ -262,7 +296,7 @@ public:
      * (given as an instance of <code>Martrix</code>) and <code>x</code> is the
      * solution which is returned by this method.
      * 
-     * Note that if this is a <code>MATRIX_DENSE<code> matrix, then it is assumed it is 
+     * Note that if this is a <code>MATRIX_DENSE</code> matrix, then it is assumed it is 
      * lower triangular (but there is no verification) and only its lower triangular 
      * part is considered.
      * 
@@ -315,7 +349,7 @@ public:
     Matrix& operator-=(const Matrix& right);
 
     /**
-     * Overloaded multiplication operator for <code>Matrix</code>
+     * Overloaded multiplication operator for <code>Matrix</code>.
      * @param right is the right-hand side matrix
      * @return 
      */
@@ -324,7 +358,7 @@ public:
     /**
      * Assignment operator.
      * @param right is the right-hand operand.
-     * @return 
+     * @return A copy of the current object.
      */
     Matrix& operator=(const Matrix& right);
 
@@ -339,8 +373,9 @@ public:
 
 
     /**
-     * @param os
-     * @param obj
+     * Prints out a Matrix object to an output stream.
+     * @param os Output stream
+     * @param obj Matrix object
      */
     friend std::ostream& operator<<(std::ostream& os, const Matrix& obj);
 

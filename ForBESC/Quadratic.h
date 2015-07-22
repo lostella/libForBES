@@ -43,11 +43,11 @@ public:
 
 
 protected:
-    Matrix *Q;
-    Matrix *q;
-    Matrix *L;
-    bool is_Q_eye;
-    bool is_q_zero;
+    Matrix *Q; /**< Matrix Q */
+    Matrix *q; /**< Vector q*/
+    Matrix *L; /**< Cholesky factor L */
+    bool is_Q_eye;  /**< TRUE if Q is the identity matrix */
+    bool is_q_zero; /**< TRUE is q is the zero vector */
     
     virtual int computeGradient( Matrix& x, Matrix& grad);
 

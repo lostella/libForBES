@@ -70,6 +70,22 @@ Matrix::Matrix(const Matrix& orig) {
         m_dataLength = orig.m_dataLength;
     }
     m_type = orig.m_type;
+    if (m_type == MATRIX_SPARSE) {
+        m_cholmod_common = new cholmod_common;
+        cholmod_start(m_cholmod_common);
+        if (orig.m_triplet != NULL) {
+            m_triplet = cholmod_copy_triplet(orig.m_triplet, m_cholmod_common);
+        }
+        if (orig.m_sparse != NULL){
+            m_sparse = cholmod_copy_sparse(orig.m_sparse, m_cholmod_common);
+        }
+        if (orig.m_dense != NULL) {
+            m_dense = cholmod_copy_dense(orig.m_dense, m_cholmod_common);
+        }
+        if (orig.m_cholesky_factor != NULL){
+            m_cholesky_factor = cholmod_copy_factor(orig.m_cholesky_factor, m_cholmod_common);
+        }
+    }
 }
 
 /********* DENSTRUCTOR ************/
@@ -159,23 +175,21 @@ float Matrix::get(const int i, const int j) const {
                 ? (j >= i) ? m_data[j + m_ncols * i - i * (i + 1) / 2] : 0.0f
                 : (i >= j) ? m_data[i + m_nrows * j - j * (j + 1) / 2] : 0.0f;
     } else if (m_type == MATRIX_SPARSE) {
-        if (m_sparseStorageType == CHOLMOD_TYPE_TRIPLET) {
-            float val = 0.0f;
-            for (int k = 0; k < m_triplet->nnz; k++) {
-                if (i == (static_cast<int*> (m_triplet->i))[k]) {
-                    if (j == (static_cast<int*> (m_triplet->j))[k]) {
-                        val = (static_cast<double*> (m_triplet->x))[k];
-                        break;
-                    }
+        if (m_triplet == NULL) {
+            throw std::logic_error("not supported yet");
+        }
+        float val = 0.0f;
+        for (int k = 0; k < m_triplet->nnz; k++) {
+            if (i == (static_cast<int*> (m_triplet->i))[k]) {
+                if (j == (static_cast<int*> (m_triplet->j))[k]) {
+                    val = (static_cast<double*> (m_triplet->x))[k];
+                    break;
                 }
             }
-            return val;
-        } else {
-            throw std::logic_error("Sorry... not supported yet!");
         }
-
+        return val;
     }
-}
+} /* END GET */
 
 void Matrix::set(int i, int j, float v) {
     if (!indexWithinBounds(i, j)) {
@@ -235,11 +249,13 @@ float Matrix::quad(Matrix& x) {
             }
             result += x[i] * get(i, i) * x[i];
         }
+    } else if (MATRIX_SPARSE == m_type) {
+        throw std::logic_error("Sparse quad is not implemented yet!");
     }
     return result;
 }
 
-float Matrix::quad(Matrix& x, Matrix& q) {
+float Matrix::quad(Matrix& x, Matrix & q) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -259,16 +275,16 @@ float Matrix::quad(Matrix& x, Matrix& q) {
     return t;
 }
 
-int Matrix::cholesky(Matrix& L) {
+int Matrix::cholesky(Matrix & L) {
     if (m_type == MATRIX_SPARSE) {
-        // Cholesky decomposition of a sparse matrix:
-        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, m_cholmod_common);
-        m_cholesky_factor = cholmod_analyze(m_sparse, m_cholmod_common); // analyze
-        int status = cholmod_factorize(m_sparse, m_cholesky_factor, m_cholmod_common); // factorize
+        // Cholesky decomposition of a SPARSE matrix:
         L = *this;
+        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, m_cholmod_common);
+        L.m_cholesky_factor = cholmod_analyze(m_sparse, m_cholmod_common); // analyze
+        int status = cholmod_factorize(m_sparse, L.m_cholesky_factor, m_cholmod_common); // factorize        
         L.m_sparseStorageType = CHOLMOD_TYPE_FACTOR;
         return status;
-    } else {
+    } else { // If this is any non-sparse matrix:
         L = *this;
         if (m_nrows != m_ncols) {
             throw std::invalid_argument("Method `cholesky` can only be applied to square matrices!");
@@ -276,20 +292,17 @@ int Matrix::cholesky(Matrix& L) {
         int info;
 #ifdef USE_LIBS
         if (m_type == MATRIX_DENSE) {
+            // Cholesky decomposition of a DENSE matrix:
 #ifdef DEBUG_VERBOSE
             std::cerr << "[Warning] Applying Cholesky on a possibly non-symmetric matrix!" << std::endl;
-#endif
+#endif /* END DEBUG_VERBOSE */
             info = LAPACKE_spotrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data, m_nrows);
             for (int i = 0; i < m_nrows; i++) {
                 for (int j = 0; j > i; j++) {
                     L.set(i, j, 0.0f);
                 }
             }
-        } else if (m_type == MATRIX_SYMMETRIC) {
-            info = LAPACKE_spptrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data);
-            L.m_type = MATRIX_LOWERTR;
-        }
-#else
+#else /* ELSE (!USE_LIBS) [and this is a dense matrix]*/
         //TODO: Make fail-safe (return proper status code!)
         info = 0;
         for (int i = 0; i < m_nrows; i++) {
@@ -302,7 +315,15 @@ int Matrix::cholesky(Matrix& L) {
                         (1.0 / L[j * m_nrows + j] * (m_data[i * m_nrows + j] - s));
             }
         }
+#endif /* END USE_LIBS */
+        } else if (m_type == MATRIX_SYMMETRIC) {
+#ifdef USE_LIBS
+            info = LAPACKE_spptrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data);
+            L.m_type = MATRIX_LOWERTR;
+#else /* Symmetric matrix - no libs */
+            throw std::logic_error("Symmetric matrix - no LAPACK: Unsupported operation!");
 #endif
+        }
         return info;
     }
 }
@@ -338,7 +359,7 @@ int Matrix::solveCholeskySystem(Matrix& solution, const Matrix & rhs) const {
 }
 
 /********* OPERATORS ************/
-bool Matrix::operator==(const Matrix& right) const {
+bool Matrix::operator==(const Matrix & right) const {
     bool result = (m_type == right.m_type) &&
             (m_ncols == right.m_ncols) &&
             (m_nrows == right.m_nrows);
@@ -351,15 +372,31 @@ bool Matrix::operator==(const Matrix& right) const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
-    os << "Matrix " << obj.m_nrows << "x" << obj.m_ncols << std::endl;
+    os << "\nMatrix " << obj.m_nrows << "x" << obj.m_ncols << std::endl;
     if (obj.m_transpose) {
         os << "Stored as transpose : YES\n";
     }
     const char * const types[] = {"Dense", "Sparse", "Diagonal", "Lower Triangular", "Symmetric"};
-    os << types[obj.m_type] << std::endl;
+    os << "Type: " << types[obj.m_type] << std::endl;
+    if (obj.m_type == Matrix::MATRIX_SPARSE && obj.m_triplet == NULL && obj.m_sparse != NULL) {
+        os << "Storage type: Packed Sparse" << std::endl;
+        for (int j = 0; j < obj.m_ncols; j++) {
+            int p = ((int*) obj.m_sparse->p)[j];
+            int pend = (obj.m_sparse->packed == 1) ? (((int*) obj.m_sparse->p)[j + 1]) : p + ((int*) obj.m_sparse->nz)[j];
+            for (; p < pend; p++) {
+                std::cout << "(" << ((int*) obj.m_sparse->i)[p] << "," << j << ")  : "
+                        << std::setw(8) << std::setprecision(4) << ((double*) obj.m_sparse->x)[p] << std::endl;
+            }
+        }
+        return os;
+    }
     for (int i = 0; i < obj.m_nrows; i++) {
         for (int j = 0; j < obj.m_ncols; j++) {
-            os << std::setw(8) << std::setprecision(4) << obj.get(i, j) << ",";
+            if (obj.m_type == Matrix::MATRIX_SPARSE && obj.get(i, j) == 0) {
+                os << std::setw(8) << "x";
+            } else {
+                os << std::setw(8) << std::setprecision(4) << obj.get(i, j);
+            }
         }
         os << std::endl;
     }
@@ -377,14 +414,44 @@ Matrix & Matrix::operator+=(const Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
+    if (m_type == MATRIX_SPARSE) {
+        if (MATRIX_SPARSE != right.getType()) { // right summand is DENSE (Sparse + Dense)
+            /* For any type of non-sparse right-summands */
+            /* Sparse + Dense = Dense */
+            m_type = MATRIX_DENSE;
+            /* this = zero matrix */
+            m_data = new float[m_ncols * m_nrows];
+            for (int i = 0; i < m_nrows; i++) {
+                for (int j = 0; j < m_ncols; j++) {
+                    set(i, j, right.get(i, j));
+                }
+            }
+
+            if (m_triplet != NULL) {
+                /* Add triplets */
+                int i = -1, j = -1;
+                float v = 0.0;
+                for (int k = 0; k < m_triplet->nnz; k++) {
+                    i = ((int*) m_triplet->i)[k];
+                    j = ((int*) m_triplet->j)[k];
+                    v = ((double*) m_triplet->x)[k];
+                    m_data[i + j * m_nrows] += v;
+                }
+            }
+            return *this;
+        } else {
+            throw std::logic_error("Addition of sparse matrices is not implemented yet!");
+        }
+
+    } else if (m_data != NULL) { /* Not sparse & m_data is not NULL */
 #ifdef USE_LIBS    
-    cblas_saxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
+        cblas_saxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else
-    for (int i = 0; i < length(); i++) {
-        m_data[i] += right[i];
-    }
+        for (int i = 0; i < length(); i++)
+            m_data[i] += right[i];
 #endif
-    return *this;
+        return *this;
+    }
 }
 
 Matrix & Matrix::operator-=(const Matrix & right) {
@@ -484,7 +551,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
 }
 
 /********* PRIVATE METHODS ************/
-void Matrix::domm(const Matrix &right, Matrix &result) const {
+void Matrix::domm(const Matrix &right, Matrix & result) const {
     // multiply with LHS being dense
     float t;
     //std::cout << "multiplication - left = " << m_nrows << "x" << m_ncols << std::endl;
@@ -534,7 +601,7 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
     }
 }
 
-Matrix Matrix::multiplyLeftSymmetric(const Matrix& right) const {
+Matrix Matrix::multiplyLeftSymmetric(const Matrix & right) const {
     // multiply when the LHS is symmetric    
     Matrix result(m_nrows, right.m_ncols);
     if (right.isColumnVector()) {
@@ -573,7 +640,7 @@ Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const {
     return result;
 }
 
-Matrix Matrix::multiplyLeftSparse(Matrix& right) {
+Matrix Matrix::multiplyLeftSparse(Matrix & right) {
     if (right.m_type == MATRIX_SPARSE) {
         // RHS is sparse
         throw std::logic_error("S*S not implemented yet!");

@@ -15,7 +15,11 @@ class TestMatrixFactory : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testMakeIdentity);
     CPPUNIT_TEST(testMakeRandomMatrix);
-
+    CPPUNIT_TEST(testMakeSparse);
+    CPPUNIT_TEST(testReadSparseFromFile);
+    CPPUNIT_TEST(testSparse);
+    CPPUNIT_TEST(testSparse2);
+    
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -27,6 +31,10 @@ public:
 private:
     void testMakeIdentity();
     void testMakeRandomMatrix();
+    void testMakeSparse();
+    void testReadSparseFromFile();
+    void testSparse();
+    void testSparse2();
 
 };
 
