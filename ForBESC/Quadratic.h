@@ -33,6 +33,7 @@ public:
      * zero linear term.
      */
     Quadratic();
+    
     /**
      * Create a quadratic function of the form <code>f(x) = x'*Q*x</code>, where
      * <code>Q</code> is a square matrix.
@@ -40,18 +41,21 @@ public:
      * @param Q Matrix Q.
      */
     Quadratic(Matrix&Q);
+    
     /**
      * Create a quadratic-plus-linear function of the form <code>f(x) = x'*Q*x + q'*x</code>,
      * where <code>Q</code> is a square matrix and <code>q</code> is a vector.
      * @param Q A square matrix
      * @param q A vector
      */
-    Quadratic(Matrix& Q,  Matrix& q); // both Q and q    
+    Quadratic(Matrix& Q, Matrix& q); // both Q and q    
+    
     /**
      * The copy constructor of this class.
      * @param orig Instance of Quadratic to be copied.
      */
     Quadratic(const Quadratic& orig);
+    
     /**
      * Destructor.
      */
@@ -66,17 +70,17 @@ public:
     virtual int call(Matrix& x, double& f);
     virtual int callConj(const Matrix& x, double& f_star);
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox);
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);   
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
 
 
 protected:
-    Matrix *Q; /**< Matrix Q */
-    Matrix *q; /**< Vector q*/
-    Matrix *L; /**< Cholesky factor L */
+    Matrix *Q;      /**< Matrix Q */
+    Matrix *q;      /**< Vector q*/
+    Matrix *L;      /**< Cholesky factor L */
     bool is_Q_eye;  /**< TRUE if Q is the identity matrix */
     bool is_q_zero; /**< TRUE is q is the zero vector */
-    
-    virtual int computeGradient( Matrix& x, Matrix& grad);
+
+    virtual int computeGradient(Matrix& x, Matrix& grad);
 
 
 };

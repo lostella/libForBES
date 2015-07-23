@@ -19,8 +19,6 @@
  */
 
 
-
-
 #ifndef FUNCTION_H
 #define	FUNCTION_H
 
@@ -28,9 +26,17 @@
 
 /**
  * A ForBES function.
+ * 
+ * This is a generic API for ForBES functions. 
  */
 class Function {
 public:
+    
+    /**
+     * Destructor for this class.
+     */
+    virtual ~Function();
+    
     /**
      * Method has succeeded.
      */
@@ -49,10 +55,7 @@ public:
      * A quadratic function.
      */
     const static int CAT_QUADRATIC;
-
-    Function(); /**< Default constructor */
-    Function(const Function& orig); /**< Default copy-constructor */
-    virtual ~Function();
+    
 
     /**
      * The function category. Functions may define a function category so that
@@ -104,25 +107,61 @@ public:
     virtual int call(Matrix& x, double& f, Matrix& grad); // returns also the gradient
 
     /**
+     * Computes the proximal of this function at a point <code>x</code> with 
+     * parameter <code>gamma</code>.
      * 
-     * @param x
-     * @param gamma
-     * @param prox
+     * @param x The vector x where f(x) should be computed.
+     * @param gamma The parameter <code>gamma</code> of <code>prox_(gamma*f)(x)</code>
+     * @param prox The result of this operation
      * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
      */
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox) = 0; // returns the value of prox_{gamma f}
 
+    /**     
+     * 
+     * @param x The vector x where f(x) should be computed.
+     * @param gamma The parameter <code>gamma</code> of <code>prox_(gamma*f)(x)</code>
+     * @param prox The result of this operation
+     * @param f_at_prox Value of this function at the proximal operator
+     * 
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     */
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox) = 0; // prox_{gamma f} and value-at-prox
 
+    /**
+     * Computes the conjugate of this function at a point <code>x</code>
+     * @param x
+     * @param f_star
+     * @return 
+     */
     virtual int callConj(const Matrix& x, double& f_star) = 0; // conjugate of f at x: f*(x)
 
 
 private:
+    
+    /*
+     * Constructors are private.
+     * It is not allowed to instantiate objects of this class directly.
+     * Use its subclasses/implementations.
+     */
+    
+    Function();                         /**< Default constructor */
+    Function(const Function& orig);     /**< Default copy-constructor */    
 
 protected:
     virtual int computeGradient(Matrix& x, Matrix& grad) = 0;
-
-    //virtual int computeFunctionAtProx(const Matrix& x, double gamma, const Matrix& prox, double f_at_prox) const =0;
 
 };
 
