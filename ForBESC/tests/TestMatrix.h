@@ -24,7 +24,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#define HELPER_UTILITIES
+#define FORBES_TEST_UTILS
 #include "ForBES.h"
 
 

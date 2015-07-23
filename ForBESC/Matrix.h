@@ -408,29 +408,27 @@ public:
 
 
 private:
-    /*
-     * MatrixFactory is allowed to access these private fields!
-     */
+    /* MatrixFactory is allowed to access these private fields! */
     friend class MatrixFactory;
 
-    size_t m_nrows;        /*< Number of rows */
-    size_t m_ncols;        /*< Number of columns */
-    bool m_transpose;   /*< Whether this matrix is transposed */
-    MatrixType m_type;  /*< Matrix type */
+    size_t m_nrows;         /*< Number of rows */
+    size_t m_ncols;         /*< Number of columns */
+    bool m_transpose;       /*< Whether this matrix is transposed */
+    MatrixType m_type;      /*< Matrix type */
 
     /* For dense matrices: */
 
-    size_t m_dataLength;       /*< Length of data */
-    double *m_data = NULL;   /*< Data */
+    size_t m_dataLength;        /*< Length of data */
+    double *m_data = NULL;      /*< Data */
 
     /* CSparse members */
     cholmod_triplet *m_triplet = NULL;          /*< Sparse triplets */
     cholmod_sparse *m_sparse = NULL;            /*< A sparse matrix */
-    cholmod_factor *m_factor = NULL;   /*< Cholesky factor */
+    cholmod_factor *m_factor = NULL;            /*< Cholesky factor */
     cholmod_dense *m_dense = NULL;              /*< A dense CHOLMOD matrix */
+
     
-    /* SINGLETON CHOLMOD HANDLE */
-    
+    /* SINGLETON CHOLMOD HANDLE */    
     static cholmod_common *ms_singleton;    /**< Singleton instance of cholmod_common */
 
     /**
@@ -488,10 +486,16 @@ private:
     Matrix multiplyLeftSparse(Matrix& right);
 
 
+    /**
+     * Custom implementation of matrix-matrix multiplication.
+     * @param right RHS
+     * @param result the result
+     */
     void domm(const Matrix &right, Matrix &result) const;
 
     /**
      * Storage types for sparse matrix data.
+     * This is a private enumeration.
      */
     enum SparseMatrixStorageType {
         CHOLMOD_TYPE_TRIPLET = 444,
@@ -506,8 +510,13 @@ private:
      * <code>cholmod_factor</code>).
      */
     SparseMatrixStorageType m_sparseStorageType;
-    
-    friend double quadFromTriplet(const Matrix& Q, const Matrix& x);
+        
+    /**
+     * 
+     * @param x
+     * @return 
+     */
+    double quadFromTriplet(const Matrix& x) const;
     
 };
 

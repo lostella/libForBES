@@ -247,12 +247,12 @@ void Matrix::set(size_t i, size_t j, double v) {
 
 }
 
-double quadFromTriplet(const Matrix& Q, const Matrix& x) {
+double Matrix::quadFromTriplet(const Matrix& x) const {
     double r = 0.0;
-    for (size_t k = 0; k < Q.m_triplet->nzmax; k++) {
-        r += x.get(static_cast<int*> (Q.m_triplet->i)[k], 0) *
-                x.get(static_cast<int*> (Q.m_triplet->j)[k], 0) *
-                (static_cast<double*> (Q.m_triplet->x))[k];
+    for (size_t k = 0; k < m_triplet->nzmax; k++) {
+        r += x.get(static_cast<int*> (m_triplet->i)[k], 0) *
+                x.get(static_cast<int*> (m_triplet->j)[k], 0) *
+                (static_cast<double*> (m_triplet->x))[k];
     }
     return r;
 }
@@ -288,7 +288,7 @@ double Matrix::quad(Matrix & x) {
         }
     } else if (MATRIX_SPARSE == m_type) { /* SPARSE */
         if (m_triplet != NULL) {
-            result = quadFromTriplet(*this, x);
+            result = quadFromTriplet(x);
         } else {
             /* TODO: Implement quadFromSparse */
             throw std::logic_error("Quad on sparse matrix - no triplets found (not implemented yet)");
