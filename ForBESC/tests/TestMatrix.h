@@ -79,6 +79,8 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSparseAddSparse);
     CPPUNIT_TEST(testSparseAddSparse2);
     CPPUNIT_TEST(testSparseQuad);
+    CPPUNIT_TEST(testSparseQuadSparseX);
+    CPPUNIT_TEST(testSparseQuad_q);
     
 
     CPPUNIT_TEST_SUITE_END();
@@ -138,6 +140,8 @@ private:
     void testSparseAddSparse();
     void testSparseAddSparse2();
     void testSparseQuad();
+    void testSparseQuadSparseX();
+    void testSparseQuad_q();
     
 };
 

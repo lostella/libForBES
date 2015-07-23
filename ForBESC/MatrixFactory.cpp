@@ -23,6 +23,7 @@
 #include "MatrixFactory.h"
 #include "Matrix.h"
 
+typedef std::pair<int, int> nice_pair;
 
 Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
     Matrix mat(n, n, Matrix::MATRIX_DIAGONAL);
@@ -31,8 +32,6 @@ Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
     }
     return mat;
 }
-
-typedef std::pair<int, int> nice_pair;
 
 Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale) {
     Matrix R = MakeSparse(nrows, ncols, nnz, Matrix::SPARSE_UNSYMMETRIC);
@@ -78,7 +77,6 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
     return mat;
 }
 
-
 Matrix MatrixFactory::MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Matrix::SparseMatrixType stype) {
     Matrix matrix(nrows, ncols, Matrix::MATRIX_SPARSE);
     matrix.m_triplet = cholmod_allocate_triplet(nrows, ncols, max_nnz, stype, CHOLMOD_REAL, Matrix::cholmod_handle());
@@ -90,8 +88,6 @@ Matrix MatrixFactory::MakeSparseSymmetric(size_t nrows, size_t ncols, size_t max
     return MakeSparse(nrows, ncols, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
 }
 
-
-
 Matrix MatrixFactory::ReadSparse(FILE* fp) {
     cholmod_sparse *sp;
     sp = cholmod_read_sparse(fp, Matrix::cholmod_handle());
@@ -99,13 +95,6 @@ Matrix MatrixFactory::ReadSparse(FILE* fp) {
     Matrix mat(sp->nrow, sp->ncol, Matrix::MATRIX_SPARSE);
     mat.m_sparse = sp;
     mat.m_sparseStorageType = Matrix::CHOLMOD_TYPE_SPARSE;
-    mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());    
-    
+    mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());        
     return mat;
 }
-
-
-
-
-
-

@@ -436,9 +436,9 @@ private:
      * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>. Can only be
      * applied to sparse matrices.
      */
-    void createSparse();
+    inline void createSparse();
     
-    void createTriplet();
+    inline void createTriplet();
 
     /**
      * Initialize the current matrix (allocate memory etc) for a given number of 
@@ -447,7 +447,7 @@ private:
      * @param ncols Number of column
      * @param matrixType Matrix type
      */
-    void init(size_t nrows, size_t ncols, MatrixType matrixType);
+    inline void init(size_t nrows, size_t ncols, MatrixType matrixType);
 
     /**
      * Check whether a given pair of indexes is within the matrix bounds.
@@ -455,35 +455,35 @@ private:
      * @param j column 
      * @return <code>true</code> if (i,j) is within the bounds
      */
-    bool indexWithinBounds(size_t i, size_t j);
+    inline bool indexWithinBounds(size_t i, size_t j);
 
     /**
      * Multiply with a matrix when the left-hand side matrix is dense
      * @param right any right-hand side matrix
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
-    Matrix multiplyLeftDense(const Matrix& right) const;
+    inline Matrix multiplyLeftDense(const Matrix& right) const;
 
     /**
      * Multiply with a matrix when the left-hand side matrix is diagonal.
      * @param right any right-hand side matrix
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
-    Matrix multiplyLeftDiagonal(const Matrix& right) const;
+    inline Matrix multiplyLeftDiagonal(const Matrix& right) const;
 
     /**
      * Multiply with a matrix when the left-hand side matrix is symmetric.
      * @param right any right-hand side matrix
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
-    Matrix multiplyLeftSymmetric(const Matrix& right) const;
+    inline Matrix multiplyLeftSymmetric(const Matrix& right) const;
 
     /**
      * Multiply with a matrix when the left-hand side matrix is sparse.
      * @param right any right-hand side matrix
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
-    Matrix multiplyLeftSparse(Matrix& right);
+    inline Matrix multiplyLeftSparse(Matrix& right);
 
 
     /**
@@ -516,7 +516,7 @@ private:
      * @param x
      * @return 
      */
-    double quadFromTriplet(const Matrix& x) const;
+    inline double quadFromTriplet(const Matrix& x) const;
     
 };
 

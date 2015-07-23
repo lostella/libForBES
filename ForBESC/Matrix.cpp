@@ -20,6 +20,7 @@
 
 #include "Matrix.h"
 #include "MatrixFactory.h"
+#include <assert.h>
 
 /* STATIC MEMBERS */
 
@@ -116,6 +117,25 @@ Matrix::~Matrix() {
         delete[] m_data;
     }
     m_data = NULL;
+    bool nonNullSingleton = (ms_singleton != NULL);
+    if (m_triplet != NULL) {
+        assert(nonNullSingleton);
+        cholmod_free_triplet(&m_triplet, Matrix::cholmod_handle());
+        m_triplet = NULL;
+    }
+    if (m_sparse != NULL) {
+        assert(nonNullSingleton);
+        cholmod_free_sparse(&m_sparse, Matrix::cholmod_handle());
+        m_sparse = NULL;
+    }
+    if (m_factor != NULL) {
+        assert(nonNullSingleton);
+        cholmod_free_factor(&m_factor, Matrix::cholmod_handle());
+    }
+    if (m_dense != NULL) {
+        assert(nonNullSingleton);
+        cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
+    }
 }
 
 /********* GETTERS/SETTERS ************/
@@ -249,7 +269,7 @@ void Matrix::set(size_t i, size_t j, double v) {
 
 double Matrix::quadFromTriplet(const Matrix& x) const {
     double r = 0.0;
-    for (size_t k = 0; k < m_triplet->nzmax; k++) {
+    for (size_t k = 0; k < m_triplet->nnz; k++) {
         r += x.get(static_cast<int*> (m_triplet->i)[k], 0) *
                 x.get(static_cast<int*> (m_triplet->j)[k], 0) *
                 (static_cast<double*> (m_triplet->x))[k];
@@ -313,7 +333,7 @@ double Matrix::quad(Matrix& x, Matrix & q) {
     double t = 0.0f;
     Matrix r;
     r = q*x;
-    t = r[0] + quad(x);
+    t = r.get(0, 0) + quad(x);
     return t;
 }
 
@@ -552,7 +572,7 @@ Matrix Matrix::operator*(Matrix & right) {
         r[0] = t;
         return r;
     }
-    if (m_ncols != right.m_nrows) {
+    if (!(isColumnVector() && right.isColumnVector()) && (m_ncols != right.m_nrows)) {
         throw std::invalid_argument("Incompatible dimensions!");
     }
     Matrix result;
@@ -710,7 +730,30 @@ Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const {
 Matrix Matrix::multiplyLeftSparse(Matrix & right) {
     if (right.m_type == MATRIX_SPARSE) {
         // RHS is sparse
-        throw std::logic_error("S*S not implemented yet!");
+        if (m_sparse == NULL) {
+            createSparse();
+        }
+        if (right.m_sparse == NULL) {
+            right.createSparse();
+        }
+        cholmod_sparse *r;
+        r = cholmod_ssmult(
+                (isColumnVector() && right.isColumnVector()) ? cholmod_transpose(m_sparse, 1, Matrix::cholmod_handle()) : m_sparse,
+                right.m_sparse,
+                0,
+                true,
+                false,
+                Matrix::cholmod_handle());
+
+        Matrix result;
+        if (isColumnVector() && right.isColumnVector()) { /* Sparse-sparse dot product */
+            result = Matrix(1, 1, Matrix::MATRIX_SPARSE);
+        } else {
+            result = Matrix(m_nrows, right.m_ncols, Matrix::MATRIX_SPARSE);
+        }
+        result.m_sparse = r;
+        result.createTriplet();
+        return result;
     } else {
         // RHS is dense
         Matrix result(m_nrows, right.m_ncols);

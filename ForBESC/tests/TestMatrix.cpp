@@ -27,7 +27,6 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestMatrix);
 
-
 TestMatrix::TestMatrix() {
 }
 
@@ -1104,9 +1103,9 @@ void TestMatrix::testSparseAddSparse2() {
 }
 
 void TestMatrix::testSparseQuad() {
-    size_t n = 8;
+    size_t n = 60;
     size_t nnz = std::floor(1.2f * n);
-    size_t tests = 40;
+    size_t tests = 100;
 
     Matrix *A = new Matrix();
     Matrix *x = new Matrix();
@@ -1128,12 +1127,57 @@ void TestMatrix::testSparseQuad() {
         double tol = 1e-6;
         _ASSERT(std::abs(r) > tol);
         _ASSERT_NUM_EQ(r_exp, r, tol);
-        _ASSERT_EQ(0, Matrix::cholmod_handle()->status);        
+        _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
     }
-    
+
     delete A;
     delete x;
-        
+
     _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
     _ASSERT_OK(Matrix::destroy_handle());
+}
+
+void TestMatrix::testSparseQuadSparseX() {
+    for (size_t n = 10; n < 30; ++n) {
+        size_t nnz = (1.2 * n);
+        Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0);
+        Matrix x = MatrixFactory::MakeRandomSparse(n, 1, n / 2, 0.0, 10.0);
+        double r, r_exp = 0.0;
+        _ASSERT_OK(r = A.quad(x));
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < n; j++) {
+                r_exp += x.get(i, 0) * x.get(j, 0) * A.get(i, j);
+            }
+        }
+        double tol = 1e-6;
+        _ASSERT_NUM_EQ(r_exp, r, tol);
+    }
+
+}
+
+void TestMatrix::testSparseQuad_q() {
+    size_t n = 6;
+    Matrix A = MatrixFactory::MakeSparse(n, n, 6, Matrix::SPARSE_UNSYMMETRIC);
+    A.set(0, 0, 4);
+    A.set(0, 1, 5);
+    A.set(1, 0, 8);
+    A.set(1, 2, 10);
+    A.set(5, 3, 100);
+
+    Matrix x = MatrixFactory::MakeSparse(n, 1, 4, Matrix::SPARSE_UNSYMMETRIC);
+    x.set(0, 0, 1);
+    x.set(1, 0, 2);
+    x.set(5, 0, 9);
+    x.set(4, 0, 3);
+
+    Matrix q = MatrixFactory::MakeSparse(n, 1, 1, Matrix::SPARSE_UNSYMMETRIC);
+    q.set(4, 0, 1);
+
+    double r = A.quad(x, q);
+    const double r_exp = 33.0;
+    const double tol = 1e-10;
+    
+    _ASSERT_NUM_EQ(r_exp, r, tol);
+
+
 }
