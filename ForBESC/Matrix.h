@@ -72,6 +72,8 @@ public:
      * @return The singleton <code>cholmod_common</code> object.
      */
     static cholmod_common* cholmod_handle();
+    
+    static int destroy_handle();
 
     /**
      * Types of matrices.
@@ -502,6 +504,9 @@ private:
      * <code>cholmod_factor</code>).
      */
     SparseMatrixStorageType m_sparseStorageType;
+    
+    friend float quadFromTriplet(const Matrix& Q, const Matrix& x);
+    
 };
 
 #endif	/* MATRIX_H */

@@ -33,6 +33,15 @@ cholmod_common* Matrix::cholmod_handle() {
     return ms_singleton;
 }
 
+int Matrix::destroy_handle() {
+    if (ms_singleton == NULL) {
+        return 0;
+    }
+    int status = cholmod_finish(ms_singleton);
+    ms_singleton == NULL;
+    return status;
+
+}
 
 /********* CONSTRUCTORS ************/
 Matrix::Matrix() {
@@ -232,7 +241,17 @@ void Matrix::set(int i, int j, float v) {
 
 }
 
-float Matrix::quad(Matrix& x) {
+float quadFromTriplet(const Matrix& Q, const Matrix& x) {
+    float r = 0.0;
+    for (int k = 0; k < Q.m_triplet->nzmax; k++) {
+        r +=    x.get(((int *) Q.m_triplet->i)[k], 0) *
+                x.get(((int *) Q.m_triplet->j)[k], 0) *
+                ((double*) Q.m_triplet->x)[k];
+    }
+    return r;
+}
+
+float Matrix::quad(Matrix & x) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -243,25 +262,31 @@ float Matrix::quad(Matrix& x) {
         throw std::invalid_argument("The argument of quad(Matrix&) is not of appropriate dimension.");
     }
     float result = 0.0;
-    if (MATRIX_DENSE == m_type || MATRIX_LOWERTR == m_type) {
+
+    if (MATRIX_DENSE == m_type || MATRIX_LOWERTR == m_type) { /* DENSE or LOWER TRIANGULAR */
         for (int i = 0; i < m_nrows; i++) {
             for (int j = 0; j < m_ncols; j++) {
                 result += x[i] * get(i, j) * x[j];
             }
         }
-    } else if (MATRIX_DIAGONAL == m_type) {
+    } else if (MATRIX_DIAGONAL == m_type) { /* DIAGONAL */
         for (int i = 0; i < m_nrows; i++) {
             result += x[i] * x[i] * get(i, i);
         }
-    } else if (MATRIX_SYMMETRIC == m_type) {
+    } else if (MATRIX_SYMMETRIC == m_type) { /* SYMMETRIC */
         for (int i = 0; i < m_nrows; i++) {
             for (int j = 0; j < i; j++) {
                 result += 2.0f * x[i] * get(i, j) * x[j];
             }
             result += x[i] * get(i, i) * x[i];
         }
-    } else if (MATRIX_SPARSE == m_type) {
-        throw std::logic_error("Sparse quad is not implemented yet!");
+    } else if (MATRIX_SPARSE == m_type) { /* SPARSE */
+        if (m_triplet != NULL) {
+            result = quadFromTriplet(*this, x);
+        } else {
+            /* TODO: Implement quadFromSparse */
+            throw std::logic_error("Quad on sparse matrix - no triplets found (not implemented yet)");
+        }
     }
     return result;
 }
@@ -404,7 +429,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     for (int i = 0; i < obj.m_nrows; i++) {
         for (int j = 0; j < obj.m_ncols; j++) {
             if (obj.m_type == Matrix::MATRIX_SPARSE && obj.get(i, j) == 0) {
-                os << std::setw(8) << "x";
+                os << std::setw(8) << "0";
             } else {
                 os << std::setw(8) << std::setprecision(4) << obj.get(i, j);
             }
@@ -451,18 +476,22 @@ Matrix & Matrix::operator+=(Matrix & right) {
             }
             return *this;
         } else { // right summand is SPARSE (Sparse + Sparse)                             
-
             double alpha[1] = {1};
-            double beta[1] = {1};
-
-            cholmod_sparse *RESULT;
-            RESULT = cholmod_add(m_sparse, right.m_sparse, alpha, beta, true, true, Matrix::cholmod_handle());
-            m_sparse = cholmod_copy_sparse(RESULT, Matrix::cholmod_handle());
+            /* TODO: Create private friend method `updateSparse` and `updateTriplet` */
+            /* these methods will create m_sparse and m_triplet if they don't exist (==NULL) */
+            if (m_sparse == NULL && m_triplet != NULL) {
+                m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
+            }
+            if (right.m_sparse == NULL && right.m_triplet != NULL) {
+                right.m_sparse = cholmod_triplet_to_sparse(right.m_triplet, right.m_triplet->nzmax, Matrix::cholmod_handle());
+            }
+            /* Use cholmod_add to compute the sum A+=B */
+            m_sparse = cholmod_add(m_sparse, right.m_sparse, alpha, alpha, true, true, Matrix::cholmod_handle());
+            /* Update the triplet of the result (optional) */
             m_triplet = cholmod_sparse_to_triplet(m_sparse, Matrix::cholmod_handle());
             return *this;
         }
-
-    } else if (m_data != NULL) { /* Not sparse & m_data is not NULL */
+    } else if (m_data != NULL) { /* Not sparse AND m_data is not NULL */
 #ifdef USE_LIBS    
         cblas_saxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else

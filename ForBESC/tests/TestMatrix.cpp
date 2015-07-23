@@ -25,8 +25,14 @@
 #include <cmath>
 #include <time.h>
 
-
 CPPUNIT_TEST_SUITE_REGISTRATION(TestMatrix);
+
+#define _ASSERT_OK               CPPUNIT_ASSERT_NO_THROW
+#define _ASSERT                  CPPUNIT_ASSERT
+#define _ASSERT_NOT(P)           CPPUNIT_ASSERT(!(P))
+#define _ASSERT_NUM_EQ(A,B,TOL)  CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
+#define _ASSERT_EQ               CPPUNIT_ASSERT_EQUAL
+#define _ASSERT_NEQ(A,B)         CPPUNIT_ASSERT(A!=B)
 
 TestMatrix::TestMatrix() {
 }
@@ -53,7 +59,7 @@ void TestMatrix::testQuadratic() {
             (*x)[i] = i + 1;
         }
         float r = f -> quad(*x);
-        CPPUNIT_ASSERT_EQUAL(static_cast<float> (n * (n + 1)* (2 * n + 1) / 6), r);
+        _ASSERT_EQ(static_cast<float> (n * (n + 1)* (2 * n + 1) / 6), r);
         delete f;
         delete x;
     }
@@ -66,8 +72,9 @@ void TestMatrix::testQuadratic2() {
     Matrix f(3, 3, fdata);
     Matrix x(3, 1, xdata);
 
-    float r = f.quad(x);
-    CPPUNIT_ASSERT_EQUAL(-16.0f, r);
+    float r;
+    _ASSERT_OK(r = f.quad(x));
+    _ASSERT_EQ(-16.0f, r);
 }
 
 void TestMatrix::testQuadratic3() {
@@ -79,8 +86,9 @@ void TestMatrix::testQuadratic3() {
     Matrix x(3, 1, xdata);
     Matrix q(3, 1, qdata);
 
-    float r = f.quad(x, q);
-    CPPUNIT_ASSERT_EQUAL(-77.5f, r);
+    float r;
+    _ASSERT_OK(r = f.quad(x, q));
+    _ASSERT_EQ(-77.5f, r);
 }
 
 void TestMatrix::testQuadraticDot() {
@@ -92,10 +100,10 @@ void TestMatrix::testQuadraticDot() {
 
     Matrix r = y*x;
 
-    CPPUNIT_ASSERT_EQUAL(1, r.getNcols());
-    CPPUNIT_ASSERT_EQUAL(1, r.getNrows());
-    CPPUNIT_ASSERT_EQUAL(1, r.length());
-    CPPUNIT_ASSERT_EQUAL(-72.0f, r[0]);
+    _ASSERT_EQ(1, r.getNcols());
+    _ASSERT_EQ(1, r.getNrows());
+    _ASSERT_EQ(1, r.length());
+    _ASSERT_EQ(-72.0f, r[0]);
 }
 
 void TestMatrix::testMultiplication() {
@@ -108,12 +116,12 @@ void TestMatrix::testMultiplication() {
     Matrix r;
     r = f*x;
 
-    CPPUNIT_ASSERT_EQUAL(3, r.getNrows());
-    CPPUNIT_ASSERT_EQUAL(1, r.getNcols());
-    CPPUNIT_ASSERT_EQUAL(3, r.length());
-    CPPUNIT_ASSERT_EQUAL(18.f, r[0]);
-    CPPUNIT_ASSERT_EQUAL(7.f, r[1]);
-    CPPUNIT_ASSERT_EQUAL(-16.f, r[2]);
+    _ASSERT_EQ(3, r.getNrows());
+    _ASSERT_EQ(1, r.getNcols());
+    _ASSERT_EQ(3, r.length());
+    _ASSERT_EQ(18.f, r[0]);
+    _ASSERT_EQ(7.f, r[1]);
+    _ASSERT_EQ(-16.f, r[2]);
 }
 
 void TestMatrix::testGetSet() {
@@ -125,7 +133,7 @@ void TestMatrix::testGetSet() {
     }
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            CPPUNIT_ASSERT_EQUAL(static_cast<float> (3 * i + 5 * j + 13), f.get(i, j));
+            _ASSERT_EQ(static_cast<float> (3 * i + 5 * j + 13), f.get(i, j));
         }
     }
 }
@@ -139,11 +147,11 @@ void TestMatrix::testAssignment() {
     Matrix g;
     g = f;
 
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DENSE, g.getType());
-    CPPUNIT_ASSERT_EQUAL(size, g.length());
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, g.getType());
+    _ASSERT_EQ(size, g.length());
     for (int i = 0; i < size; i++) {
-        CPPUNIT_ASSERT(g[i] >= 0);
-        CPPUNIT_ASSERT(g[i] <= 1);
+        _ASSERT(g[i] >= 0);
+        _ASSERT(g[i] <= 1);
     }
 }
 
@@ -174,7 +182,7 @@ void TestMatrix::testAddition() {
     C = A + B;
 
     for (int i = 0; i < size; i++) {
-        CPPUNIT_ASSERT_EQUAL(a[i] + b[i], C[i]);
+        _ASSERT_EQ(a[i] + b[i], C[i]);
     }
 
     delete[] a;
@@ -184,8 +192,8 @@ void TestMatrix::testAddition() {
 void TestMatrix::testFBMatrix() {
     /* Test FBMatrix() - empty constructor */
     Matrix *fBMatrix = new Matrix();
-    CPPUNIT_ASSERT(fBMatrix->getNcols() == 0);
-    CPPUNIT_ASSERT(fBMatrix->getNrows() == 0);
+    _ASSERT_EQ(0, fBMatrix->getNcols());
+    _ASSERT_EQ(0, fBMatrix->getNrows());
     delete fBMatrix;
 
     /* Test FBMatrix(int, int, float*) - Provide data */
@@ -197,7 +205,7 @@ void TestMatrix::testFBMatrix() {
     Matrix f(n, 1, x);
     delete[] x;
     for (int i = 0; i < n; i++) {
-        CPPUNIT_ASSERT_EQUAL(static_cast<float> (1 + 7 * i), f[i]);
+        _ASSERT_EQ(static_cast<float> (1 + 7 * i), f[i]);
     }
 }
 
@@ -208,14 +216,14 @@ void TestMatrix::testMakeRandomFBMatrix() {
     const float scale = 3.5;
     Matrix f = MatrixFactory::MakeRandomMatrix(nRows, nCols, offset, scale, Matrix::MATRIX_DENSE);
 
-    CPPUNIT_ASSERT(f.getNcols() == nCols);
-    CPPUNIT_ASSERT(f.getNrows() == nRows);
+    _ASSERT_EQ(nCols, f.getNcols());
+    _ASSERT_EQ(nRows, f.getNrows());
     for (int i = 0; i < nRows * nCols; i++) {
         if (i > 0) {
-            CPPUNIT_ASSERT(f[i] != f[i - 1]);
+            _ASSERT_NEQ(f[i], f[i - 1]);
         }
-        CPPUNIT_ASSERT(f[i] >= offset);
-        CPPUNIT_ASSERT(f[i] <= offset + scale);
+        _ASSERT(f[i] >= offset);
+        _ASSERT(f[i] <= offset + scale);
     }
 }
 
@@ -231,11 +239,11 @@ void TestMatrix::testGetData() {
     retrievedData = mat->getData();
 
     for (int j = 0; j < n; j++) {
-        CPPUNIT_ASSERT_EQUAL(j, (int) retrievedData[j]);
+        _ASSERT_EQ(j, (int) retrievedData[j]);
     }
 
     retrievedData[0] = 666;
-    CPPUNIT_ASSERT_EQUAL(666, (int) (*mat)[0]);
+    _ASSERT_EQ(666, (int) (*mat)[0]);
 
     delete(mat);
 }
@@ -243,29 +251,29 @@ void TestMatrix::testGetData() {
 void TestMatrix::testGetNcols() {
     int y = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
     Matrix mat(10, y);
-    CPPUNIT_ASSERT_EQUAL(y, mat.getNcols());
+    _ASSERT_EQ(y, mat.getNcols());
 }
 
 void TestMatrix::testGetNrows() {
     int x = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
     Matrix mat(x, 10);
-    CPPUNIT_ASSERT_EQUAL(x, mat.getNrows());
+    _ASSERT_EQ(x, mat.getNrows());
 
     Matrix *gm = new Matrix(5, 5);
-    CPPUNIT_ASSERT(!gm->isEmpty());
-    CPPUNIT_ASSERT_EQUAL(5, gm->getNrows());
-    CPPUNIT_ASSERT_EQUAL(5, gm->getNcols());
+    _ASSERT_NOT(gm->isEmpty());
+    _ASSERT_EQ(5, gm->getNrows());
+    _ASSERT_EQ(5, gm->getNcols());
     delete gm;
 }
 
 void TestMatrix::testIsColumnVector() {
     Matrix rowVec(2345, 1);
-    CPPUNIT_ASSERT(rowVec.isColumnVector());
+    _ASSERT(rowVec.isColumnVector());
 }
 
 void TestMatrix::testIsRowVector() {
     Matrix rowVec(1, 100);
-    CPPUNIT_ASSERT(rowVec.isRowVector());
+    _ASSERT(rowVec.isRowVector());
 }
 
 void TestMatrix::testLength() {
@@ -277,7 +285,7 @@ void TestMatrix::testLength() {
         x = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
         y = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
         f = new Matrix(x, y);
-        CPPUNIT_ASSERT_EQUAL(x*y, f->length());
+        _ASSERT_EQ(x*y, f->length());
     }
     delete f;
 }
@@ -285,19 +293,19 @@ void TestMatrix::testLength() {
 void TestMatrix::testReshape() {
     Matrix f(45, 56);
     int status = f.reshape(5, 5);
-    CPPUNIT_ASSERT_EQUAL(0, status);
-    CPPUNIT_ASSERT_EQUAL(5, f.getNcols());
+    _ASSERT_EQ(0, status);
+    _ASSERT_EQ(5, f.getNcols());
 }
 
 void TestMatrix::testReshapeBad() {
     Matrix f(45, 56);
     int status = f.reshape(45, 57);
-    CPPUNIT_ASSERT_EQUAL(-2, status);
-    CPPUNIT_ASSERT_EQUAL(45, f.getNrows());
-    CPPUNIT_ASSERT_EQUAL(56, f.getNcols());
+    _ASSERT_EQ(-2, status);
+    _ASSERT_EQ(45, f.getNrows());
+    _ASSERT_EQ(56, f.getNcols());
 
     status = f.reshape(0, 1);
-    CPPUNIT_ASSERT_EQUAL(-1, status);
+    _ASSERT_EQ(-1, status);
 }
 
 void TestMatrix::testDiagonalGetSet() {
@@ -311,15 +319,15 @@ void TestMatrix::testDiagonalGetSet() {
     delete[] myData;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            CPPUNIT_ASSERT_EQUAL(static_cast<float> (i + 1)*(i == j), A -> get(i, j));
+            _ASSERT_EQ(static_cast<float> (i + 1)*(i == j), A -> get(i, j));
         }
     }
 
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, A -> getType());
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, A -> getType());
 
     float t = -1.234;
     A -> set(3, 3, t);
-    CPPUNIT_ASSERT_EQUAL(t, A -> get(3, 3));
+    _ASSERT_EQ(t, A -> get(3, 3));
     CPPUNIT_ASSERT_THROW(A -> set(3, 4, 1.0), std::invalid_argument);
 
     delete A;
@@ -343,15 +351,15 @@ void TestMatrix::testDiagonalMultiplication() {
     }
 
     Matrix C = (*A) * B;
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DENSE, C.getType());
-    CPPUNIT_ASSERT_EQUAL(n, C.getNrows());
-    CPPUNIT_ASSERT_EQUAL(m, C.getNcols());
-    CPPUNIT_ASSERT(!C.isEmpty());
-    CPPUNIT_ASSERT_EQUAL(n*m, C.length());
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, C.getType());
+    _ASSERT_EQ(n, C.getNrows());
+    _ASSERT_EQ(m, C.getNcols());
+    _ASSERT_NOT(C.isEmpty());
+    _ASSERT_EQ(n*m, C.length());
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            CPPUNIT_ASSERT_EQUAL(std::pow(i + 1.0f, 2.0f), C.get(i, j));
+            _ASSERT_EQ(std::pow(i + 1.0f, 2.0f), C.get(i, j));
         }
     }
 
@@ -376,12 +384,12 @@ void TestMatrix::testDiagonalMultiplication2() {
     delete[] bData;
 
     Matrix C = (*A) * (*B);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, A -> getType());
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, B -> getType());
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, C.getType());
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, A -> getType());
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, B -> getType());
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, C.getType());
 
     for (int i = 0; i < n; i++) {
-        CPPUNIT_ASSERT_EQUAL((i + 1.0f)*(n - i), C.get(i, i));
+        _ASSERT_EQ((i + 1.0f)*(n - i), C.get(i, i));
     }
 }
 
@@ -410,7 +418,7 @@ void TestMatrix::testDenseTimesDiagonal() {
 
     for (int i = 0; i < C.getNrows(); i++) {
         for (int j = 0; j < C.getNcols(); j++) {
-            CPPUNIT_ASSERT_EQUAL(A.get(i, j) * B.get(j, j), C.get(i, j));
+            _ASSERT_EQ(A.get(i, j) * B.get(j, j), C.get(i, j));
         }
     }
 
@@ -430,11 +438,11 @@ void TestMatrix::testQuadDiagonal() {
     Matrix *x = new Matrix(n, 1, xData);
     float val = A -> quad(*x, *x);
     const float correct = 30690.0f;
-    CPPUNIT_ASSERT_EQUAL(correct, val);
+    _ASSERT_EQ(correct, val);
 
     val = A -> quad(*x);
     const float correct2 = 27225.0f;
-    CPPUNIT_ASSERT_EQUAL(correct2, val);
+    _ASSERT_EQ(correct2, val);
 
     delete A;
     delete x;
@@ -447,13 +455,13 @@ void TestMatrix::testSubtract() {
     Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix Y = X - X;
     for (int i = 0; i < n * n; i++) {
-        CPPUNIT_ASSERT_EQUAL(0.0f, Y.getData()[i]);
+        _ASSERT_EQ(0.0f, Y.getData()[i]);
     }
 
     X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     X -= X;
     for (int i = 0; i < n * n; i++) {
-        CPPUNIT_ASSERT_EQUAL(0.0f, X.getData()[i]);
+        _ASSERT_EQ(0.0f, X.getData()[i]);
     }
 
     X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
@@ -462,7 +470,7 @@ void TestMatrix::testSubtract() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < 0; j++) {
-            CPPUNIT_ASSERT_EQUAL(X.get(i, j) - B.get(i, j), Z.get(i, j));
+            _ASSERT_EQ(X.get(i, j) - B.get(i, j), Z.get(i, j));
         }
     }
 
@@ -476,10 +484,10 @@ void TestMatrix::testCholesky() {
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
     int info = A.cholesky(L);
-    CPPUNIT_ASSERT_EQUAL(0, info);
-    CPPUNIT_ASSERT_EQUAL(n, L.getNcols());
-    CPPUNIT_ASSERT_EQUAL(n, L.getNrows());
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DENSE, L.getType());
+    _ASSERT_EQ(0, info);
+    _ASSERT_EQ(n, L.getNcols());
+    _ASSERT_EQ(n, L.getNrows());
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, L.getType());
 
 }
 
@@ -490,19 +498,20 @@ void TestMatrix::testSolveCholesky() {
         2, 5, 3};
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
-    CPPUNIT_ASSERT_EQUAL(0, A.cholesky(L));
+    _ASSERT_EQ(0, A.cholesky(L));
 
     float bData[n] = {-1, 2, -3};
     Matrix b(n, 1, bData);
     Matrix x; // the solution!
-    CPPUNIT_ASSERT_EQUAL(0, L.solveCholeskySystem(x, b));
-    CPPUNIT_ASSERT(std::fabs(-2.75f - x[0]) < 1e-5);
-    CPPUNIT_ASSERT(std::fabs(1.25f - x[1]) < 1e-5);
-    CPPUNIT_ASSERT(std::fabs(-1.25f - x[2]) < 1e-5);
+    float tol = 1e-5;
+    _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
+    _ASSERT_NUM_EQ(-2.75f, x[0], tol);
+    _ASSERT_NUM_EQ(1.25f, x[1], tol);
+    _ASSERT_NUM_EQ(-1.25f, x[2], tol);
 
     Matrix C = A * x - b;
     for (int i = 0; i < n; i++) {
-        CPPUNIT_ASSERT(std::fabs(C[i]) < 1e-5);
+        _ASSERT(std::fabs(C[i]) < tol);
     }
 }
 
@@ -515,21 +524,22 @@ void TestMatrix::testSolveCholeskyMulti() {
         -1, -1, -1, 1};
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
-    CPPUNIT_ASSERT_EQUAL(0, A.cholesky(L));
-    CPPUNIT_ASSERT(std::fabs(2.64575f - L[0]) < 1e-5);
-    CPPUNIT_ASSERT(std::fabs(0.7559289f - L[1]) < 1e-5);
+    _ASSERT_EQ(0, A.cholesky(L));
+    float tol = 1e-5;
+    _ASSERT_NUM_EQ(2.64575f, L[0], tol);
+    _ASSERT_NUM_EQ(0.7559289f, L[1], tol);
 
     float bData[n * m] = {1, 2.5, 3, 4,
         -1, -2.5, -3, -4};
     Matrix b(n, m, bData);
     Matrix x; // the solution!
 
-    CPPUNIT_ASSERT_EQUAL(0, L.solveCholeskySystem(x, b));
+    _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
 
     Matrix C = A * x - b;
     for (int i = 0; i < C.getNrows(); i++) {
         for (int j = 0; j < C.getNcols(); j++) {
-            CPPUNIT_ASSERT(std::fabs(C.get(i, j)) < 1e-4);
+            _ASSERT(std::fabs(C.get(i, j)) < 1e-4);
         }
     }
 }
@@ -547,15 +557,15 @@ void TestMatrix::testLowerTriangular_getSet() {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i >= j) {
-                    CPPUNIT_ASSERT(std::fabs(3.2f * i + 7.5f * j + 0.45f - A->get(i, j)) < 1e-3);
+                    _ASSERT_NUM_EQ(3.2f * i + 7.5f * j + 0.45f, A->get(i, j), 1e-3);
                 } else {
-                    CPPUNIT_ASSERT_EQUAL(0.0f, A->get(i, j));
+                    _ASSERT_EQ(0.0f, A->get(i, j));
                 }
             }
         }
 
         int exp_length = n * (n + 1) / 2;
-        CPPUNIT_ASSERT_EQUAL(exp_length, A->length());
+        _ASSERT_EQ(exp_length, A->length());
         delete A;
     }
 }
@@ -567,11 +577,11 @@ void TestMatrix::testLowerTriangularTraspose_getSet() {
     AT.transpose();
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            CPPUNIT_ASSERT_EQUAL(A.get(i, j), AT.get(j, i));
+            _ASSERT_EQ(A.get(i, j), AT.get(j, i));
         }
     }
     AT.transpose();
-    CPPUNIT_ASSERT_EQUAL(A, AT);
+    _ASSERT_EQ(A, AT);
 }
 
 void TestMatrix::testSymmetric_getSet() {
@@ -585,18 +595,18 @@ void TestMatrix::testSymmetric_getSet() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i >= j) {
-                CPPUNIT_ASSERT(std::fabs(3.2f * i + 0.2f * j + 0.45f - A->get(i, j)) < 1e-5);
+                _ASSERT_NUM_EQ(3.2f * i + 0.2f * j + 0.45f, A->get(i, j), 1e-5);
             } else {
-                CPPUNIT_ASSERT(std::fabs(A -> get(j, i) - A->get(i, j)) < 1e-6);
+                _ASSERT_NUM_EQ(A -> get(j, i), A->get(i, j), 1e-6);
             }
         }
     }
     int exp_length = n * (n + 1) / 2;
-    CPPUNIT_ASSERT_EQUAL(exp_length, A->length());
+    _ASSERT_EQ(exp_length, A->length());
 
     Matrix *L = new Matrix();
     int status = A -> cholesky(*L); // A is not positive definite (Cholesky shouldn't be allowed!)
-    CPPUNIT_ASSERT(status != 0);
+    _ASSERT_NEQ(0, status);
     delete L;
 
     delete A;
@@ -605,7 +615,7 @@ void TestMatrix::testSymmetric_getSet() {
 void TestMatrix::testSymmetricCholesky() {
     const int n = 4;
     Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SYMMETRIC, A -> getType());
+    _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, A -> getType());
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
             A -> set(i, j, 3.2 * i + 0.2 * j + 0.45);
@@ -614,14 +624,13 @@ void TestMatrix::testSymmetricCholesky() {
     }
 
     Matrix L;
-    CPPUNIT_ASSERT_EQUAL(0, A -> cholesky(L));
+    _ASSERT_EQ(0, A -> cholesky(L));
     float tol = 1e-4;
-    CPPUNIT_ASSERT(std::fabs(4.52217 - L.get(0, 0)) < tol);
-    CPPUNIT_ASSERT(std::fabs(0.807135 - L.get(1, 0)) < tol);
-    CPPUNIT_ASSERT(std::fabs(1.51476 - L.get(2, 0)) < tol);
-    CPPUNIT_ASSERT(std::fabs(2.22239 - L.get(3, 0)) < tol);
-    CPPUNIT_ASSERT(std::fabs(4.81649 - L.get(1, 1)) < tol);
-
+    _ASSERT_NUM_EQ(4.52217, L.get(0, 0), tol);
+    _ASSERT_NUM_EQ(0.807135, L.get(1, 0), tol);
+    _ASSERT_NUM_EQ(1.51476, L.get(2, 0), tol);
+    _ASSERT_NUM_EQ(2.22239, L.get(3, 0), tol);
+    _ASSERT_NUM_EQ(4.81649, L.get(1, 1), tol);
 
     delete A;
 }
@@ -631,11 +640,11 @@ void TestMatrix::testTranspose() {
     int m = 6;
     Matrix A(n, m);
     A.transpose();
-    CPPUNIT_ASSERT_EQUAL(n, A.getNcols());
-    CPPUNIT_ASSERT_EQUAL(m, A.getNrows());
+    _ASSERT_EQ(n, A.getNcols());
+    _ASSERT_EQ(m, A.getNrows());
     A.transpose();
-    CPPUNIT_ASSERT_EQUAL(n, A.getNrows());
-    CPPUNIT_ASSERT_EQUAL(m, A.getNcols());
+    _ASSERT_EQ(n, A.getNrows());
+    _ASSERT_EQ(m, A.getNcols());
 
     Matrix X(n, m);
     for (int i = 0; i < n; i++) {
@@ -646,7 +655,7 @@ void TestMatrix::testTranspose() {
     X.transpose();
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            CPPUNIT_ASSERT_NO_THROW(X.get(i, j));
+            _ASSERT_OK(X.get(i, j));
         }
     }
 
@@ -667,7 +676,7 @@ void TestMatrix::testTranspose() {
     Y.transpose();
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            CPPUNIT_ASSERT_EQUAL(YT.get(i, j), Y.get(i, j));
+            _ASSERT_EQ(YT.get(i, j), Y.get(i, j));
         }
     }
 
@@ -688,10 +697,10 @@ void TestMatrix::testDiagonalTimesSymmetric() {
     }
 
     Matrix DS = D * S;
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SYMMETRIC, DS.getType());
+    _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, DS.getType());
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
-            CPPUNIT_ASSERT_EQUAL((i + 1.0f)*(-3.1f * i + 3.25f * j + 5.35f), DS.get(i, j));
+            _ASSERT_EQ((i + 1.0f)*(-3.1f * i + 3.25f * j + 5.35f), DS.get(i, j));
         }
     }
 }
@@ -712,14 +721,14 @@ void TestMatrix::testDiagonalTimesLowerTri() {
     }
 
     Matrix DL = D * L;
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_LOWERTR, DL.getType());
-    CPPUNIT_ASSERT_EQUAL(n, DL.getNcols());
-    CPPUNIT_ASSERT_EQUAL(n, DL.getNrows());
-    CPPUNIT_ASSERT(!DL.isEmpty());
+    _ASSERT_EQ(Matrix::MATRIX_LOWERTR, DL.getType());
+    _ASSERT_EQ(n, DL.getNcols());
+    _ASSERT_EQ(n, DL.getNrows());
+    _ASSERT_NOT(DL.isEmpty());
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
-            CPPUNIT_ASSERT_EQUAL(0.0f, DL.get(i, j) - D[i] * L.get(i, j));
+            _ASSERT_EQ(0.0f, DL.get(i, j) - D[i] * L.get(i, j));
         }
     }
 }
@@ -740,12 +749,12 @@ void TestMatrix::testDenseTimesSymmetric() {
     }
 
     Matrix AS = A*S;
-    CPPUNIT_ASSERT(!AS.isEmpty());
-    CPPUNIT_ASSERT(!AS.isColumnVector());
-    CPPUNIT_ASSERT(!AS.isRowVector());
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DENSE, AS.getType());
-    CPPUNIT_ASSERT_EQUAL(n, AS.getNcols());
-    CPPUNIT_ASSERT_EQUAL(n, AS.getNrows());
+    _ASSERT_NOT(AS.isEmpty());
+    _ASSERT_NOT(AS.isColumnVector());
+    _ASSERT_NOT(AS.isRowVector());
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, AS.getType());
+    _ASSERT_EQ(n, AS.getNcols());
+    _ASSERT_EQ(n, AS.getNrows());
 
     float asData[n * n] = {-382.0f, 52.0f, -50.0f, 369.0f,
         -433.0f, 89.0f, -50.0f, 422.0f,
@@ -755,7 +764,7 @@ void TestMatrix::testDenseTimesSymmetric() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            CPPUNIT_ASSERT_EQUAL(AS_correct.get(i, j), AS.get(i, j));
+            _ASSERT_EQ(AS_correct.get(i, j), AS.get(i, j));
         }
     }
 }
@@ -782,7 +791,7 @@ void TestMatrix::testDenseTimesLowerTriangular() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
-            CPPUNIT_ASSERT_EQUAL(AL.get(i, j), AL_correct.get(i, j));
+            _ASSERT_EQ(AL.get(i, j), AL_correct.get(i, j));
         }
     }
 }
@@ -801,7 +810,7 @@ void TestMatrix::testQuadSymmetric() {
     }
     float correct_val = 1711809.0f;
     float val = A.quad(x);
-    CPPUNIT_ASSERT_EQUAL(correct_val, val);
+    _ASSERT_EQ(correct_val, val);
 
     Matrix q(n, 1);
     for (int i = 0; i < n; i++) {
@@ -809,7 +818,7 @@ void TestMatrix::testQuadSymmetric() {
     }
     val = A.quad(x, q);
     correct_val = 1706694.0f;
-    CPPUNIT_ASSERT_EQUAL(correct_val, val);
+    _ASSERT_EQ(correct_val, val);
 }
 
 void TestMatrix::testLeftTransposeMultiply() {
@@ -821,13 +830,13 @@ void TestMatrix::testLeftTransposeMultiply() {
     Matrix B = MatrixFactory::MakeRandomMatrix(m, k, 0.0f, 1.0, Matrix::MATRIX_DENSE);
 
     A.transpose();
-    CPPUNIT_ASSERT_EQUAL(n, A.getNrows());
-    CPPUNIT_ASSERT_EQUAL(m, A.getNcols());
+    _ASSERT_EQ(n, A.getNrows());
+    _ASSERT_EQ(m, A.getNcols());
 
     Matrix C = A * B;
 
-    CPPUNIT_ASSERT_EQUAL(n, C.getNrows());
-    CPPUNIT_ASSERT_EQUAL(k, C.getNcols());
+    _ASSERT_EQ(n, C.getNrows());
+    _ASSERT_EQ(k, C.getNcols());
 
     A.transpose();
     Matrix AT(n, m, Matrix::MATRIX_DENSE);
@@ -840,7 +849,7 @@ void TestMatrix::testLeftTransposeMultiply() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            CPPUNIT_ASSERT_EQUAL(C0.get(i, j), C.get(i, j));
+            _ASSERT_EQ(C0.get(i, j), C.get(i, j));
         }
     }
 
@@ -866,11 +875,11 @@ void TestMatrix::testRightTransposeMultiply() {
     }
 
     Matrix C_correct = A*BT;
-    CPPUNIT_ASSERT_EQUAL(C_correct.getNrows(), C.getNrows());
-    CPPUNIT_ASSERT_EQUAL(C_correct.getNcols(), C.getNcols());
+    _ASSERT_EQ(C_correct.getNrows(), C.getNrows());
+    _ASSERT_EQ(C_correct.getNcols(), C.getNcols());
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < k; j++) {
-            CPPUNIT_ASSERT_EQUAL(C_correct.get(i, j), C.get(i, j));
+            _ASSERT_EQ(C_correct.get(i, j), C.get(i, j));
         }
     }
 }
@@ -891,7 +900,7 @@ void TestMatrix::testLeftSymmetricMultiply() {
     Matrix C_correct = S2D*A;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            CPPUNIT_ASSERT_EQUAL(C_correct.get(i, j), C.get(i, j));
+            _ASSERT_EQ(C_correct.get(i, j), C.get(i, j));
         }
     }
 
@@ -901,7 +910,7 @@ void TestMatrix::testLeftSymmetricMultiply() {
     C_correct = S2D * x;
 
     for (int i = 0; i < n; i++) {
-        CPPUNIT_ASSERT(std::fabs(C_correct.get(i, 0) - C.get(i, 0)) < 1e-4);
+        _ASSERT_NUM_EQ(C_correct.get(i, 0), C.get(i, 0), 1e-4);
     }
 }
 
@@ -916,12 +925,12 @@ void TestMatrix::testSparseGetSet() {
     M.set(0, 1, r[1]);
     M.set(1, 1, r[2]);
 
-    CPPUNIT_ASSERT_EQUAL(r[0], M.get(0, 0));
-    CPPUNIT_ASSERT_EQUAL(r[1], M.get(0, 1));
-    CPPUNIT_ASSERT_EQUAL(r[2], M.get(1, 1));
-    CPPUNIT_ASSERT_EQUAL(n, M.getNrows());
-    CPPUNIT_ASSERT_EQUAL(m, M.getNcols());
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SPARSE, M.getType());
+    _ASSERT_EQ(r[0], M.get(0, 0));
+    _ASSERT_EQ(r[1], M.get(0, 1));
+    _ASSERT_EQ(r[2], M.get(1, 1));
+    _ASSERT_EQ(n, M.getNrows());
+    _ASSERT_EQ(m, M.getNcols());
+    _ASSERT_EQ(Matrix::MATRIX_SPARSE, M.getType());
 
 }
 
@@ -949,11 +958,11 @@ void TestMatrix::testSparseCholesky() {
     L.solveCholeskySystem(xsol, rhs);
 
     const double tol = 1e-6;
-    CPPUNIT_ASSERT(std::abs(0.210526 - xsol.get(0, 0)) < tol);
-    CPPUNIT_ASSERT(std::abs(0.157895 - xsol[1]) < tol);
-    CPPUNIT_ASSERT(std::abs(0.1 - xsol[2]) < tol);
+    _ASSERT_NUM_EQ(0.210526, xsol.get(0, 0), tol);
+    _ASSERT_NUM_EQ(0.157895, xsol[1], tol);
+    _ASSERT_NUM_EQ(0.1, xsol[2], tol);
 
-    CPPUNIT_ASSERT_EQUAL(0, Matrix::cholmod_handle()->status);
+    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
 
 }
 
@@ -978,11 +987,11 @@ void TestMatrix::testSparseDenseMultiply() {
     }
 
 
-    CPPUNIT_ASSERT_EQUAL(m, B.getNrows());
-    CPPUNIT_ASSERT_EQUAL(n, B.getNcols());
+    _ASSERT_EQ(m, B.getNrows());
+    _ASSERT_EQ(n, B.getNcols());
 
     Matrix C;
-    CPPUNIT_ASSERT_NO_THROW(C = A * B);
+    _ASSERT_OK(C = A * B);
 
     float correctData[9] = {
         4.4000, 21.6000, 71.0000,
@@ -993,8 +1002,8 @@ void TestMatrix::testSparseDenseMultiply() {
     Matrix C_correct(n, n, correctData, Matrix::MATRIX_DENSE);
 
 
-    CPPUNIT_ASSERT_EQUAL(C_correct, C);
-    CPPUNIT_ASSERT_EQUAL(0, Matrix::cholmod_handle()->status);
+    _ASSERT_EQ(C_correct, C);
+    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
 
 }
 
@@ -1022,7 +1031,7 @@ void TestMatrix::testSparseAddDense() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            CPPUNIT_ASSERT_EQUAL(A.get(i, j), A_init.get(i, j) + B.get(i, j));
+            _ASSERT_EQ(A.get(i, j), A_init.get(i, j) + B.get(i, j));
         }
     }
 
@@ -1041,19 +1050,60 @@ void TestMatrix::testSparseAddSparse() {
     Matrix B = MatrixFactory::ReadSparse(fp_B);
 
     /* close file handlers */
-    CPPUNIT_ASSERT_EQUAL(0, fclose(fp_A)); 
-    CPPUNIT_ASSERT_EQUAL(0, fclose(fp_B));
+    _ASSERT_EQ(0, fclose(fp_A));
+    _ASSERT_EQ(0, fclose(fp_B));
 
     Matrix A0 = A;
-    A += B;
+    _ASSERT_OK(A += B);
 
     for (int i = 0; i < A.getNrows(); i++) {
         for (int j = 0; j < A.getNcols(); j++) {
-            CPPUNIT_ASSERT_EQUAL(A0.get(i, j) + B.get(i, j), A.get(i, j));
+            _ASSERT_EQ(A0.get(i, j) + B.get(i, j), A.get(i, j));
         }
     }
 
-
 }
 
+void TestMatrix::testSparseAddSparse2() {
+    int n = 100;
+    int m = 250;
+    int nnz = 200;
+    Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, -1.0, 2.0);
+    Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, -1.0, 2.0);
+    Matrix C;
+    _ASSERT_OK(C = A + B);
+    _ASSERT_EQ(Matrix::MATRIX_SPARSE, C.getType());
+    _ASSERT_EQ(n, C.getNrows());
+    _ASSERT_EQ(m, C.getNcols());
 
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            _ASSERT_EQ(A.get(i, j) + B.get(i, j), C.get(i, j));
+        }
+    }
+
+    _ASSERT_OK(C += A);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            _ASSERT_EQ(2 * A.get(i, j) + B.get(i, j), C.get(i, j));
+        }
+    }
+
+    _ASSERT_OK(Matrix::destroy_handle());
+}
+
+void TestMatrix::testSparseQuad() {
+    int n = 10;
+    int nnz = std::floor(1.2f * n);
+    Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0);
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0, Matrix::MATRIX_DENSE);
+
+    float r;
+    _ASSERT_OK(r = A.quad(x));
+    
+    std::cout << A;
+    std::cout << x;
+    std::cout << r;
+
+}
