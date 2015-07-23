@@ -24,6 +24,7 @@ const static double MAT2[16] = {
 CPPUNIT_TEST_SUITE_REGISTRATION(TestQuadratic);
 
 TestQuadratic::TestQuadratic() {
+
 }
 
 TestQuadratic::~TestQuadratic() {
@@ -42,17 +43,22 @@ void TestQuadratic::testQuadratic() {
 
     Matrix Q = Matrix(4, 4, Qdata);
     Matrix x = Matrix(4, 1, xdata);
-    Function *quad = new Quadratic(Q);
+    Function *quad;
+    _ASSERT_OK(quad = new Quadratic(Q));
 
     double f;
-    int info = quad -> call(x, f);
+    int info;
+    _ASSERT_OK(info = quad -> call(x, f));
     _ASSERT_EQ(Function::STATUS_OK, info);
 
     delete quad;
 }
 
 void TestQuadratic::testQuadratic2() {
-    //  CPPUNIT_ASSERT(false);
+    /* Test the empty constructor */
+    Quadratic *Q = new Quadratic();
+    _ASSERT_EQ(Function::CAT_QUADRATIC, Q->category());
+    _ASSERT_OK(delete Q);
 }
 
 void TestQuadratic::testQuadratic3() {
@@ -163,4 +169,20 @@ void TestQuadratic::testCallDiagonalMatrix() {
 
     double tol = 1e-8;
     _ASSERT_NUM_EQ(374, val, tol);
+}
+
+void TestQuadratic::testCallSparse() {
+    size_t n = 10;
+    size_t nnz_Q = 20;
+    Matrix Qsp = MatrixFactory::MakeRandomSparse(n, n, nnz_Q, 0.0, 1.0);
+
+    Function *F = new Quadratic(Qsp);
+
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 3.0, 1.5, Matrix::MATRIX_DENSE);
+    double fval = -1;
+    _ASSERT_OK(F->call(x, fval));
+    _ASSERT(fval > 0);
+
+    _ASSERT_OK(delete F);
+
 }

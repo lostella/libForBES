@@ -329,7 +329,7 @@ void TestMatrix::testDiagonalGetSet() {
     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, A -> getType());
 
     double t = -1.234;
-    A -> set(3, 3, t);
+    _ASSERT_OK(A -> set(3, 3, t));
     _ASSERT_EQ(t, A -> get(3, 3));
     CPPUNIT_ASSERT_THROW(A -> set(3, 4, 1.0), std::invalid_argument);
 
@@ -353,7 +353,8 @@ void TestMatrix::testDiagonalMultiplication() {
         }
     }
 
-    Matrix C = (*A) * B;
+    Matrix C;
+    _ASSERT_OK(C = (*A) * B);
     _ASSERT_EQ(Matrix::MATRIX_DENSE, C.getType());
     _ASSERT_EQ(n, C.getNrows());
     _ASSERT_EQ(m, C.getNcols());
@@ -366,7 +367,7 @@ void TestMatrix::testDiagonalMultiplication() {
         }
     }
 
-    delete A;
+    _ASSERT_OK(delete A);
     delete[] myData;
 }
 
@@ -1138,46 +1139,54 @@ void TestMatrix::testSparseQuad() {
 }
 
 void TestMatrix::testSparseQuadSparseX() {
-    for (size_t n = 10; n < 30; ++n) {
-        size_t nnz = (1.2 * n);
-        Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0);
-        Matrix x = MatrixFactory::MakeRandomSparse(n, 1, n / 2, 0.0, 10.0);
-        double r, r_exp = 0.0;
-        _ASSERT_OK(r = A.quad(x));
-        for (size_t i = 0; i < n; i++) {
-            for (size_t j = 0; j < n; j++) {
-                r_exp += x.get(i, 0) * x.get(j, 0) * A.get(i, j);
+    const double tol = 1e-6;
+    const size_t runs = 20;
+    for (size_t p = 0; p < runs; p++) {
+        for (size_t n = 2; n < 70; n += 3) {
+            size_t nnz_A = (size_t) std::ceil(1.2 * n);
+            size_t nnz_x = std::max((size_t) 1, (size_t) std::ceil(0.75 * n));
+            Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz_A, 0.0, 10.0);
+            Matrix x = MatrixFactory::MakeRandomSparse(n, 1, nnz_x, 0.0, 10.0);
+            double r, r_exp = 0.0;
+            _ASSERT_OK(r = A.quad(x));
+            for (size_t i = 0; i < n; i++) {
+                for (size_t j = 0; j < n; j++) {
+                    r_exp += x.get(i, 0) * x.get(j, 0) * A.get(i, j);
+                }
             }
+            _ASSERT_NUM_EQ(r_exp, r, tol);
         }
-        double tol = 1e-6;
-        _ASSERT_NUM_EQ(r_exp, r, tol);
     }
-
 }
 
 void TestMatrix::testSparseQuad_q() {
     size_t n = 6;
-    Matrix A = MatrixFactory::MakeSparse(n, n, 6, Matrix::SPARSE_UNSYMMETRIC);
+    size_t nnz_A = 6;
+    size_t nnz_x = 4;
+    size_t nnz_q = 1;
+
+    Matrix A = MatrixFactory::MakeSparse(n, n, nnz_A, Matrix::SPARSE_UNSYMMETRIC);
     A.set(0, 0, 4);
     A.set(0, 1, 5);
     A.set(1, 0, 8);
     A.set(1, 2, 10);
     A.set(5, 3, 100);
 
-    Matrix x = MatrixFactory::MakeSparse(n, 1, 4, Matrix::SPARSE_UNSYMMETRIC);
+    Matrix x = MatrixFactory::MakeSparse(n, 1, nnz_x, Matrix::SPARSE_UNSYMMETRIC);
     x.set(0, 0, 1);
     x.set(1, 0, 2);
     x.set(5, 0, 9);
     x.set(4, 0, 3);
 
-    Matrix q = MatrixFactory::MakeSparse(n, 1, 1, Matrix::SPARSE_UNSYMMETRIC);
+    Matrix q = MatrixFactory::MakeSparse(n, 1, nnz_q, Matrix::SPARSE_UNSYMMETRIC);
     q.set(4, 0, 1);
 
     double r = A.quad(x, q);
     const double r_exp = 33.0;
     const double tol = 1e-10;
-    
-    _ASSERT_NUM_EQ(r_exp, r, tol);
 
+    _ASSERT_NUM_EQ(r_exp, r, tol);
+    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
+    _ASSERT_OK(Matrix::destroy_handle());
 
 }

@@ -28,12 +28,39 @@
 
 class Quadratic : public Function {
 public:
+    /**
+     * Create a trivial quadratic function with zero Hessian and
+     * zero linear term.
+     */
     Quadratic();
-    Quadratic(Matrix&); // provide just Q
-    Quadratic(Matrix&,  Matrix&); // both Q and q    
+    /**
+     * Create a quadratic function of the form <code>f(x) = x'*Q*x</code>, where
+     * <code>Q</code> is a square matrix.
+     * 
+     * @param Q Matrix Q.
+     */
+    Quadratic(Matrix&Q);
+    /**
+     * Create a quadratic-plus-linear function of the form <code>f(x) = x'*Q*x + q'*x</code>,
+     * where <code>Q</code> is a square matrix and <code>q</code> is a vector.
+     * @param Q A square matrix
+     * @param q A vector
+     */
+    Quadratic(Matrix& Q,  Matrix& q); // both Q and q    
+    /**
+     * The copy constructor of this class.
+     * @param orig Instance of Quadratic to be copied.
+     */
     Quadratic(const Quadratic& orig);
+    /**
+     * Destructor.
+     */
     virtual ~Quadratic();
 
+    /**
+     * Category of this function. 
+     * @return Category index.
+     */
     int category();
 
     virtual int call(Matrix& x, double& f);
