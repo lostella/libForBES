@@ -36,10 +36,10 @@ public:
 
     int category();
 
-    virtual int call( Matrix& x, float& f);
-    virtual int callConj(const Matrix& x, float& f_star);
-    virtual int callProx(const Matrix& x, float gamma, Matrix& prox, float f_at_prox);
-    virtual int callProx(const Matrix& x, float gamma, Matrix& prox);   
+    virtual int call(Matrix& x, double& f);
+    virtual int callConj(const Matrix& x, double& f_star);
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox);
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);   
 
 
 protected:

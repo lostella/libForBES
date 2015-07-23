@@ -56,7 +56,7 @@ Quadratic::~Quadratic() {
     }
 }
 
-int Quadratic::call( Matrix& x, float& f)  {
+int Quadratic::call( Matrix& x, double& f)  {
     if (!is_Q_eye) {
         if (is_q_zero) {
             f = Q->quad(x);
@@ -71,7 +71,7 @@ int Quadratic::category() {
     return CAT_QUADRATIC;
 }
 
-int Quadratic::callConj(const Matrix& y, float& f_star) {
+int Quadratic::callConj(const Matrix& y, double& f_star) {
     //TODO: Make Cholesky factor (if it doesn't exist)
     if (L == NULL) {
         L = new Matrix();
@@ -87,11 +87,11 @@ int Quadratic::callConj(const Matrix& y, float& f_star) {
     return STATUS_OK;
 }
 
-int Quadratic::callProx(const Matrix& x, float gamma, Matrix& prox, float f_at_prox) {
+int Quadratic::callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox) {
     return STATUS_UNDEFINED_FUNCTION;
 }
 
-int Quadratic::callProx(const Matrix& x, float gamma, Matrix& prox) {
+int Quadratic::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return STATUS_UNDEFINED_FUNCTION;
 }
 

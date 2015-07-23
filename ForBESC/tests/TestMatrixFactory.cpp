@@ -39,7 +39,7 @@ void TestMatrixFactory::tearDown() {
 
 void TestMatrixFactory::testMakeIdentity() {
     int n = 10;
-    float alpha = 2.5;
+    double alpha = 2.5;
     Matrix result = MatrixFactory::MakeIdentity(n, alpha);
     CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, result.getType());
     for (int i = 0; i < n; i++) {
@@ -47,7 +47,7 @@ void TestMatrixFactory::testMakeIdentity() {
             if (i == j) {
                 CPPUNIT_ASSERT_EQUAL(alpha, result.get(i, j));
             } else {
-                CPPUNIT_ASSERT_EQUAL(0.0f, result.get(i, j));
+                CPPUNIT_ASSERT_EQUAL(0.0, result.get(i, j));
             }
         }
     }
@@ -61,7 +61,7 @@ void TestMatrixFactory::testMakeRandomMatrix() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i < j) {
-                CPPUNIT_ASSERT_EQUAL(0.0f, result.get(i, j));
+                CPPUNIT_ASSERT_EQUAL(0.0, result.get(i, j));
             } else {
                 CPPUNIT_ASSERT(result.get(i, j) > 0);
             }

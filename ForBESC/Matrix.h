@@ -124,9 +124,9 @@ public:
      * 
      * @param nr number of rows
      * @param nc number of columns
-     * @param data float values (data will be copied)
+     * @param data double values (data will be copied)
      */
-    Matrix(int nr, int nc, const float * data);
+    Matrix(int nr, int nc, const double * data);
 
     /**
      * Allocates a new matrix of given dimensions, given data and given 
@@ -136,10 +136,10 @@ public:
      * 
      * @param nr number of rows
      * @param nc number of columns
-     * @param data float values (data will be copied)
+     * @param data double values (data will be copied)
      * @param matrixType a non-sparse matrix type.
      */
-    Matrix(int nr, int nc, const float * data, MatrixType matrixType);
+    Matrix(int nr, int nc, const double * data, MatrixType matrixType);
 
     /**
      * Copy-constructor.
@@ -168,7 +168,7 @@ public:
      * @param j column index (<code>0,...,ncols-1</code>)
      * @return value at <code>(i,j)</code>
      */
-    float get(const int i, const int j) const;
+    double get(const int i, const int j) const;
 
 
     /**
@@ -177,7 +177,7 @@ public:
      * @param j column index (<code>0,...,ncols-1</code>)
      * @param val value to be set at <code>(i,j)</code>
      */
-    void set(int i, int j, float val);
+    void set(int i, int j, double val);
 
 
     /* Getters */
@@ -196,11 +196,11 @@ public:
 
     /**
      * Getter for the matrix data. Provides direct access to the matrix data which
-     * are stored as an array of <code>float</code> (datatype <code>float*</code>).
+     * are stored as an array of <code>double</code> (datatype <code>double*</code>).
      * 
      * @return Pointer to the matrix data
      */
-    float * const getData() const;
+    double * const getData() const;
 
     /**
      * Returns the type of this matrix as <code>MatrixType</code>
@@ -267,9 +267,9 @@ public:
      * need to be of combatible dimensions.</p>
      * 
      * @param x The vector x.
-     * @return Scalar x'*Q*x as <code>float</code>.
+     * @return Scalar x'*Q*x as <code>double</code>.
      */
-    float quad(Matrix& x);
+    double quad(Matrix& x);
 
     /**
      * Computes the quadratic form x'*Q*x + q'*x.
@@ -285,7 +285,7 @@ public:
      * @param q The parameter vector x.
      * @return The result of x'*Q*x + q'*x.
      */
-    float quad(Matrix& x, Matrix& q);
+    double quad(Matrix& x, Matrix& q);
 
     /**
      * Computes the Cholesky factorization of this matrix. 
@@ -340,7 +340,7 @@ public:
      * @param sub index
      * @return reference to matrix data
      */
-    float &operator[](const int sub) const; //overloading []    
+    double &operator[](const int sub) const; //overloading []    
 
     /**
      * Summation operator.
@@ -421,7 +421,7 @@ private:
     /* For dense matrices: */
 
     int m_dataLength;       /*< Length of data */
-    float *m_data = NULL;   /*< Data */
+    double *m_data = NULL;   /*< Data */
 
     /* CSparse members */
     cholmod_triplet *m_triplet = NULL;          /*< Sparse triplets */
@@ -505,7 +505,7 @@ private:
      */
     SparseMatrixStorageType m_sparseStorageType;
     
-    friend float quadFromTriplet(const Matrix& Q, const Matrix& x);
+    friend double quadFromTriplet(const Matrix& Q, const Matrix& x);
     
 };
 

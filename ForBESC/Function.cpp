@@ -36,7 +36,7 @@ Function::Function(const Function& orig) {
 Function::~Function() {
 }
 
-int Function::call( Matrix& x, float& f, Matrix& grad)  {
+int Function::call( Matrix& x, double& f, Matrix& grad)  {
     int status;
     status = call(x, f);
     if (STATUS_OK != status) {

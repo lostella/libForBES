@@ -47,7 +47,7 @@ int Matrix::destroy_handle() {
 Matrix::Matrix() {
     m_nrows = 0;
     m_ncols = 0;
-    m_data = new float;
+    m_data = new double;
     *m_data = 0;
     m_type = MATRIX_DENSE;
     m_dataLength = 0;
@@ -62,14 +62,14 @@ Matrix::Matrix(int nr, int nc, MatrixType mType) {
     init(nr, nc, mType);
 }
 
-Matrix::Matrix(int nr, int nc, const float * dat) {
+Matrix::Matrix(int nr, int nc, const double * dat) {
     init(nr, nc, MATRIX_DENSE);
     for (int j = 0; j < nc * nr; j++) {
         m_data[j] = dat[j];
     }
 }
 
-Matrix::Matrix(int nr, int nc, const float * dat, MatrixType mType) {
+Matrix::Matrix(int nr, int nc, const double * dat, MatrixType mType) {
     init(nr, nc, mType);
     for (int j = 0; j < length(); j++) {
         m_data[j] = dat[j];
@@ -85,7 +85,7 @@ Matrix::Matrix(const Matrix& orig) {
         if (n <= 0) {
             n = 1;
         }
-        m_data = new float[n];
+        m_data = new double[n];
         for (int i = 0; i < n; i++) {
             m_data[i] = orig.m_data[i];
         }
@@ -127,7 +127,7 @@ int Matrix::getNrows() const {
     return m_nrows;
 }
 
-float * const Matrix::getData() const {
+double * const Matrix::getData() const {
     return m_data;
 }
 
@@ -174,7 +174,7 @@ int Matrix::reshape(int nrows, int ncols) {
     return 0;
 }
 
-float Matrix::get(const int i, const int j) const {
+double Matrix::get(const int i, const int j) const {
     if (i < 0 || i >= getNrows() || j < 0 || j >= getNcols()) {
         throw std::out_of_range("Index out of range!");
     }
@@ -198,7 +198,7 @@ float Matrix::get(const int i, const int j) const {
         if (m_triplet == NULL) {
             throw std::logic_error("not supported yet");
         }
-        float val = 0.0f;
+        double val = 0.0f;
         for (int k = 0; k < m_triplet->nnz; k++) {
             if (i == (static_cast<int*> (m_triplet->i))[k]) {
                 if (j == (static_cast<int*> (m_triplet->j))[k]) {
@@ -211,7 +211,7 @@ float Matrix::get(const int i, const int j) const {
     }
 } /* END GET */
 
-void Matrix::set(int i, int j, float v) {
+void Matrix::set(int i, int j, double v) {
     if (!indexWithinBounds(i, j)) {
         throw std::out_of_range("Index out of range!");
     }
@@ -241,8 +241,8 @@ void Matrix::set(int i, int j, float v) {
 
 }
 
-float quadFromTriplet(const Matrix& Q, const Matrix& x) {
-    float r = 0.0;
+double quadFromTriplet(const Matrix& Q, const Matrix& x) {
+    double r = 0.0;
     for (int k = 0; k < Q.m_triplet->nzmax; k++) {
         r +=    x.get(((int *) Q.m_triplet->i)[k], 0) *
                 x.get(((int *) Q.m_triplet->j)[k], 0) *
@@ -251,7 +251,7 @@ float quadFromTriplet(const Matrix& Q, const Matrix& x) {
     return r;
 }
 
-float Matrix::quad(Matrix & x) {
+double Matrix::quad(Matrix & x) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -261,7 +261,7 @@ float Matrix::quad(Matrix & x) {
     if (x.getNrows() != m_ncols) {
         throw std::invalid_argument("The argument of quad(Matrix&) is not of appropriate dimension.");
     }
-    float result = 0.0;
+    double result = 0.0;
 
     if (MATRIX_DENSE == m_type || MATRIX_LOWERTR == m_type) { /* DENSE or LOWER TRIANGULAR */
         for (int i = 0; i < m_nrows; i++) {
@@ -291,7 +291,7 @@ float Matrix::quad(Matrix & x) {
     return result;
 }
 
-float Matrix::quad(Matrix& x, Matrix & q) {
+double Matrix::quad(Matrix& x, Matrix & q) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -304,7 +304,7 @@ float Matrix::quad(Matrix& x, Matrix & q) {
     if (x.getNrows() != m_ncols) {
         throw std::invalid_argument("The argument of quad(Matrix&) is not of appropriate dimension.");
     }
-    float t = 0.0f;
+    double t = 0.0f;
     Matrix r;
     r = q*x;
     t = r[0] + quad(x);
@@ -332,7 +332,7 @@ int Matrix::cholesky(Matrix & L) {
 #ifdef DEBUG_VERBOSE
             std::cerr << "[Warning] Applying Cholesky on a possibly non-symmetric matrix!" << std::endl;
 #endif /* END DEBUG_VERBOSE */
-            info = LAPACKE_spotrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data, m_nrows);
+            info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data, m_nrows);
             for (int i = 0; i < m_nrows; i++) {
                 for (int j = 0; j > i; j++) {
                     L.set(i, j, 0.0f);
@@ -354,7 +354,7 @@ int Matrix::cholesky(Matrix & L) {
 #endif /* END USE_LIBS */
         } else if (m_type == MATRIX_SYMMETRIC) {
 #ifdef USE_LIBS
-            info = LAPACKE_spptrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data);
+            info = LAPACKE_dpptrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data);
             L.m_type = MATRIX_LOWERTR;
 #else /* Symmetric matrix - no libs */
             throw std::logic_error("Symmetric matrix - no LAPACK: Unsupported operation!");
@@ -386,7 +386,7 @@ int Matrix::solveCholeskySystem(Matrix& solution, const Matrix & rhs) const {
             throw std::invalid_argument("Method `solveCholesky` can only be applied to square matrices!");
         }
 #ifdef USE_LIBS
-        info = LAPACKE_spotrs(LAPACK_COL_MAJOR, 'L', m_nrows, rhs.m_ncols, m_data, m_nrows, solution.m_data, m_nrows);
+        info = LAPACKE_dpotrs(LAPACK_COL_MAJOR, 'L', m_nrows, rhs.m_ncols, m_data, m_nrows, solution.m_data, m_nrows);
 #else
         // Custom implementation!
 #endif  
@@ -439,7 +439,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     return os;
 }
 
-float &Matrix::operator[](int sub) const {
+double &Matrix::operator[](int sub) const {
     if (sub < 0 || sub > length()) {
         throw std::out_of_range("Exception: Index out of range for Matrix");
     }
@@ -456,7 +456,7 @@ Matrix & Matrix::operator+=(Matrix & right) {
             /* Sparse + Dense = Dense */
             m_type = MATRIX_DENSE;
             /* this = zero matrix */
-            m_data = new float[m_ncols * m_nrows];
+            m_data = new double[m_ncols * m_nrows];
             for (int i = 0; i < m_nrows; i++) {
                 for (int j = 0; j < m_ncols; j++) {
                     set(i, j, right.get(i, j));
@@ -466,7 +466,7 @@ Matrix & Matrix::operator+=(Matrix & right) {
             if (m_triplet != NULL) {
                 /* Add triplets */
                 int i = -1, j = -1;
-                float v = 0.0;
+                double v = 0.0;
                 for (int k = 0; k < m_triplet->nnz; k++) {
                     i = ((int*) m_triplet->i)[k];
                     j = ((int*) m_triplet->j)[k];
@@ -493,7 +493,7 @@ Matrix & Matrix::operator+=(Matrix & right) {
         }
     } else if (m_data != NULL) { /* Not sparse AND m_data is not NULL */
 #ifdef USE_LIBS    
-        cblas_saxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
+        cblas_daxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else
         for (int i = 0; i < length(); i++)
             m_data[i] += right[i];
@@ -507,7 +507,7 @@ Matrix & Matrix::operator-=(const Matrix & right) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
 #ifdef USE_LIBS    
-    cblas_saxpy(length(), -1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
+    cblas_daxpy(length(), -1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else
     for (int i = 0; i < length(); i++) {
         m_data[i] -= right[i];
@@ -535,7 +535,7 @@ Matrix Matrix::operator-(const Matrix & right) const {
 }
 
 Matrix Matrix::operator*(Matrix & right) {
-    float t = 0.0f;
+    double t = 0.0f;
     if (isColumnVector() && right.isColumnVector() && length() == right.length()) {
         // multiplication of two column vectors = dot product
         Matrix r(1, 1);
@@ -579,7 +579,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
         if (m_data != NULL) {
             delete m_data;
         }
-        m_data = new float[m_dataLength];
+        m_data = new double[m_dataLength];
     }
     m_transpose = right.m_transpose;
     m_sparseStorageType = right.m_sparseStorageType;
@@ -601,7 +601,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
 
 
 #ifdef USE_LIBS
-    cblas_scopy(m_dataLength, right.m_data, 1, m_data, 1);
+    cblas_dcopy(m_dataLength, right.m_data, 1, m_data, 1);
 #else
     for (int i = 0; i < m_dataLength; i++) {
         m_data[i] = right[i];
@@ -613,7 +613,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
 /********* PRIVATE METHODS ************/
 void Matrix::domm(const Matrix &right, Matrix & result) const {
     // multiply with LHS being dense
-    float t;
+    double t;
     //std::cout << "multiplication - left = " << m_nrows << "x" << m_ncols << std::endl;
     for (int i = 0; i < m_nrows; i++) {
         for (int j = 0; j < right.m_ncols; j++) {
@@ -634,7 +634,7 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
     if (MATRIX_DENSE == right.m_type) { // RHS is also dense
         Matrix result(m_nrows, right.m_ncols);
 #ifdef USE_LIBS
-        cblas_sgemm(CblasColMajor,
+        cblas_dgemm(CblasColMajor,
                 m_transpose ? CblasTrans : CblasNoTrans,
                 right.m_transpose ? CblasTrans : CblasNoTrans,
                 m_nrows, right.m_ncols, m_ncols, 1.0f, m_data, m_transpose ? m_ncols : m_nrows,
@@ -666,7 +666,7 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix & right) const {
     Matrix result(m_nrows, right.m_ncols);
     if (right.isColumnVector()) {
 #ifdef USE_LIBS
-        cblas_sspmv(CblasColMajor, CblasLower,
+        cblas_dspmv(CblasColMajor, CblasLower,
                 m_nrows, 1.0f, m_data,
                 right.m_data, 1,
                 0.0, result.m_data, 1);
@@ -753,14 +753,14 @@ void Matrix::init(int nr, int nc, MatrixType mType) {
     switch (m_type) {
         case MATRIX_DENSE:
             m_dataLength = nc * nr;
-            m_data = new float[m_dataLength]();
+            m_data = new double[m_dataLength]();
             break;
         case MATRIX_DIAGONAL:
             if (nc != nr) {
                 throw std::invalid_argument("Diagonal matrices must be square!!!");
             }
             m_dataLength = nc;
-            m_data = new float[m_dataLength]();
+            m_data = new double[m_dataLength]();
             break;
         case MATRIX_LOWERTR:
         case MATRIX_SYMMETRIC:
@@ -768,7 +768,7 @@ void Matrix::init(int nr, int nc, MatrixType mType) {
                 throw std::invalid_argument("Lower triangular matrices must be square!!!");
             }
             m_dataLength = nc * (nc + 1) / 2;
-            m_data = new float[m_dataLength]();
+            m_data = new double[m_dataLength]();
             break;
         case MATRIX_SPARSE:
             break;

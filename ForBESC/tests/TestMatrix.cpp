@@ -55,45 +55,45 @@ void TestMatrix::testQuadratic() {
         f = new Matrix(n, n);
         x = new Matrix(n, 1);
         for (int i = 0; i < n; i++) {
-            f -> set(i, i, 1.0f);
+            f -> set(i, i, 1.0);
             (*x)[i] = i + 1;
         }
-        float r = f -> quad(*x);
-        _ASSERT_EQ(static_cast<float> (n * (n + 1)* (2 * n + 1) / 6), r);
+        double r = f -> quad(*x);
+        _ASSERT_EQ(static_cast<double> (n * (n + 1)* (2 * n + 1) / 6), r);
         delete f;
         delete x;
     }
 }
 
 void TestMatrix::testQuadratic2() {
-    float fdata[9] = {-1.0, 3.0, 1.0, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
-    float xdata[3] = {1.0, 2.0, 3.0};
+    double fdata[9] = {-1.0, 3.0, 1.0, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
+    double xdata[3] = {1.0, 2.0, 3.0};
 
     Matrix f(3, 3, fdata);
     Matrix x(3, 1, xdata);
 
-    float r;
+    double r;
     _ASSERT_OK(r = f.quad(x));
-    _ASSERT_EQ(-16.0f, r);
+    _ASSERT_EQ(-16.0, r);
 }
 
 void TestMatrix::testQuadratic3() {
-    float fdata[9] = {-1.0, -3.0, 7.5, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
-    float xdata[3] = {-1.5, 2.0, 3.0};
-    float qdata[3] = {5.0, -6.0, 13.5};
+    double fdata[9] = {-1.0, -3.0, 7.5, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
+    double xdata[3] = {-1.5, 2.0, 3.0};
+    double qdata[3] = {5.0, -6.0, 13.5};
 
     Matrix f(3, 3, fdata);
     Matrix x(3, 1, xdata);
     Matrix q(3, 1, qdata);
 
-    float r;
+    double r;
     _ASSERT_OK(r = f.quad(x, q));
-    _ASSERT_EQ(-77.5f, r);
+    _ASSERT_EQ(-77.5, r);
 }
 
 void TestMatrix::testQuadraticDot() {
-    float ydata[4] = {-2.0, 5.0, -6.0, -11.0};
-    float xdata[4] = {10.0, 2.0, 3.0, 4.0};
+    double ydata[4] = {-2.0, 5.0, -6.0, -11.0};
+    double xdata[4] = {10.0, 2.0, 3.0, 4.0};
 
     Matrix y(4, 1, ydata);
     Matrix x(4, 1, xdata);
@@ -103,12 +103,12 @@ void TestMatrix::testQuadraticDot() {
     _ASSERT_EQ(1, r.getNcols());
     _ASSERT_EQ(1, r.getNrows());
     _ASSERT_EQ(1, r.length());
-    _ASSERT_EQ(-72.0f, r[0]);
+    _ASSERT_EQ(-72.0, r[0]);
 }
 
 void TestMatrix::testMultiplication() {
-    float fdata[9] = {-1.0, 3.0, 1.0, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
-    float xdata[3] = {1.0, 2.0, 3.0};
+    double fdata[9] = {-1.0, 3.0, 1.0, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
+    double xdata[3] = {1.0, 2.0, 3.0};
 
     Matrix f(3, 3, fdata);
     Matrix x(3, 1, xdata);
@@ -119,21 +119,21 @@ void TestMatrix::testMultiplication() {
     _ASSERT_EQ(3, r.getNrows());
     _ASSERT_EQ(1, r.getNcols());
     _ASSERT_EQ(3, r.length());
-    _ASSERT_EQ(18.f, r[0]);
-    _ASSERT_EQ(7.f, r[1]);
-    _ASSERT_EQ(-16.f, r[2]);
+    _ASSERT_EQ(18.0, r[0]);
+    _ASSERT_EQ(7.0, r[1]);
+    _ASSERT_EQ(-16.0, r[2]);
 }
 
 void TestMatrix::testGetSet() {
     Matrix f(10, 10);
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            f.set(i, j, static_cast<float> (3 * i + 5 * j + 13));
+            f.set(i, j, static_cast<double> (3 * i + 5 * j + 13));
         }
     }
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            _ASSERT_EQ(static_cast<float> (3 * i + 5 * j + 13), f.get(i, j));
+            _ASSERT_EQ(static_cast<double> (3 * i + 5 * j + 13), f.get(i, j));
         }
     }
 }
@@ -166,9 +166,9 @@ void TestMatrix::testAddition() {
     const int nRows = 3;
     const int nCols = 2;
     const int size = nRows * nCols;
-    float *a, *b;
-    a = new float[size];
-    b = new float[size];
+    double *a, *b;
+    a = new double[size];
+    b = new double[size];
     for (int i = 0; i < size; i++) {
         a[i] = i;
         b[i] = 3 * i + 7;
@@ -196,24 +196,24 @@ void TestMatrix::testFBMatrix() {
     _ASSERT_EQ(0, fBMatrix->getNrows());
     delete fBMatrix;
 
-    /* Test FBMatrix(int, int, float*) - Provide data */
+    /* Test FBMatrix(int, int, double*) - Provide data */
     const int n = 5;
-    float *x = new float[n];
+    double *x = new double[n];
     for (int i = 0; i < n; i++) {
         x[i] = 1 + 7 * i;
     }
     Matrix f(n, 1, x);
     delete[] x;
     for (int i = 0; i < n; i++) {
-        _ASSERT_EQ(static_cast<float> (1 + 7 * i), f[i]);
+        _ASSERT_EQ(static_cast<double> (1 + 7 * i), f[i]);
     }
 }
 
 void TestMatrix::testMakeRandomFBMatrix() {
     const int nRows = 10;
     const int nCols = 20;
-    const float offset = 0.1;
-    const float scale = 3.5;
+    const double offset = 0.1;
+    const double scale = 3.5;
     Matrix f = MatrixFactory::MakeRandomMatrix(nRows, nCols, offset, scale, Matrix::MATRIX_DENSE);
 
     _ASSERT_EQ(nCols, f.getNcols());
@@ -229,13 +229,13 @@ void TestMatrix::testMakeRandomFBMatrix() {
 
 void TestMatrix::testGetData() {
     int n = 100;
-    float *myData = new float[n];
+    double *myData = new double[n];
     for (int j = 0; j < n; j++) {
         myData[j] = j;
     }
     Matrix * mat = new Matrix(n, 1, myData);
 
-    float * retrievedData;
+    double * retrievedData;
     retrievedData = mat->getData();
 
     for (int j = 0; j < n; j++) {
@@ -249,13 +249,13 @@ void TestMatrix::testGetData() {
 }
 
 void TestMatrix::testGetNcols() {
-    int y = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
+    int y = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
     Matrix mat(10, y);
     _ASSERT_EQ(y, mat.getNcols());
 }
 
 void TestMatrix::testGetNrows() {
-    int x = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
+    int x = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
     Matrix mat(x, 10);
     _ASSERT_EQ(x, mat.getNrows());
 
@@ -282,8 +282,8 @@ void TestMatrix::testLength() {
     Matrix *f;
     f = new Matrix(3, 4);
     for (int i = 0; i < nRep; i++) {
-        x = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
-        y = (int) (5 + 50 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX));
+        x = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        y = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
         f = new Matrix(x, y);
         _ASSERT_EQ(x*y, f->length());
     }
@@ -310,22 +310,22 @@ void TestMatrix::testReshapeBad() {
 
 void TestMatrix::testDiagonalGetSet() {
     int n = 10;
-    float *myData = new float[n];
+    double *myData = new double[n];
     for (int j = 0; j < n; j++) {
-        myData[j] = j + 1.0f;
+        myData[j] = j + 1.0;
     }
 
     Matrix *A = new Matrix(n, n, myData, Matrix::MATRIX_DIAGONAL);
     delete[] myData;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            _ASSERT_EQ(static_cast<float> (i + 1)*(i == j), A -> get(i, j));
+            _ASSERT_EQ(static_cast<double> (i + 1)*(i == j), A -> get(i, j));
         }
     }
 
     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, A -> getType());
 
-    float t = -1.234;
+    double t = -1.234;
     A -> set(3, 3, t);
     _ASSERT_EQ(t, A -> get(3, 3));
     CPPUNIT_ASSERT_THROW(A -> set(3, 4, 1.0), std::invalid_argument);
@@ -337,16 +337,16 @@ void TestMatrix::testDiagonalMultiplication() {
     /* Diag * Dense = Dense */
     int n = 10;
     int m = 3;
-    float *myData = new float[n];
+    double *myData = new double[n];
     for (int j = 0; j < n; j++) {
-        myData[j] = j + 1.0f;
+        myData[j] = j + 1.0;
     }
     Matrix *A = new Matrix(n, n, myData, Matrix::MATRIX_DIAGONAL);
     Matrix B(n, m);
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            B.set(i, j, i + 1.0f);
+            B.set(i, j, i + 1.0);
         }
     }
 
@@ -359,7 +359,7 @@ void TestMatrix::testDiagonalMultiplication() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            _ASSERT_EQ(std::pow(i + 1.0f, 2.0f), C.get(i, j));
+            _ASSERT_EQ(std::pow(i + 1.0, 2.0), C.get(i, j));
         }
     }
 
@@ -370,11 +370,11 @@ void TestMatrix::testDiagonalMultiplication() {
 void TestMatrix::testDiagonalMultiplication2() {
     /* Diag * Diag = Diag */
     int n = 10;
-    float *aData = new float[n];
-    float *bData = new float[n];
+    double *aData = new double[n];
+    double *bData = new double[n];
 
     for (int i = 0; i < n; i++) {
-        aData[i] = i + 1.0f;
+        aData[i] = i + 1.0;
         bData[i] = n - i;
     }
     Matrix *A = new Matrix(n, n, aData, Matrix::MATRIX_DIAGONAL);
@@ -389,7 +389,7 @@ void TestMatrix::testDiagonalMultiplication2() {
     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, C.getType());
 
     for (int i = 0; i < n; i++) {
-        _ASSERT_EQ((i + 1.0f)*(n - i), C.get(i, i));
+        _ASSERT_EQ((i + 1.0)*(n - i), C.get(i, i));
     }
 }
 
@@ -397,15 +397,15 @@ void TestMatrix::testDenseTimesDiagonal() {
     const int nRows = 7;
     const int nCols = 3;
     const int size = nRows * nCols;
-    float *aData;
-    float *bData;
+    double *aData;
+    double *bData;
 
-    aData = new float[size];
+    aData = new double[size];
     for (int i = 0; i < size; i++) {
         aData[i] = i;
     }
 
-    bData = new float[nCols];
+    bData = new double[nCols];
     for (int i = 0; i < nCols; i++) {
         bData[i] = 3.0 * (i + 1);
     }
@@ -428,20 +428,20 @@ void TestMatrix::testDenseTimesDiagonal() {
 
 void TestMatrix::testQuadDiagonal() {
     int n = 10;
-    float *aData = new float[n];
-    float *xData = new float[n];
+    double *aData = new double[n];
+    double *xData = new double[n];
     for (int i = 0; i < n; i++) {
-        aData[i] = i + 1.0f;
-        xData[i] = 3.0f * (i + 1.0f);
+        aData[i] = i + 1.0;
+        xData[i] = 3.0 * (i + 1.0);
     }
     Matrix *A = new Matrix(n, n, aData, Matrix::MATRIX_DIAGONAL);
     Matrix *x = new Matrix(n, 1, xData);
-    float val = A -> quad(*x, *x);
-    const float correct = 30690.0f;
+    double val = A -> quad(*x, *x);
+    const double correct = 30690.0;
     _ASSERT_EQ(correct, val);
 
     val = A -> quad(*x);
-    const float correct2 = 27225.0f;
+    const double correct2 = 27225.0;
     _ASSERT_EQ(correct2, val);
 
     delete A;
@@ -455,13 +455,13 @@ void TestMatrix::testSubtract() {
     Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix Y = X - X;
     for (int i = 0; i < n * n; i++) {
-        _ASSERT_EQ(0.0f, Y.getData()[i]);
+        _ASSERT_EQ(0.0, Y.getData()[i]);
     }
 
     X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     X -= X;
     for (int i = 0; i < n * n; i++) {
-        _ASSERT_EQ(0.0f, X.getData()[i]);
+        _ASSERT_EQ(0.0, X.getData()[i]);
     }
 
     X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
@@ -478,7 +478,7 @@ void TestMatrix::testSubtract() {
 
 void TestMatrix::testCholesky() {
     const int n = 3;
-    float a[n * n] = {14, 32, 2,
+    double a[n * n] = {14, 32, 2,
         32, 77, 5,
         2, 5, 3};
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
@@ -493,17 +493,17 @@ void TestMatrix::testCholesky() {
 
 void TestMatrix::testSolveCholesky() {
     const int n = 3;
-    float a[n * n] = {14, 32, 2,
+    double a[n * n] = {14, 32, 2,
         32, 77, 5,
         2, 5, 3};
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
     _ASSERT_EQ(0, A.cholesky(L));
 
-    float bData[n] = {-1, 2, -3};
+    double bData[n] = {-1, 2, -3};
     Matrix b(n, 1, bData);
     Matrix x; // the solution!
-    float tol = 1e-5;
+    double tol = 1e-5;
     _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
     _ASSERT_NUM_EQ(-2.75f, x[0], tol);
     _ASSERT_NUM_EQ(1.25f, x[1], tol);
@@ -518,18 +518,18 @@ void TestMatrix::testSolveCholesky() {
 void TestMatrix::testSolveCholeskyMulti() {
     const int n = 4;
     const int m = 2;
-    float a[n * n] = {7, 2, -2, -1,
+    double a[n * n] = {7, 2, -2, -1,
         2, 3, 0, -1,
         -2, 0, 3, -1,
         -1, -1, -1, 1};
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
     _ASSERT_EQ(0, A.cholesky(L));
-    float tol = 1e-5;
-    _ASSERT_NUM_EQ(2.64575f, L[0], tol);
-    _ASSERT_NUM_EQ(0.7559289f, L[1], tol);
+    double tol = 1e-5;
+    _ASSERT_NUM_EQ(2.64575, L[0], tol);
+    _ASSERT_NUM_EQ(0.7559289, L[1], tol);
 
-    float bData[n * m] = {1, 2.5, 3, 4,
+    double bData[n * m] = {1, 2.5, 3, 4,
         -1, -2.5, -3, -4};
     Matrix b(n, m, bData);
     Matrix x; // the solution!
@@ -559,7 +559,7 @@ void TestMatrix::testLowerTriangular_getSet() {
                 if (i >= j) {
                     _ASSERT_NUM_EQ(3.2f * i + 7.5f * j + 0.45f, A->get(i, j), 1e-3);
                 } else {
-                    _ASSERT_EQ(0.0f, A->get(i, j));
+                    _ASSERT_EQ(0.0, A->get(i, j));
                 }
             }
         }
@@ -619,13 +619,13 @@ void TestMatrix::testSymmetricCholesky() {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
             A -> set(i, j, 3.2 * i + 0.2 * j + 0.45);
-            if (i == j) A -> set(i, i, A->get(i, i) + 20.0f);
+            if (i == j) A -> set(i, i, A->get(i, i) + 20.0);
         }
     }
 
     Matrix L;
     _ASSERT_EQ(0, A -> cholesky(L));
-    float tol = 1e-4;
+    double tol = 1e-4;
     _ASSERT_NUM_EQ(4.52217, L.get(0, 0), tol);
     _ASSERT_NUM_EQ(0.807135, L.get(1, 0), tol);
     _ASSERT_NUM_EQ(1.51476, L.get(2, 0), tol);
@@ -649,7 +649,7 @@ void TestMatrix::testTranspose() {
     Matrix X(n, m);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            X.set(i, j, 7.5 * i - 2.8 * j - 1.0f);
+            X.set(i, j, 7.5 * i - 2.8 * j - 1.0);
         }
     }
     X.transpose();
@@ -662,7 +662,7 @@ void TestMatrix::testTranspose() {
     Matrix Y(n, m);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            Y.set(i, j, 7.5 * i - 2.8 * j - 1.0f);
+            Y.set(i, j, 7.5 * i - 2.8 * j - 1.0);
         }
     }
 
@@ -686,13 +686,13 @@ void TestMatrix::testDiagonalTimesSymmetric() {
     int n = 10;
     Matrix D(n, n, Matrix::MATRIX_DIAGONAL);
     for (int i = 0; i < n; i++) {
-        D[i] = i + 1.0f;
+        D[i] = i + 1.0;
     }
 
     Matrix S(n, n, Matrix::MATRIX_SYMMETRIC);
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
-            S.set(i, j, -3.1f * i + 3.25f * j + 5.35f);
+            S.set(i, j, -3.1 * i + 3.25 * j + 5.35);
         }
     }
 
@@ -700,7 +700,7 @@ void TestMatrix::testDiagonalTimesSymmetric() {
     _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, DS.getType());
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
-            _ASSERT_EQ((i + 1.0f)*(-3.1f * i + 3.25f * j + 5.35f), DS.get(i, j));
+            _ASSERT_EQ((i + 1.0)*(-3.1 * i + 3.25 * j + 5.35), DS.get(i, j));
         }
     }
 }
@@ -709,8 +709,7 @@ void TestMatrix::testDiagonalTimesLowerTri() {
     int n = 6;
     Matrix D(n, n, Matrix::MATRIX_DIAGONAL);
     for (int i = 0; i < n; i++) {
-        D[i] = i + 1.0f;
-        ;
+        D[i] = i + 1.0;        
     }
 
     Matrix L(n, n, Matrix::MATRIX_LOWERTR);
@@ -728,14 +727,14 @@ void TestMatrix::testDiagonalTimesLowerTri() {
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
-            _ASSERT_EQ(0.0f, DL.get(i, j) - D[i] * L.get(i, j));
+            _ASSERT_EQ(0.0, DL.get(i, j) - D[i] * L.get(i, j));
         }
     }
 }
 
 void TestMatrix::testDenseTimesSymmetric() {
     const int n = 4;
-    float a[n * n] = {5, 11, -2, -1,
+    double a[n * n] = {5, 11, -2, -1,
         6, 3, 7, -1,
         -21, 0, 13, -1,
         -18, -1, -17, 30};
@@ -744,7 +743,7 @@ void TestMatrix::testDenseTimesSymmetric() {
     Matrix S(n, n, Matrix::MATRIX_SYMMETRIC);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
-            S.set(i, j, 3 * i + 2 * j + 4.0f);
+            S.set(i, j, 3 * i + 2 * j + 4.0);
         }
     }
 
@@ -756,10 +755,10 @@ void TestMatrix::testDenseTimesSymmetric() {
     _ASSERT_EQ(n, AS.getNcols());
     _ASSERT_EQ(n, AS.getNrows());
 
-    float asData[n * n] = {-382.0f, 52.0f, -50.0f, 369.0f,
-        -433.0f, 89.0f, -50.0f, 422.0f,
-        -478.0f, 129.0f, -43.0f, 474.0f,
-        -544.0f, 169.0f, -23.0f, 525.0f};
+    double asData[n * n] = {-382.0, 52.0, -50.0, 369.0,
+        -433.0, 89.0, -50.0, 422.0,
+        -478.0, 129.0, -43.0, 474.0,
+        -544.0, 169.0, -23.0, 525.0};
     Matrix AS_correct(n, n, asData, Matrix::MATRIX_DENSE);
 
     for (int i = 0; i < n; i++) {
@@ -771,7 +770,7 @@ void TestMatrix::testDenseTimesSymmetric() {
 
 void TestMatrix::testDenseTimesLowerTriangular() {
     const int n = 4;
-    float a[n * n] = {5, 11, -2, -1,
+    double a[n * n] = {5, 11, -2, -1,
         6, 3, 7, -1,
         -21, 0, 13, -1,
         -18, -1, -17, 30};
@@ -780,13 +779,13 @@ void TestMatrix::testDenseTimesLowerTriangular() {
     Matrix L(n, n, Matrix::MATRIX_LOWERTR);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
-            L.set(i, j, 3 * i + 2 * j + 4.0f);
+            L.set(i, j, 3 * i + 2 * j + 4.0);
         }
     }
 
     Matrix AL = A*L;
-    float alCorrect[n * n] = {-382.0f, 52.0f, -50.0f, 369.0f, -468.0f, 12.0f, -36.0f, 429.0f,
-        -600.0f, -17.0f, -107.0f, 496.0f, -342.0f, -19.0f, -323.0f, 570.0f};
+    double alCorrect[n * n] = {-382.0, 52.0, -50.0, 369.0, -468.0, 12.0, -36.0, 429.0,
+        -600.0, -17.0, -107.0, 496.0, -342.0, -19.0, -323.0, 570.0};
     Matrix AL_correct(n, n, alCorrect, Matrix::MATRIX_DENSE);
 
     for (int i = 0; i < n; i++) {
@@ -803,21 +802,21 @@ void TestMatrix::testQuadSymmetric() {
     Matrix x(n, 1);
 
     for (int i = 0; i < n; i++) {
-        x.set(i, 0, 3.0f * (i + 1.0f));
+        x.set(i, 0, 3.0 * (i + 1.0));
         for (int j = 0; j <= i; j++) {
-            A.set(i, j, 4.0f * i + 7.0f * j + 1.0f);
+            A.set(i, j, 4.0 * i + 7.0 * j + 1.0);
         }
     }
-    float correct_val = 1711809.0f;
-    float val = A.quad(x);
+    double correct_val = 1711809.0f;
+    double val = A.quad(x);
     _ASSERT_EQ(correct_val, val);
 
     Matrix q(n, 1);
     for (int i = 0; i < n; i++) {
-        q.set(i, 0, -5.0f * i - 1.0f);
+        q.set(i, 0, -5.0 * i - 1.0);
     }
     val = A.quad(x, q);
-    correct_val = 1706694.0f;
+    correct_val = 1706694.0;
     _ASSERT_EQ(correct_val, val);
 }
 
@@ -826,8 +825,8 @@ void TestMatrix::testLeftTransposeMultiply() {
     int m = 5;
     int k = 8;
 
-    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 0.0f, 1.0, Matrix::MATRIX_DENSE);
-    Matrix B = MatrixFactory::MakeRandomMatrix(m, k, 0.0f, 1.0, Matrix::MATRIX_DENSE);
+    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 00., 1.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(m, k, 00., 1.0, Matrix::MATRIX_DENSE);
 
     A.transpose();
     _ASSERT_EQ(n, A.getNrows());
@@ -860,8 +859,8 @@ void TestMatrix::testRightTransposeMultiply() {
     int m = 5;
     int k = 8;
 
-    Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 0.0f, 1.0, Matrix::MATRIX_DENSE);
-    Matrix B = MatrixFactory::MakeRandomMatrix(k, m, 0.0f, 1.0, Matrix::MATRIX_DENSE);
+    Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 00., 1.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(k, m, 00., 1.0, Matrix::MATRIX_DENSE);
 
     B.transpose();
     Matrix C = A*B;
@@ -920,7 +919,7 @@ void TestMatrix::testSparseGetSet() {
     int max_nnz = 3;
     Matrix M = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
 
-    float r[3] = {4.576, 3.645, 1.092};
+    double r[3] = {4.576, 3.645, 1.092};
     M.set(0, 0, r[0]);
     M.set(0, 1, r[1]);
     M.set(1, 1, r[2]);
@@ -941,18 +940,18 @@ void TestMatrix::testSparseCholesky() {
     int max_nnz = 4;
 
     Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
-    A.set(0, 0, 4.0f);
-    A.set(1, 0, 1.0f); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
-    A.set(1, 1, 5.0f);
-    A.set(2, 2, 10.0f);
+    A.set(0, 0, 40.);
+    A.set(1, 0, 10.); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
+    A.set(1, 1, 50.);
+    A.set(2, 2, 100.);
 
     Matrix L;
     A.cholesky(L);
 
     Matrix rhs(3, 1);
-    rhs.set(0, 0, 1.0f);
-    rhs.set(1, 0, 1.0f);
-    rhs.set(2, 0, 1.0f);
+    rhs.set(0, 0, 10.);
+    rhs.set(1, 0, 10.);
+    rhs.set(2, 0, 10.);
 
     Matrix xsol;
     L.solveCholeskySystem(xsol, rhs);
@@ -973,10 +972,10 @@ void TestMatrix::testSparseDenseMultiply() {
     int max_nnz = 4;
 
     Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
-    A.set(0, 0, 4.0f);
-    A.set(1, 0, 1.0f); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
-    A.set(1, 1, 5.0f);
-    A.set(2, 2, 10.0f);
+    A.set(0, 0, 4.0);
+    A.set(1, 0, 1.0); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
+    A.set(1, 1, 5.0);
+    A.set(2, 2, 10.0);
 
 
     Matrix B(m, n);
@@ -993,7 +992,7 @@ void TestMatrix::testSparseDenseMultiply() {
     Matrix C;
     _ASSERT_OK(C = A * B);
 
-    float correctData[9] = {
+    double correctData[9] = {
         4.4000, 21.6000, 71.0000,
         21.3200, 46.9800, 113.3000,
         38.2400, 72.3600, 155.6000
@@ -1099,7 +1098,7 @@ void TestMatrix::testSparseQuad() {
     Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0);
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0, Matrix::MATRIX_DENSE);
 
-    float r;
+    double r;
     _ASSERT_OK(r = A.quad(x));
     
     std::cout << A;

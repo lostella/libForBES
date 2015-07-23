@@ -81,10 +81,10 @@ public:
      * status codes.
      * 
      */
-    virtual int call(Matrix& x, float& f) = 0;
+    virtual int call(Matrix& x, double& f) = 0;
 
     /**
-     * Same as <code>call(const Matrix& x, float& f)</code>, but this function returns
+     * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
      * also the gradient of f at x.
      * 
      * @param x The vector x where f(x) should be computed.
@@ -101,7 +101,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int call(Matrix& x, float& f, Matrix& grad); // returns also the gradient
+    virtual int call(Matrix& x, double& f, Matrix& grad); // returns also the gradient
 
     /**
      * 
@@ -110,11 +110,11 @@ public:
      * @param prox
      * @return 
      */
-    virtual int callProx(const Matrix& x, float gamma, Matrix& prox) = 0; // returns the value of prox_{gamma f}
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox) = 0; // returns the value of prox_{gamma f}
 
-    virtual int callProx(const Matrix& x, float gamma, Matrix& prox, float f_at_prox) = 0; // prox_{gamma f} and value-at-prox
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox) = 0; // prox_{gamma f} and value-at-prox
 
-    virtual int callConj(const Matrix& x, float& f_star) = 0; // conjugate of f at x: f*(x)
+    virtual int callConj(const Matrix& x, double& f_star) = 0; // conjugate of f at x: f*(x)
 
 
 private:
@@ -122,7 +122,7 @@ private:
 protected:
     virtual int computeGradient(Matrix& x, Matrix& grad) = 0;
 
-    //virtual int computeFunctionAtProx(const Matrix& x, float gamma, const Matrix& prox, float f_at_prox) const =0;
+    //virtual int computeFunctionAtProx(const Matrix& x, double gamma, const Matrix& prox, double f_at_prox) const =0;
 
 };
 
