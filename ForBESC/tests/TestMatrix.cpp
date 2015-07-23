@@ -27,12 +27,6 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestMatrix);
 
-#define _ASSERT_OK               CPPUNIT_ASSERT_NO_THROW
-#define _ASSERT                  CPPUNIT_ASSERT
-#define _ASSERT_NOT(P)           CPPUNIT_ASSERT(!(P))
-#define _ASSERT_NUM_EQ(A,B,TOL)  CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
-#define _ASSERT_EQ               CPPUNIT_ASSERT_EQUAL
-#define _ASSERT_NEQ(A,B)         CPPUNIT_ASSERT(A!=B)
 
 TestMatrix::TestMatrix() {
 }
@@ -95,14 +89,17 @@ void TestMatrix::testQuadraticDot() {
     double ydata[4] = {-2.0, 5.0, -6.0, -11.0};
     double xdata[4] = {10.0, 2.0, 3.0, 4.0};
 
-    Matrix y(4, 1, ydata);
-    Matrix x(4, 1, xdata);
+    const size_t n = 4;
+    const size_t m = 1;
+
+    Matrix y(n, m, ydata);
+    Matrix x(n, m, xdata);
 
     Matrix r = y*x;
 
-    _ASSERT_EQ(1, r.getNcols());
-    _ASSERT_EQ(1, r.getNrows());
-    _ASSERT_EQ(1, r.length());
+    _ASSERT_EQ(m, r.getNcols());
+    _ASSERT_EQ(m, r.getNrows());
+    _ASSERT_EQ(m, r.length());
     _ASSERT_EQ(-72.0, r[0]);
 }
 
@@ -110,15 +107,18 @@ void TestMatrix::testMultiplication() {
     double fdata[9] = {-1.0, 3.0, 1.0, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
     double xdata[3] = {1.0, 2.0, 3.0};
 
-    Matrix f(3, 3, fdata);
-    Matrix x(3, 1, xdata);
+    const size_t n = 3;
+    const size_t m = 1;
+
+    Matrix f(n, n, fdata);
+    Matrix x(n, m, xdata);
 
     Matrix r;
     r = f*x;
 
-    _ASSERT_EQ(3, r.getNrows());
-    _ASSERT_EQ(1, r.getNcols());
-    _ASSERT_EQ(3, r.length());
+    _ASSERT_EQ(n, r.getNrows());
+    _ASSERT_EQ(m, r.getNcols());
+    _ASSERT_EQ(n, r.length());
     _ASSERT_EQ(18.0, r[0]);
     _ASSERT_EQ(7.0, r[1]);
     _ASSERT_EQ(-16.0, r[2]);
@@ -139,9 +139,9 @@ void TestMatrix::testGetSet() {
 }
 
 void TestMatrix::testAssignment() {
-    const int nRows = 3;
-    const int nCols = 2;
-    const int size = nRows * nCols;
+    const size_t nRows = 3;
+    const size_t nCols = 2;
+    const size_t size = nRows * nCols;
 
     Matrix f = MatrixFactory::MakeRandomMatrix(nRows, nCols, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix g;
@@ -192,8 +192,8 @@ void TestMatrix::testAddition() {
 void TestMatrix::testFBMatrix() {
     /* Test FBMatrix() - empty constructor */
     Matrix *fBMatrix = new Matrix();
-    _ASSERT_EQ(0, fBMatrix->getNcols());
-    _ASSERT_EQ(0, fBMatrix->getNrows());
+    _ASSERT_EQ((size_t) 0, fBMatrix->getNcols());
+    _ASSERT_EQ((size_t) 0, fBMatrix->getNrows());
     delete fBMatrix;
 
     /* Test FBMatrix(int, int, double*) - Provide data */
@@ -210,8 +210,8 @@ void TestMatrix::testFBMatrix() {
 }
 
 void TestMatrix::testMakeRandomFBMatrix() {
-    const int nRows = 10;
-    const int nCols = 20;
+    const size_t nRows = 10;
+    const size_t nCols = 20;
     const double offset = 0.1;
     const double scale = 3.5;
     Matrix f = MatrixFactory::MakeRandomMatrix(nRows, nCols, offset, scale, Matrix::MATRIX_DENSE);
@@ -249,20 +249,20 @@ void TestMatrix::testGetData() {
 }
 
 void TestMatrix::testGetNcols() {
-    int y = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+    size_t y = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
     Matrix mat(10, y);
     _ASSERT_EQ(y, mat.getNcols());
 }
 
 void TestMatrix::testGetNrows() {
-    int x = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+    size_t x = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
     Matrix mat(x, 10);
     _ASSERT_EQ(x, mat.getNrows());
 
     Matrix *gm = new Matrix(5, 5);
     _ASSERT_NOT(gm->isEmpty());
-    _ASSERT_EQ(5, gm->getNrows());
-    _ASSERT_EQ(5, gm->getNcols());
+    _ASSERT_EQ((size_t) 5, gm->getNrows());
+    _ASSERT_EQ((size_t) 5, gm->getNcols());
     delete gm;
 }
 
@@ -277,13 +277,13 @@ void TestMatrix::testIsRowVector() {
 }
 
 void TestMatrix::testLength() {
-    int nRep = 20;
-    int x, y;
+    size_t nRep = 20;
+    size_t x, y;
     Matrix *f;
     f = new Matrix(3, 4);
     for (int i = 0; i < nRep; i++) {
-        x = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
-        y = (int) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        x = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        y = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
         f = new Matrix(x, y);
         _ASSERT_EQ(x*y, f->length());
     }
@@ -291,18 +291,22 @@ void TestMatrix::testLength() {
 }
 
 void TestMatrix::testReshape() {
-    Matrix f(45, 56);
+    size_t n = 45;
+    size_t m = 56;
+    Matrix f(n, m);
     int status = f.reshape(5, 5);
     _ASSERT_EQ(0, status);
-    _ASSERT_EQ(5, f.getNcols());
+    _ASSERT_EQ((size_t) 5, f.getNcols());
 }
 
 void TestMatrix::testReshapeBad() {
-    Matrix f(45, 56);
-    int status = f.reshape(45, 57);
+    size_t n = 45;
+    size_t m = 56;
+    Matrix f(n, m);
+    int status = f.reshape(n, m + 1);
     _ASSERT_EQ(-2, status);
-    _ASSERT_EQ(45, f.getNrows());
-    _ASSERT_EQ(56, f.getNcols());
+    _ASSERT_EQ(n, f.getNrows());
+    _ASSERT_EQ(m, f.getNcols());
 
     status = f.reshape(0, 1);
     _ASSERT_EQ(-1, status);
@@ -335,8 +339,8 @@ void TestMatrix::testDiagonalGetSet() {
 
 void TestMatrix::testDiagonalMultiplication() {
     /* Diag * Dense = Dense */
-    int n = 10;
-    int m = 3;
+    size_t n = 10;
+    size_t m = 3;
     double *myData = new double[n];
     for (int j = 0; j < n; j++) {
         myData[j] = j + 1.0;
@@ -344,8 +348,8 @@ void TestMatrix::testDiagonalMultiplication() {
     Matrix *A = new Matrix(n, n, myData, Matrix::MATRIX_DIAGONAL);
     Matrix B(n, m);
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
             B.set(i, j, i + 1.0);
         }
     }
@@ -388,7 +392,7 @@ void TestMatrix::testDiagonalMultiplication2() {
     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, B -> getType());
     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, C.getType());
 
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         _ASSERT_EQ((i + 1.0)*(n - i), C.get(i, i));
     }
 }
@@ -477,7 +481,7 @@ void TestMatrix::testSubtract() {
 }
 
 void TestMatrix::testCholesky() {
-    const int n = 3;
+    const size_t n = 3;
     double a[n * n] = {14, 32, 2,
         32, 77, 5,
         2, 5, 3};
@@ -503,7 +507,7 @@ void TestMatrix::testSolveCholesky() {
     double bData[n] = {-1, 2, -3};
     Matrix b(n, 1, bData);
     Matrix x; // the solution!
-    double tol = 1e-5;
+    double tol = 1e-7;
     _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
     _ASSERT_NUM_EQ(-2.75f, x[0], tol);
     _ASSERT_NUM_EQ(1.25f, x[1], tol);
@@ -525,8 +529,8 @@ void TestMatrix::testSolveCholeskyMulti() {
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
     _ASSERT_EQ(0, A.cholesky(L));
-    double tol = 1e-5;
-    _ASSERT_NUM_EQ(2.64575, L[0], tol);
+    double tol = 1e-6;
+    _ASSERT_NUM_EQ(2.64575131, L[0], tol);
     _ASSERT_NUM_EQ(0.7559289, L[1], tol);
 
     double bData[n * m] = {1, 2.5, 3, 4,
@@ -539,7 +543,7 @@ void TestMatrix::testSolveCholeskyMulti() {
     Matrix C = A * x - b;
     for (int i = 0; i < C.getNrows(); i++) {
         for (int j = 0; j < C.getNcols(); j++) {
-            _ASSERT(std::fabs(C.get(i, j)) < 1e-4);
+            _ASSERT(std::fabs(C.get(i, j)) < tol);
         }
     }
 }
@@ -554,17 +558,18 @@ void TestMatrix::testLowerTriangular_getSet() {
             }
         }
 
+        const double tol = 1e-6;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (i >= j) {
-                    _ASSERT_NUM_EQ(3.2f * i + 7.5f * j + 0.45f, A->get(i, j), 1e-3);
+                    _ASSERT_NUM_EQ(3.2 * i + 7.5 * j + 0.45, A->get(i, j), tol);
                 } else {
                     _ASSERT_EQ(0.0, A->get(i, j));
                 }
             }
         }
 
-        int exp_length = n * (n + 1) / 2;
+        size_t exp_length = n * (n + 1) / 2;
         _ASSERT_EQ(exp_length, A->length());
         delete A;
     }
@@ -585,23 +590,24 @@ void TestMatrix::testLowerTriangularTraspose_getSet() {
 }
 
 void TestMatrix::testSymmetric_getSet() {
-    const int n = 4;
+    const size_t n = 4;
     Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
             A -> set(i, j, 3.2 * i + 0.2 * j + 0.45);
         }
     }
+    const double tol = 1e-6;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i >= j) {
-                _ASSERT_NUM_EQ(3.2f * i + 0.2f * j + 0.45f, A->get(i, j), 1e-5);
+                _ASSERT_NUM_EQ(3.2f * i + 0.2f * j + 0.45f, A->get(i, j), tol);
             } else {
-                _ASSERT_NUM_EQ(A -> get(j, i), A->get(i, j), 1e-6);
+                _ASSERT_NUM_EQ(A -> get(j, i), A->get(i, j), tol);
             }
         }
     }
-    int exp_length = n * (n + 1) / 2;
+    size_t exp_length = n * (n + 1) / 2;
     _ASSERT_EQ(exp_length, A->length());
 
     Matrix *L = new Matrix();
@@ -625,7 +631,7 @@ void TestMatrix::testSymmetricCholesky() {
 
     Matrix L;
     _ASSERT_EQ(0, A -> cholesky(L));
-    double tol = 1e-4;
+    const double tol = 1e-5;
     _ASSERT_NUM_EQ(4.52217, L.get(0, 0), tol);
     _ASSERT_NUM_EQ(0.807135, L.get(1, 0), tol);
     _ASSERT_NUM_EQ(1.51476, L.get(2, 0), tol);
@@ -636,8 +642,8 @@ void TestMatrix::testSymmetricCholesky() {
 }
 
 void TestMatrix::testTranspose() {
-    int n = 5;
-    int m = 6;
+    size_t n = 5;
+    size_t m = 6;
     Matrix A(n, m);
     A.transpose();
     _ASSERT_EQ(n, A.getNcols());
@@ -647,14 +653,14 @@ void TestMatrix::testTranspose() {
     _ASSERT_EQ(m, A.getNcols());
 
     Matrix X(n, m);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
             X.set(i, j, 7.5 * i - 2.8 * j - 1.0);
         }
     }
     X.transpose();
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
+    for (size_t i = 0; i < m; i++) {
+        for (size_t j = 0; j < n; j++) {
             _ASSERT_OK(X.get(i, j));
         }
     }
@@ -706,16 +712,16 @@ void TestMatrix::testDiagonalTimesSymmetric() {
 }
 
 void TestMatrix::testDiagonalTimesLowerTri() {
-    int n = 6;
+    size_t n = 6;
     Matrix D(n, n, Matrix::MATRIX_DIAGONAL);
     for (int i = 0; i < n; i++) {
-        D[i] = i + 1.0;        
+        D[i] = i + 1.0;
     }
 
     Matrix L(n, n, Matrix::MATRIX_LOWERTR);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j <= i; j++) {
-            L.set(i, j, -0.1f * i + 0.45f * j + 1.01f);
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j <= i; j++) {
+            L.set(i, j, -0.1 * i + 0.45 * j + 1.01);
         }
     }
 
@@ -733,7 +739,7 @@ void TestMatrix::testDiagonalTimesLowerTri() {
 }
 
 void TestMatrix::testDenseTimesSymmetric() {
-    const int n = 4;
+    const size_t n = 4;
     double a[n * n] = {5, 11, -2, -1,
         6, 3, 7, -1,
         -21, 0, 13, -1,
@@ -821,9 +827,9 @@ void TestMatrix::testQuadSymmetric() {
 }
 
 void TestMatrix::testLeftTransposeMultiply() {
-    int n = 10;
-    int m = 5;
-    int k = 8;
+    size_t n = 10;
+    size_t m = 5;
+    size_t k = 8;
 
     Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 00., 1.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(m, k, 00., 1.0, Matrix::MATRIX_DENSE);
@@ -914,8 +920,8 @@ void TestMatrix::testLeftSymmetricMultiply() {
 }
 
 void TestMatrix::testSparseGetSet() {
-    int n = 5;
-    int m = 10;
+    size_t n = 5;
+    size_t m = 10;
     int max_nnz = 3;
     Matrix M = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
 
@@ -930,6 +936,11 @@ void TestMatrix::testSparseGetSet() {
     _ASSERT_EQ(n, M.getNrows());
     _ASSERT_EQ(m, M.getNcols());
     _ASSERT_EQ(Matrix::MATRIX_SPARSE, M.getType());
+    _ASSERT_EQ(0, M.cholmod_handle()->status);
+
+    _ASSERT_EXCEPTION(M.set(1, 0, 0.5), std::out_of_range);
+    _ASSERT_OK(Matrix::destroy_handle());
+
 
 }
 
@@ -967,8 +978,8 @@ void TestMatrix::testSparseCholesky() {
 
 void TestMatrix::testSparseDenseMultiply() {
 
-    int n = 3;
-    int m = 3;
+    size_t n = 3;
+    size_t m = 3;
     int max_nnz = 4;
 
     Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
@@ -1007,8 +1018,8 @@ void TestMatrix::testSparseDenseMultiply() {
 }
 
 void TestMatrix::testSparseAddDense() {
-    int n = 5;
-    int m = 7;
+    size_t n = 5;
+    size_t m = 7;
     int nnz = 6;
     Matrix A = MatrixFactory::MakeSparse(n, m, nnz, Matrix::SPARSE_UNSYMMETRIC);
     A.set(0, 0, 0.5);
@@ -1064,8 +1075,8 @@ void TestMatrix::testSparseAddSparse() {
 }
 
 void TestMatrix::testSparseAddSparse2() {
-    int n = 100;
-    int m = 250;
+    size_t n = 100;
+    size_t m = 250;
     int nnz = 200;
     Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, -1.0, 2.0);
     Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, -1.0, 2.0);
@@ -1093,16 +1104,36 @@ void TestMatrix::testSparseAddSparse2() {
 }
 
 void TestMatrix::testSparseQuad() {
-    int n = 10;
-    int nnz = std::floor(1.2f * n);
-    Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0);
-    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0, Matrix::MATRIX_DENSE);
+    size_t n = 8;
+    size_t nnz = std::floor(1.2f * n);
+    size_t tests = 40;
 
-    double r;
-    _ASSERT_OK(r = A.quad(x));
+    Matrix *A = new Matrix();
+    Matrix *x = new Matrix();
+
+    for (size_t k = 0; k < tests; k++) {
+        _ASSERT_OK(*A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0));
+        _ASSERT_OK(*x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0, Matrix::MATRIX_DENSE));
+
+        double r;
+        _ASSERT_OK(r = A->quad(*x));
+
+        double r_exp = 0.0;
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < n; j++) {
+                r_exp += x->get(i, 0) * x->get(j, 0) * A->get(i, j);
+            }
+        }
+
+        double tol = 1e-6;
+        _ASSERT(std::abs(r) > tol);
+        _ASSERT_NUM_EQ(r_exp, r, tol);
+        _ASSERT_EQ(0, Matrix::cholmod_handle()->status);        
+    }
     
-    std::cout << A;
-    std::cout << x;
-    std::cout << r;
-
+    delete A;
+    delete x;
+        
+    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
+    _ASSERT_OK(Matrix::destroy_handle());
 }

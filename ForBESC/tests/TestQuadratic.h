@@ -10,6 +10,10 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#define FORBES_TEST_UTILS
+#include "ForBES.h"
+#include <cmath>
+
 class TestQuadratic : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestQuadratic);
 

@@ -44,7 +44,7 @@ public:
      * @param type matrix type.
      * @return A random matrix object.
      */
-    static Matrix MakeRandomMatrix(int nrows, int ncols, float offset, float scale, Matrix::MatrixType type);
+    static Matrix MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type);
     
     
     /**
@@ -55,7 +55,7 @@ public:
      * @return Diagonal matrix of the form <code>alpha*I</code>, where <code>alpha</code>
      * is a given scalar.
      */
-    static Matrix MakeIdentity(int n, float alpha);
+    static Matrix MakeIdentity(size_t n, float alpha);
         
     
     /**
@@ -67,7 +67,7 @@ public:
      * @param stype symmetry type
      * @return Allocated sparse matrix
      */
-    static Matrix MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype);
+    static Matrix MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Matrix::SparseMatrixType stype);
     
     /**
      * Creates a sparse symmetric matrix of given dimensions.
@@ -76,7 +76,7 @@ public:
      * @param max_nnz maximum number of non-zero elements
      * @return Allocated sparse matrix
      */
-    static Matrix MakeSparseSymmetric(int nrows, int ncols, int max_nnz);
+    static Matrix MakeSparseSymmetric(size_t nrows, size_t ncols, size_t max_nnz);
     
     /**
      * Allocates a sparse matrix of given dimensions and instantiates it with
@@ -95,7 +95,7 @@ public:
      * @param scale random number scaling factor
      * @return Allocated random sparse matrix
      */
-    static Matrix MakeRandomSparse(int nrows, int ncols, int nnz, float offset, float scale);
+    static Matrix MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale);
     
     /**
      * Reads a sparse matrix from a file and returns a <code>Matrix</code> object.

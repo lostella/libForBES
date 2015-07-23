@@ -10,6 +10,9 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#define FORBES_TEST_UTILS
+#include "ForBES.h"
+
 class TestMatrixFactory : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrixFactory);
 

@@ -6,9 +6,7 @@
  */
 
 #include "TestQuadratic.h"
-#include "Quadratic.h"
 
-#include <cmath>
 
 const static double MAT1[16] = {
     7, 2, -2, -1,
@@ -48,7 +46,7 @@ void TestQuadratic::testQuadratic() {
 
     double f;
     int info = quad -> call(x, f);
-    CPPUNIT_ASSERT_EQUAL(Function::STATUS_OK, info);
+    _ASSERT_EQ(Function::STATUS_OK, info);
 
     delete quad;
 }
@@ -79,33 +77,33 @@ void TestQuadratic::testCall() {
     double f = -999.0;
     int status = quadratic.call(x, f);
 
-    CPPUNIT_ASSERT_EQUAL(Function::STATUS_OK, status);
-    CPPUNIT_ASSERT_EQUAL(74.0, f);
+    _ASSERT_EQ(Function::STATUS_OK, status);
+    _ASSERT_EQ(74.0, f);
 
     /* Second part */
     Quadratic quadratic2(Q);
     status = quadratic2.call(x, f);
-    CPPUNIT_ASSERT_EQUAL(0, status);
-    CPPUNIT_ASSERT_EQUAL(64.0, f);
+    _ASSERT_EQ(0, status);
+    _ASSERT_EQ(64.0, f);
 }
 
-void TestQuadratic::testCallWithGradient() {    
-    const int n = 4;
+void TestQuadratic::testCallWithGradient() {
+    const size_t n = 4;
     const double * Qdata;
     Qdata = MAT1;
     double xdata[4] = {-1.0, 1.0, 1.0, 1.0};
     const double expected[4] = {-8, 0, 4, 0};
 
-    Matrix Q = Matrix(4, 4, Qdata);
-    Matrix x = Matrix(4, 1, xdata);
+    Matrix Q = Matrix(n, n, Qdata);
+    Matrix x = Matrix(n, 1, xdata);
 
     Function * quad = new Quadratic(Q);
     double f = -999.0f;
     Matrix grad;
-    CPPUNIT_ASSERT_EQUAL(Function::STATUS_OK, quad -> call(x, f, grad));
+    _ASSERT_EQ(Function::STATUS_OK, quad -> call(x, f, grad));
 
-    for (int i = 0; i < n; i++) {
-        CPPUNIT_ASSERT_EQUAL(expected[i], grad[i]);
+    for (size_t i = 0; i < n; i++) {
+        _ASSERT_EQ(expected[i], grad[i]);
     }
 
     delete quad;
@@ -113,55 +111,56 @@ void TestQuadratic::testCallWithGradient() {
 }
 
 void TestQuadratic::testCallConj() {
-    const int n = 4;
+    const size_t n = 4;
     const double * Qdata;
     Qdata = MAT1;
 
     double qdata[4] = {2.0, 3.0, 4.0, 5.0};
     double xdata[4] = {-1.0, 1.0, 1.0, 1.0};
 
-    Matrix Q = Matrix(4, 4, Qdata);
-    Matrix q = Matrix(4, 1, qdata);
-    Matrix x = Matrix(4, 1, xdata);
+    Matrix Q = Matrix(n, n, Qdata);
+    Matrix q = Matrix(n, 1, qdata);
+    Matrix x = Matrix(n, 1, xdata);
 
     Quadratic quadratic(Q, q);
     double fstar;
     quadratic.callConj(x, fstar);
 
     double expected = 421.0;
-    CPPUNIT_ASSERT(std::fabs(expected - fstar) / expected < 1e-5);
+    _ASSERT(std::fabs(expected - fstar) / expected < 1e-5);
 
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         x[i] = 10 + 2 * i;
     }
 
     quadratic.callConj(x, fstar);
     expected = 3722;
-    CPPUNIT_ASSERT(std::fabs(expected - fstar) / expected < 1e-5);
+    _ASSERT(std::fabs(expected - fstar) / expected < 1e-5);
 }
 
 void TestQuadratic::testCategory() {
     Quadratic quadratic;
     int cat = quadratic.category();
-    CPPUNIT_ASSERT_EQUAL(100, cat);
+    _ASSERT_EQ(Function::CAT_QUADRATIC, cat);
 }
 
 void TestQuadratic::testCallDiagonalMatrix() {
-    const int n = 4;
+    const size_t n = 4;
     Matrix Q(n, n, Matrix::MATRIX_DIAGONAL);
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         Q[i] = i + 2.0f;
     }
 
     Function *f = new Quadratic(Q);
 
     Matrix x(n, 1);
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         x[i] = 2 * i + 1.0f;
     }
 
     double val;
     f -> call(x, val);
 
-    CPPUNIT_ASSERT_EQUAL(374.0, val);
+    double tol = 1e-8;
+    _ASSERT_NUM_EQ(374, val, tol);
 }

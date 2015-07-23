@@ -22,16 +22,17 @@
 #ifndef FORBES_H
 #define	FORBES_H
 
-/*! \mainpage ForBES++ docuemntation
+/*! \mainpage LibForBES documentation
  *
  * \section firstSteps Getting started
  *
- * ForBES++ is a solver for smooth and non-smooth convex optimization problems
- * implemented in C++.
+ * ForBES is a solver for smooth and non-smooth convex optimization problems. 
+ * LibForBES is a C++ implementation of ForBES powered the high-performance 
+ * computational routines of BLAS, LAPACK and SuiteSparse.
  *
  * \section install_sec Installation
  *
- * ForBES++ is available as a static library which you can easily use in your
+ * LibForBES is available as a static library which you can easily use in your
  * C++ code.
  *  
  *
@@ -41,6 +42,22 @@
 #include "MatrixFactory.h"
 #include "Function.h"
 #include "Quadratic.h"
+
+#ifdef FORBES_TEST_UTILS
+
+#ifndef TEST_UTILS_DEFINED
+#define TEST_UTILS_DEFINED
+
+#define _ASSERT_OK               CPPUNIT_ASSERT_NO_THROW
+#define _ASSERT                  CPPUNIT_ASSERT
+#define _ASSERT_NOT(P)           CPPUNIT_ASSERT(!(P))
+#define _ASSERT_NUM_EQ(A,B,TOL)  CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
+#define _ASSERT_EQ               CPPUNIT_ASSERT_EQUAL
+#define _ASSERT_NEQ(A,B)         CPPUNIT_ASSERT(A!=B)
+#define _ASSERT_EXCEPTION(P, EXCEPTION)     CPPUNIT_ASSERT_THROW(P, EXCEPTION)
+
+#endif /* TEST_UTILS_DEFINED */
+#endif /* FORBES_TEST_UTILS */
 
 #endif	/* FORBES_H */
 

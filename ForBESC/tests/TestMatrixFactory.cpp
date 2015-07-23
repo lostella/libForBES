@@ -41,13 +41,13 @@ void TestMatrixFactory::testMakeIdentity() {
     int n = 10;
     double alpha = 2.5;
     Matrix result = MatrixFactory::MakeIdentity(n, alpha);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, result.getType());
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, result.getType());
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if (i == j) {
-                CPPUNIT_ASSERT_EQUAL(alpha, result.get(i, j));
+                _ASSERT_EQ(alpha, result.get(i, j));
             } else {
-                CPPUNIT_ASSERT_EQUAL(0.0, result.get(i, j));
+                _ASSERT_EQ(0.0, result.get(i, j));
             }
         }
     }
@@ -57,47 +57,47 @@ void TestMatrixFactory::testMakeIdentity() {
 void TestMatrixFactory::testMakeRandomMatrix() {
     int n = 8;
     Matrix result = MatrixFactory::MakeRandomMatrix(n, n, 0.01, 1.5, Matrix::MATRIX_LOWERTR);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_LOWERTR, result.getType());
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    _ASSERT_EQ(Matrix::MATRIX_LOWERTR, result.getType());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
             if (i < j) {
-                CPPUNIT_ASSERT_EQUAL(0.0, result.get(i, j));
+                _ASSERT_EQ(0.0, result.get(i, j));
             } else {
-                CPPUNIT_ASSERT(result.get(i, j) > 0);
+                _ASSERT(result.get(i, j) > 0);
             }
         }
     }
 
     result = MatrixFactory::MakeRandomMatrix(n, n, 0.01, 1.5, Matrix::MATRIX_SYMMETRIC);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SYMMETRIC, result.getType());
+    _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, result.getType());
 
     result = MatrixFactory::MakeRandomMatrix(n, n, 0.01, 1.5, Matrix::MATRIX_DIAGONAL);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DIAGONAL, result.getType());
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, result.getType());
 
     result = MatrixFactory::MakeRandomMatrix(n, n, 0.01, 1.5, Matrix::MATRIX_DENSE);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_DENSE, result.getType());
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, result.getType());
 
 }
 
 void TestMatrixFactory::testMakeSparse() {
-    int n = 5;
-    int m = 8;
-    int nnz = 10;
+    size_t n = 5;
+    size_t m = 8;
+    size_t nnz = 10;
     Matrix *SP = new Matrix();
-    for (int k = 0; k < 20; k++) {
-        CPPUNIT_ASSERT_NO_THROW(*SP = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0));
-        CPPUNIT_ASSERT_EQUAL(n, SP->getNrows());
-        CPPUNIT_ASSERT_EQUAL(m, SP->getNcols());
-        CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SPARSE, SP->getType());
-        int actual_nnz = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
+    for (size_t k = 0; k < 20; k++) {
+        _ASSERT_OK(*SP = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0));
+        _ASSERT_EQ(n, SP->getNrows());
+        _ASSERT_EQ(m, SP->getNcols());
+        _ASSERT_EQ(Matrix::MATRIX_SPARSE, SP->getType());
+        size_t actual_nnz = 0;
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < m; j++) {
                 if (SP->get(i, j) != 0) {
                     actual_nnz++;
                 }
             }
         }
-        CPPUNIT_ASSERT_EQUAL(nnz, actual_nnz);
+        _ASSERT_EQ(nnz, actual_nnz);
     }
     delete SP;
 }
@@ -109,13 +109,13 @@ void TestMatrixFactory::testReadSparseFromFile() {
     CPPUNIT_ASSERT_MESSAGE("File not found or cannot open", fp != NULL);
 
     Matrix A;
-    CPPUNIT_ASSERT_NO_THROW(A = MatrixFactory::ReadSparse(fp));
-    
-    CPPUNIT_ASSERT_EQUAL(0, fclose(fp));
+    _ASSERT_OK(A = MatrixFactory::ReadSparse(fp));
 
-    int n = 6;
-    int m = 9;
-    int nnz = 7;
+    _ASSERT_EQ(0, fclose(fp));
+
+    size_t n = 6;
+    size_t m = 9;
+    size_t nnz = 7;
     Matrix A_correct = MatrixFactory::MakeSparse(n, m, nnz, Matrix::SPARSE_UNSYMMETRIC);
     A_correct.set(0, 0, 3.8);
     A_correct.set(0, 1, 2.20);
@@ -125,25 +125,28 @@ void TestMatrixFactory::testReadSparseFromFile() {
     A_correct.set(5, 1, 0.95);
     A_correct.set(5, 5, 2.68);
 
-    CPPUNIT_ASSERT_EQUAL(A_correct, A);
+    _ASSERT_EQ(A_correct, A);
 }
 
 void TestMatrixFactory::testSparse() {
-    int n = 5;
-    int m = 10;
-    int max_nnz = 5;
+    size_t n = 5;
+    size_t m = 10;
+    size_t max_nnz = 5;
     Matrix M = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
-    CPPUNIT_ASSERT_EQUAL(Matrix::MATRIX_SPARSE, M.getType());
+    _ASSERT_EQ(Matrix::MATRIX_SPARSE, M.getType());
 }
 
 void TestMatrixFactory::testSparse2() {
-    Matrix N = MatrixFactory::MakeSparse(20, 40, 6, Matrix::SPARSE_UNSYMMETRIC);
+    const size_t n = 20;
+    const size_t m = 40;
+    const size_t nnz = 6;
+    Matrix N = MatrixFactory::MakeSparse(n, m, nnz, Matrix::SPARSE_UNSYMMETRIC);
     Matrix *M;
     CPPUNIT_ASSERT_NO_THROW(M = new Matrix(N));
     CPPUNIT_ASSERT_NO_THROW(delete M);
-    
-    CPPUNIT_ASSERT_EQUAL(20, N.getNrows());
-    CPPUNIT_ASSERT_EQUAL(40, N.getNcols());
-    CPPUNIT_ASSERT_EQUAL(0, Matrix::cholmod_handle()->status);
-    CPPUNIT_ASSERT(Matrix::cholmod_handle()->memory_usage > 0);
+
+    _ASSERT_EQ(n, N.getNrows());
+    _ASSERT_EQ(m, N.getNcols());
+    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
+    _ASSERT(Matrix::cholmod_handle()->memory_usage > 0);
 }

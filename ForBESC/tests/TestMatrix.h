@@ -24,7 +24,9 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
+#define HELPER_UTILITIES
 #include "ForBES.h"
+
 
 class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrix);

@@ -24,7 +24,7 @@
 #include "Matrix.h"
 
 
-Matrix MatrixFactory::MakeIdentity(int n, float alpha) {
+Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
     Matrix mat(n, n, Matrix::MATRIX_DIAGONAL);
     for (int i = 0; i < n; i++) {
         mat[i] = alpha;
@@ -34,9 +34,8 @@ Matrix MatrixFactory::MakeIdentity(int n, float alpha) {
 
 typedef std::pair<int, int> nice_pair;
 
-Matrix MatrixFactory::MakeRandomSparse(int nrows, int ncols, int nnz, float offset, float scale) {
+Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale) {
     Matrix R = MakeSparse(nrows, ncols, nnz, Matrix::SPARSE_UNSYMMETRIC);
-    std::srand(unsigned ( std::time(0)));
     std::set<nice_pair> s;
     nice_pair p;
     while (true) { // construct pairs
@@ -55,7 +54,7 @@ Matrix MatrixFactory::MakeRandomSparse(int nrows, int ncols, int nnz, float offs
     return R;
 }
 
-Matrix MatrixFactory::MakeRandomMatrix(int nrows, int ncols, float offset, float scale, Matrix::MatrixType type) {
+Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type) {
     int len = 0;
     switch (type) {
         case Matrix::MATRIX_DENSE:
@@ -80,14 +79,14 @@ Matrix MatrixFactory::MakeRandomMatrix(int nrows, int ncols, float offset, float
 }
 
 
-Matrix MatrixFactory::MakeSparse(int nrows, int ncols, int max_nnz, Matrix::SparseMatrixType stype) {
+Matrix MatrixFactory::MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Matrix::SparseMatrixType stype) {
     Matrix matrix(nrows, ncols, Matrix::MATRIX_SPARSE);
     matrix.m_triplet = cholmod_allocate_triplet(nrows, ncols, max_nnz, stype, CHOLMOD_REAL, Matrix::cholmod_handle());
     matrix.m_sparseStorageType = Matrix::CHOLMOD_TYPE_TRIPLET;
     return matrix;
 }
 
-Matrix MatrixFactory::MakeSparseSymmetric(int nrows, int ncols, int max_nnz) {
+Matrix MatrixFactory::MakeSparseSymmetric(size_t nrows, size_t ncols, size_t max_nnz) {
     return MakeSparse(nrows, ncols, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
 }
 

@@ -108,7 +108,7 @@ public:
      * @param nr number of rows
      * @param nc number of columns
      */
-    Matrix(int nr, int nc);
+    Matrix(size_t nr, size_t nc);
 
     /**
      * Allocates a matrix of given dimensions and given type.
@@ -117,7 +117,7 @@ public:
      * @param nc number of columns
      * @param matrixType type of matrix
      */
-    Matrix(int nr, int nc, MatrixType matrixType);
+    Matrix(size_t nr, size_t nc, MatrixType matrixType);
 
     /**
      * Allocates a new dense matrix.
@@ -126,7 +126,7 @@ public:
      * @param nc number of columns
      * @param data double values (data will be copied)
      */
-    Matrix(int nr, int nc, const double * data);
+    Matrix(size_t nr, size_t nc, const double * data);
 
     /**
      * Allocates a new matrix of given dimensions, given data and given 
@@ -139,7 +139,7 @@ public:
      * @param data double values (data will be copied)
      * @param matrixType a non-sparse matrix type.
      */
-    Matrix(int nr, int nc, const double * data, MatrixType matrixType);
+    Matrix(size_t nr, size_t nc, const double * data, MatrixType matrixType);
 
     /**
      * Copy-constructor.
@@ -168,7 +168,7 @@ public:
      * @param j column index (<code>0,...,ncols-1</code>)
      * @return value at <code>(i,j)</code>
      */
-    double get(const int i, const int j) const;
+    double get(const size_t i, const size_t j) const;
 
 
     /**
@@ -177,7 +177,7 @@ public:
      * @param j column index (<code>0,...,ncols-1</code>)
      * @param val value to be set at <code>(i,j)</code>
      */
-    void set(int i, int j, double val);
+    void set(size_t i, size_t j, double val);
 
 
     /* Getters */
@@ -186,13 +186,13 @@ public:
      * Get the number of columns of the current matrix.
      * @return columns as <code>int</code>.
      */
-    int getNcols() const;
+    size_t getNcols() const;
 
     /**
      * Get the number of rows of the current matrix.
      * @return rows as <code>int</code>.
      */
-    int getNrows() const;
+    size_t getNrows() const;
 
     /**
      * Getter for the matrix data. Provides direct access to the matrix data which
@@ -218,7 +218,7 @@ public:
      * if some of the new dimensions is 0, <code>-2</code> if reshaping is 
      * impossible.
      */
-    int reshape(int nrows, int ncols);
+    int reshape(size_t nrows, size_t ncols);
 
 
 
@@ -254,7 +254,7 @@ public:
      * 
      * @return Data length.
      */
-    int length() const;
+    size_t length() const;
 
     /**
      * Computes the quadratic form x'*Q*x.
@@ -264,7 +264,7 @@ public:
      * <code>Matrix</code>.</p>
      * 
      * <p>This method can only be applied on square matrices Q while x and q 
-     * need to be of combatible dimensions.</p>
+     * need to be of compatible dimensions.</p>
      * 
      * @param x The vector x.
      * @return Scalar x'*Q*x as <code>double</code>.
@@ -413,20 +413,20 @@ private:
      */
     friend class MatrixFactory;
 
-    int m_nrows;        /*< Number of rows */
-    int m_ncols;        /*< Number of columns */
+    size_t m_nrows;        /*< Number of rows */
+    size_t m_ncols;        /*< Number of columns */
     bool m_transpose;   /*< Whether this matrix is transposed */
     MatrixType m_type;  /*< Matrix type */
 
     /* For dense matrices: */
 
-    int m_dataLength;       /*< Length of data */
+    size_t m_dataLength;       /*< Length of data */
     double *m_data = NULL;   /*< Data */
 
     /* CSparse members */
     cholmod_triplet *m_triplet = NULL;          /*< Sparse triplets */
     cholmod_sparse *m_sparse = NULL;            /*< A sparse matrix */
-    cholmod_factor *m_cholesky_factor = NULL;   /*< Cholesky factor */
+    cholmod_factor *m_factor = NULL;   /*< Cholesky factor */
     cholmod_dense *m_dense = NULL;              /*< A dense CHOLMOD matrix */
     
     /* SINGLETON CHOLMOD HANDLE */
@@ -438,7 +438,9 @@ private:
      * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>. Can only be
      * applied to sparse matrices.
      */
-    void createSparseFromTriplet();
+    void createSparse();
+    
+    void createTriplet();
 
     /**
      * Initialize the current matrix (allocate memory etc) for a given number of 
@@ -447,7 +449,7 @@ private:
      * @param ncols Number of column
      * @param matrixType Matrix type
      */
-    void init(int nrows, int ncols, MatrixType matrixType);
+    void init(size_t nrows, size_t ncols, MatrixType matrixType);
 
     /**
      * Check whether a given pair of indexes is within the matrix bounds.
@@ -455,7 +457,7 @@ private:
      * @param j column 
      * @return <code>true</code> if (i,j) is within the bounds
      */
-    bool indexWithinBounds(int i, int j);
+    bool indexWithinBounds(size_t i, size_t j);
 
     /**
      * Multiply with a matrix when the left-hand side matrix is dense
