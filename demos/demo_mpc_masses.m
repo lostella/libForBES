@@ -27,13 +27,19 @@ N = 20;
 % Define ForBES problem
 f = lqrCost(x0, Q, R, Q_f, A, B, N);
 
-% % many blocks
+% one block constraints
+lb = [repmat([xmin;umin],N,1);xmin];
+ub = [repmat([xmax;umax],N,1);xmax];
+weights = [repmat([1e2*ones(n,1);inf*ones(m,1)],N,1);1e2*ones(n,1)];
+g = distBox(lb,ub,weights);
+
+% % many blocks constraints
 % prob.g = separableSum(  {distBox(xmin,xmax,1e5*ones(n,1)),...
 %     indBox(umin,umax), distBox(-ones(n,1),ones(n,1),1e5*ones(n,1))}, ...
 %     [repmat([1, 2], 1, N), 3], ...    % indices
 %     [repmat([n, m], 1, N), n]);       % dimensions
 
-% % two blocks
+% % two blocks constraints
 % lb = repmat([xmin;umin],N,1);
 % ub = repmat([xmax;umax],N,1);
 % weights = repmat([1e5*ones(n,1);inf*ones(m,1)],N,1);
@@ -41,23 +47,40 @@ f = lqrCost(x0, Q, R, Q_f, A, B, N);
 %     [1, 2], ...    % indices
 %     [N*(n+m), n]);       % dimensions
 
-% one block
-lb = [repmat([xmin;umin],N,1);xmin];
-ub = [repmat([xmax;umax],N,1);xmax];
-weights = [repmat([1e2*ones(n,1);inf*ones(m,1)],N,1);1e2*ones(n,1)];
-g = distBox(lb,ub,weights);
-
-% A1 = 1;
-% B = -1;
 b = zeros(n*(N+1)+m*N,1);
+constr = {1, -1, b};
 y0 = zeros(n*(N+1)+m*N,1);
+opt.maxit = 10000;
+opt.tol = 1e-9;
 
-% Call solver
-opt.display = 1;
-opt.tol = 1e-8;
-tic; out = forbes(f, g, y0, [], {1, -1, b}, opt); toc
-% Call fast AMM
-% opt_amm.display = 1;
-% opt_amm.tol = 1e-8;
-% opt_amm.method = 'fbs';
-% tic;out_amm = forbes(prob,opt_amm);toc
+fprintf('\nFast FBS\n');
+opt_fbs = opt;
+opt_fbs.method = 'fbs';
+opt_fbs.variant = 'fast';
+out = forbes(f, g, y0, [], constr, opt_fbs);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('matvecs    : %d\n', out.operations.cnt_C1);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+
+fprintf('\nL-BFGS\n');
+opt_lbfgs = opt;
+opt_lbfgs.method = 'lbfgs';
+out = forbes(f, g, y0, [], constr, opt_lbfgs);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('matvecs    : %d\n', out.operations.cnt_C1);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+
+fprintf('\nCG-DYHS\n');
+opt_cg = opt;
+opt_cg.method = 'cg-dyhs';
+out = forbes(f, g, y0, [], constr, opt_cg);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('matvecs    : %d\n', out.operations.cnt_C1);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+
