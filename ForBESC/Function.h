@@ -23,11 +23,12 @@
 #define	FUNCTION_H
 
 #include "Matrix.h"
-
+#include "ForBESUtils.h"
 /**
  * A ForBES function.
  * 
- * This is a generic API for ForBES functions. 
+ * This is a generic API for ForBES functions. Constructors for this class are
+ * protected.
  */
 class Function {
 public:
@@ -37,19 +38,7 @@ public:
      */
     virtual ~Function();
     
-    /**
-     * Method has succeeded.
-     */
-    const static int STATUS_OK;
-    /**
-     * Method is undefined.
-     */
-    const static int STATUS_UNDEFINED_FUNCTION;
-    /**
-     * The result is unreliable, or could not be computed because
-     * of numerical errors.
-     */
-    const static int STATUS_NUMERICAL_PROBLEMS;
+   
 
     /**
      * A quadratic function.
@@ -84,7 +73,9 @@ public:
      * status codes.
      * 
      */
-    virtual int call(Matrix& x, double& f) = 0;
+    virtual int call(Matrix& x, double& f) {
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    };
 
     /**
      * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
@@ -121,7 +112,9 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox) = 0; // returns the value of prox_{gamma f}
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox) {
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    }; // returns the value of prox_{gamma f}
 
     /**     
      * 
@@ -138,15 +131,45 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox) = 0; // prox_{gamma f} and value-at-prox
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox) {
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    }; // prox_{gamma f} and value-at-prox
 
     /**
-     * Computes the conjugate of this function at a point <code>x</code>
-     * @param x
-     * @param f_star
+     * Computes the conjugate of this function at a point <code>x</code>.
+     * 
+     * @param x The vector x where <code>f_star(x)</code> should be computed.
+     * @param f_star the computed value <code>f_star(x)</code> 
      * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
      */
-    virtual int callConj(const Matrix& x, double& f_star) = 0; // conjugate of f at x: f*(x)
+    virtual int callConj(const Matrix& x, double& f_star) {
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    }; // conjugate of f at x: f*(x)
+    
+    /**
+     * Computes the conjugate of this function at a point <code>x</code> as well 
+     * as the corresponding gradient.
+     * 
+     * @param x The vector x where <code>f_star(x)</code> should be computed.
+     * @param f_star the computed value <code>f_star(x)</code> 
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     */
+    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad) {
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    };
+
 
 
 private:
@@ -163,6 +186,18 @@ protected:
     Function();                         /**< Default constructor */
     Function(const Function& orig);     /**< Default copy-constructor */  
     
+    /**
+     * Computes the gradient of this function at a given vector x. 
+     * @param x The vector x where the gradient of f should be computed.
+     * @param grad the computed gradient at x
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     */
     virtual int computeGradient(Matrix& x, Matrix& grad) = 0;
 
 };

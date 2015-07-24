@@ -1,0 +1,16 @@
+./build/
+./nbproject/
+*.tag
+*.o
+*.d
+*.a
+*.html
+*.js
+*.css
+*.png
+./logo/
+./various/
+*.svg
+*.map
+*.md5
+

@@ -20,10 +20,11 @@ class TestQuadratic : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testQuadratic);
     CPPUNIT_TEST(testQuadratic2);
     CPPUNIT_TEST(testQuadratic3);
-    CPPUNIT_TEST(testQuadratic4);
+    CPPUNIT_TEST(testCallProx);
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testCallWithGradient);
     CPPUNIT_TEST(testCallConj);
+    CPPUNIT_TEST(testCallConj2);
     CPPUNIT_TEST(testCategory);
     CPPUNIT_TEST(testCallDiagonalMatrix);
     CPPUNIT_TEST(testCallSparse);
@@ -42,10 +43,11 @@ private:
     void testQuadratic();
     void testQuadratic2();
     void testQuadratic3();
-    void testQuadratic4();
+    void testCallProx();
     void testCall();
     void testCallWithGradient();
     void testCallConj();
+    void testCallConj2();
     void testCategory();
     
     void testCallSparse();

@@ -18,9 +18,6 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO Implement packed storage for symmetric and lower/upper triangular matrices [done]
-//TODO Implement multiplication with such matrices [almost done]
-//TODO Use CSparse to introduce sparse matrices [ongoing]
 
 #ifndef MATRIX_H
 #define	MATRIX_H
@@ -73,6 +70,14 @@ public:
      */
     static cholmod_common* cholmod_handle();
     
+    /**
+     * Static method used to destroy the singleton <code>cholmod_handle</code>,
+     * if any.
+     * 
+     * 
+     * @return status this call returns <code>0</code> when it succeeds. See the
+     * CHOLMOD documentation for the interpretation of error codes.
+     */
     static int destroy_handle();
 
     /**
@@ -437,7 +442,11 @@ private:
      * applied to sparse matrices.
      */
     inline void createSparse();
-    
+
+
+    /**
+     * Creates m_triplet from other existing sparse matrix representations.
+     */
     inline void createTriplet();
 
     /**

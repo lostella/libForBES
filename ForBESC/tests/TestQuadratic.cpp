@@ -49,7 +49,7 @@ void TestQuadratic::testQuadratic() {
     double f;
     int info;
     _ASSERT_OK(info = quad -> call(x, f));
-    _ASSERT_EQ(Function::STATUS_OK, info);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
 
     delete quad;
 }
@@ -65,8 +65,12 @@ void TestQuadratic::testQuadratic3() {
     //  CPPUNIT_ASSERT(false);
 }
 
-void TestQuadratic::testQuadratic4() {
-    //   CPPUNIT_ASSERT(false);
+void TestQuadratic::testCallProx() {
+    Function *F = new Quadratic();
+    Matrix x;
+    Matrix prox;
+    _ASSERT_EQ(ForBESUtils::STATUS_UNDEFINED_FUNCTION, F->callProx(x, 0.5, prox));
+    _ASSERT_OK(delete F);
 }
 
 void TestQuadratic::testCall() {
@@ -83,7 +87,7 @@ void TestQuadratic::testCall() {
     double f = -999.0;
     int status = quadratic.call(x, f);
 
-    _ASSERT_EQ(Function::STATUS_OK, status);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_EQ(74.0, f);
 
     /* Second part */
@@ -106,7 +110,7 @@ void TestQuadratic::testCallWithGradient() {
     Function * quad = new Quadratic(Q);
     double f = -999.0f;
     Matrix grad;
-    _ASSERT_EQ(Function::STATUS_OK, quad -> call(x, f, grad));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, quad -> call(x, f, grad));
 
     for (size_t i = 0; i < n; i++) {
         _ASSERT_EQ(expected[i], grad[i]);
@@ -130,18 +134,61 @@ void TestQuadratic::testCallConj() {
 
     Quadratic quadratic(Q, q);
     double fstar;
-    quadratic.callConj(x, fstar);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar));
 
     double expected = 421.0;
-    _ASSERT(std::fabs(expected - fstar) / expected < 1e-5);
+    const double rel_tol = 1e-5;
+    _ASSERT(std::fabs(expected - fstar) / expected < rel_tol);
 
     for (size_t i = 0; i < n; i++) {
         x[i] = 10 + 2 * i;
     }
 
-    quadratic.callConj(x, fstar);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar));
     expected = 3722;
-    _ASSERT(std::fabs(expected - fstar) / expected < 1e-5);
+    _ASSERT(std::fabs(expected - fstar) / expected < rel_tol);
+
+    Matrix grad;
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar, grad));
+
+    Matrix grad_expected(n, 1);
+    grad_expected.set(0, 0, 45.5);
+    grad_expected.set(1, 0, 35.5);
+    grad_expected.set(2, 0, 96.5);
+    grad_expected.set(3, 0, 188.5);
+
+    const double tol = 1e-5;
+    for (size_t i = 0; i < n; i++) {
+        _ASSERT_NUM_EQ(grad_expected.get(i, 0), grad.get(i, 0), tol);
+    }
+
+}
+
+void TestQuadratic::testCallConj2() {
+    const size_t n = 4;
+
+    double qdata[4] = {2.0, 3.0, 4.0, 5.0};
+    double xdata[4] = {-1.0, 1.0, 1.0, 1.0};
+
+    Quadratic *F = new Quadratic();
+    Matrix q(n, 1, qdata);
+    Matrix x(n, 1, xdata);
+
+    _ASSERT_OK(F->setq(q));
+    double fstar;
+    double fstar_exp = 38.0;
+    const double tol = 1e-6;
+
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->callConj(x, fstar));
+    _ASSERT_NUM_EQ(fstar_exp, fstar, tol);
+    _ASSERT_OK(delete F);
+
+    double alpha = 2.3;
+    Matrix Eye = MatrixFactory::MakeIdentity(n, alpha); /* Here Eye is a diagonal matrix */
+    Function *F2 = new Quadratic(Eye, q);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F2->callConj(x, fstar));
+    _ASSERT_NUM_EQ(fstar_exp / alpha, fstar, tol);
+    _ASSERT_OK(delete F2);
 }
 
 void TestQuadratic::testCategory() {
@@ -183,7 +230,7 @@ void TestQuadratic::testCallSparse() {
 
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 3.0, 1.5, Matrix::MATRIX_DENSE);
     double fval = -1;
-    _ASSERT_EQ(Function::STATUS_OK, F->call(x, fval));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
     _ASSERT(fval > 0);
 
     double f_exp = Qsp.quad(x);
@@ -207,7 +254,7 @@ void TestQuadratic::testCallSparse2() {
 
     Matrix x = MatrixFactory::MakeRandomSparse(n, 1, nnz_x, 0.0, 1.0);
     double fval = -1;
-    _ASSERT_EQ(Function::STATUS_OK, F->call(x, fval));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
     _ASSERT(fval > 0);
 
     double f_exp = Qsp.quad(x);
@@ -224,23 +271,23 @@ void TestQuadratic::testCallConjSparse() {
     const double tol = 1e-8;
     const double fstar_exp = 5.13142364727941;
     int status;
-    Function *F;    
-    
+    Function *F;
+
     Matrix Qsp = MatrixFactory::MakeSparseSymmetric(n, nnz_Q);
     Matrix x(n, 1);
 
     for (size_t i = 0; i < n; i++) {
         Qsp.set(i, i, 10.0);
-        x.set(i, 0, i+1);
+        x.set(i, 0, i + 1);
     }
     for (size_t i = 1; i < n; i++) { /* Set the LT part */
         Qsp.set(i, i - 1, 0.5);
-    }   
+    }
 
     _ASSERT_OK(F = new Quadratic(Qsp));
     _ASSERT_OK(status = F->callConj(x, fstar));
     _ASSERT_NEQ(-1, fstar);
-    _ASSERT_EQ(Function::STATUS_OK, status);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     _ASSERT_NUM_EQ(fstar_exp, fstar, tol);
 

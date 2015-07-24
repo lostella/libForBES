@@ -1,8 +1,8 @@
 /* 
- * File:   Function.cpp
+ * File:   LinearOperator.h
  * Author: chung
- * 
- * Created on July 9, 2015, 3:35 AM
+ *
+ * Created on July 24, 2015, 5:05 PM
  * 
  * ForBES is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,29 +18,32 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Function.h"
+#ifndef LINEAROPERATOR_H
+#define	LINEAROPERATOR_H
 
-const int Function::CAT_QUADRATIC = 100;
+#include "Matrix.h"
 
-Function::Function() {
+/**
+ * An interface for an arbitrary linear operator.
+ * This is an abstract class which cannot be instantiated. 
+ * @param x
+ * @return 
+ */
+class LinearOperator {
+public:
 
-}
+    /**
+     * 
+     * @param x
+     * @return 
+     */
+    virtual Matrix call(Matrix& x) = 0;
 
-Function::Function(const Function& orig) {
-}
+protected:
+    LinearOperator();
+    LinearOperator(const LinearOperator& orig);
+    virtual ~LinearOperator();
+};
 
-Function::~Function() {
-}
+#endif	/* LINEAROPERATOR_H */
 
-int Function::call(Matrix& x, double& f, Matrix& grad)  {
-    int status;
-    status = call(x, f);
-    if (ForBESUtils::STATUS_OK != status) {
-        return status;
-    }
-    status = computeGradient(x, grad);
-    if (ForBESUtils::STATUS_OK != status) {
-        return status;
-    }
-    return ForBESUtils::STATUS_OK;
-}

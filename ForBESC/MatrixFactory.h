@@ -28,9 +28,7 @@
 #include <functional>
 
 class MatrixFactory {
-public:
-    
-    cholmod_common COMMON;
+public:    
     
 
     /**

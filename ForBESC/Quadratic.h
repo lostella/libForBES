@@ -67,13 +67,16 @@ public:
      */
     int category();
 
+    void setQ(Matrix& Q);
+    void setq(Matrix& q);
+    
     virtual int call(Matrix& x, double& f);
     virtual int callConj(const Matrix& x, double& f_star);
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox);
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
+    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
 
 
-protected:
+
+private:
     Matrix *Q;      /**< Matrix Q */
     Matrix *q;      /**< Vector q*/
     Matrix *L;      /**< Cholesky factor L */

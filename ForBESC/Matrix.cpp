@@ -41,7 +41,6 @@ int Matrix::destroy_handle() {
     int status = cholmod_finish(ms_singleton);
     ms_singleton == NULL;
     return status;
-
 }
 
 /********* CONSTRUCTORS ************/
@@ -345,7 +344,7 @@ int Matrix::cholesky(Matrix & L) {
         L.m_factor = cholmod_analyze(m_sparse, Matrix::cholmod_handle()); // analyze
         cholmod_factorize(m_sparse, L.m_factor, Matrix::cholmod_handle()); // factorize        
         L.m_sparseStorageType = CHOLMOD_TYPE_FACTOR;
-        return (L.m_factor->minor == L.m_nrows) ? 0 : 1;
+        return (L.m_factor->minor == L.m_nrows) ? 0 : 1; /* Success: status = 0, else 1*/
     } else { // If this is any non-sparse matrix:
         L = *this;
         if (m_nrows != m_ncols) {

@@ -38,22 +38,29 @@
  *
  */
 
-#include "Matrix.h"
-#include "MatrixFactory.h"
-#include "Function.h"
-#include "Quadratic.h"
 
-#ifdef FORBES_TEST_UTILS
+/*
+ * This is a header you may include to your project - it will include all those
+ * headers that are necessary to compile your project with libforbes. 
+ * 
+ */
+#include "ForBESUtils.h"        /* ForBES utilities */
+#include "Matrix.h"             /* Matrices */
+#include "MatrixFactory.h"      /* Matrix Factory to construct matrices */
+#include "Function.h"           /* The Function API */
+#include "Quadratic.h"          /* Quadratic functions */
+
+#ifdef FORBES_TEST_UTILS        /* Define FORBES_TEST_UTILS in tests */
 
 #ifndef TEST_UTILS_DEFINED
 #define TEST_UTILS_DEFINED
 
-#define _ASSERT_OK               CPPUNIT_ASSERT_NO_THROW
-#define _ASSERT                  CPPUNIT_ASSERT
-#define _ASSERT_NOT(P)           CPPUNIT_ASSERT(!(P))
-#define _ASSERT_NUM_EQ(A,B,TOL)  CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
-#define _ASSERT_EQ               CPPUNIT_ASSERT_EQUAL
-#define _ASSERT_NEQ(X,Y)         CPPUNIT_ASSERT(X!=Y)
+#define _ASSERT_OK                          CPPUNIT_ASSERT_NO_THROW
+#define _ASSERT                             CPPUNIT_ASSERT
+#define _ASSERT_NOT(P)                      CPPUNIT_ASSERT(!(P))
+#define _ASSERT_NUM_EQ(A,B,TOL)             CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
+#define _ASSERT_EQ                          CPPUNIT_ASSERT_EQUAL
+#define _ASSERT_NEQ(X,Y)                    CPPUNIT_ASSERT(X!=Y)
 #define _ASSERT_EXCEPTION(P, EXCEPTION)     CPPUNIT_ASSERT_THROW(P, EXCEPTION)
 
 #endif /* TEST_UTILS_DEFINED */
