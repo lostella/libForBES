@@ -28,20 +28,20 @@ function obj = logLoss(mu)
     end
     obj.makef = @() @(x) call_logLoss_f(x, mu);
     obj.L = mu; % Lipschitz constant of the gradient of f
-%     obj.hasHessian = 1;
+    obj.hasHessian = 1;
 end
 
 function [val, grad, hess] = call_logLoss_f(x, mu)
 % value and gradient of f(x) = mu*sum(log(1+exp(-x)))
-    ex = exp(-x);
-    px = 1./(1+ex);
+    ex = exp(x);
+    px = ex./(1+ex);
     val = -sum(log(px))*mu;
     if nargout >= 2
         grad = (px-1)*mu;
     end
-%     if nargout >= 3
-%         h = (mu*ex)./(px.*px);
+    if nargout >= 3
+        h = (mu*ex)./((ex+1).^2);
 %         hess = @(y) h.*y;
-%         hess = diag(sparse(h));
-%     end
+        hess = diag(sparse(h));
+    end
 end

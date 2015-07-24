@@ -16,11 +16,7 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function out = minfbe(prob, opt)
-    t0 = tic();
-    
-    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob, opt); end
-    
-    lsopt = ProcessLineSearchOptions(opt);
+    lsopt = ProcessLineSearchOptions(prob, opt);
     
     %% initialize output stuff
     objective = zeros(1, opt.maxit);
@@ -28,6 +24,7 @@ function out = minfbe(prob, opt)
     residual = zeros(1, opt.maxit);
     msgTerm = '';
     
+    %% initialize counters
     %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
 
@@ -55,10 +52,13 @@ function out = minfbe(prob, opt)
         fprintf('%6s%11s%11s%11s%11s%11s%11s\n', 'iter', 'gamma', 'optim.', 'object.', '||dir||', 'slope', 'tau');
     end
     
+    if opt.toRecord
+        record = [];
+    end
+    
     rejCount = 0;
     flagChangedGamma = 0;
     
-    preprocess = toc(t0);
     t0 = tic();
     
     %% main iteration
@@ -68,6 +68,7 @@ function out = minfbe(prob, opt)
             [cache_current, cnt1] = CacheFBE(prob, gam, y);
             cnt = cnt+cnt1;
             z = cache_current.z;
+            % enforce monotonicity in the fast-monotone case
             if opt.fast && it > 1 && opt.monotone > 0 && ~flagChangedGamma
                 if cache_current.FBE > cache_tau.FBE
                     y = cache_tau.z;
@@ -78,44 +79,38 @@ function out = minfbe(prob, opt)
             end
         end
         
-        %% check if the Lipschitz constant is to be adjusted
-        if opt.adaptive || prob.unknownLf
-            flagChangedGamma = 0;
-            [fz, cnt1] = Evaluatef(prob, cache_current.z);
-            cnt = cnt+cnt1;
-            % increase Lf until a candidate Lipschitz constant is found
-            while fz + cache_current.gz > cache_current.FBE
-                prob.Lf = prob.Lf*2;
-                gam = SelectGamma(prob, opt);
-                flagChangedGamma = 1;
-                [cache_current, cnt1] = CacheFBE(prob, gam, cache_current.x, cache_current);
-                [fz, cnt2] = Evaluatef(prob, cache_current.z);
-                cnt = cnt+cnt1+cnt2;
-            end
+        %% store initial cache
+        if it == 1
+            cache_0 = cache_current;
         end
         
         %% trace stuff
         ts(1, it) = toc(t0);
         residual(1, it) = norm(cache_current.diff, inf)/gam;
         objective(1, it) = cache_current.FBE;
+        if opt.toRecord
+            record = [record, opt.record(it, gam, cache_current, cnt)];
+        end
         
         %% check for termination
-        if ~opt.customTerm
-            % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
-            absFBE = abs(cache_current.FBE);
-            if residual(1, it) <= 10*sqrt(eps) || ...
-                    (it > 1 && residual(1, it) <= nthroot(opt.tol, 3)*(1+absFBE) && ...
-                    norm(cache_previous.x-cache_current.x, inf) < sqrt(opt.tol)*(1+norm(cache_current.x, inf)) && ...
-                    cache_previous.FBE-cache_current.FBE < opt.tol*(1+absFBE))
-                msgTerm = [msgTerm, 'reached optimum (up to tolerance)'];
-                flagTerm = 0;
-                break;
-            end
-        else
-            if opt.term(cache_current, gam)
-                msgTerm = [msgTerm, 'reached optimum (custom criterion)'];
-                flagTerm = 0;
-                break;
+        if ~flagChangedGamma
+            if ~opt.customTerm
+                % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
+                absFBE = abs(cache_current.FBE);
+                if residual(1, it) <= 10*sqrt(eps) || ...
+                        (it > 1 && residual(1, it) <= nthroot(opt.tol, 3)*(1+absFBE) && ...
+                        norm(cache_previous.x-cache_current.x, inf) < sqrt(opt.tol)*(1+norm(cache_current.x, inf)) && ...
+                        cache_previous.FBE-cache_current.FBE < opt.tol*(1+absFBE))
+                    msgTerm = 'reached optimum (up to tolerance)';
+                    flagTerm = 0;
+                    break;
+                end
+            else
+                if it > 1 && opt.term(cache_0, cache_current, gam)
+                    msgTerm = 'reached optimum (custom criterion)';
+                    flagTerm = 0;
+                    break;
+                end
             end
         end
         
@@ -125,9 +120,9 @@ function out = minfbe(prob, opt)
         
         %% compute search direction and slope
         switch opt.method
-            case {1, 6}
+            case {1, 6} % STEEPEST DESCENT and BARZILAI-BORWEIN
                 dir = -cache_current.gradFBE;
-            case 2
+            case 2 % L-BFGS
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % use steepest descent direction initially
                     LBFGS_col = 1;
@@ -136,7 +131,7 @@ function out = minfbe(prob, opt)
                     Sk = cache_current.x - cache_previous.x;
                     Yk = cache_current.gradFBE - cache_previous.gradFBE;
                     YSk = Yk'*Sk;
-                    if YSk > 0
+                    if YSk > 0;
                         LBFGS_col = 1+mod(LBFGS_col, opt.memory);
                         LBFGS_mem = min(LBFGS_mem+1, opt.memory);
                         S(:,LBFGS_col) = Sk;
@@ -152,8 +147,8 @@ function out = minfbe(prob, opt)
                 end
             case 7 % BFGS
                 if it == 1 || flagChangedGamma
-                    dir = - cache_current.gradFBE;
-                elseif it==2
+                    dir = -cache_current.gradFBE;
+                elseif it == 2
                     % Compute difference vectors
                     Sk = cache_current.x - cache_previous.x;
                     Yk = cache_current.gradFBE - cache_previous.gradFBE;
@@ -186,7 +181,7 @@ function out = minfbe(prob, opt)
                     beta = max(beta,etak);
                     dir = -cache_current.gradFBE + beta*dir;
                 end
-            case 4 % PRP-CG
+            case 4 % CG-PRP
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % Initially use steepest descent direction
                 else
@@ -194,7 +189,7 @@ function out = minfbe(prob, opt)
                     beta = max((cache_current.gradFBE'*yy)/(cache_previous.gradFBE'*cache_previous.gradFBE),0);
                     dir = -cache_current.gradFBE + beta*dir;
                 end
-            case 5 % DYHS-CG
+            case 5 % CG-DYHS
                 if it == 1 || flagChangedGamma
                     dir = -cache_current.gradFBE; % Initially use steepest descent direction
                 else
@@ -204,6 +199,8 @@ function out = minfbe(prob, opt)
                     beta = max(0,min(betaHS,betaDY));
                     dir = -cache_current.gradFBE + beta*dir;
                 end
+            otherwise
+                error('search direction not implemented')
         end
         slope = cache_current.gradFBE'*dir;
         
@@ -213,9 +210,9 @@ function out = minfbe(prob, opt)
 
         %% set initial guess for the step length
         switch opt.method
-            case 2
-                lsopt.tau0 = 1.0;
-            case 6
+            case 2 % L-BFGS
+                tau0 = 1.0;
+            case 6 % BARZILAI-BORWEIN
                 if it == 1 || flagChangedGamma
                     tau0 = 1.0/norm(cache_current.gradFBE, inf);
                 else
@@ -223,23 +220,22 @@ function out = minfbe(prob, opt)
                     Yk = cache_current.gradFBE-cache_previous.gradFBE;
                     tau0 = (Sk'*Sk)/(Sk'*Yk);
                 end
-                lsopt.tau0 = tau0;
             otherwise
                 if it == 1 || flagChangedGamma
                     xinf = norm(cache_current.x,inf);
                     if xinf ~= 0
-                        lsopt.tau0 = lsopt.psi0*xinf/norm(cache_current.gradFBE, inf); % g is the gradient at x
+                        tau0 = lsopt.psi0*xinf/norm(cache_current.gradFBE, inf); % g is the gradient at x
                     elseif cache_current.FBE ~= 0
                         % Check changes in Version 5.2 (3). psi0 is set equal
                         % to 0 when x=0;
-                        lsopt.tau0 = lsopt.psi0*abs(cache_current.FBE)/(cache_current.gradFBE'*cache_current.gradFBE);
+                        tau0 = lsopt.psi0*abs(cache_current.FBE)/(cache_current.gradFBE'*cache_current.gradFBE);
                     else
-                        lsopt.tau0 = 1;
+                        tau0 = 1;
                     end
                 else
                     %                             lsopt.tau0 = lsopt.psi2*tau;
                     %                             lsopt.tau0 = 2*(cache.FBE - FBE_old)/slope;
-                    lsopt.tau0 = -2*max(cache_previous.FBE-cache_current.FBE ,10*eps)/slope;% Fletcher, pp. 38
+                    tau0 = -2*max(cache_previous.FBE-cache_current.FBE ,10*eps)/slope;% Fletcher, pp. 38
                     if lsopt.quadStep
                         tp = tau*lsopt.psi1;
                         [cache_tau, cnt1] = DirFBE(prob, gam, tp, cache_current, 1);
@@ -248,7 +244,7 @@ function out = minfbe(prob, opt)
                             % quadratic interpolation
                             q = cache_tau.FBE - cache_current.FBE - tp*slope;
                             if q > 0
-                                lsopt.tau0 = -(slope*tp^2)/(2*q);
+                                tau0 = -(slope*tp^2)/(2*q);
                             end
                         end
                     end
@@ -257,56 +253,30 @@ function out = minfbe(prob, opt)
 
         %% perform the line search
         switch opt.linesearch
-            case 1 % backtracking until Armijo condition is met
-                [cache_tau, tau, cntLS, info] = ArmijoLS(prob, gam, cache_current, slope, lsopt);
-            case 2 % Nonmonotone Armijo backtracking
-                FBErefs(1+mod(it, lsopt.M), 1) = cache_current.FBE;
-                [cache_tau, tau, cntLS, info] = ArmijoLS(prob, gam, cache_current, slope, lsopt, max(FBErefs));
-            case 3 % Lemarechal line search
-                [cache_tau, tau, cntLS, info] = LemarechalLS(prob, gam, cache_current, slope, lsopt);
-            case 4 % Hager-Zhang line search
-                Q = 1 + Q*lsopt.Delta;
-                C = C + (abs(cache_current.FBE) - C)/Q;
-                [cache_tau, tau, cntLS, info] = HagerZhangLS(prob, gam, cache_current, slope, lsopt);
-                if ~opt.global && ~opt.fast && info ~= 0
-                    flagTerm = 2;
-                    msgTerm = [msgTerm, 'hager-zhang line search failed at it. ', num2str(it)];
-                    break;
-                end
-                if ~lsopt.AWolfe
-                    if abs(cache_tau.FBE-cache_current.FBE) <= lsopt.omega*C % switch to approximate Wolfe conditions
-                        lsopt.AWolfe = true;
-                    end
-                end
-            case 5 % More-Thuente line search
-                [cache_tau, tau, cntLS, info] = MoreThuenteLS(prob, gam, cache_current, slope, lsopt);
-            case 6 % Fletcher's line search (modified matlab function)
-                [cache_tau, tau, cntLS, info] = FletcherLS(prob, gam, cache_current, slope,lsopt);
+            case 1 % BACKTRACKING (ARMIJO COND.)
+                [cache_tau, tau, cntLS, info] = ArmijoLS(prob, gam, cache_current, slope, tau0, lsopt);
+            case 3 % LEMARECHAL (ARMIJO + WOLF COND.)
+                [cache_tau, tau, cntLS, info] = LemarechalLS(prob, gam, cache_current, slope, tau0, lsopt);
+            otherwise
+                error('line search not implemented')
         end
         cnt = cnt+cntLS;
 
         %% check for line search fails
-        if ~opt.global && ~opt.fast && info ~= 0 && opt.linesearch ~= 4
-            msgTerm = ['line search failed at it. ', num2str(it), '; '];
-            opt.linesearch = 4;
-            tau0 = lsopt.tau0;
-            lsopt = ProcessLineSearchOptions(opt);
-            lsopt.tau0 = tau0;
-            [cache_tau, tau, cntLS, info] = HagerZhangLS(prob, gam, cache_current, slope, lsopt);
-            cnt = cnt+cntLS;
-            if info ~= 0
-                flagTerm = 2;
-                msgTerm = [msgTerm, 'hager-zhang line search failed at it. ', num2str(it)];
-                break;
-            end
-            if ~lsopt.AWolfe
-                if abs(cache_tau.FBE-cache_current.FBE) <= lsopt.omega*C % switch to approximate Wolfe conditions
-                    lsopt.AWolfe = true;
-                end
-            end
+        if info > 0 && ~opt.global && ~opt.fast
+            flagTerm = 2;
+            msgTerm = strcat('line search failed at iteration', num2str(it));
         end
         
-        if info ~= 0
+        flagChangedGamma = 0;
+        if info == -1 % gam was too large
+            y = cache_current.x;
+            cache_previous = cache_current;
+            recache = true;
+            prob.Lf = prob.Lf*2;
+            gam = SelectGamma(prob, opt);
+            flagChangedGamma = 1;
+        elseif info > 0
             y = cache_current.z;
             cache_previous = cache_current;
             recache = true;
@@ -345,13 +315,13 @@ function out = minfbe(prob, opt)
     
     if it == opt.maxit
         flagTerm = 1;
-        msgTerm = [msgTerm, 'exceeded maximum iterations'];
+        msgTerm = 'exceeded maximum iterations';
     end
     
     %% pack up results
+    out.name = opt.name;
     out.message = msgTerm;
     out.flag = flagTerm;
-    out.gam = gam;
     out.x = cache_current.z;
     out.iterations = it;
     out.operations.cnt_f1 = cnt(1);
@@ -364,8 +334,11 @@ function out = minfbe(prob, opt)
     out.objective = objective(1, 1:it);
     out.ts = ts(1, 1:it);
     out.prob = prob;
-    out.preprocess = preprocess;
     out.opt = opt;
+    out.gam = gam;
+    if opt.toRecord
+        out.record = record;
+    end
 end
 
 function gam = SelectGamma(prob, opt)
@@ -376,52 +349,13 @@ function gam = SelectGamma(prob, opt)
     end
 end
 
-function [v, cnt] = Evaluatef(prob, x)
-    %      Q,C1,C2,f2, g
-    cnt = [0, 0, 0, 0, 0];
-    f1x = 0; f2x = 0;
-    if prob.istheref1
-        if prob.isthereC1
-            if prob.isC1fun, C1x = prob.C1(x);
-            else C1x = prob.C1*x; end
-            res1x = C1x - prob.d1;
-            if prob.isQfun, Qres1x = prob.Q(res1x);
-            else Qres1x = prob.Q*res1x; end
-            cnt(2) = cnt(2)+1;
-        else
-            res1x = x - prob.d1;
-            if prob.isQfun, Qres1x = prob.Q(res1x);
-            else Qres1x = prob.Q*res1x; end
-        end
-        cnt(1) = cnt(1)+1;
-        f1x = 0.5*(res1x'*Qres1x) + prob.q'*res1x;
-    end
-    if prob.istheref2
-        if prob.isthereC2
-            if prob.isC2fun, C2x = prob.C2(x);
-            else C2x = prob.C2*x; end
-            res2x = C2x - prob.d2;
-            f2x = prob.callf2(res2x);
-            cnt(3) = cnt(3)+1;
-        else
-            res2x = x - prob.d2;
-            f2x = prob.callf2(res2x);
-        end
-        cnt(4) = cnt(4)+1;
-    end
-    if prob.istherelin
-        v = f1x + f2x + prob.l'*x;
-    else
-        v = f1x + f2x;
-    end
-end
-
 %% compute the FBE value and store reusable quantities
 function [cache, cnt] = CacheFBE(prob, gam, x, cache)
     %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
     f1x = 0; gradf1x = 0;
     f2x = 0; gradf2x = 0;
+    cache.gam = gam;
     if nargin < 4
         cache.x = x;
         if prob.istheref1

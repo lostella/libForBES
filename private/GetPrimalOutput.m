@@ -51,5 +51,4 @@ function out = GetPrimalOutput(prob, dualprob, dualout)
     out.residual = dualout.residual;
     out.ts = dualout.ts;
     out.prob = prob;
-    out.preprocess = dualout.preprocess;
 end

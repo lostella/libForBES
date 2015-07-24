@@ -15,13 +15,22 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function [cachet, t, cnt, exitflag] = ArmijoLS(prob, gam, cache, df0, lsopt, fr)
+function [cachet, t, cnt, exitflag] = ArmijoLS(prob, gam, cache, df0, t0, lsopt, fr)
+%ARMIJOLS - computes a steplength t > 0 so that it satisfies the Armijo condition
+%
+% f(t) <= f(0) + delta*f'(0)
+%
+% exitflag = -1: gam is not small enough
+% exitflag =  0: acceptable steplength was found
+% exitflag =  1: maximum number of backtracking steps exceeded
+% exitflag =  2: no further progress can be made
+
     %      Q, A, C, f2, proxg
     cnt = [0, 0, 0, 0, 0];
-    t = lsopt.tau0;
     arm_hi = lsopt.delta*df0;
-    exitflag = -1;
-    if nargin >= 6
+    t = t0;
+    exitflag = 1;
+    if nargin >= 7
         f0 = fr;
     else
         f0 = cache.FBE;
@@ -34,9 +43,9 @@ function [cachet, t, cnt, exitflag] = ArmijoLS(prob, gam, cache, df0, lsopt, fr)
             exitflag = 0;
             break;
         end
-        if i == 1%quadratic interpolation
+        if i == 1 %quadratic interpolation
             tn = ArmijoQuadInterp(f0,df0,t,ft);
-        else%cubic interpolation
+        else %cubic interpolation
             tn = ArmijoCubInterp(f0,df0,told,ftold,t,ft);
         end
         if tn <= 0
@@ -45,8 +54,16 @@ function [cachet, t, cnt, exitflag] = ArmijoLS(prob, gam, cache, df0, lsopt, fr)
         told = t;ftold = ft;
         t = tn;
         if t <= lsopt.progTol
-            exitflag = -2;
+            exitflag = 2;
             break
+        end
+    end
+    if exitflag == 0 && lsopt.testGamma
+        [fz, cnt1] = Evaluatef(prob, cachet.z);
+        cnt = cnt+cnt1;
+        % check whether gam is small enough
+        if fz + cachet.gz > cachet.FBE
+            exitflag = -1;
         end
     end
 end

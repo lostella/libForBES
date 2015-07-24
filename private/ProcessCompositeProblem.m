@@ -45,7 +45,7 @@ function prob = ProcessCompositeProblem(prob, opt)
                 end
                 prob.isC1fun = true;
             else
-                prob.m1 = size(prob.C1, 1);
+                prob.m1 = size(prob.C1*prob.x0, 1);
             end
             prob.isthereC1 = true;
         else
@@ -63,7 +63,7 @@ function prob = ProcessCompositeProblem(prob, opt)
     end
     if isfield(prob, 'f2')
         if isfield(prob.f2, 'isQuadratic') && prob.f2.isQuadratic
-            error('consider providing f2 as f1, since it is quadratic');
+            error('you should provide f2 as f1, since it is quadratic');
         end
         if ~isfield(prob.f2, 'makef'), error('function of f2 is not defined'); end
         prob.callf2 = prob.f2.makef();
@@ -86,7 +86,7 @@ function prob = ProcessCompositeProblem(prob, opt)
         end
         if ~isfield(prob, 'd2'), prob.d2 = zeros(prob.m2, 1); end
         if isfield(prob.f2, 'L'), prob.Lf2 = prob.f2.L; end
-        if isfield(prob.f2, 'hasHessian') && prob.f2.hasHessian, prob.useHessian = 1;
+        if isfield(prob.f2, 'hasHessian') && prob.f2.hasHessian && opt.useHessian, prob.useHessian = 1;
         else prob.useHessian = 0; end
     else
         prob.istheref2 = false;

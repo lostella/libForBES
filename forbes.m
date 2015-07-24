@@ -23,7 +23,7 @@
 %   We assume that f is strongly convex, and that g is closed, proper,
 %   convex. 
 %
-%   out = FORBES(f, g, init, [], constr) solves the specified problem.
+%   out = FORBES(f, g, init, [], constr, opt) solves the specified problem.
 %   init is the initial *dual* variable, constr is a cell array defining
 %   the constraint, i.e., constr = {A, B, b}. the options are specified in
 %   the opt structure (more on this later).
@@ -95,22 +95,29 @@
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 function out = forbes(fs, gs, init, aff, constr, opt)
+    t0 = tic();
     if nargin < 4, aff = []; end
     if nargin < 5, constr = []; end
     if nargin < 6, opt = []; end
-    prob = MakeProb(fs, gs, init, aff, constr);
     opt = ProcessOptions(opt);
+    prob = MakeProb(fs, gs, init, aff, constr, opt);
     switch prob.id
         case 1
+            prob = ProcessCompositeProblem(prob, opt);
+            preprocess = toc(t0);
             if opt.method == 0, out = fbs(prob, opt);
             else out = minfbe(prob, opt); end
         case 2
-            if opt.method == 0, out = amm(prob, opt);
-            else out = miname(prob, opt); end
+            [prob, dualprob] = ProcessSeparableProblem(prob, opt);
+            preprocess = toc(t0);
+            if opt.method == 0, dualout = fbs(dualprob, opt);
+            else dualout = minfbe(dualprob, opt); end
+            out = GetPrimalOutput(prob, dualprob, dualout);
     end
+    out.preprocess = preprocess;
 end
 
-function prob = MakeProb(fs, gs, init, aff, constr)
+function prob = MakeProb(fs, gs, init, aff, constr, opt)
     M = length(fs);
     N = length(gs);
     if M > 2

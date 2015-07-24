@@ -15,15 +15,16 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function [cachet, t, cnt, exitflag] = LemarechalLS(prob, gam, cache, slope, lsopt)
+function [cachet, t, cnt, exitflag] = LemarechalLS(prob, gam, cache, slope, t0, lsopt)
 %LEMARECHALLS - computes a steplength t > 0 so that it satisfies the (weak) Wolfe conditions
 %
 % f(t) <= f(0) + delta*f'(0)
 % f'(t) >= sigma*f'(0).
 %
+% exitflag = -1: gam is not small enough
 % exitflag =  0: acceptable steplength was found
-% exitflag = -1: maximum number of bracketing or sectioning iterations reached
-% exitflag = -2: no further progress can be made
+% exitflag =  1: maximum number of bracketing or sectioning iterations reached
+% exitflag =  2: no further progress can be made
 %
 % Algorithm is described in Figure 1 of
 %
@@ -39,18 +40,29 @@ function [cachet, t, cnt, exitflag] = LemarechalLS(prob, gam, cache, slope, lsop
 
     %      Q, A, C, f2, proxg
     cnt = [0, 0, 0, 0, 0];
-    t = lsopt.tau0;
+    t = t0;
     wolfe_hi = lsopt.delta*slope;
     wolfe_lo = lsopt.sigma*slope;
     a = 0; fa = cache.FBE; dfa = slope;
     tprev = a; fprev = fa; dfprev = dfa;
-    b = inf;% upper bound
+    b = inf; % upper bound
     rho = lsopt.rho;
     theta = lsopt.theta;
-    exitflag = -1;
+    exitflag = 1;
+    testGammaFlag = 0;
     for it = 1:lsopt.nbracket
         [cachet, cnt1] = DirFBE(prob, gam, t, cache, 1);
         cnt = cnt+cnt1;
+        if lsopt.testGamma && testGammaFlag
+            [fz, cnt1] = Evaluatef(prob, cachet.z);
+            cnt = cnt+cnt1;
+            % check whether gam is small enough
+            if fz + cachet.gz > cachet.FBE
+                exitflag = -1;
+                break;
+            end
+        end
+        testGammaFlag = 0;
         if cachet.FBE > cache.FBE + t*wolfe_hi
             b = t; fb = cachet.FBE;
             if lsopt.interp == 1
@@ -84,6 +96,7 @@ function [cachet, t, cnt, exitflag] = LemarechalLS(prob, gam, cache, slope, lsop
                     else
                         tn = rho*t;
                     end
+                    testGammaFlag = 1;
                 else
                     % interpolate
                     if lsopt.interp == 1
@@ -109,8 +122,17 @@ function [cachet, t, cnt, exitflag] = LemarechalLS(prob, gam, cache, slope, lsop
         end
 
         if (b-a) <= lsopt.progTol
-            exitflag = -2;
+            exitflag = 2;
             break;
+        end
+    end
+    
+    if lsopt.testGamma && exitflag == 0;
+        [fz, cnt1] = Evaluatef(prob, cachet.z);
+        cnt = cnt+cnt1;
+        % check whether gam is small enough
+        if fz + cachet.gz > cachet.FBE
+            exitflag = -1;
         end
     end
 end

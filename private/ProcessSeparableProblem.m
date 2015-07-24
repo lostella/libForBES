@@ -66,7 +66,7 @@ function [prob, dualprob] = ProcessSeparableProblem(prob, opt)
     end
     if isfield(prob, 'f2')
         if isfield(prob.f2, 'isConjQuadratic') && prob.f2.isConjQuadratic
-            error('consider providing f2 as f1, since its conjugate is quadratic');
+            error('you should provide f2 as f1, since its conjugate is quadratic');
         end
         dualprob.istheref2 = true;
         if ~isfield(prob.f2, 'makefconj'), error('conjugate function of f2 is not defined'); end
