@@ -168,7 +168,7 @@ public:
      */
     virtual int callConj(const Matrix& x, double& f_star, Matrix& grad) {
         return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    };
+    }; // Nabla f*(x)
 
 
 
@@ -198,7 +198,9 @@ protected:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int computeGradient(Matrix& x, Matrix& grad) = 0;
+    virtual int computeGradient(Matrix& x, Matrix& grad){
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    };
 
 };
 

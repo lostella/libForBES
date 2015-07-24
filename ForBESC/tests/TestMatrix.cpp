@@ -34,7 +34,7 @@ TestMatrix::~TestMatrix() {
 }
 
 void TestMatrix::setUp() {
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
 }
 
 void TestMatrix::tearDown() {

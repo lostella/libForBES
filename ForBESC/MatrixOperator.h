@@ -1,9 +1,9 @@
 /* 
- * File:   LinearOperator.h
+ * File:   MatrixOperator.h
  * Author: chung
  *
- * Created on July 24, 2015, 5:05 PM
- * 
+ * Created on July 24, 2015, 7:31 PM
+ *
  * ForBES is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,37 +15,43 @@
  * GNU Lesser General Public License for more details.
  * 
  * You should have received a copy of the GNU Lesser General Public License
- * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#ifndef LINEAROPERATOR_H
-#define	LINEAROPERATOR_H
+#ifndef MATRIXOPERATOR_H
+#define	MATRIXOPERATOR_H
 
 #include "Matrix.h"
+#include "LinearOperator.h"
 
-/**
- * An interface for an arbitrary linear operator.
- * This is an abstract class which cannot be instantiated. 
- * @param x
- * @return 
- */
-class LinearOperator {
+class MatrixOperator : public LinearOperator {
 public:
 
-    /**
-     * 
-     * @param x
-     * @return 
-     */
-    virtual Matrix call(Matrix& x) = 0;
+    MatrixOperator(Matrix& A) :
+    A(A) {
+    }
 
-    virtual ~LinearOperator();
+    MatrixOperator(const MatrixOperator& other) :
+    A(other.A) {
+    }
+
+    Matrix& GetMatrix() const {
+        return A;
+    }
+
+    void SetMatrix(Matrix& A) {
+        this->A = A;
+    }
+
+
+    virtual Matrix call(Matrix& x);
+
+
+    virtual ~MatrixOperator();
     
-protected:
-    LinearOperator();
-    LinearOperator(const LinearOperator& orig);
-    
+private:
+    Matrix &A;
 };
 
-#endif	/* LINEAROPERATOR_H */
+#endif	/* MATRIXOPERATOR_H */
 

@@ -58,6 +58,8 @@ private:
     Matrix *q;
     Matrix *A;
     Matrix *b;
+    
+    Matrix *F;
 };
 
 #endif	/* QUADOVERAFFINE_H */

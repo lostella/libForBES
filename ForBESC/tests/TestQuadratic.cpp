@@ -216,6 +216,7 @@ void TestQuadratic::testCallDiagonalMatrix() {
 
     double tol = 1e-8;
     _ASSERT_NUM_EQ(374, val, tol);
+    _ASSERT_OK(delete f);
 }
 
 void TestQuadratic::testCallSparse() {
