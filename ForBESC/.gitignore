@@ -1,5 +1,5 @@
-./build/
-./nbproject/
+build/
+nbproject/
 *.tag
 *.o
 *.d
@@ -8,8 +8,8 @@
 *.js
 *.css
 *.png
-./logo/
-./various/
+logo/
+various/
 *.svg
 *.map
 *.md5
@@ -20,3 +20,4 @@ various/**
 Makefile
 coverage/**
 dist/**
+coverage.info
