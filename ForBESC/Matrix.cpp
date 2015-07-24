@@ -39,7 +39,7 @@ int Matrix::destroy_handle() {
         return 0;
     }
     int status = cholmod_finish(ms_singleton);
-    ms_singleton == NULL;
+    ms_singleton = NULL;
     return status;
 }
 
@@ -116,23 +116,18 @@ Matrix::~Matrix() {
         delete[] m_data;
     }
     m_data = NULL;
-    bool nonNullSingleton = (ms_singleton != NULL);
     if (m_triplet != NULL) {
-        assert(nonNullSingleton);
         cholmod_free_triplet(&m_triplet, Matrix::cholmod_handle());
         m_triplet = NULL;
     }
     if (m_sparse != NULL) {
-        assert(nonNullSingleton);
         cholmod_free_sparse(&m_sparse, Matrix::cholmod_handle());
         m_sparse = NULL;
     }
     if (m_factor != NULL) {
-        assert(nonNullSingleton);
         cholmod_free_factor(&m_factor, Matrix::cholmod_handle());
     }
     if (m_dense != NULL) {
-        assert(nonNullSingleton);
         cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
     }
 }
@@ -257,6 +252,16 @@ void Matrix::set(size_t i, size_t j, double v) {
         (static_cast<int*> (m_triplet->j))[m_triplet->nnz] = j;
         (static_cast<double*> (m_triplet->x))[m_triplet->nnz] = v;
         (m_triplet->nnz)++;
+        /* Invalidate alternative sparse representations */
+        if (m_sparse != NULL) {
+            cholmod_free_sparse(&m_sparse, Matrix::cholmod_handle());
+        }
+        if (m_dense != NULL) {
+            cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
+        }
+        if (m_factor != NULL) {
+            cholmod_free_factor(&m_factor, Matrix::cholmod_handle());
+        }
         m_sparse = NULL;
         m_dense = NULL;
         m_factor = NULL;
@@ -433,6 +438,8 @@ bool Matrix::operator==(const Matrix & right) const {
     return result;
 }
 
+//LCOV_EXCL_START
+
 std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     os << "\nMatrix " << obj.m_nrows << "x" << obj.m_ncols << std::endl;
     if (obj.m_transpose) {
@@ -468,9 +475,10 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     }
     return os;
 }
+//LCOV_EXCL_STOP
 
 double &Matrix::operator[](int sub) const {
-    if (sub < 0 || sub > length()) {
+    if (sub < 0 || sub >= length()) {
         throw std::out_of_range("Exception: Index out of range for Matrix");
     }
     return m_data[sub];

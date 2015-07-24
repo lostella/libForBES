@@ -48,14 +48,27 @@ void TestMatrix::testQuadratic() {
         f = new Matrix(n, n);
         x = new Matrix(n, 1);
         for (int i = 0; i < n; i++) {
-            f -> set(i, i, 1.0);
+            _ASSERT_OK(f -> set(i, i, 1.0));
             (*x)[i] = i + 1;
         }
         double r = f -> quad(*x);
         _ASSERT_EQ(static_cast<double> (n * (n + 1)* (2 * n + 1) / 6), 2 * r);
-        delete f;
-        delete x;
+        _ASSERT_OK(delete f);
+        _ASSERT_OK(delete x);
     }
+    Matrix A(5, 6);
+    Matrix y(6, 1);
+    _ASSERT_EXCEPTION(A.quad(y), std::invalid_argument);
+
+    Matrix B(5, 5);
+    Matrix z(5, 2);
+    _ASSERT_EXCEPTION(B.quad(z), std::invalid_argument);
+    _ASSERT_EXCEPTION(B.quad(z, z), std::invalid_argument);
+
+    Matrix C(5, 5);
+    Matrix s(7, 1);
+    _ASSERT_EXCEPTION(C.quad(s), std::invalid_argument);
+
 }
 
 void TestMatrix::testQuadratic2() {
@@ -78,7 +91,7 @@ void TestMatrix::testQuadratic3() {
     Matrix f(3, 3, fdata);
     Matrix x(3, 1, xdata);
     Matrix q(3, 1, qdata);
-   
+
 
     double r;
     _ASSERT_OK(r = f.quad(x, q));
@@ -122,6 +135,11 @@ void TestMatrix::testMultiplication() {
     _ASSERT_EQ(18.0, r[0]);
     _ASSERT_EQ(7.0, r[1]);
     _ASSERT_EQ(-16.0, r[2]);
+
+    Matrix A(5, 6);
+    Matrix B(3, 5);
+    Matrix C;
+    _ASSERT_EXCEPTION(C = A*B, std::invalid_argument);
 }
 
 void TestMatrix::testGetSet() {
@@ -153,6 +171,7 @@ void TestMatrix::testAssignment() {
         _ASSERT(g[i] >= 0);
         _ASSERT(g[i] <= 1);
     }
+    _ASSERT_OK(f=f);
 }
 
 void TestMatrix::testAdditionBad() {
@@ -160,6 +179,9 @@ void TestMatrix::testAdditionBad() {
     Matrix B(7, 8);
     Matrix C;
     CPPUNIT_ASSERT_THROW(C = A + B, std::invalid_argument);
+    CPPUNIT_ASSERT_THROW(C = A - B, std::invalid_argument);
+    CPPUNIT_ASSERT_THROW(A += B, std::invalid_argument);
+    CPPUNIT_ASSERT_THROW(A -= B, std::invalid_argument);
 }
 
 void TestMatrix::testAddition() {
@@ -207,6 +229,15 @@ void TestMatrix::testFBMatrix() {
     for (int i = 0; i < n; i++) {
         _ASSERT_EQ(static_cast<double> (1 + 7 * i), f[i]);
     }
+
+    double s;
+    _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_DIAGONAL), std::invalid_argument);
+    _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_SYMMETRIC), std::invalid_argument);
+    _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_LOWERTR), std::invalid_argument);    
+    _ASSERT_EXCEPTION(s = f[-1], std::out_of_range);
+    _ASSERT_EXCEPTION(s = f[n], std::out_of_range);
+    _ASSERT_OK(Matrix::destroy_handle());
+    _ASSERT_EQ(0, Matrix::destroy_handle());
 }
 
 void TestMatrix::testMakeRandomFBMatrix() {
@@ -332,7 +363,9 @@ void TestMatrix::testDiagonalGetSet() {
     double t = -1.234;
     _ASSERT_OK(A -> set(3, 3, t));
     _ASSERT_EQ(t, A -> get(3, 3));
-    CPPUNIT_ASSERT_THROW(A -> set(3, 4, 1.0), std::invalid_argument);
+    _ASSERT_EXCEPTION(A -> set(3, 4, 1.0), std::invalid_argument);
+    _ASSERT_EXCEPTION(A -> get(n, n - 1), std::out_of_range);
+    _ASSERT_EXCEPTION(A -> set(n, n, 100.0), std::out_of_range);
 
     delete A;
 }
@@ -444,8 +477,8 @@ void TestMatrix::testQuadDiagonal() {
     double val = A -> quad(*x, *x);
 
     const double correct = 17077.5;
-    _ASSERT_EQ(correct, val);  
-    
+    _ASSERT_EQ(correct, val);
+
     val = A -> quad(*x);
     const double correct2 = 13612.5;
     _ASSERT_EQ(correct2, val);
@@ -823,7 +856,7 @@ void TestMatrix::testQuadSymmetric() {
     for (int i = 0; i < n; i++) {
         q.set(i, 0, -5.0 * i - 1.0);
     }
-    
+
     val = A.quad(x, q);
     correct_val = 850789.5;
     _ASSERT_EQ(correct_val, val);
@@ -1183,7 +1216,7 @@ void TestMatrix::testSparseQuad_q() {
 
     Matrix q = MatrixFactory::MakeSparse(n, 1, nnz_q, Matrix::SPARSE_UNSYMMETRIC);
     q.set(4, 0, 1);
-    
+
     double r = A.quad(x, q);
     const double r_exp = 18.0;
     const double tol = 1e-10;

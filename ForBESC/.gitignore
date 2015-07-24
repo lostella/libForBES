@@ -20,4 +20,4 @@ various/**
 Makefile
 coverage/**
 dist/**
-coverage.info
+*.info
