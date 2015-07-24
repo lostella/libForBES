@@ -16,4 +16,7 @@
 nbproject/**
 various/**
 ./.*
+.*
+Makefile
+
 
