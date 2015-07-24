@@ -100,6 +100,12 @@ void TestMatrixFactory::testMakeSparse() {
         _ASSERT_EQ(nnz, actual_nnz);
     }
     delete SP;
+
+    Matrix A;
+    _ASSERT_OK(A = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0, Matrix::MATRIX_SPARSE));
+    _ASSERT_EQ(Matrix::MATRIX_SPARSE, A.getType());
+    _ASSERT_EQ(n, A.getNrows());
+    _ASSERT_EQ(m, A.getNcols());
 }
 
 void TestMatrixFactory::testReadSparseFromFile() {

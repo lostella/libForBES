@@ -67,7 +67,7 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
             len = nrows;
             break;
         case Matrix::MATRIX_SPARSE:
-
+            return MakeRandomSparse(nrows, ncols, std::ceil((nrows*ncols)/3), offset, scale);
             break;
     }
     Matrix mat(nrows, ncols, type);
