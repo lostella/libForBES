@@ -1,3 +1,5 @@
+% solve a SVM problem using ForBES
+
 close all;
 clear;
 
@@ -26,17 +28,39 @@ fprintf('%d instances, %d features, nnz(A) = %d\n', size(A, 1), size(A, 2), nnz(
 
 f = quadLoss(lam);
 g = hingeLoss(1, b);
-constr = {A, -1, zeros(m,1)};
-opt.tol = 1e-10;
+constr = {A, -1, zeros(m, 1)};
+y0 = zeros(m, 1);
+opt.maxit = 10000;
+opt.tol = 1e-12;
 
-opt.method = 'cg-dyhs';
-tic; out1 = forbes(f, g, zeros(m, 1), [], constr, opt); toc
-out1
+fprintf('\nFast FBS\n');
+opt_fbs = opt;
+opt_fbs.method = 'fbs';
+opt_fbs.variant = 'fast';
+out = forbes(f, g, y0, [], constr, opt_fbs);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('matvecs    : %d\n', out.operations.cnt_C1);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
 
-opt.method = 'lbfgs';
-tic; out2 = forbes(f, g, zeros(m, 1), [], constr, opt); toc
-out2
+fprintf('\nL-BFGS\n');
+opt_lbfgs = opt;
+opt_lbfgs.method = 'lbfgs';
+out = forbes(f, g, y0, [], constr, opt_lbfgs);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('matvecs    : %d\n', out.operations.cnt_C1);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
 
-opt.method = 'fbs';
-tic; out3 = forbes(f, g, zeros(m, 1), [], constr, opt); toc
-out3
+fprintf('\nCG-DYHS\n');
+opt_cg = opt;
+opt_cg.method = 'cg-dyhs';
+out = forbes(f, g, y0, [], constr, opt_cg);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('matvecs    : %d\n', out.operations.cnt_C1);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+

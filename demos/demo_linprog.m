@@ -43,9 +43,9 @@ d = [c; b; 0];
 % f1 is the sum of the squared norm plus the indicator of the affine
 % subspace
 p = zeros(2*n+m,1);
-f = quadLossOverAffine(p, K, d);
+f = quadLossOverAffine(K, d, 1, p);
 % g is indicator of x>= 0, s>=0 
-g = indPos([repmat(0, n, 1); repmat(-inf, m, 1); repmat(0, n, 1)]);
+g = indPos([zeros(n, 1); repmat(-inf, m, 1); zeros(n, 1)]);
 constr = {1, -1, zeros(2*n+m,1)};
 y0 = zeros(2*n+m,1);
 % run forbes

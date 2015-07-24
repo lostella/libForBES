@@ -1,4 +1,4 @@
-% solve a sparse logistic regression problem using forbes
+% solve a sparse logistic regression problem using ForBES
 
 close all;
 clear;
@@ -17,19 +17,40 @@ f = logLoss(1/m);
 aff = {diag(sparse(b))*A};
 g = l1Norm(lam);
 x0 = zeros(n, 1);
-
-opt.display = 1;
 opt.maxit = 1000;
-opt.tolOpt = 1e-8;
+opt.tol = 1e-12;
 
-opt.method = 'lbfgs';
-tic; out_lbfgs = forbes(f, g, x0, aff, [], opt); toc
-out_lbfgs
+fprintf('\nFast FBS\n');
+opt_fbs = opt;
+opt_fbs.method = 'fbs';
+opt_fbs.variant = 'fast';
+out = forbes(f, g, x0, aff, [], opt_fbs);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('f evals    : %d\n', out.operations.cnt_f2);
+fprintf('matvecs    : %d\n', out.operations.cnt_C2);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
 
-opt.method = 'cg-dyhs';
-tic; out_cg = forbes(f, g, x0, aff, [], opt); toc
-out_cg
+fprintf('\nL-BFGS\n');
+opt_lbfgs = opt;
+opt_lbfgs.method = 'lbfgs';
+out = forbes(f, g, x0, aff, [], opt_lbfgs);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('f evals    : %d\n', out.operations.cnt_f2);
+fprintf('matvecs    : %d\n', out.operations.cnt_C2);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
 
-opt.method = 'fbs';
-tic; out_fbs = forbes(f, g, x0, aff, [], opt); toc
-out_fbs
+fprintf('\nCG-DYHS\n');
+opt_cg = opt;
+opt_cg.method = 'cg-dyhs';
+out = forbes(f, g, x0, aff, [], opt_cg);
+fprintf('message    : %s\n', out.message);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('f evals    : %d\n', out.operations.cnt_f2);
+fprintf('matvecs    : %d\n', out.operations.cnt_C2);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+

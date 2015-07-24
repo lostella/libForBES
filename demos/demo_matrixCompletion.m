@@ -1,4 +1,4 @@
-% solve a matrix completion problem using forbes
+% solve a sparse logistic regression problem using ForBES
 
 close all;
 clear;
@@ -19,15 +19,37 @@ B = full(M.*P);
 
 lam = 1e0;
 
-f = quadLoss(1, P(:), B(:));
+f = quadLoss(P(:), B(:));
 g = nuclearNorm(m, n, lam);
 x0 = zeros(m*n, 1);
+opt.maxit = 1000;
 opt.tol = 1e-12;
 
-opt.method = 'lbfgs';
-tic; out = forbes(f, g, x0, [], [], opt); toc;
-out
+fprintf('\nFast FBS\n');
+opt_fbs = opt;
+opt_fbs.method = 'fbs';
+opt_fbs.variant = 'fast';
+out = forbes(f, g, x0, [], [], opt_fbs);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('SVDs       : %d\n', out.operations.cnt_g);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
 
-opt.method = 'fbs';
-tic; out = forbes(f, g, x0, [], [], opt); toc;
-out
+fprintf('\nL-BFGS\n');
+opt_lbfgs = opt;
+opt_lbfgs.method = 'lbfgs';
+out = forbes(f, g, x0, [], [], opt_lbfgs);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('SVDs       : %d\n', out.operations.cnt_g);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+
+fprintf('\nCG-DYHS\n');
+opt_cg = opt;
+opt_cg.method = 'cg-dyhs';
+out = forbes(f, g, x0, [], [], opt_cg);
+fprintf('iterations : %d\n', out.iterations);
+fprintf('SVDs       : %d\n', out.operations.cnt_g);
+fprintf('time       : %7.4e\n', out.ts(end));
+fprintf('residual   : %7.4e\n', out.residual(end));
+
