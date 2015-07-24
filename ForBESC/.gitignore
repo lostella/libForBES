@@ -13,4 +13,7 @@
 *.svg
 *.map
 *.md5
+nbproject/**
+various/**
+./.*
 
