@@ -56,7 +56,7 @@ Quadratic::~Quadratic() {
     }
 }
 
-int Quadratic::call( Matrix& x, double& f)  {
+int Quadratic::call(Matrix& x, double& f) {
     if (!is_Q_eye) {
         if (is_q_zero) {
             f = Q->quad(x);
@@ -73,6 +73,10 @@ int Quadratic::category() {
 
 int Quadratic::callConj(const Matrix& y, double& f_star) {
     //TODO: Make Cholesky factor (if it doesn't exist)
+    if (is_Q_eye || Q == NULL) {
+        throw std::logic_error("[Q==I] to be implemented");
+
+    }
     if (L == NULL) {
         L = new Matrix();
         int status = Q->cholesky(*L);
@@ -80,10 +84,16 @@ int Quadratic::callConj(const Matrix& y, double& f_star) {
             return STATUS_NUMERICAL_PROBLEMS;
         }
     }
-    Matrix z = y - *q;                      // z = y - q
-    Matrix g; 
-    L->solveCholeskySystem(g, z);           // g = Q \ z 
-    f_star = (z * g)[0];                    // fstar = z' *g 
+    Matrix z;
+    if (is_q_zero || q == NULL) {
+        z = y;                          // z = y
+    } else {
+        z = y - *q;                     // z = y - q
+    }
+
+    Matrix g;
+    L->solveCholeskySystem(g, z);       // g = Q \ z 
+    f_star = (z * g)[0];                // fstar = z' *g 
     return STATUS_OK;
 }
 

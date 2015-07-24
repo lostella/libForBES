@@ -151,16 +151,18 @@ public:
 
 private:
     
+      
+
+protected:
     /*
-     * Constructors are private.
+     * Constructors are protected.
      * It is not allowed to instantiate objects of this class directly.
      * Use its subclasses/implementations.
      */
     
     Function();                         /**< Default constructor */
-    Function(const Function& orig);     /**< Default copy-constructor */    
-
-protected:
+    Function(const Function& orig);     /**< Default copy-constructor */  
+    
     virtual int computeGradient(Matrix& x, Matrix& grad) = 0;
 
 };

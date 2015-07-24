@@ -343,9 +343,9 @@ int Matrix::cholesky(Matrix & L) {
         L = *this;
         m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
         L.m_factor = cholmod_analyze(m_sparse, Matrix::cholmod_handle()); // analyze
-        int status = cholmod_factorize(m_sparse, L.m_factor, Matrix::cholmod_handle()); // factorize        
+        cholmod_factorize(m_sparse, L.m_factor, Matrix::cholmod_handle()); // factorize        
         L.m_sparseStorageType = CHOLMOD_TYPE_FACTOR;
-        return status;
+        return (L.m_factor->minor == L.m_nrows) ? 0 : 1;
     } else { // If this is any non-sparse matrix:
         L = *this;
         if (m_nrows != m_ncols) {
@@ -440,13 +440,17 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     }
     const char * const types[] = {"Dense", "Sparse", "Diagonal", "Lower Triangular", "Symmetric"};
     os << "Type: " << types[obj.m_type] << std::endl;
+    if (obj.m_type == Matrix::MATRIX_SPARSE && obj.m_sparseStorageType == Matrix::CHOLMOD_TYPE_FACTOR) {
+        os << "CHOLMOD Factor - Successful: " << ((obj.m_factor->minor == obj.m_ncols) ? "YES" : "NO") << std::endl;
+        return os;
+    }
     if (obj.m_type == Matrix::MATRIX_SPARSE && obj.m_triplet == NULL && obj.m_sparse != NULL) {
         os << "Storage type: Packed Sparse" << std::endl;
         for (size_t j = 0; j < obj.m_ncols; j++) {
             int p = ((int*) obj.m_sparse->p)[j];
             int pend = (obj.m_sparse->packed == 1) ? (((int*) obj.m_sparse->p)[j + 1]) : p + ((int*) obj.m_sparse->nz)[j];
             for (; p < pend; p++) {
-                std::cout << "(" << ((int*) obj.m_sparse->i)[p] << "," << j << ")  : "
+                os << "(" << ((int*) obj.m_sparse->i)[p] << "," << j << ")  : "
                         << std::setw(8) << std::setprecision(4) << ((double*) obj.m_sparse->x)[p] << std::endl;
             }
         }

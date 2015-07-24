@@ -71,12 +71,11 @@ public:
     
     /**
      * Creates a sparse symmetric matrix of given dimensions.
-     * @param nrows number of rows
-     * @param ncols number of columns.
+     * @param n matrix size (matrix is square)
      * @param max_nnz maximum number of non-zero elements
      * @return Allocated sparse matrix
      */
-    static Matrix MakeSparseSymmetric(size_t nrows, size_t ncols, size_t max_nnz);
+    static Matrix MakeSparseSymmetric(size_t n, size_t max_nnz);
     
     /**
      * Allocates a sparse matrix of given dimensions and instantiates it with
@@ -87,6 +86,9 @@ public:
      * <code>offset + scale * r</code>, where <code>r</code> is a random
      * variable in [0,1]. Parameters <code>offset</code> and <code>scale</code> 
      * are provided as input arguments.
+     * 
+     * The allocated matrix assumes that its <em>lower-triangular part</em> is 
+     * provided only. 
      * 
      * @param nrows number of rows
      * @param ncols number of columns.

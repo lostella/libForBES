@@ -172,6 +172,9 @@ void TestQuadratic::testCallDiagonalMatrix() {
 }
 
 void TestQuadratic::testCallSparse() {
+    /*
+     * Q is sparse, x is dense
+     */
     size_t n = 10;
     size_t nnz_Q = 20;
     Matrix Qsp = MatrixFactory::MakeRandomSparse(n, n, nnz_Q, 0.0, 1.0);
@@ -180,8 +183,66 @@ void TestQuadratic::testCallSparse() {
 
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 3.0, 1.5, Matrix::MATRIX_DENSE);
     double fval = -1;
-    _ASSERT_OK(F->call(x, fval));
+    _ASSERT_EQ(Function::STATUS_OK, F->call(x, fval));
     _ASSERT(fval > 0);
+
+    double f_exp = Qsp.quad(x);
+    const double tol = 1e-8;
+    _ASSERT_NUM_EQ(f_exp, fval, tol);
+
+    _ASSERT_OK(delete F);
+
+}
+
+void TestQuadratic::testCallSparse2() {
+    /*
+     * BOTH Q and x are sparse
+     */
+    size_t n = 10;
+    size_t nnz_Q = 20;
+    size_t nnz_x = 6;
+    Matrix Qsp = MatrixFactory::MakeRandomSparse(n, n, nnz_Q, 0.0, 1.0);
+
+    Function *F = new Quadratic(Qsp);
+
+    Matrix x = MatrixFactory::MakeRandomSparse(n, 1, nnz_x, 0.0, 1.0);
+    double fval = -1;
+    _ASSERT_EQ(Function::STATUS_OK, F->call(x, fval));
+    _ASSERT(fval > 0);
+
+    double f_exp = Qsp.quad(x);
+    const double tol = 1e-8;
+    _ASSERT_NUM_EQ(f_exp, fval, tol);
+
+    _ASSERT_OK(delete F);
+}
+
+void TestQuadratic::testCallConjSparse() {
+    size_t n = 5;
+    size_t nnz_Q = 2 * n - 1;
+    double fstar = -1;
+    const double tol = 1e-8;
+    const double fstar_exp = 5.13142364727941;
+    int status;
+    Function *F;    
+    
+    Matrix Qsp = MatrixFactory::MakeSparseSymmetric(n, nnz_Q);
+    Matrix x(n, 1);
+
+    for (size_t i = 0; i < n; i++) {
+        Qsp.set(i, i, 10.0);
+        x.set(i, 0, i+1);
+    }
+    for (size_t i = 1; i < n; i++) { /* Set the LT part */
+        Qsp.set(i, i - 1, 0.5);
+    }   
+
+    _ASSERT_OK(F = new Quadratic(Qsp));
+    _ASSERT_OK(status = F->callConj(x, fstar));
+    _ASSERT_NEQ(-1, fstar);
+    _ASSERT_EQ(Function::STATUS_OK, status);
+
+    _ASSERT_NUM_EQ(fstar_exp, fstar, tol);
 
     _ASSERT_OK(delete F);
 

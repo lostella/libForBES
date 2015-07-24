@@ -67,7 +67,7 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
             len = nrows;
             break;
         case Matrix::MATRIX_SPARSE:
-            
+
             break;
     }
     Matrix mat(nrows, ncols, type);
@@ -84,8 +84,8 @@ Matrix MatrixFactory::MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Mat
     return matrix;
 }
 
-Matrix MatrixFactory::MakeSparseSymmetric(size_t nrows, size_t ncols, size_t max_nnz) {
-    return MakeSparse(nrows, ncols, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
+Matrix MatrixFactory::MakeSparseSymmetric(size_t n, size_t max_nnz) {
+    return MakeSparse(n, n, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
 }
 
 Matrix MatrixFactory::ReadSparse(FILE* fp) {
@@ -95,6 +95,6 @@ Matrix MatrixFactory::ReadSparse(FILE* fp) {
     Matrix mat(sp->nrow, sp->ncol, Matrix::MATRIX_SPARSE);
     mat.m_sparse = sp;
     mat.m_sparseStorageType = Matrix::CHOLMOD_TYPE_SPARSE;
-    mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());        
+    mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());
     return mat;
 }
