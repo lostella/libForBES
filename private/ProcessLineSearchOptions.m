@@ -15,20 +15,19 @@
 % You should have received a copy of the GNU Lesser General Public License
 % along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
-function lsopt = ProcessLineSearchOptions(opt)
+function lsopt = ProcessLineSearchOptions(prob, opt)
     %  factor in [0, 1] used to compute average cost magnitude C_k as follows:
     % Q_k = 1 + (Delta)Q_k-1, Q_0 = 0,  C_k = C_k-1 + (|f_k| - C_k-1)/Q_k
     lsopt.Delta = 0.7;% this goes here to include Hager-Zhang line search as a backup
     % Wolfe line search parameter delta, range [0, .5]
     % phi (a) - phi (0) <= delta phi'(0)
     lsopt.delta = 0.1;
+    lsopt.testGamma = prob.unknownLf;
     switch opt.linesearch
         case 1 % armijo backtracking
-%         lsopt.str = 'Armijo Backtracking';
             lsopt.progTol = 0;
             lsopt.nLS = 50;
         case 2 % Nonmonotone Armijo
-%         lsopt.str = 'Nonmonotone Armijo Backtracking';
             lsopt.progTol = 0;
             lsopt.nLS = 50;
             lsopt.M = 5;
@@ -36,7 +35,7 @@ function lsopt = ProcessLineSearchOptions(opt)
             lsopt.sigma = 0.9;
             % maximum number of iterations
             lsopt.nbracket = 100;
-            % type of interpolation - 0 [bisection], 1 [quadratick
+            % type of interpolation - 0 [bisection], 1 [quadratic
             % interpolation], 2 [cubic interpolation when possible]
             lsopt.interp = 1;
             if isfield(opt, 'interp'), lsopt.interp = opt.interp; end
@@ -104,7 +103,7 @@ function lsopt = ProcessLineSearchOptions(opt)
             lsopt.fmin = -inf;
     end
 
-    % if method is not FBS or L-BFGS then initial stepsize is selected
+    % if method is not L-BFGS then initial stepsize is selected
     % according to Hager-Zhang
     if opt.method ~= 2
         lsopt.quadStep = true;

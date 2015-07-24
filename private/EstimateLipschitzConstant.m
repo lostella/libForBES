@@ -18,6 +18,10 @@
 function [L, lowerbound] = EstimateLipschitzConstant(prob, opt)
     L = 0;
     lowerbound = 0;
+    if isfield(opt, 'Lf')
+        L = opt.Lf;
+        return;
+    end
     eigsOpt.issym = 1;
     eigsOpt.tol = 1e-3;
     if prob.istheref1

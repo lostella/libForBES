@@ -20,6 +20,8 @@ function opt = ProcessOptions(opt)
     if ~isfield(opt, 'tol'), opt.tol = 1e-8; end
     if ~isfield(opt, 'term'), opt.customTerm = false;
     else opt.customTerm = true; end
+    if ~isfield(opt, 'record'), opt.toRecord = false;
+    else opt.toRecord = true; end
     if ~isfield(opt, 'maxit'), opt.maxit = 10000; end
     if ~isfield(opt, 'method'), opt.method = 'lbfgs'; end
     
@@ -28,35 +30,31 @@ function opt = ProcessOptions(opt)
             case 'sd'
                 opt.linesearch = 'armijo';
             case 'lbfgs'
-                opt.linesearch = 'hager-zhang';
+                opt.linesearch = 'lemarechal';
             case 'bfgs'
-                opt.linesearch = 'hager-zhang';
+                opt.linesearch = 'lemarechal';
             case 'cg-desc'
-                opt.linesearch = 'hager-zhang';
+                opt.linesearch = 'lemarechal';
             case 'cg-prp'
-                opt.linesearch = 'hager-zhang';
+                opt.linesearch = 'lemarechal';
             case 'cg-dyhs'
-                opt.linesearch = 'hager-zhang';
+                opt.linesearch = 'lemarechal';
             case 'bb'
                 opt.linesearch = 'nonmonotone-armijo';
             case 'fbs'
                 opt.linesearch = 'none';
+            otherwise
+                error('unknown method');
         end
     end
     
-    if ~isfield(opt, 'variant')
-        switch opt.method
-            case 'fbs'
-                opt.variant = 'fast';
-            otherwise
-                opt.variant = 'global';
-        end
-    end
+    opt.name = strcat(opt.method, ', ', opt.linesearch);
     
     if ~isfield(opt, 'recache'), opt.recache = 100; end
-    if ~isfield(opt, 'memory'), opt.memory = 11; end
+    if ~isfield(opt, 'memory'), opt.memory = 10; end
     if ~isfield(opt, 'adaptive'), opt.adaptive = 0; end
     if ~isfield(opt, 'display'), opt.display = 0; end
+    if ~isfield(opt, 'useHessian'), opt.useHessian = 0; end
     
     % translate labels into integer codes
     switch opt.method
@@ -99,6 +97,15 @@ function opt = ProcessOptions(opt)
             opt.linesearch = 0;
         otherwise
             error('unknown line search');
+    end
+    
+    if ~isfield(opt, 'variant')
+        switch opt.method
+            case 0 % FBS
+                opt.variant = 'fast';
+            otherwise
+                opt.variant = 'global';
+        end
     end
     
     switch opt.variant

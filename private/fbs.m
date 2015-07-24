@@ -1,8 +1,4 @@
 function out = fbs(prob, opt)
-    t0 = tic();
-
-    if ~isfield(prob, 'processed') || ~prob.processed, prob = ProcessCompositeProblem(prob, opt); end
-    
     %% initialize output stuff
     residual = zeros(1, opt.maxit);
     ts = zeros(1, opt.maxit);
@@ -14,6 +10,10 @@ function out = fbs(prob, opt)
         fprintf('%6s%11s%11s%11s\n', 'iter', 'gamma', 'optim.', 'object.');
     end
     
+    if opt.toRecord
+        record = [];
+    end
+    
     %      Q,C1,C2,f2, g
     cnt = [0, 0, 0, 0, 0];
     
@@ -21,7 +21,6 @@ function out = fbs(prob, opt)
     xk = prob.x0;
     vk = prob.x0;
     
-    preprocess = toc(t0);
     t0 = tic();
     
     for it = 1:opt.maxit
@@ -40,6 +39,10 @@ function out = fbs(prob, opt)
         u = cache_yk.z;
         cnt = cnt+cnt1;
         
+        if it == 1
+            cache_0 = cache_yk;
+        end
+        
         if opt.adaptive || prob.unknownLf
             [fz, cnt1] = Evaluatef(prob, u);
             cnt = cnt+cnt1;
@@ -57,6 +60,9 @@ function out = fbs(prob, opt)
         ts(1, it) = toc(t0);
         residual(1, it) = norm(cache_yk.diff, inf)/gam;
         objective(1, it) = cache_yk.FBE;
+        if opt.toRecord
+            record = [record, opt.record(it, gam, cache_yk, cnt)];
+        end
 
         if ~opt.customTerm
             % From sec. 8.2.3.2 of Gill, Murray, Wright (1982).
@@ -70,7 +76,7 @@ function out = fbs(prob, opt)
                 break;
             end
         else
-            if opt.term(cache_yk, gam)
+            if opt.term(cache_0, cache_yk, gam)
                 msgTerm = [msgTerm, 'reached optimum (custom criterion)'];
                 flagTerm = 0;
                 break;
@@ -103,6 +109,7 @@ function out = fbs(prob, opt)
         msgTerm = [msgTerm, 'exceeded maximum iterations'];
     end
     
+    out.name = opt.name;
     out.message = msgTerm;
     out.flag = flagTerm;
     out.gam = gam;
@@ -117,47 +124,9 @@ function out = fbs(prob, opt)
     out.objective = objective(1, 1:it);
     out.ts = ts(1, 1:it);
     out.prob = prob;
-    out.preprocess = preprocess;
     out.opt = opt;
-end
-
-function [v, cnt] = Evaluatef(prob, x)
-    %      Q,C1,C2,f2, g
-    cnt = [0, 0, 0, 0, 0];
-    f1x = 0; f2x = 0;
-    if prob.istheref1
-        if prob.isthereC1
-            if prob.isC1fun, C1x = prob.C1(x);
-            else C1x = prob.C1*x; end
-            res1x = C1x - prob.d1;
-            if prob.isQfun, Qres1x = prob.Q(res1x);
-            else Qres1x = prob.Q*res1x; end
-            cnt(2) = cnt(2)+1;
-        else
-            res1x = x - prob.d1;
-            if prob.isQfun, Qres1x = prob.Q(res1x);
-            else Qres1x = prob.Q*res1x; end
-        end
-        cnt(1) = cnt(1)+1;
-        f1x = 0.5*(res1x'*Qres1x) + prob.q'*res1x;
-    end
-    if prob.istheref2
-        if prob.isthereC2
-            if prob.isC2fun, C2x = prob.C2(x);
-            else C2x = prob.C2*x; end
-            res2x = C2x - prob.d2;
-            f2x = prob.callf2(res2x);
-            cnt(3) = cnt(3)+1;
-        else
-            res2x = x - prob.d2;
-            f2x = prob.callf2(res2x);
-        end
-        cnt(4) = cnt(4)+1;
-    end
-    if prob.istherelin
-        v = f1x + f2x + prob.l'*x;
-    else
-        v = f1x + f2x;
+    if opt.toRecord
+        out.record = record;
     end
 end
 
@@ -167,6 +136,7 @@ function [cache, cnt] = ForwardBackwardStep(prob, gam, x, cache)
     cnt = [0, 0, 0, 0, 0];
     f1x = 0; gradf1x = 0;
     f2x = 0; gradf2x = 0;
+    cache.gam = gam;
     if nargin < 4
         cache.x = x;
         if prob.istheref1
