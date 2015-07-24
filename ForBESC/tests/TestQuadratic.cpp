@@ -81,20 +81,20 @@ void TestQuadratic::testCall() {
 
     Matrix Q = Matrix(4, 4, Qdata);
     Matrix q = Matrix(4, 1, qdata);
-    Matrix x = Matrix(4, 1, xdata);
+    Matrix x = Matrix(4, 1, xdata);     
 
     Quadratic quadratic(Q, q);
     double f = -999.0;
     int status = quadratic.call(x, f);
 
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    _ASSERT_EQ(74.0, f);
+    _ASSERT_EQ(42.0, f);
 
     /* Second part */
     Quadratic quadratic2(Q);
     status = quadratic2.call(x, f);
     _ASSERT_EQ(0, status);
-    _ASSERT_EQ(64.0, f);
+    _ASSERT_EQ(32.0, f);
 }
 
 void TestQuadratic::testCallWithGradient() {
@@ -215,7 +215,7 @@ void TestQuadratic::testCallDiagonalMatrix() {
     f -> call(x, val);
 
     double tol = 1e-8;
-    _ASSERT_NUM_EQ(374, val, tol);
+    _ASSERT_NUM_EQ(187.0, val, tol);
     _ASSERT_OK(delete f);
 }
 

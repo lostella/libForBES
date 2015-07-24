@@ -301,7 +301,7 @@ double Matrix::quad(Matrix & x) {
     } else if (MATRIX_SYMMETRIC == m_type) { /* SYMMETRIC */
         for (size_t i = 0; i < m_nrows; i++) {
             for (size_t j = 0; j < i; j++) {
-                result += 2.0f * x[i] * get(i, j) * x[j];
+                result += 2 * x[i] * get(i, j) * x[j];
             }
             result += x[i] * get(i, i) * x[i];
         }
@@ -313,6 +313,7 @@ double Matrix::quad(Matrix & x) {
             throw std::logic_error("Quad on sparse matrix - no triplets found (not implemented yet)");
         }
     }
+    result /= 2;
     return result;
 }
 
@@ -332,7 +333,7 @@ double Matrix::quad(Matrix& x, Matrix & q) {
     double t = 0.0f;
     Matrix r;
     r = q*x;
-    t = r.get(0, 0) + quad(x);
+    t = r.get(0, 0) + quad(x); /* q*x + (1/2) x'*Q*x */
     return t;
 }
 

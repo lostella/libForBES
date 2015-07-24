@@ -26,6 +26,10 @@
 #include "Matrix.h"
 #include <iostream>
 
+/**
+ * A Quadratic function of the form <code>Q(x) = 0.5 * x'*Q*x + q'*x</code>, where
+ * <code>Q</code> is a square symmetric matrix and <code>q</code> is a vector. 
+ */
 class Quadratic : public Function {
 public:
     /**
@@ -35,7 +39,7 @@ public:
     Quadratic();
     
     /**
-     * Create a quadratic function of the form <code>f(x) = x'*Q*x</code>, where
+     * Create a quadratic function of the form <code>f(x) = 0.5*x'*Q*x</code>, where
      * <code>Q</code> is a square matrix.
      * 
      * @param Q Matrix Q.
@@ -43,7 +47,7 @@ public:
     Quadratic(Matrix&Q);
     
     /**
-     * Create a quadratic-plus-linear function of the form <code>f(x) = x'*Q*x + q'*x</code>,
+     * Create a quadratic-plus-linear function of the form <code>f(x) = 0.5*x'*Q*x + q'*x</code>,
      * where <code>Q</code> is a square matrix and <code>q</code> is a vector.
      * @param Q A square matrix
      * @param q A vector
@@ -62,7 +66,9 @@ public:
     virtual ~Quadratic();
 
     /**
-     * Category of this function. 
+     * Category of this function. This is a quadratic function, therefore it 
+     * returns <code>CAT_QUADRATIC</code>.
+     * 
      * @return Category index.
      */
     int category();
@@ -70,8 +76,26 @@ public:
     void setQ(Matrix& Q);
     void setq(Matrix& q);
     
+    /**
+     * Returns the value of function f which is computed as <code>Q(x)=0.5*x'*Q*x + q'*x</code>.
+     * 
+     * @param x The vector x where f(x) should be computed.
+     * 
+     * @param f The computed value of f(x)
+     * 
+     * @return
+     * status code which is equal to <code>STATUS_OK</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     * 
+     */
     virtual int call(Matrix& x, double& f);
+    
     virtual int callConj(const Matrix& x, double& f_star);
+    
     virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
 
 

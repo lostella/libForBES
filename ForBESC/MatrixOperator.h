@@ -28,7 +28,7 @@ class MatrixOperator : public LinearOperator {
 public:
 
     MatrixOperator(Matrix& A) :
-    A(A) {
+    A(A) {        
     }
 
     MatrixOperator(const MatrixOperator& other) :
@@ -46,9 +46,12 @@ public:
 
     virtual Matrix call(Matrix& x);
 
+    virtual size_t dimensionIn();
+
+    virtual size_t dimensionOut();
 
     virtual ~MatrixOperator();
-    
+
 private:
     Matrix &A;
 };

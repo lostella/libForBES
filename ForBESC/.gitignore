@@ -18,5 +18,5 @@ various/**
 ./.*
 .*
 Makefile
-
-
+coverage/**
+dist/**

@@ -7,7 +7,6 @@
 
 #include "MatrixOperator.h"
 
-
 MatrixOperator::~MatrixOperator() {
 }
 
@@ -16,4 +15,13 @@ Matrix MatrixOperator::call(Matrix& x) {
     y = A*x;
     return y;
 }
+
+size_t MatrixOperator::dimensionIn() {
+    return A.getNcols();
+}
+
+size_t MatrixOperator::dimensionOut() {
+    return A.getNrows();
+}
+
 

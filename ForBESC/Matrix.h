@@ -262,33 +262,31 @@ public:
     size_t length() const;
 
     /**
-     * Computes the quadratic form x'*Q*x.
+     * Computes the quadratic form <code>0.5 * x'*Q*x</code>.
      * 
-     * <p>Here x is a given vector
-     * as <code>Matrix</code>, where Q is the current instance of 
-     * <code>Matrix</code>.</p>
+     * <p>Here x is a given vector as <code>Matrix</code>, where Q is the current 
+     * instance of <code>Matrix</code>.</p>
      * 
      * <p>This method can only be applied on square matrices Q while x and q 
      * need to be of compatible dimensions.</p>
      * 
      * @param x The vector x.
-     * @return Scalar x'*Q*x as <code>double</code>.
+     * @return Scalar 0.5*x'*Q*x as <code>double</code> as a double.
      */
     double quad(Matrix& x);
 
     /**
-     * Computes the quadratic form x'*Q*x + q'*x.
+     * Computes the quadratic form <code>0.5*x'*Q*x + q'*x</code>.
      * 
-     * <p>Here x is a given vector
-     * as <code>Matrix</code>, where Q is the current instance of 
-     * <code>Matrix</code>. Computes x'*Q*x.</p>
+     * <p>Here x is a given vector as <code>Matrix</code>, where Q is the current 
+     * instance of <code>Matrix</code>.</p>
      * 
      * <p>This method can only be applied on square matrices Q while x and q 
      * need to be of combatible dimensions.</p>
      * 
      * @param x The vector x.
      * @param q The parameter vector x.
-     * @return The result of x'*Q*x + q'*x.
+     * @return The result of operation <code>0.5*x'*Q*x + q'*x</code> as a double.
      */
     double quad(Matrix& x, Matrix& q);
 

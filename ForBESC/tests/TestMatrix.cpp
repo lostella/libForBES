@@ -34,7 +34,7 @@ TestMatrix::~TestMatrix() {
 }
 
 void TestMatrix::setUp() {
-    srand((unsigned)time(NULL));
+    srand((unsigned) time(NULL));
 }
 
 void TestMatrix::tearDown() {
@@ -52,7 +52,7 @@ void TestMatrix::testQuadratic() {
             (*x)[i] = i + 1;
         }
         double r = f -> quad(*x);
-        _ASSERT_EQ(static_cast<double> (n * (n + 1)* (2 * n + 1) / 6), r);
+        _ASSERT_EQ(static_cast<double> (n * (n + 1)* (2 * n + 1) / 6), 2 * r);
         delete f;
         delete x;
     }
@@ -67,7 +67,7 @@ void TestMatrix::testQuadratic2() {
 
     double r;
     _ASSERT_OK(r = f.quad(x));
-    _ASSERT_EQ(-16.0, r);
+    _ASSERT_EQ(-8.0, r);
 }
 
 void TestMatrix::testQuadratic3() {
@@ -78,10 +78,11 @@ void TestMatrix::testQuadratic3() {
     Matrix f(3, 3, fdata);
     Matrix x(3, 1, xdata);
     Matrix q(3, 1, qdata);
+   
 
     double r;
     _ASSERT_OK(r = f.quad(x, q));
-    _ASSERT_EQ(-77.5, r);
+    _ASSERT_EQ(-28.25, r);
 }
 
 void TestMatrix::testQuadraticDot() {
@@ -441,17 +442,18 @@ void TestMatrix::testQuadDiagonal() {
     Matrix *A = new Matrix(n, n, aData, Matrix::MATRIX_DIAGONAL);
     Matrix *x = new Matrix(n, 1, xData);
     double val = A -> quad(*x, *x);
-    const double correct = 30690.0;
-    _ASSERT_EQ(correct, val);
 
+    const double correct = 17077.5;
+    _ASSERT_EQ(correct, val);  
+    
     val = A -> quad(*x);
-    const double correct2 = 27225.0;
+    const double correct2 = 13612.5;
     _ASSERT_EQ(correct2, val);
 
     delete A;
     delete x;
-    delete[] aData;
-    delete[] xData;
+    _ASSERT_OK(delete[] aData);
+    _ASSERT_OK(delete[] xData);
 }
 
 void TestMatrix::testSubtract() {
@@ -473,7 +475,7 @@ void TestMatrix::testSubtract() {
     Matrix Z = X - B;
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < 0; j++) {
+        for (int j = 0; j < n; j++) {
             _ASSERT_EQ(X.get(i, j) - B.get(i, j), Z.get(i, j));
         }
     }
@@ -813,7 +815,7 @@ void TestMatrix::testQuadSymmetric() {
             A.set(i, j, 4.0 * i + 7.0 * j + 1.0);
         }
     }
-    double correct_val = 1711809.0f;
+    double correct_val = 855904.5f;
     double val = A.quad(x);
     _ASSERT_EQ(correct_val, val);
 
@@ -821,8 +823,9 @@ void TestMatrix::testQuadSymmetric() {
     for (int i = 0; i < n; i++) {
         q.set(i, 0, -5.0 * i - 1.0);
     }
+    
     val = A.quad(x, q);
-    correct_val = 1706694.0;
+    correct_val = 850789.5;
     _ASSERT_EQ(correct_val, val);
 }
 
@@ -1124,7 +1127,7 @@ void TestMatrix::testSparseQuad() {
                 r_exp += x->get(i, 0) * x->get(j, 0) * A->get(i, j);
             }
         }
-
+        r *= 2;
         double tol = 1e-6;
         _ASSERT(std::abs(r) > tol);
         _ASSERT_NUM_EQ(r_exp, r, tol);
@@ -1151,7 +1154,7 @@ void TestMatrix::testSparseQuadSparseX() {
             _ASSERT_OK(r = A.quad(x));
             for (size_t i = 0; i < n; i++) {
                 for (size_t j = 0; j < n; j++) {
-                    r_exp += x.get(i, 0) * x.get(j, 0) * A.get(i, j);
+                    r_exp += x.get(i, 0) * x.get(j, 0) * A.get(i, j) / 2;
                 }
             }
             _ASSERT_NUM_EQ(r_exp, r, tol);
@@ -1180,9 +1183,9 @@ void TestMatrix::testSparseQuad_q() {
 
     Matrix q = MatrixFactory::MakeSparse(n, 1, nnz_q, Matrix::SPARSE_UNSYMMETRIC);
     q.set(4, 0, 1);
-
+    
     double r = A.quad(x, q);
-    const double r_exp = 33.0;
+    const double r_exp = 18.0;
     const double tol = 1e-10;
 
     _ASSERT_NUM_EQ(r_exp, r, tol);

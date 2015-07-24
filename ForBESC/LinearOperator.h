@@ -38,6 +38,9 @@ public:
      * @return 
      */
     virtual Matrix call(Matrix& x) = 0;
+    
+    virtual size_t dimensionIn() =0;
+    virtual size_t dimensionOut() =0;
 
     virtual ~LinearOperator();
     
