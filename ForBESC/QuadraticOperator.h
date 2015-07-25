@@ -13,10 +13,12 @@
 
 /**
  * A quadratic operator is a function of the form <code>Q(x) = 0.5*x'*T(x)</code>,
- * where <code>T</code> is a given linear operator. Operator </code>T</code> produces 
+ * where <code>T</code> is a given linear operator. Operator <code>T</code> produces 
  * a column vector of the same dimension as <code>x</code>. It is assumed that 
  * <code>T</code> is a symmetric operator, therefore the derivative of <code>Q(x)</code>
  * is computed as <code>Q'(x) = T(x)</code>.
+ * 
+ * \ingroup Functions
  * 
  */
 class QuadraticOperator : public Function {

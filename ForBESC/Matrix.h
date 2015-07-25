@@ -39,7 +39,12 @@
 #endif
 
 /**
- * A generic matrix API.
+ * \class Matrix
+ * \version version 0.2
+ * \ingroup Matrix
+ * \date Created on July 7, 2015, 8:02 PM
+ * 
+ * \brief A generic matrix API.
  * 
  * <p>A generic matrix which can be an unstructured dense, a structured dense (e.g.,
  * symmetric or lower triangular, stored in packed form) or a dense matrix. 
@@ -49,6 +54,9 @@
  * 
  * <p>To construct a Matrix you can use one of this class's constructors. However,
  * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.</p>
+ * 
+ * \todo Implement LDL factorization
+ * \todo Implement LDL-based system solution
  */
 class Matrix {
     
@@ -272,6 +280,9 @@ public:
      * 
      * @param x The vector x.
      * @return Scalar 0.5*x'*Q*x as <code>double</code> as a double.
+     * 
+     * \todo Implement quadFromSparse in case the matrix is sparse, but there
+     * are no triplets available.
      */
     double quad(Matrix& x);
 
@@ -309,6 +320,9 @@ public:
      * @param L the Cholesky factor of this matrix. 
      * @return status code. Returns <code>0</code> if the factorization succeeded.
      * 
+     * \todo Make this function fail-safe: it should return the right status code
+     * when BLAS and LAPACK are deactivated.
+     * 
      */
     int cholesky(Matrix& L);
 
@@ -328,10 +342,7 @@ public:
      * @return Returns <code>0</code> if the solution of the system has succeeded.
      */
     int solveCholeskySystem(Matrix& solution, const Matrix& rhs) const;
-
-
-    //TODO Implement LDL factorization
-    //TODO Implement LDL-based system solution
+    
 
     /* Operators */
 

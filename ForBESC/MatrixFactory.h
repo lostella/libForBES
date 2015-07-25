@@ -27,6 +27,16 @@
 #include <ctime>        // std::time
 #include <functional>
 
+/**
+ * \class MatrixFactory
+ * \version version 0.1
+ * \ingroup Matrix
+ * \date Created on July 12, 2015, 7:50 PM
+ * \author <a href="http://dysco.imtlucca.it/sopasakis">Pantelis Sopasakis</a>
+ * 
+ * \brief Use this class to create instances of Matrix
+ * 
+ */
 class MatrixFactory {
 public:    
     

@@ -25,7 +25,14 @@
 #include "Matrix.h"
 #include "ForBESUtils.h"
 /**
- * A ForBES function.
+ * \class Function
+ * \brief A ForBES function.
+ * \version version 0.1
+ * \ingroup Functions
+ * \date Created on July 9, 2015, 3:35 AM
+ * \author Pantelis Sopasakis
+ * 
+ * 
  * 
  * This is a generic API for ForBES functions. Constructors for this class are
  * protected.

@@ -32,6 +32,8 @@
  * 
  * This class implements only the computation of the conjugate of quadratic-over-affine
  * as well as its gradient.
+ * 
+ * \ingroup Functions
  */
 class QuadOverAffine : public Function {
 public:

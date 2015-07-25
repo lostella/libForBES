@@ -38,6 +38,64 @@
  *
  */
 
+/*! \page ex-matrix How to use Matrices
+ * \tableofcontents
+ * Here we provide some examples on how to make the most out of the class
+ * Matrix.
+ * \section sec Creating and accessing matrices
+ * \subsection subsection1 First steps
+ * Create an empty matrix and access its elements:
+ * 
+ * \code{.cpp} 
+ * size_t n = 5, m = 7;
+ * 
+ * // Create an empty dense matrix 5-by-7:
+ * Matrix A(n, m, Matrix::MATRIX_DENSE); 
+ * 
+ * // Set A(1,0) to a value:
+ * A.set(1, 0, 10.56);
+ * 
+ * // retrieve the value of A(1,0):
+ * double value = A.get(1, 0); 
+ * \endcode
+ * 
+ * But you can also very easily create a random matrix:
+ * \code{.cpp}
+ * size_t n = 8;
+ * // Make a random symmetric matrix:
+ * Matrix S = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
+ * // Make a random lower triangular matrix and random entries in [1, 3]:
+ * Matrix L = MatrixFactory::MakeRandomMatrix(n, n, 1.0, 2.0, Matrix::MATRIX_LOWERTR);
+ * // Make a random sparse matrix with given number of non-zero entries:
+ * size_t nnz = 10;
+ * Matrix Y = MatrixFactory::MakeRandomMatrix(n, n, nnz, 0.01, 1.5);
+ * \endcode
+ *  
+ * 
+ * \subsection matops Matrix operations
+ * 
+ * 
+ * More text.
+ */
+
+
+
+
+
+/** \defgroup Functions ForBES Functions
+ *
+ * \brief ForBES functions
+ * 
+ * Lalala
+ */
+
+
+/** \defgroup Matrix Matrix
+ *
+ * \brief Matrices and utilities
+ * 
+ */
+
 
 /*
  * This is a header you may include to your project - it will include all those

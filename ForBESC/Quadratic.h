@@ -29,6 +29,8 @@
 /**
  * A Quadratic function of the form <code>Q(x) = 0.5 * x'*Q*x + q'*x</code>, where
  * <code>Q</code> is a square symmetric matrix and <code>q</code> is a vector. 
+ * 
+ * \ingroup Functions
  */
 class Quadratic : public Function {
 public:

@@ -55,7 +55,7 @@ void TestMatrixFactory::testMakeIdentity() {
 }
 
 void TestMatrixFactory::testMakeRandomMatrix() {
-    int n = 8;
+    size_t n = 8;
     Matrix result = MatrixFactory::MakeRandomMatrix(n, n, 0.01, 1.5, Matrix::MATRIX_LOWERTR);
     _ASSERT_EQ(Matrix::MATRIX_LOWERTR, result.getType());
     for (size_t i = 0; i < n; i++) {
