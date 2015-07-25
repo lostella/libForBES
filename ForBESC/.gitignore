@@ -21,3 +21,4 @@ Makefile
 coverage/**
 dist/**
 *.info
+html/*
