@@ -56,13 +56,75 @@ void TestQuadratic::testQuadratic() {
 
 void TestQuadratic::testQuadratic2() {
     /* Test the empty constructor */
-    Quadratic *Q = new Quadratic();
-    _ASSERT_EQ(Function::CAT_QUADRATIC, Q->category());
-    _ASSERT_OK(delete Q);
+    size_t n = 8;
+    Function *F = new Quadratic(); /* Q = I, q = 0. */
+    _ASSERT_EQ(Function::CAT_QUADRATIC, F->category());
+
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    x.set(0, 0, 666);
+    Matrix grad;
+
+    double fval = 0.0;
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval, grad));
+
+    _ASSERT_NUM_EQ((x * x).get(0, 0), fval, 1e-6);
+
+    Matrix q(n, 1);
+    for (size_t i = 0; i < n; ++i) {
+        q.set(i, 0, i + 1);
+    }
+    static_cast<Quadratic*> (F)->setq(q);
+
+    double fval_prev = fval;
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval, grad));
+    _ASSERT_NUM_EQ(fval_prev + (q * x).get(0, 0), fval, 1e-6);
+
+    _ASSERT_OK(delete F);
 }
 
 void TestQuadratic::testQuadratic3() {
-    //  CPPUNIT_ASSERT(false);
+    size_t n = 10;
+    Matrix Q(n, n, Matrix::MATRIX_DENSE);
+    for (size_t i = 0; i < n - 1; ++i) {
+        Q.set(i, i, 1.5);
+    }
+    Function *F = new Quadratic(Q);
+    Matrix x(n, 1);
+    double fval;
+    int status = F->callConj(x, fval);
+    _ASSERT_EQ(ForBESUtils::STATUS_NUMERICAL_PROBLEMS, status);
+
+    Q.set(n - 1, n - 1, 1.5);
+    Q.set(1, 0, 0.1);
+    Q.set(0, 1, 0.1);
+
+    static_cast<Quadratic*> (F)->setQ(Q);
+    _ASSERT_OK(status = F->callConj(x, fval));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    Matrix q(n, 1);
+    for (size_t i = 0; i < n; ++i) {
+        q.set(i, 0, i + 1);
+        x.set(i, 0, 2 * i + 1);
+    }
+
+
+    Matrix grad;
+    static_cast<Quadratic*> (F)->setq(q);
+
+    _ASSERT_OK(status = F->callConj(x, fval, grad));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    const double fval_exp = 190.002976190476;
+    const double tol = 1e-8;
+
+    _ASSERT_NUM_EQ(fval_exp, fval, tol);
+
+    double grad0_exp = -0.0446428571428572;
+    _ASSERT_NUM_EQ(grad0_exp, grad.get(0, 0), tol);
+
+    std::cout << fval;
+    _ASSERT_OK(delete F);
 }
 
 void TestQuadratic::testCallProx() {
@@ -81,7 +143,7 @@ void TestQuadratic::testCall() {
 
     Matrix Q = Matrix(4, 4, Qdata);
     Matrix q = Matrix(4, 1, qdata);
-    Matrix x = Matrix(4, 1, xdata);     
+    Matrix x = Matrix(4, 1, xdata);
 
     Quadratic quadratic(Q, q);
     double f = -999.0;

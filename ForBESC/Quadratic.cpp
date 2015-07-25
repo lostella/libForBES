@@ -59,6 +59,7 @@ Quadratic::~Quadratic() {
 void Quadratic::setQ(Matrix& Q) {
     is_Q_eye = false;
     this->Q = &Q;
+    this->L = NULL;
 }
 
 void Quadratic::setq(Matrix& q) {
@@ -73,6 +74,11 @@ int Quadratic::call(Matrix& x, double& f) {
         } else {
             f = Q->quad(x, *q);
         }
+    } else {
+        f = (x * x).get(0, 0);
+        if (!is_q_zero) {
+            f += ((*q) * x).get(0, 0);
+        }
     }
     return ForBESUtils::STATUS_OK;
 }
@@ -82,14 +88,13 @@ int Quadratic::category() {
 }
 
 int Quadratic::callConj(const Matrix& y, double& f_star) {
-    Matrix *g = new Matrix();
-    int status = callConj(y, f_star, *g);
-    delete g;
+    Matrix g;
+    int status = callConj(y, f_star, g);
     return status;
 }
 
 int Quadratic::callConj(const Matrix& y, double& f_star, Matrix& g) {
-    Matrix z = (is_q_zero || q == NULL) ? y : y - *q; // z = y
+    Matrix z = (is_q_zero || q == NULL) ? y : y - *q; // z = y    
 
     if (is_Q_eye || Q == NULL) {
         g = z;

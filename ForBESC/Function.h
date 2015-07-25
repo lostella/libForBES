@@ -53,9 +53,15 @@ public:
      * <code>Function::CAT_QUADRATIC</code>. Users can define and use their own
      * category indices. 
      * 
+     * \todo also introduce super-classes like FunctionQuadratic to be able to cast
+     * functions of specific types accordingly and access additional methods (e.g.,
+     * getQ).
+     * 
      * @return Function category as <code>int</code>
      */
     virtual int category() = 0; // abstract method
+    
+    
 
     /**
      * Returns the value of function f.

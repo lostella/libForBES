@@ -827,7 +827,7 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
         case MATRIX_LOWERTR:
         case MATRIX_SYMMETRIC:
             if (nc != nr) {
-                throw std::invalid_argument("Lower triangular matrices must be square!!!");
+                throw std::invalid_argument("Lower triangular and symmetric matrices must be square!!!");
             }
             m_dataLength = nc * (nc + 1) / 2;
             m_data = new double[m_dataLength]();
