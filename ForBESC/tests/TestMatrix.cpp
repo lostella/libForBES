@@ -1072,6 +1072,45 @@ void TestMatrix::testSparseDenseMultiply() {
 
 }
 
+void TestMatrix::testSparseSparseMultiply() {
+    const size_t n = 10;
+    const size_t m = 12;
+    const size_t k = 9;
+    const size_t nnz_L = 50;
+    const size_t nnz_R = 40;
+
+    Matrix L = MatrixFactory::MakeRandomSparse(n, m, nnz_L, 1.0, 2.0);
+    Matrix R = MatrixFactory::MakeRandomSparse(m, k, nnz_R, 1.0, 2.0);
+
+    Matrix Y;    
+    _ASSERT_OK(Y = L * R);
+    _ASSERT_EQ(n, Y.getNrows());
+    _ASSERT_EQ(k, Y.getNcols());
+    _ASSERT_EQ(Matrix::MATRIX_SPARSE, Y.getType());
+
+    Matrix Ld(n, m);
+    Matrix Rd(m, k);
+
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            Ld.set(i, j, L.get(i, j));
+        }
+    }
+
+    for (size_t i = 0; i < m; i++) {
+        for (size_t j = 0; j < k; j++) {
+            Rd.set(i, j, R.get(i, j));
+        }
+    }
+    
+    Matrix Z = Ld*Rd;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < k; j++) {
+            _ASSERT_NUM_EQ(Z.get(i,j), Y.get(i,j), 1e-6);
+        }
+    }
+}
+
 void TestMatrix::testSparseAddDense() {
     size_t n = 5;
     size_t m = 7;

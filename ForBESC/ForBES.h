@@ -368,7 +368,7 @@
  * then, the conjugate of <code>F</code> is
  * 
  * \f{align*}{
- * g(x^*) &=  S^{-1}\begin{bmatrix}x^*-q\\b\end{bmatrix}\\
+ * S g(x^*) &=  \begin{bmatrix}x^*-q\\b\end{bmatrix}\\
  * F^*(x^*) &= -\frac{1}{2} \left(g(x^*)'Qg(x^*) + (q-x^*)'g(x^*)\right)
  * \f}
  * 
