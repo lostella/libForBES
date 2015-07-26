@@ -24,6 +24,13 @@
 #include "Matrix.h"
 #include "LinearOperator.h"
 
+/**
+ * \class MatrixOperator
+ * \brief A linear operator T(x) = M*x, where M is a Matrix
+ * \version 0.0-tentative
+ * \author Pantelis Sopasakis
+ * \date Created on July 24, 2015, 7:31 PM
+ */
 class MatrixOperator : public LinearOperator {
 public:
 
@@ -44,7 +51,13 @@ public:
     }
 
 
+    virtual bool isSelfAdjoint(){
+        return false;
+    };
+
     virtual Matrix call(Matrix& x);
+    
+    virtual Matrix callAdjoint(Matrix& x);
 
     virtual size_t dimensionIn();
 

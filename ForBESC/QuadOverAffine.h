@@ -24,6 +24,12 @@
 #include "Function.h"
 
 /**
+ * \class QuadOverAffine
+ * \brief %Function <code>F(x) = x'*Q*x + q'*x + delta(x|Z)</code>
+ * \version 0.0-tentative
+ * \author Pantelis Sopasakis
+ * \date Created on July 24, 2015, 4:55 PM
+ * 
  * Quadratic-over-affine function.
  * 
  * This is the function <code>F(x) = x'*Q*x + q'*x + delta(x|Z)</code> where 

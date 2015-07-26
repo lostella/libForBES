@@ -27,6 +27,12 @@
 #include <iostream>
 
 /**
+ * 
+ * \class Quadratic
+ * \brief A quadratic function <code>F(x) = 0.5 * x'*Q*x + q'*x</code>
+ * \version 0.0-tentative
+ * \author Pantelis Sopasakis
+ * \date Created on July 24, 2015, 4:55 PM
  * A Quadratic function of the form <code>Q(x) = 0.5 * x'*Q*x + q'*x</code>, where
  * <code>Q</code> is a square symmetric matrix and <code>q</code> is a vector. 
  * 
@@ -95,6 +101,9 @@ public:
      * 
      */
     virtual int call(Matrix& x, double& f);
+    virtual int call(Matrix& x, double& f, Matrix& grad);
+    
+    
     
     virtual int callConj(const Matrix& x, double& f_star);
     

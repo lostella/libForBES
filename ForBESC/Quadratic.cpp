@@ -67,6 +67,16 @@ void Quadratic::setq(Matrix& q) {
     this->q = &q;
 }
 
+int Quadratic::call(Matrix& x, double& f, Matrix& grad) {
+    int statusComputeGrad = computeGradient(x, grad); // compute the gradient of f at x (grad)
+    if (statusComputeGrad != ForBESUtils::STATUS_OK) {
+        return statusComputeGrad;
+    }
+    // f = (1/2)*(grad+q)'*x
+    f = (  (is_q_zero ? grad : grad + (*q)) * x).get(0, 0)/2;
+    return ForBESUtils::STATUS_OK;
+}
+
 int Quadratic::call(Matrix& x, double& f) {
     if (!is_Q_eye) {
         if (is_q_zero) {

@@ -189,6 +189,9 @@ int Matrix::reshape(size_t nrows, size_t ncols) {
 }
 
 double Matrix::get(const size_t i, const size_t j) const {
+    if (isEmpty()) {
+        throw std::out_of_range("Method get(size_t, size_t) applied to an empty matrix");
+    }
     if (i < 0 || i >= getNrows() || j < 0 || j >= getNcols()) {
         throw std::out_of_range("Index out of range!");
     }
@@ -338,6 +341,7 @@ double Matrix::quad(Matrix& x, Matrix & q) {
     double t = 0.0f;
     Matrix r;
     r = q*x;
+    assert(!r.isEmpty());
     t = r.get(0, 0) + quad(x); /* q*x + (1/2) x'*Q*x */
     return t;
 }
@@ -365,7 +369,7 @@ int Matrix::cholesky(Matrix & L) {
 #endif /* END DEBUG_VERBOSE */
             info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data, m_nrows);
             for (size_t i = 0; i < m_nrows; i++) {
-                for (size_t j = 0; j > i; j++) {
+                for (size_t j = i + 1; j < m_ncols; j++) {
                     L.set(i, j, 0.0f);
                 }
             }
@@ -575,7 +579,8 @@ Matrix Matrix::operator-(const Matrix & right) const {
 
 Matrix Matrix::operator*(Matrix & right) {
     double t = 0.0f;
-    if (isColumnVector() && right.isColumnVector() && length() == right.length()) {
+    if (!(getType() == Matrix::MATRIX_SPARSE && right.getType() == Matrix::MATRIX_SPARSE) &&
+            isColumnVector() && right.isColumnVector() && length() == right.length()) {
         // multiplication of two column vectors = dot product
         Matrix r(1, 1);
         for (size_t i = 0; i < m_nrows * m_ncols; i++) {
@@ -637,15 +642,15 @@ Matrix & Matrix::operator=(const Matrix & right) {
             m_factor = cholmod_copy_factor(right.m_factor, Matrix::cholmod_handle());
         }
     }
-
-
+    if (Matrix::MATRIX_SPARSE != right.getType()) {
 #ifdef USE_LIBS
-    cblas_dcopy(m_dataLength, right.m_data, 1, m_data, 1);
+        cblas_dcopy(m_dataLength, right.m_data, 1, m_data, 1);
 #else
-    for (int i = 0; i < m_dataLength; i++) {
-        m_data[i] = right[i];
-    }
+        for (int i = 0; i < m_dataLength; i++) {
+            m_data[i] = right[i];
+        }
 #endif
+    }
     return *this;
 }
 
@@ -756,7 +761,6 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 true,
                 false,
                 Matrix::cholmod_handle());
-
         Matrix result;
         if (isColumnVector() && right.isColumnVector()) { /* Sparse-sparse dot product */
             result = Matrix(1, 1, Matrix::MATRIX_SPARSE);
@@ -782,10 +786,16 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 ((double*) right.m_dense->x)[k] = right.m_data[k];
             }
         }
-        result.m_dense = cholmod_allocate_dense(result.m_nrows, result.m_ncols, result.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
+        bool dotProd = isColumnVector() && right.isColumnVector();
+        result.m_dense = cholmod_allocate_dense(
+                dotProd ? 1 : result.m_nrows, 
+                dotProd ? 1 : result.m_ncols, 
+                dotProd ? 1 : result.m_nrows, 
+                CHOLMOD_REAL, 
+                Matrix::cholmod_handle());
         cholmod_sdmult(
                 m_sparse,
-                m_transpose,
+                dotProd ? true : m_transpose,
                 alpha,
                 beta,
                 right.m_dense,

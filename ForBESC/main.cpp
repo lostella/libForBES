@@ -21,7 +21,21 @@
 
 using namespace std;
 
-int main(int argc, char** argv) {    
+int main(int argc, char** argv) {
+    const size_t n = 10;
+    Matrix x = MatrixFactory::MakeSparse(n, 1, 0, Matrix::SPARSE_UNSYMMETRIC);
+    Matrix result;
+    result = x * x;
+
+    Matrix y = MatrixFactory::MakeSparse(n, 1, 1, Matrix::SPARSE_UNSYMMETRIC);
+    y.set(0, 0, 2.0);
+    Matrix z = y*y;
+    std::cout << z;
+
+    x = y;
+    std::cout << x;
+
+    z = x+x;
     return (0);
 }
 

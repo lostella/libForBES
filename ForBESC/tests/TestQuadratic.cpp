@@ -57,6 +57,7 @@ void TestQuadratic::testQuadratic() {
 void TestQuadratic::testQuadratic2() {
     /* Test the empty constructor */
     size_t n = 8;
+    const double tol = 1e-7;
     Function *F = new Quadratic(); /* Q = I, q = 0. */
     _ASSERT_EQ(Function::CAT_QUADRATIC, F->category());
 
@@ -67,13 +68,14 @@ void TestQuadratic::testQuadratic2() {
     double fval = 0.0;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval, grad));
 
-    _ASSERT_NUM_EQ((x * x).get(0, 0), fval, 1e-6);
+    const double fval_expected = (x * x).get(0, 0) / 2;
+    _ASSERT_NUM_EQ(fval_expected, fval, tol);
 
     Matrix q(n, 1);
     for (size_t i = 0; i < n; ++i) {
-        q.set(i, 0, i + 1);
+        _ASSERT_OK(q.set(i, 0, i + 1));
     }
-    static_cast<Quadratic*> (F)->setq(q);
+    _ASSERT_OK(static_cast<Quadratic*> (F)->setq(q));
 
     double fval_prev = fval;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval, grad));
@@ -353,6 +355,34 @@ void TestQuadratic::testCallConjSparse() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     _ASSERT_NUM_EQ(fstar_exp, fstar, tol);
+
+    _ASSERT_OK(delete F);
+
+}
+
+void TestQuadratic::testCallSparse3() {
+    const size_t n = 10;
+    const double tol = 1e-7;
+    Matrix Q = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 2.0, Matrix::MATRIX_SYMMETRIC);
+    Matrix q = MatrixFactory::MakeSparse(n, 1, 0, Matrix::SPARSE_UNSYMMETRIC); /* q = [] */
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+
+    Function *F = new Quadratic(Q, q);
+
+    double f;
+    int status = F->call(x, f);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    double f_exp = Q.quad(x);
+    _ASSERT_NUM_EQ(f_exp, f, tol);
+
+    q = MatrixFactory::MakeSparse(n, 1, 1, Matrix::SPARSE_UNSYMMETRIC);
+    q.set(0, 0, 5.5);
+
+
+    status = F->call(x, f);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    f_exp = Q.quad(x, q);
+    _ASSERT_NUM_EQ(f_exp, f, tol);
 
     _ASSERT_OK(delete F);
 

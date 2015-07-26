@@ -154,6 +154,10 @@ void TestMatrix::testGetSet() {
             _ASSERT_EQ(static_cast<double> (3 * i + 5 * j + 13), f.get(i, j));
         }
     }
+
+    Matrix o;
+    _ASSERT(o.isEmpty());
+    _ASSERT_EXCEPTION(o.get(0, 0), std::out_of_range);
 }
 
 void TestMatrix::testAssignment() {
@@ -171,7 +175,7 @@ void TestMatrix::testAssignment() {
         _ASSERT(g[i] >= 0);
         _ASSERT(g[i] <= 1);
     }
-    _ASSERT_OK(f=f);
+    _ASSERT_OK(f = f);
 }
 
 void TestMatrix::testAdditionBad() {
@@ -233,7 +237,7 @@ void TestMatrix::testFBMatrix() {
     double s;
     _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_DIAGONAL), std::invalid_argument);
     _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_SYMMETRIC), std::invalid_argument);
-    _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_LOWERTR), std::invalid_argument);    
+    _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_LOWERTR), std::invalid_argument);
     _ASSERT_EXCEPTION(s = f[-1], std::out_of_range);
     _ASSERT_EXCEPTION(s = f[n], std::out_of_range);
     _ASSERT_OK(Matrix::destroy_handle());
@@ -523,10 +527,20 @@ void TestMatrix::testCholesky() {
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
     int info = A.cholesky(L);
-    _ASSERT_EQ(0, info);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
     _ASSERT_EQ(n, L.getNcols());
     _ASSERT_EQ(n, L.getNrows());
     _ASSERT_EQ(Matrix::MATRIX_DENSE, L.getType());
+    Matrix Lt(L);
+    Lt.transpose();
+    Matrix Err = A - L*Lt;
+    const double tol = 1e-8;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(0.0, Err.get(i, j), tol);
+        }
+    }
+
 
 }
 
@@ -537,13 +551,13 @@ void TestMatrix::testSolveCholesky() {
         2, 5, 3};
     Matrix A(n, n, a, Matrix::MATRIX_DENSE);
     Matrix L;
-    _ASSERT_EQ(0, A.cholesky(L));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, A.cholesky(L));
 
     double bData[n] = {-1, 2, -3};
     Matrix b(n, 1, bData);
     Matrix x; // the solution!
     double tol = 1e-7;
-    _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, L.solveCholeskySystem(x, b));
     _ASSERT_NUM_EQ(-2.75f, x[0], tol);
     _ASSERT_NUM_EQ(1.25f, x[1], tol);
     _ASSERT_NUM_EQ(-1.25f, x[2], tol);
@@ -982,9 +996,9 @@ void TestMatrix::testSparseGetSet() {
 
 void TestMatrix::testSparseCholesky() {
 
-    int n = 3;
-    int m = 3;
-    int max_nnz = 4;
+    const size_t n = 3;
+    const size_t m = 3;
+    const size_t max_nnz = 4;
 
     Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
     A.set(0, 0, 40.);
@@ -993,7 +1007,7 @@ void TestMatrix::testSparseCholesky() {
     A.set(2, 2, 100.);
 
     Matrix L;
-    A.cholesky(L);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, A.cholesky(L));
 
     Matrix rhs(3, 1);
     rhs.set(0, 0, 10.);
@@ -1001,14 +1015,19 @@ void TestMatrix::testSparseCholesky() {
     rhs.set(2, 0, 10.);
 
     Matrix xsol;
-    L.solveCholeskySystem(xsol, rhs);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, L.solveCholeskySystem(xsol, rhs));
 
-    const double tol = 1e-6;
-    _ASSERT_NUM_EQ(0.210526, xsol.get(0, 0), tol);
-    _ASSERT_NUM_EQ(0.157895, xsol[1], tol);
+    const double tol = 1e-7;
+    _ASSERT_NUM_EQ(0.21052632, xsol.get(0, 0), tol);
+    _ASSERT_NUM_EQ(0.15789474, xsol[1], tol);
     _ASSERT_NUM_EQ(0.1, xsol[2], tol);
 
     _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
+
+    Matrix Err = rhs - A*xsol;
+    for (size_t i = 0; i < Err.getNrows(); i++) {
+        _ASSERT_NUM_EQ(0.0, Err.get(i, 0), tol);
+    }
 
 }
 
@@ -1225,4 +1244,20 @@ void TestMatrix::testSparseQuad_q() {
     _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
     _ASSERT_OK(Matrix::destroy_handle());
 
+}
+
+void TestMatrix::testSparseDotProd() {
+    const size_t n = 10;
+    Matrix x = MatrixFactory::MakeSparse(n, 1, 0, Matrix::SPARSE_UNSYMMETRIC);
+    Matrix result;
+    _ASSERT_OK(result = x * x);
+    _ASSERT_NOT(result.isEmpty());
+    _ASSERT_EQ((size_t) 1, result.getNcols());
+    _ASSERT_EQ((size_t) 1, result.getNrows());
+    _ASSERT_EQ(0.0, result.get(0, 0));
+
+    x = MatrixFactory::MakeSparse(n, 1, 1, Matrix::SPARSE_UNSYMMETRIC);
+    x.set(0, 0, 2.0);
+    result = x*x;
+    _ASSERT_EQ(4.0, result.get(0, 0));
 }

@@ -27,11 +27,9 @@ void TestQuadraticOperator::testCall() {
     size_t n = 10;
 
     Matrix Q = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 10.0, Matrix::MATRIX_DENSE);
-    Matrix q = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0, Matrix::MATRIX_DENSE);
 
     LinearOperator *T = new MatrixOperator(Q);
-    LinearOperator *t = new MatrixOperator(q);
 
     Function *F = new QuadraticOperator(*T);
     Function *F2 = new Quadratic(Q);

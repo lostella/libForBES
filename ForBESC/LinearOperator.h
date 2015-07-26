@@ -1,6 +1,6 @@
 /* 
  * File:   LinearOperator.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 24, 2015, 5:05 PM
  * 
@@ -24,10 +24,14 @@
 #include "Matrix.h"
 
 /**
+ * \class LinearOperator
+ * \brief A linear operator T(x)
+ * \version 0.0-tentative
+ * \author Pantelis Sopasakis
+ * \date Created on July 24, 2015, 5:05 PM
+ * 
  * An interface for an arbitrary linear operator.
  * This is an abstract class which cannot be instantiated. 
- * @param x
- * @return 
  */
 class LinearOperator {
 public:
@@ -38,16 +42,17 @@ public:
      * @return 
      */
     virtual Matrix call(Matrix& x) = 0;
-    
-    virtual size_t dimensionIn() =0;
-    virtual size_t dimensionOut() =0;
+    virtual Matrix callAdjoint(Matrix& x) = 0;
+    virtual bool isSelfAdjoint() = 0;
+    virtual size_t dimensionIn() = 0;
+    virtual size_t dimensionOut() = 0;
 
     virtual ~LinearOperator();
-    
+
 protected:
     LinearOperator();
     LinearOperator(const LinearOperator& orig);
-    
+
 };
 
 #endif	/* LINEAROPERATOR_H */

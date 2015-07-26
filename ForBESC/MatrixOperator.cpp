@@ -16,6 +16,14 @@ Matrix MatrixOperator::call(Matrix& x) {
     return y;
 }
 
+Matrix MatrixOperator::callAdjoint(Matrix& x) {
+    Matrix y;
+    A.transpose();
+    y = A*x;
+    A.transpose();
+    return y;
+}
+
 size_t MatrixOperator::dimensionIn() {
     return A.getNcols();
 }

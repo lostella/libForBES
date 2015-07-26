@@ -30,6 +30,7 @@
 #include <iomanip>
 #include <cmath>
 #include <cstring>
+#include <assert.h>
 
 #include "cholmod.h"
 
@@ -44,7 +45,10 @@
  * \ingroup Matrix
  * \date Created on July 7, 2015, 8:02 PM
  * 
- * \brief A generic matrix API.
+ * \brief A generic matrix API
+ * 
+ * \note Operations with dense matrices are supported by BLAS and LAPACK routines,
+ * while sparse matrix operations are delegated to SuiteSparse routines.
  * 
  * <p>A generic matrix which can be an unstructured dense, a structured dense (e.g.,
  * symmetric or lower triangular, stored in packed form) or a dense matrix. 

@@ -12,6 +12,12 @@
 #include "Function.h"
 
 /**
+ * \class QuadraticOperator
+ * \brief %Quadratic operator <code>F(x) = 0.5*x'*T(x)</code>, where <code>T</code> is a linear operator
+ * \author Pantelis Sopasakis
+ * \version 0.0
+ * \date Created on July 24, 2015, 8:49 PM
+ * 
  * A quadratic operator is a function of the form <code>Q(x) = 0.5*x'*T(x)</code>,
  * where <code>T</code> is a given linear operator. Operator <code>T</code> produces 
  * a column vector of the same dimension as <code>x</code>. It is assumed that 

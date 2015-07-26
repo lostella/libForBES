@@ -32,7 +32,7 @@
  * \date Created on July 9, 2015, 3:35 AM
  * \author Pantelis Sopasakis
  * 
- * 
+ * \todo Implement indBox, indPos, indNeg and indBall.
  * 
  * This is a generic API for ForBES functions. Constructors for this class are
  * protected.
