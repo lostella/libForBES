@@ -225,6 +225,8 @@ public:
      */
     MatrixType getType() const;
 
+    /* Utilities */
+    
     /**
      * Reshape the matrix.
      * 
@@ -238,8 +240,7 @@ public:
     int reshape(size_t nrows, size_t ncols);
 
 
-
-    /* Utilities */
+    bool isSymmetric();
 
     /**
      * Checks whether this is a column vector. 

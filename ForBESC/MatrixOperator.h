@@ -34,29 +34,16 @@
 class MatrixOperator : public LinearOperator {
 public:
 
-    MatrixOperator(Matrix& A) :
-    A(A) {        
-    }
+    MatrixOperator(Matrix& A);
+    
+    Matrix& GetMatrix() const;
 
-    MatrixOperator(const MatrixOperator& other) :
-    A(other.A) {
-    }
+    void SetMatrix(Matrix& A);
 
-    Matrix& GetMatrix() const {
-        return A;
-    }
-
-    void SetMatrix(Matrix& A) {
-        this->A = A;
-    }
-
-
-    virtual bool isSelfAdjoint(){
-        return false;
-    };
+    virtual bool isSelfAdjoint();
 
     virtual Matrix call(Matrix& x);
-    
+
     virtual Matrix callAdjoint(Matrix& x);
 
     virtual size_t dimensionIn();
@@ -67,6 +54,7 @@ public:
 
 private:
     Matrix &A;
+    bool m_isSelfAdjoint;
 };
 
 #endif	/* MATRIXOPERATOR_H */

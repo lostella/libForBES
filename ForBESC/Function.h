@@ -52,6 +52,13 @@ public:
      */
     const static int CAT_QUADRATIC;
     
+    const static int CAT_INDICATOR;
+    
+    /**
+     * An uncategorized function.
+     */
+    const static int CAT_UNCATEGORIZED;
+    
 
     /**
      * The function category. Functions may define a function category so that
@@ -144,7 +151,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double f_at_prox) {
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
         return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     }; // prox_{gamma f} and value-at-prox
 

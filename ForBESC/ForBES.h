@@ -228,7 +228,7 @@
  * \endcode
  * 
  * \subsection qad Quadratic Forms
- * It may be often needed to compute quadratic forms <code>F(x) = x'Qx + q'x</code>.
+ * It may be often needed to compute quadratic forms <code>F(x) = (1/2)*x'Qx + q'x</code>.
  * 
  * To this end, two methods in <code>Matrix</code> have been implemented, both named
  * <code>Matrix::quad()</code>. Here is an example of use:
@@ -242,7 +242,7 @@
  * 
  * Matrix q = Matrix::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
  * 
- * double g = Q.quad(x, q); // compute f = x'*Q*x + q'*x
+ * double g = Q.quad(x, q); // compute f = (1/2)*x'*Q*x + q'*x
  * \endcode
  * 
  */
@@ -296,7 +296,7 @@
  * double fval;                         // the value of F at x, F(x) - to be computed
  * Matrix grad;                         // the gradient of F at x - to be computed
  * 
- * Function *F = new Quadratic(Q, x);   // define a quadratic function
+ * Function *F = new Quadratic(Q, q);   // define a quadratic function
  * int info = F -> call(x, fval, grad); // compute its value at x, F(x) and its gradient grad(F)(x)
  * 
  * delete F;                            // free allocated memory
@@ -380,6 +380,39 @@
  * 
  * 
  * \subsection indbox Indicator functions
+ * There are four types of indicator functions implemented in ForBES, namely
+ * (i) the indicator of a rectangle, that is a set of the form \f$B_{[l,u]}=\{x: l \leq x \leq u\}\f$,
+ * (ii) the indicator of a set \f$B_{\geq l}=\{x: x \geq l\}\f$, (iii) or of a set \f$B_{\leq u}=\{x: x \leq u\}\f$
+ * and (iv) the indicator of a ball \f$B_c=\{x: \|x\| \leq c\}\f$.
+ * 
+ * Here is an example:
+ * 
+ * \code{.cpp}
+ * double lb = -1.0;    // uniform lower bound (-1.0)
+ * double ub = 4.0;     // uniform upper bound (4.0)
+ * 
+ * Function *F = new IndBox(lb, ub);    // define the indicator function of a box
+ * Matrix x(2, 1);
+ * x[0] = -1.0;
+ * x[1] = 4.0;
+ * 
+ * double fval;         // value F(x)
+ * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
+ * assert(fval == 1.0);                                 // here F(x) = 1.0
+ * 
+ * x[0] = -1.1;
+ * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
+ * assert(isinf(fval));                                 // here F(x) = infinity
+ * 
+ * delete F;
+ * \endcode
+ * 
+ * One can use IndBox::callConj to compute the conjugate of the indicator function
+ * of a box which is given by:
+ * 
+ * \f[
+ * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x; l, u)
+ * \f]
  * 
  * 
  */
@@ -433,7 +466,7 @@
 #define _ASSERT_NOT(P)                      CPPUNIT_ASSERT(!(P))
 #define _ASSERT_NUM_EQ(A,B,TOL)             CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
 #define _ASSERT_EQ                          CPPUNIT_ASSERT_EQUAL
-#define _ASSERT_NEQ(X,Y)                    CPPUNIT_ASSERT(X!=Y)
+#define _ASSERT_NEQ(X,Y)                    CPPUNIT_ASSERT((X)!=(Y))
 #define _ASSERT_EXCEPTION(P, EXCEPTION)     CPPUNIT_ASSERT_THROW(P, EXCEPTION)
 
 #endif /* TEST_UTILS_DEFINED */

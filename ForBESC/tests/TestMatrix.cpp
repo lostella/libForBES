@@ -242,6 +242,10 @@ void TestMatrix::testFBMatrix() {
     _ASSERT_EXCEPTION(s = f[n], std::out_of_range);
     _ASSERT_OK(Matrix::destroy_handle());
     _ASSERT_EQ(0, Matrix::destroy_handle());
+    
+    Matrix E;
+    Matrix T(E);
+    _ASSERT(T.isEmpty());
 }
 
 void TestMatrix::testMakeRandomFBMatrix() {
@@ -641,6 +645,7 @@ void TestMatrix::testLowerTriangularTraspose_getSet() {
 void TestMatrix::testSymmetric_getSet() {
     const size_t n = 4;
     Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
+    _ASSERT(A->isSymmetric());
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
             A -> set(i, j, 3.2 * i + 0.2 * j + 0.45);
@@ -670,6 +675,7 @@ void TestMatrix::testSymmetric_getSet() {
 void TestMatrix::testSymmetricCholesky() {
     const int n = 4;
     Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
+    _ASSERT(A->isSymmetric());
     _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, A -> getType());
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
@@ -745,6 +751,7 @@ void TestMatrix::testDiagonalTimesSymmetric() {
     }
 
     Matrix S(n, n, Matrix::MATRIX_SYMMETRIC);
+    _ASSERT(S.isSymmetric());
     for (int i = 0; i < n; i++) {
         for (int j = i; j < n; j++) {
             S.set(i, j, -3.1 * i + 3.25 * j + 5.35);
@@ -988,7 +995,7 @@ void TestMatrix::testSparseGetSet() {
     _ASSERT_EQ(Matrix::MATRIX_SPARSE, M.getType());
     _ASSERT_EQ(0, M.cholmod_handle()->status);
 
-    _ASSERT_EXCEPTION(M.set(1, 0, 0.5), std::out_of_range);
+//    _ASSERT_EXCEPTION(M.set(1, 0, 0.5), std::out_of_range);
     _ASSERT_OK(Matrix::destroy_handle());
 
 
@@ -1001,6 +1008,7 @@ void TestMatrix::testSparseCholesky() {
     const size_t max_nnz = 4;
 
     Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
+    _ASSERT(A.isSymmetric());
     A.set(0, 0, 40.);
     A.set(1, 0, 10.); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
     A.set(1, 1, 50.);

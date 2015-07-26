@@ -7,6 +7,26 @@
 
 #include "MatrixOperator.h"
 
+Matrix& MatrixOperator::GetMatrix() const {
+    return A;
+}
+
+bool MatrixOperator::isSelfAdjoint() {
+    return m_isSelfAdjoint;
+}
+
+void MatrixOperator::SetMatrix(Matrix& A) {
+    this->A = A;
+    m_isSelfAdjoint = A.isSymmetric();
+}
+
+MatrixOperator::MatrixOperator(Matrix& A) :
+A(A) {
+    if (A.isSymmetric()) {
+        this->m_isSelfAdjoint = true;
+    }
+}
+
 MatrixOperator::~MatrixOperator() {
 }
 
@@ -17,6 +37,9 @@ Matrix MatrixOperator::call(Matrix& x) {
 }
 
 Matrix MatrixOperator::callAdjoint(Matrix& x) {
+    if (isSelfAdjoint()) {
+        return call(x);
+    }
     Matrix y;
     A.transpose();
     y = A*x;

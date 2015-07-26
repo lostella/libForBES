@@ -9,12 +9,11 @@
 #define	INDPOS_H
 
 #include "Function.h"
+#include "IndBox.h"
 
 
-class IndPos : public Function {
+class IndPos : public IndBox {
 public:
-    IndPos();
-    IndPos(const IndPos& orig);
     virtual ~IndPos();
 private:
 

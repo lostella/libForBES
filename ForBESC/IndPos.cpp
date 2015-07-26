@@ -7,11 +7,6 @@
 
 #include "IndPos.h"
 
-IndPos::IndPos() {
-}
-
-IndPos::IndPos(const IndPos& orig) {
-}
 
 IndPos::~IndPos() {
 }

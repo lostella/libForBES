@@ -22,6 +22,10 @@
 
 const int Function::CAT_QUADRATIC = 100;
 
+const int Function::CAT_INDICATOR = 150;
+
+const int Function::CAT_UNCATEGORIZED = 9999;
+
 Function::Function() {
 
 }
@@ -34,13 +38,13 @@ Function::~Function() {
 
 int Function::call(Matrix& x, double& f, Matrix& grad)  {
     int status;
-    status = call(x, f);
-    if (ForBESUtils::STATUS_OK != status) {
-        return status;
-    }
     status = computeGradient(x, grad);
     if (ForBESUtils::STATUS_OK != status) {
         return status;
     }
+    status = call(x, f);
+    if (ForBESUtils::STATUS_OK != status) {
+        return status;
+    }    
     return ForBESUtils::STATUS_OK;
 }
