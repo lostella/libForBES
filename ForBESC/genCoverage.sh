@@ -1,5 +1,5 @@
 #!/bin/bash
-make clean
+#make clean
 make
 make build-tests
 make test

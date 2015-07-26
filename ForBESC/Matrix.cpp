@@ -247,7 +247,7 @@ void Matrix::set(size_t i, size_t j, double v) {
             createTriplet();
         }
         if (m_triplet->nnz == m_triplet->nzmax) { /* max NNZ exceeded */
-            cholmod_reallocate_triplet(m_triplet->nzmax+1, m_triplet, Matrix::cholmod_handle());
+            cholmod_reallocate_triplet(m_triplet->nzmax + 1, m_triplet, Matrix::cholmod_handle());
         }
 
         int k_found = -1;
@@ -422,11 +422,11 @@ int Matrix::solveCholeskySystem(Matrix& solution, const Matrix & rhs) const {
         cholmod_dense *b;
         b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
         for (size_t k = 0; k < rhs.getNrows(); k++) {
-            ((double*) b->x)[k] = rhs.get(k,0);
+            ((double*) b->x)[k] = rhs.get(k, 0);
         }
         x = cholmod_solve(CHOLMOD_A, m_factor, b, Matrix::cholmod_handle());
         solution = Matrix(rhs.m_nrows, rhs.m_ncols);
-        for (size_t k = 0; k < x->nzmax; k++) {            
+        for (size_t k = 0; k < x->nzmax; k++) {
             solution.m_data[k] = ((double*) x->x)[k];
         }
         cholmod_free_dense(&x, Matrix::cholmod_handle());
@@ -510,7 +510,13 @@ double &Matrix::operator[](int sub) const {
     return m_data[sub];
 }
 
-Matrix & Matrix::operator+=(Matrix & right) {
+void _addDenseDiagonal(Matrix& dense, Matrix& diagonal) {
+    for (size_t i = 0; i < diagonal.getNrows(); i++) {
+        dense.set(i, i, dense.get(i, i) + diagonal.get(i, i));
+    }
+}
+
+Matrix& Matrix::operator+=(Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
@@ -566,7 +572,7 @@ Matrix & Matrix::operator+=(Matrix & right) {
         }
     } else if (m_data != NULL) { /* Not sparse AND m_data is not NULL */
 
-        if ((!m_transpose && !right.m_transpose) || (m_transpose && right.m_transpose)) {
+        if (((!m_transpose && !right.m_transpose) || (m_transpose && right.m_transpose)) && length() == right.length()) {
 #ifdef USE_LIBS 
             cblas_daxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else
@@ -574,9 +580,13 @@ Matrix & Matrix::operator+=(Matrix & right) {
                 m_data[i] += right[i];
 #endif
         } else {
+            if (getType() == MATRIX_DENSE && right.getType() == MATRIX_DIAGONAL) {
+                _addDenseDiagonal(*this, right);
+                return *this;
+            }
+            /* TODO: distinguish cases for efficiency: Dense+Symmetric, Dense+Lower triangular */
             for (size_t i = 0; i < m_nrows; i++) {
                 for (size_t j = 0; j < m_ncols; j++) {
-
                     this->set(i, j, this->get(i, j) + right.get(i, j));
                 }
             }
@@ -589,7 +599,7 @@ Matrix & Matrix::operator-=(const Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
-#ifdef USE_LIBS    
+#ifdef USE_LIBS
     cblas_daxpy(length(), -1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else
     for (int i = 0; i < length(); i++) {

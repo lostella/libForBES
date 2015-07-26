@@ -242,7 +242,7 @@ void TestMatrix::testFBMatrix() {
     _ASSERT_EXCEPTION(s = f[n], std::out_of_range);
     _ASSERT_OK(Matrix::destroy_handle());
     _ASSERT_EQ(0, Matrix::destroy_handle());
-    
+
     Matrix E;
     Matrix T(E);
     _ASSERT(T.isEmpty());
@@ -995,8 +995,20 @@ void TestMatrix::testSparseGetSet() {
     _ASSERT_EQ(Matrix::MATRIX_SPARSE, M.getType());
     _ASSERT_EQ(0, M.cholmod_handle()->status);
 
-//    _ASSERT_EXCEPTION(M.set(1, 0, 0.5), std::out_of_range);
     _ASSERT_OK(Matrix::destroy_handle());
+
+    Matrix S = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_UNSYMMETRIC);
+    for (size_t i = 0; i <= 20; i++) {
+        _ASSERT_OK(S.set(0, 0, 0.5 * i));
+    }
+    _ASSERT_EQ(10.0, S.get(0, 0));
+
+    _ASSERT_OK(S.set(1, 0, 1.0));
+    _ASSERT_EQ(1.0, S.get(1, 0));
+
+    _ASSERT_OK(S.set(2, 2, 5.0));
+    _ASSERT_EQ(5.0, S.get(2, 2));
+
 
 
 }
@@ -1090,7 +1102,7 @@ void TestMatrix::testSparseSparseMultiply() {
     Matrix L = MatrixFactory::MakeRandomSparse(n, m, nnz_L, 1.0, 2.0);
     Matrix R = MatrixFactory::MakeRandomSparse(m, k, nnz_R, 1.0, 2.0);
 
-    Matrix Y;    
+    Matrix Y;
     _ASSERT_OK(Y = L * R);
     _ASSERT_EQ(n, Y.getNrows());
     _ASSERT_EQ(k, Y.getNcols());
@@ -1110,11 +1122,11 @@ void TestMatrix::testSparseSparseMultiply() {
             Rd.set(i, j, R.get(i, j));
         }
     }
-    
+
     Matrix Z = Ld*Rd;
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < k; j++) {
-            _ASSERT_NUM_EQ(Z.get(i,j), Y.get(i,j), 1e-6);
+            _ASSERT_NUM_EQ(Z.get(i, j), Y.get(i, j), 1e-6);
         }
     }
 }
@@ -1308,3 +1320,137 @@ void TestMatrix::testSparseDotProd() {
     result = x*x;
     _ASSERT_EQ(4.0, result.get(0, 0));
 }
+
+/* Tests R = DENSE + (?) */
+
+void TestMatrix::test_ADD() {
+    size_t n = 80;
+    size_t m = 5;
+    const double tol = 1e-10;
+    Matrix D1 = MatrixFactory::MakeRandomMatrix(n, m, -5.0, 6.0, Matrix::MATRIX_DENSE);
+    Matrix D2 = MatrixFactory::MakeRandomMatrix(n, m, -5.0, 6.0, Matrix::MATRIX_DENSE);
+
+    Matrix R;
+    _ASSERT_OK(R = D1 + D2);
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, R.getType());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            _ASSERT_NUM_EQ(D1.get(i, j) + D2.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_ADH() {
+    size_t n = 100;
+    const double tol = 1e-10;
+    Matrix D = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_DENSE);
+    Matrix H = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_SYMMETRIC);
+
+    Matrix R;
+    _ASSERT_OK(R = D + H);
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, R.getType());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(D.get(i, j) + H.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_ADL() {
+    size_t n = 80;
+    const double tol = 1e-10;
+    Matrix D = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_DENSE);
+    Matrix L = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_LOWERTR);
+
+    Matrix R;
+    _ASSERT_OK(R = D + L);
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, R.getType());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(D.get(i, j) + L.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_ADS() {
+    size_t n = 50;
+    size_t m = 120;
+    size_t nnz = 200;
+    const double tol = 1e-10;
+    Matrix D = MatrixFactory::MakeRandomMatrix(n, m, -5.0, 6.0, Matrix::MATRIX_DENSE);
+    Matrix S = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
+
+    Matrix R;
+    _ASSERT_OK(R = D + S);
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, R.getType());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            _ASSERT_NUM_EQ(D.get(i, j) + S.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_ADW() {
+
+}
+
+void TestMatrix::test_ADX() {
+    size_t n = 100;
+    const double tol = 1e-10;
+    Matrix D = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_DENSE);
+    Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 1.0, 10.0, Matrix::MATRIX_DIAGONAL);
+    Matrix R;
+    _ASSERT_OK(R = D + X);
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, R.getType());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(D.get(i, j) + X.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_EH() {
+    size_t n = 50;
+    Matrix H = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_SYMMETRIC);
+    Matrix H2(H);
+    Matrix H3 = H2;
+    _ASSERT(H2.getNrows() == n);
+    _ASSERT(H2.getNcols() == n);
+    _ASSERT(H2.getType() == Matrix::MATRIX_SYMMETRIC);
+    _ASSERT(H3.getNrows() == n);
+    _ASSERT(H3.getNcols() == n);
+    _ASSERT(H3.getType() == Matrix::MATRIX_SYMMETRIC);
+    _ASSERT(H2.isSymmetric());
+    _ASSERT(H3.isSymmetric());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_EQ(H.get(i, j), H2.get(i, j));
+            _ASSERT_EQ(H.get(i, j), H3.get(i, j));
+        }
+    }
+}
+
+void TestMatrix::test_EL() {
+    size_t n = 50;
+    Matrix L = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_LOWERTR);
+    Matrix L2(L);
+    Matrix L3 = L2;
+    _ASSERT(L2.getNrows() == n);
+    _ASSERT(L2.getNcols() == n);
+    _ASSERT(L2.getType() == Matrix::MATRIX_LOWERTR);
+    _ASSERT(L3.getNrows() == n);
+    _ASSERT(L3.getNcols() == n);
+    _ASSERT(L3.getType() == Matrix::MATRIX_LOWERTR);
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_EQ(L.get(i, j), L2.get(i, j));
+            _ASSERT_EQ(L.get(i, j), L3.get(i, j));
+        }
+    }
+}
+
+
+
+
+
+

@@ -27,7 +27,6 @@
 #define FORBES_TEST_UTILS
 #include "ForBES.h"
 
-
 class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrix);
 
@@ -35,8 +34,8 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testGetSet);
     CPPUNIT_TEST(testQuadratic);
     CPPUNIT_TEST(testQuadratic2);
-    CPPUNIT_TEST(testAssignment);    
-    CPPUNIT_TEST(testQuadratic3);    
+    CPPUNIT_TEST(testAssignment);
+    CPPUNIT_TEST(testQuadratic3);
     CPPUNIT_TEST(testAdditionBad);
     CPPUNIT_TEST(testAddition);
     CPPUNIT_TEST(testFBMatrix);
@@ -83,7 +82,20 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSparseQuadSparseX);
     CPPUNIT_TEST(testSparseQuad_q);
     CPPUNIT_TEST(testSparseDotProd);
-    
+
+
+    CPPUNIT_TEST(test_ADD);
+    CPPUNIT_TEST(test_ADS);
+    CPPUNIT_TEST(test_ADH);
+    CPPUNIT_TEST(test_ADX);
+    CPPUNIT_TEST(test_ADL);
+    CPPUNIT_TEST(test_ADW);
+
+
+    CPPUNIT_TEST(test_EH);
+    CPPUNIT_TEST(test_EL);
+
+
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -112,8 +124,8 @@ private:
     void testIsRowVector();
     void testLength();
     void testReshape();
-    void testReshapeBad();    
-    void testSubtract();    
+    void testReshapeBad();
+    void testSubtract();
     void testDiagonalGetSet();
     void testDiagonalMultiplication();
     void testDiagonalMultiplication2();
@@ -126,15 +138,15 @@ private:
     void testLowerTriangular_getSet();
     void testLowerTriangularTraspose_getSet();
     void testSymmetric_getSet();
-    void testSymmetricCholesky();   
+    void testSymmetricCholesky();
     void testDiagonalTimesSymmetric();
     void testDiagonalTimesLowerTri();
     void testDenseTimesSymmetric();
-    void testDenseTimesLowerTriangular();    
+    void testDenseTimesLowerTriangular();
     void testTranspose();
     void testLeftTransposeMultiply();
-    void testRightTransposeMultiply();    
-    void testLeftSymmetricMultiply();   
+    void testRightTransposeMultiply();
+    void testLeftSymmetricMultiply();
     void testSparseGetSet();
     void testSparseCholesky();
     void testSparseDenseMultiply();
@@ -146,7 +158,41 @@ private:
     void testSparseQuadSparseX();
     void testSparseQuad_q();
     void testSparseDotProd();
+
+    /*
+     * A: add
+     * M: multiply
+     * T: transpose
+     * E: assignment
+     * 
+     * D: Dense
+     * S: Sparse unsymmetric
+     * H: Symmetric
+     * X: Diagonal
+     * L: Lower triangular
+     * W: Sparse symmetric
+     * 
+     */
+
+    /*
+     * Copy-constructor and operator=
+     */
+    void test_EH();
+    void test_EL();
+    void test_EX();
     
+    /*
+     * Addition: X = A + B 
+     */
+    void test_ADD();
+    void test_ADS();
+    void test_ADH();
+    void test_ADX();
+    void test_ADL();
+    void test_ADW();
+
+
+
 };
 
 #endif	/* TESTMATRIX_H */
