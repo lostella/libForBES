@@ -291,7 +291,6 @@ void Matrix::set(size_t i, size_t j, double v) {
 double Matrix::quadFromTriplet(const Matrix& x) const {
     double r = 0.0;
     for (size_t k = 0; k < m_triplet->nnz; k++) {
-
         r += x.get(static_cast<int*> (m_triplet->i)[k], 0) *
                 x.get(static_cast<int*> (m_triplet->j)[k], 0) *
                 (static_cast<double*> (m_triplet->x))[k];
@@ -422,12 +421,12 @@ int Matrix::solveCholeskySystem(Matrix& solution, const Matrix & rhs) const {
         cholmod_dense *x;
         cholmod_dense *b;
         b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
-        for (size_t k = 0; k < rhs.length(); k++) {
-            ((double*) b->x)[k] = rhs[k];
+        for (size_t k = 0; k < rhs.getNrows(); k++) {
+            ((double*) b->x)[k] = rhs.get(k,0);
         }
         x = cholmod_solve(CHOLMOD_A, m_factor, b, Matrix::cholmod_handle());
         solution = Matrix(rhs.m_nrows, rhs.m_ncols);
-        for (size_t k = 0; k < x->nzmax; k++) {
+        for (size_t k = 0; k < x->nzmax; k++) {            
             solution.m_data[k] = ((double*) x->x)[k];
         }
         cholmod_free_dense(&x, Matrix::cholmod_handle());

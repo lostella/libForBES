@@ -290,17 +290,30 @@
  * 
  * Here is a simple example:
  * \code
- * Matrix Q;                            // specify a matrix Q
- * Matrix q;                            // specify a vector q
- * Matrix x;                            // A vector x
- * double fval;                         // the value of F at x, F(x) - to be computed
- * Matrix grad;                         // the gradient of F at x - to be computed
+ * size_t n = 10;
+ * Matrix Q = MatrixFactory::MakeRandomSparse(n, n, 20, 0.0, 1.0);
+ * Matrix Eye = MatrixFactory::MakeIdentity(n, 10.0);
  * 
- * Function *F = new Quadratic(Q, q);   // define a quadratic function
- * int info = F -> call(x, fval, grad); // compute its value at x, F(x) and its gradient grad(F)(x)
+ * Matrix Qt(Q);        // Qt= Q
+ * Qt.transpose();      // Qt = Qt'
+ * Q += Qt;             // Q = Q + Qt (this will make Q a symmetric matrix)
  * 
- * delete F;                            // free allocated memory
+ * Q += Eye;            // with this we ensure Q is positive definite
+ *
+ * Function *F = new Quadratic(Q); // F(x) = 0.5*x'Qx
+ * Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+ * 
+ * double f;            // value F(x)
+ * double f_star;       // value F*(x) (conjugate of F at x)
+ * Matrix grad;         // gradient of F* and x
+ * 
+ * int status = F->call(x, f);
+ * status = F->callConj(x, f_star, grad);
+ * 
+ * std::cout << grad;   // print out the gradient
  * \endcode
+ * 
+ * 
  * 
  * 
  * \subsection genquad-fun-sec Generalized Quadratic 

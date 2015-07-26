@@ -28,24 +28,20 @@ int main(int argc, char** argv) {
 
     Q += Eye;
 
-
-
-    Matrix Qt;
-    Qt = Q; // Qt = Q;
-    Qt.transpose();
-
-    Q += Qt;
-
-    std::cout << Q;
-
-
-
+    Matrix Qt(Q);       // Qt= Q
+    Qt.transpose();     // Qt = Qt'
+    Q += Qt;            // Q = Q + Qt
+   
     Function *F = new Quadratic(Q); // 0.5*x'Qx
 
-    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-
+    Matrix x = MatrixFactory::MakeRandomSparse(n, 1, 5, 0.0, 1.0);
+    
+    std::cout << x;
+    
+    
 
     double f; // F(x)
+    f = Q.quad(x);
     int status = F->call(x, f);
 
 
