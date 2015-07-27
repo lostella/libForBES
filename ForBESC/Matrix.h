@@ -67,11 +67,10 @@
  * or subtraction is done so as to easily implement <code>operator-=</code>.
  */
 class Matrix {
-    
 public:
-    
+
     /* STATIC */
-    
+
     /**
      * This is the single access method to the singleton <code>cholmod_common</code>
      * used in this project. Typically clients will not be interested in using this
@@ -85,7 +84,7 @@ public:
      * @return The singleton <code>cholmod_common</code> object.
      */
     static cholmod_common* cholmod_handle();
-    
+
     /**
      * Static method used to destroy the singleton <code>cholmod_handle</code>,
      * if any.
@@ -100,11 +99,11 @@ public:
      * Types of matrices.
      */
     enum MatrixType {
-        MATRIX_DENSE,       /**< A dense matrix */
-        MATRIX_SPARSE,      /**< A sparse matrix (powered by SuiteSparse) */
-        MATRIX_DIAGONAL,    /**< A diagonal matrix */
-        MATRIX_LOWERTR,     /**< A lower-triangular matrix */
-        MATRIX_SYMMETRIC    /**< A symmetric matrix */
+        MATRIX_DENSE, /**< A dense matrix */
+        MATRIX_SPARSE, /**< A sparse matrix (powered by SuiteSparse) */
+        MATRIX_DIAGONAL, /**< A diagonal matrix */
+        MATRIX_LOWERTR, /**< A lower-triangular matrix */
+        MATRIX_SYMMETRIC /**< A symmetric matrix */
     };
 
     /**
@@ -230,7 +229,7 @@ public:
     MatrixType getType() const;
 
     /* Utilities */
-    
+
     /**
      * Reshape the matrix.
      * 
@@ -351,7 +350,7 @@ public:
      * @return Returns <code>0</code> if the solution of the system has succeeded.
      */
     int solveCholeskySystem(Matrix& solution, const Matrix& rhs) const;
-    
+
 
     /* Operators */
 
@@ -403,6 +402,15 @@ public:
      * @return the result of the multiplication of two matrices
      */
     Matrix operator*(Matrix& right);
+    
+    /**
+     * Operator *= with a scalar - scale a matrix.
+     * @param right
+     * @return 
+     */
+    friend Matrix& operator*=(Matrix& obj, double alpha);
+    
+    
 
     /**
      * Assignment operator.
@@ -434,38 +442,38 @@ private:
     /* MatrixFactory is allowed to access these private fields! */
     friend class MatrixFactory;
 
-    size_t m_nrows;         /*< Number of rows */
-    size_t m_ncols;         /*< Number of columns */
-    bool m_transpose;       /*< Whether this matrix is transposed */
-    MatrixType m_type;      /*< Matrix type */
+    size_t m_nrows; /*< Number of rows */
+    size_t m_ncols; /*< Number of columns */
+    bool m_transpose; /*< Whether this matrix is transposed */
+    MatrixType m_type; /*< Matrix type */
 
     /* For dense matrices: */
 
-    size_t m_dataLength;        /*< Length of data */
-    double *m_data = NULL;      /*< Data */
+    size_t m_dataLength; /*< Length of data */
+    double *m_data = NULL; /*< Data */
 
     /* CSparse members */
-    cholmod_triplet *m_triplet = NULL;          /*< Sparse triplets */
-    cholmod_sparse *m_sparse = NULL;            /*< A sparse matrix */
-    cholmod_factor *m_factor = NULL;            /*< Cholesky factor */
-    cholmod_dense *m_dense = NULL;              /*< A dense CHOLMOD matrix */
+    cholmod_triplet *m_triplet = NULL; /*< Sparse triplets */
+    cholmod_sparse *m_sparse = NULL; /*< A sparse matrix */
+    cholmod_factor *m_factor = NULL; /*< Cholesky factor */
+    cholmod_dense *m_dense = NULL; /*< A dense CHOLMOD matrix */
 
-    
-    /* SINGLETON CHOLMOD HANDLE */    
-    static cholmod_common *ms_singleton;    /**< Singleton instance of cholmod_common */
+
+    /* SINGLETON CHOLMOD HANDLE */
+    static cholmod_common *ms_singleton; /**< Singleton instance of cholmod_common */
 
     /**
      * Instantiates <code>m_sparse</code> from <code>m_triplet</code>
      * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>. Can only be
      * applied to sparse matrices.
      */
-    inline void createSparse();
+    inline void _createSparse();
 
 
     /**
      * Creates m_triplet from other existing sparse matrix representations.
      */
-    inline void createTriplet();
+    inline void _createTriplet();
 
     /**
      * Initialize the current matrix (allocate memory etc) for a given number of 
@@ -511,6 +519,8 @@ private:
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
     inline Matrix multiplyLeftSparse(Matrix& right);
+    
+    
 
 
     /**
@@ -537,14 +547,49 @@ private:
      * <code>cholmod_factor</code>).
      */
     SparseMatrixStorageType m_sparseStorageType;
-        
+
     /**
      * 
      * @param x
      * @return 
      */
     inline double quadFromTriplet(const Matrix& x) const;
-    
+   
+
+    inline void _addIJ(size_t i, size_t j, double a);
+
+
+    /**
+     * Apply operator += on a dense matrix
+     * @param rhs right hand side
+     */
+    inline void _addD(Matrix& rhs); // DENSE + ?
+
+    /**
+     * Apply operator += on a symmetric matrix
+     * @param rhs right hand side
+     */
+    inline void _addH(Matrix& rhs); // SYMMETRIC + ?
+
+    /**
+     * Apply operator += on a diagonal matrix
+     * @param rhs right hand side
+     */
+    inline void _addX(Matrix& rhs);
+
+    /**
+     * Apply operator += on a lower or upper triangular matrix
+     * @param rhs right hand side
+     */
+    inline void _addL(Matrix& rhs);
+
+    /**
+     * Apply operator += on a sparse matrix
+     * @param rhs right hand side
+     */
+    inline void _addS(Matrix& rhs);
+
+
 };
 
 #endif	/* MATRIX_H */

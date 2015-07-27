@@ -91,9 +91,28 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ADL);
     CPPUNIT_TEST(test_ADW);
 
+    CPPUNIT_TEST(test_ADDT);
+    CPPUNIT_TEST(test_ADST);
+    CPPUNIT_TEST(test_ADHT);
+    CPPUNIT_TEST(test_ADXT);
+    CPPUNIT_TEST(test_ADLT);
+    CPPUNIT_TEST(test_ADWT);
+
+    CPPUNIT_TEST(test_AHH);
+    CPPUNIT_TEST(test_AHX);    
+    CPPUNIT_TEST(test_AHL);    
+    CPPUNIT_TEST(test_AHS);
+    
+    CPPUNIT_TEST(test_ASD);    
+    CPPUNIT_TEST(test_ASH);    
+    CPPUNIT_TEST(test_ASX);    
 
     CPPUNIT_TEST(test_EH);
+    CPPUNIT_TEST(test_EHT);
     CPPUNIT_TEST(test_EL);
+    
+    CPPUNIT_TEST(test_CD);
+    CPPUNIT_TEST(test_CH);
 
 
 
@@ -164,6 +183,7 @@ private:
      * M: multiply
      * T: transpose
      * E: assignment
+     * CL: scalar multiplication (left)
      * 
      * D: Dense
      * S: Sparse unsymmetric
@@ -178,11 +198,16 @@ private:
      * Copy-constructor and operator=
      */
     void test_EH();
+    void test_EHT();
     void test_EL();
     void test_EX();
     
     /*
      * Addition: X = A + B 
+     */
+    
+    /*
+     * DENSE + (?)
      */
     void test_ADD();
     void test_ADS();
@@ -192,7 +217,45 @@ private:
     void test_ADW();
 
 
+    /*
+     * DENSE + (?)'
+     */
+    void test_ADDT();
+    void test_ADST();
+    void test_ADHT();
+    void test_ADXT();
+    void test_ADLT();
+    void test_ADWT();
+    
+    /*
+     * SYMMETRIC + (?) 
+     */
+    void test_AHD();
+    void test_AHS();
+    void test_AHH();
+    void test_AHX();
+    void test_AHL();
+    void test_AHW();
 
+    /*
+     * SPARSE + (?)
+     */
+    void test_ASD();
+    void test_ASS();
+    void test_ASH();
+    void test_ASX();
+    void test_ASL();
+    void test_ASW();
+    
+    /*
+     * alpha * X
+     */
+    void test_CD();
+    void test_CH();
+    void test_CL();
+    void test_CS();
+    void test_CX();
+    
 };
 
 #endif	/* TESTMATRIX_H */

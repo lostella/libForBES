@@ -216,9 +216,11 @@ double Matrix::get(const size_t i, const size_t j) const {
             throw std::logic_error("not supported yet");
         }
         double val = 0.0f;
+        int i_ = m_transpose ? j : i;
+        int j_ = m_transpose ? i : j;
         for (size_t k = 0; k < m_triplet->nnz; k++) {
-            if (i == (static_cast<int*> (m_triplet->i))[k]) {
-                if (j == (static_cast<int*> (m_triplet->j))[k]) {
+            if (i_ == (static_cast<int*> (m_triplet->i))[k]) {
+                if (j_ == (static_cast<int*> (m_triplet->j))[k]) {
                     val = (static_cast<double*> (m_triplet->x))[k];
                     break;
                 }
@@ -244,7 +246,7 @@ void Matrix::set(size_t i, size_t j, double v) {
         m_data[i_ + m_nrows * j_ - j_ * (j_ + 1) / 2] = v;
     } else if (m_type == MATRIX_SPARSE) {
         if (m_triplet == NULL) { /* Create triplets if they don't exist */
-            createTriplet();
+            _createTriplet();
         }
         if (m_triplet->nnz == m_triplet->nzmax) { /* max NNZ exceeded */
             cholmod_reallocate_triplet(m_triplet->nzmax + 1, m_triplet, Matrix::cholmod_handle());
@@ -510,9 +512,194 @@ double &Matrix::operator[](int sub) const {
     return m_data[sub];
 }
 
-void _addDenseDiagonal(Matrix& dense, Matrix& diagonal) {
-    for (size_t i = 0; i < diagonal.getNrows(); i++) {
-        dense.set(i, i, dense.get(i, i) + diagonal.get(i, i));
+inline void Matrix::_addIJ(size_t i, size_t j, double a) {
+    set(i, j, get(i, j) + a); // A(i,j) += a
+}
+
+inline void Matrix::_addD(Matrix& rhs) { /* DENSE += (?) */
+    /* LHS is DENSE */
+    assert(MATRIX_DENSE == m_type);
+    if (rhs.m_type == MATRIX_DENSE && m_transpose == rhs.m_transpose) {
+        /* RHS is also dense and of same transpose-type (D+D or D'+D') */
+#ifdef USE_LIBS 
+        cblas_daxpy(length(), 1.0, rhs.m_data, 1, m_data, 1); // data = data + right.data
+#else
+        for (int i = 0; i < length(); i++)
+            m_data[i] += rhs[i];
+#endif
+    } else if (rhs.getType() == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
+        for (size_t i = 0; i < m_nrows; i++) {
+            _addIJ(i, i, rhs.get(i, i));
+        }
+    } else if (rhs.getType() == MATRIX_LOWERTR) { /* DENSE + LOWER */
+        /* TODO This is to be tested!!! */
+        for (size_t i = 0; i < m_nrows; i++) {
+            if (!rhs.m_transpose) {
+                for (size_t j = 0; j <= i; j++) {
+                    _addIJ(i, j, rhs.get(i, j));
+                }
+            } else {
+                for (size_t j = i; j < rhs.m_ncols; j++) {
+                    _addIJ(i, j, rhs.get(i, j));
+                }
+            }
+        }
+    } else if (rhs.getType() == MATRIX_SPARSE) {
+        rhs._createTriplet();
+        assert(rhs.m_triplet != NULL);
+        for (int k = 0; k < rhs.m_triplet->nnz; k++) {
+            int i_ = ((int*) rhs.m_triplet->i)[k];
+            int j_ = ((int*) rhs.m_triplet->j)[k];
+            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, ((double*) rhs.m_triplet->x)[k]);
+        }
+    } else { /* Symmetric and Dense+Dense' or Dense'+Dense (not of same transpose type) */
+        for (size_t i = 0; i < m_nrows; i++) {
+            for (size_t j = 0; j < m_ncols; j++) {
+                _addIJ(i, j, rhs.get(i, j));
+            }
+        }
+    }
+}
+
+inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
+    assert(MATRIX_SYMMETRIC == m_type);
+    if (rhs.m_type == MATRIX_SYMMETRIC) {
+#ifdef USE_LIBS 
+        cblas_daxpy(length(), 1.0, rhs.m_data, 1, m_data, 1); // data = data + right.data
+#else
+        for (int i = 0; i < length(); i++)
+            m_data[i] += rhs[i];
+#endif        
+    } else if (rhs.m_type == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
+        for (size_t i = 0; i < m_ncols; i++) {
+            _addIJ(i, i, rhs.get(i, i));
+        }
+    } else if (rhs.m_type == MATRIX_LOWERTR || rhs.m_type == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI = DENSE */
+        m_dataLength = m_ncols * m_nrows; /* SYMMETRIC + DENSE = DENSE     */
+        double * newData = new double[m_dataLength]; // realloc data
+        for (size_t i = 0; i < m_nrows; i++) {
+            for (size_t j = 0; j < m_ncols; j++) {
+                newData[i + j * m_nrows] = get(i, j); // load data (recast into full storage format)
+                if (rhs.m_type == MATRIX_DENSE ? i >= j : true) {
+                    newData[i + j * m_nrows] += rhs.get(i, j); // add RHS elements
+                }
+            }
+        }
+        m_data = (double*) realloc(m_data, m_dataLength * sizeof (double)); // reallocate memory
+        m_data = (double*) memcpy(m_data, newData, m_dataLength * sizeof (double)); // copy newData to m_data
+        delete newData;
+        m_type = MATRIX_DENSE;
+    } else if (rhs.m_type == MATRIX_SPARSE) { /* SYMMETRIC + SPARSE */
+        m_dataLength = m_ncols * m_nrows;
+        double * newData = new double[m_dataLength];
+        m_data = (double *) realloc(m_data, m_dataLength * sizeof (double)); // reallocate memory
+
+        for (size_t i = 0; i < m_nrows; i++) {
+            for (size_t j = 0; j < m_ncols; j++) {
+                newData[i + j * m_nrows] = get(i, j); /* restructure symmetric data into dense */
+            }
+        }
+
+        m_data = (double *) memcpy(m_data, newData, m_dataLength * sizeof (double)); // copy newData to m_data
+
+        rhs._createTriplet();
+        assert(rhs.m_triplet != NULL);
+
+        m_type = MATRIX_DENSE;
+
+        for (int k = 0; k < rhs.m_triplet->nnz; k++) {
+            int i_ = ((int*) rhs.m_triplet->i)[k];
+            int j_ = ((int*) rhs.m_triplet->j)[k];
+            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, ((double*) rhs.m_triplet->x)[k]);
+        }
+
+        delete newData;
+    }
+}
+
+inline void Matrix::_addL(Matrix& rhs) { /* LOWER += (?) */
+    assert(m_type == MATRIX_LOWERTR);
+}
+
+inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
+    assert(m_type == MATRIX_SPARSE);
+    if (rhs.m_type == MATRIX_SPARSE) {
+        double alpha[1] = {1};
+
+        if (m_sparse == NULL)
+            _createSparse(); /* CHOLMOD_SPARSE: create it 
+                                                                    from other representations */
+
+        if (rhs.m_sparse == NULL)
+            rhs._createSparse(); /* Likewise for the RHS */
+
+        m_sparse = cholmod_add(m_sparse,
+                rhs.m_sparse,
+                alpha,
+                alpha,
+                true,
+                true,
+                Matrix::cholmod_handle()); /* Use cholmod_add to compute the sum A+=B */
+
+        m_triplet = cholmod_sparse_to_triplet(
+                m_sparse,
+                Matrix::cholmod_handle()); /* Update the triplet of the result (optional) */
+    } else if (rhs.m_type == MATRIX_DIAGONAL) { /* SPARSE + DIAGONAL */
+        _createTriplet();
+        if (m_triplet != NULL) {
+            for (size_t i = 0; i < getNrows(); i++) {
+                _addIJ(i, i, rhs.get(i, i));
+            }
+        }
+    } else if (rhs.m_type == MATRIX_DENSE) { /* For any type of non-sparse right-summands */
+        /* Sparse + Dense = Dense */
+        m_type = MATRIX_DENSE;
+        m_dataLength = m_ncols * m_nrows;
+        m_data = new double[m_ncols * m_nrows];
+        for (int i = 0; i < m_nrows; i++) {
+            for (int j = 0; j < m_ncols; j++) {
+                set(i, j, rhs.get(i, j));
+            }
+        }
+        _createTriplet();
+        if (m_triplet != NULL) {
+            /* Add triplets */
+            int i = -1, j = -1;
+            double v = 0.0;
+            for (int k = 0; k < m_triplet->nnz; k++) {
+                i = ((int*) m_triplet->i)[k];
+                j = ((int*) m_triplet->j)[k];
+                v = ((double*) m_triplet->x)[k];
+                m_data[i + j * m_nrows] += v;
+            }
+        }
+    } else if (rhs.m_type == MATRIX_SYMMETRIC) { /* SPARSE + SYMMETRIC (result is dense) */
+        m_dataLength = m_nrows * m_ncols;
+        m_data = new double[m_dataLength](); // reallocate memory
+        m_type = MATRIX_DENSE;
+        for (size_t i = 0; i < m_nrows; i++) {
+            for (size_t j = 0; j < m_ncols; j++) {
+                set(i, j, rhs.get(i, j)); // load symmetric data                
+            }
+        }
+        _createTriplet();
+        for (int k = 0; k < m_triplet->nnz; k++) {
+            _addIJ(((int*) m_triplet->i)[k], ((int*) m_triplet->j)[k], ((double*) m_triplet->x)[k]);
+        }
+
+    }
+
+}
+
+void Matrix::_addX(Matrix& rhs) {
+    assert(m_type == MATRIX_DIAGONAL);
+    if (MATRIX_DIAGONAL == rhs.m_type) { /* Diagonal += Diagonal */
+#ifdef USE_LIBS 
+        cblas_daxpy(length(), 1.0, rhs.m_data, 1, m_data, 1); // data = data + right.data
+#else
+        for (int i = 0; i < length(); i++)
+            m_data[i] += rhs[i];
+#endif
     }
 }
 
@@ -520,79 +707,25 @@ Matrix& Matrix::operator+=(Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
-    if (m_type == MATRIX_SPARSE) {
-        if (MATRIX_SPARSE != right.getType() && MATRIX_DIAGONAL != right.getType()) { // right summand is DENSE (Sparse + Dense)
-            /* For any type of non-sparse right-summands */
-            /* Sparse + Dense = Dense */
-            m_type = MATRIX_DENSE;
-            /* this = zero matrix */
-            m_dataLength = m_ncols * m_nrows;
-            m_data = new double[m_ncols * m_nrows];
-            for (int i = 0; i < m_nrows; i++) {
-                for (int j = 0; j < m_ncols; j++) {
-                    set(i, j, right.get(i, j));
-                }
-            }
-            createTriplet();
-            if (m_triplet != NULL) {
-                /* Add triplets */
-                int i = -1, j = -1;
-                double v = 0.0;
-                for (int k = 0; k < m_triplet->nnz; k++) {
-                    i = ((int*) m_triplet->i)[k];
-                    j = ((int*) m_triplet->j)[k];
-                    v = ((double*) m_triplet->x)[k];
-                    m_data[i + j * m_nrows] += v;
-                }
-            }
-            return *this;
-        } else if (Matrix::MATRIX_DIAGONAL == right.getType()) {
-            createTriplet();
-            if (m_triplet != NULL) {
-                for (size_t i = 0; i < getNrows(); i++) {
-                    set(i, i, get(i, i) + right.get(i, i));
-                }
-            }
-        } else { // right summand is SPARSE (Sparse + Sparse)                             
-            double alpha[1] = {1};
 
-            /* CHOLMOD_SPARSE is needed - create it from other representations */
-            if (m_sparse == NULL) {
-                createSparse();
-            }
-            if (right.m_sparse == NULL) {
-                right.createSparse();
-            }
-
-            /* Use cholmod_add to compute the sum A+=B */
-            m_sparse = cholmod_add(m_sparse, right.m_sparse, alpha, alpha, true, true, Matrix::cholmod_handle());
-            /* Update the triplet of the result (optional) */
-            m_triplet = cholmod_sparse_to_triplet(m_sparse, Matrix::cholmod_handle());
-            return *this;
-        }
-    } else if (m_data != NULL) { /* Not sparse AND m_data is not NULL */
-
-        if (((!m_transpose && !right.m_transpose) || (m_transpose && right.m_transpose)) && length() == right.length()) {
-#ifdef USE_LIBS 
-            cblas_daxpy(length(), 1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
-#else
-            for (int i = 0; i < length(); i++)
-                m_data[i] += right[i];
-#endif
-        } else {
-            if (getType() == MATRIX_DENSE && right.getType() == MATRIX_DIAGONAL) {
-                _addDenseDiagonal(*this, right);
-                return *this;
-            }
-            /* TODO: distinguish cases for efficiency: Dense+Symmetric, Dense+Lower triangular */
-            for (size_t i = 0; i < m_nrows; i++) {
-                for (size_t j = 0; j < m_ncols; j++) {
-                    this->set(i, j, this->get(i, j) + right.get(i, j));
-                }
-            }
-        }
-        return *this;
+    switch (m_type) {
+        case MATRIX_DENSE:              /* DENSE += ? */
+            _addD(right);           
+            break;
+        case MATRIX_SYMMETRIC:          /* SYMMETRIC += ? */
+            _addH(right);
+            break;
+        case MATRIX_LOWERTR:            /* LOWER TRIANGULAR += ? */
+            _addL(right);
+            break;
+        case MATRIX_DIAGONAL:           /* DIAGONAL += ? */
+            _addX(right);
+            break;
+        case MATRIX_SPARSE:             /* SPARSE += ? */
+            _addS(right);            
+            break;
     }
+    return *this;
 }
 
 Matrix & Matrix::operator-=(const Matrix & right) {
@@ -614,7 +747,7 @@ Matrix Matrix::operator+(Matrix & right) const {
     if (this->getNrows() != right.getNrows() || this->getNcols() != right.getNcols()) {
         throw std::invalid_argument("Addition of matrices of incompatible dimensions!");
     }
-    Matrix result(*this); // Make a copy of myself.        
+    Matrix result(*this); // Make a copy of myself.
     result += right;
 
     return result;
@@ -807,10 +940,10 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
     if (right.m_type == MATRIX_SPARSE) {
         // RHS is sparse
         if (m_sparse == NULL) {
-            createSparse();
+            _createSparse();
         }
         if (right.m_sparse == NULL) {
-            right.createSparse();
+            right._createSparse();
         }
         cholmod_sparse *r;
         r = cholmod_ssmult(
@@ -827,14 +960,14 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
             result = Matrix(m_nrows, right.m_ncols, Matrix::MATRIX_SPARSE);
         }
         result.m_sparse = r;
-        result.createTriplet();
+        result._createTriplet();
         return result;
     } else {
         // RHS is dense
         Matrix result(m_nrows, right.m_ncols);
 
         if (m_triplet != NULL && m_sparse == NULL)
-            createSparse();
+            _createSparse();
 
         double alpha[2] = {1.0, 0.0};
         double beta[2] = {0.0, 0.0};
@@ -911,7 +1044,7 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
 
 }
 
-void Matrix::createSparse() {
+void Matrix::_createSparse() {
     if (m_triplet != NULL) {
         m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
         return;
@@ -921,19 +1054,27 @@ void Matrix::createSparse() {
         return;
     }
     if (m_factor != NULL) {
-
         m_sparse = cholmod_factor_to_sparse(m_factor, Matrix::cholmod_handle());
     }
 }
 
-void Matrix::createTriplet() {
-    createSparse();
+void Matrix::_createTriplet() {
+    _createSparse();
     if (m_sparse != NULL) { /* make triplets from sparse */
-
         m_triplet = cholmod_sparse_to_triplet(m_sparse, Matrix::cholmod_handle());
     }
 }
 
 bool Matrix::isSymmetric() {
-    return (getType() == Matrix::MATRIX_SYMMETRIC) || (m_triplet != NULL && m_triplet->stype != 0);
+    return (Matrix::MATRIX_SYMMETRIC == m_type)
+            || (m_triplet != NULL && m_triplet->stype != 0)
+            || (Matrix::MATRIX_DIAGONAL == m_type);
 }
+
+Matrix& operator*=(Matrix& obj, double alpha) {
+    if (obj.m_data != NULL) {
+        cblas_dscal(obj.m_dataLength, alpha, obj.m_data, 1);
+    }
+
+}
+
