@@ -47,7 +47,11 @@ Quadratic::Quadratic(Matrix& QQ, Matrix& qq) {
 }
 
 Quadratic::Quadratic(const Quadratic& orig) {
-    // copy-constructor
+    q = orig.q;
+    Q = orig.Q;
+    L = new Matrix(*(orig.L));
+    is_Q_eye = orig.is_Q_eye;
+    is_q_zero = orig.is_q_zero;
 }
 
 Quadratic::~Quadratic() {

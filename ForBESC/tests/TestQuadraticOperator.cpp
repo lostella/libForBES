@@ -32,16 +32,19 @@ void TestQuadraticOperator::testCall() {
     LinearOperator *T = new MatrixOperator(Q);
 
     Function *F = new QuadraticOperator(*T);
+    _ASSERT_EQ(Function::CAT_QUADRATIC, F->category());
     Function *F2 = new Quadratic(Q);
 
-    double fval, fval2;
+    double fval, fval2, fval3;
     const double tol = 1e-8;
     
     Matrix grad, grad2;
     
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval, grad));
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F2->call(x, fval2, grad2));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval3));    
     _ASSERT_NUM_EQ(fval, fval2, tol);
+    _ASSERT_NUM_EQ(fval2, fval3, tol);
     _ASSERT_NOT(grad2.isEmpty());
     _ASSERT_NOT(grad.isEmpty());
     _ASSERT(grad.isColumnVector());

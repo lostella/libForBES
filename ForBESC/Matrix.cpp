@@ -628,7 +628,7 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
 
         if (m_sparse == NULL)
             _createSparse(); /* CHOLMOD_SPARSE: create it 
-                                                                    from other representations */
+                                from other representations */
 
         if (rhs.m_sparse == NULL)
             rhs._createSparse(); /* Likewise for the RHS */
@@ -708,21 +708,26 @@ Matrix& Matrix::operator+=(Matrix & right) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
 
+    if (&right == this) {
+        this *= 2.0;
+        return *this;
+    }
+
     switch (m_type) {
-        case MATRIX_DENSE:              /* DENSE += ? */
-            _addD(right);           
+        case MATRIX_DENSE: /* DENSE += ? */
+            _addD(right);
             break;
-        case MATRIX_SYMMETRIC:          /* SYMMETRIC += ? */
+        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
             _addH(right);
             break;
-        case MATRIX_LOWERTR:            /* LOWER TRIANGULAR += ? */
+        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
             _addL(right);
             break;
-        case MATRIX_DIAGONAL:           /* DIAGONAL += ? */
+        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
             _addX(right);
             break;
-        case MATRIX_SPARSE:             /* SPARSE += ? */
-            _addS(right);            
+        case MATRIX_SPARSE: /* SPARSE += ? */
+            _addS(right);
             break;
     }
     return *this;
@@ -995,7 +1000,6 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 Matrix::cholmod_handle()
                 );
         for (size_t k = 0; k < result.length(); k++) {
-
             result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         }
         return result;
@@ -1045,15 +1049,15 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
 }
 
 void Matrix::_createSparse() {
-    if (m_triplet != NULL) {
+    if (m_triplet != NULL) { // from triplets
         m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
         return;
     }
-    if (m_dense != NULL) {
+    if (m_dense != NULL) { // from dense
         m_sparse = cholmod_dense_to_sparse(m_dense, true, Matrix::cholmod_handle());
         return;
     }
-    if (m_factor != NULL) {
+    if (m_factor != NULL) { // from factor
         m_sparse = cholmod_factor_to_sparse(m_factor, Matrix::cholmod_handle());
     }
 }
@@ -1072,9 +1076,17 @@ bool Matrix::isSymmetric() {
 }
 
 Matrix& operator*=(Matrix& obj, double alpha) {
-    if (obj.m_data != NULL) {
+    if (obj.m_type != Matrix::MATRIX_SPARSE) {
+        assert(obj.m_data != NULL);
         cblas_dscal(obj.m_dataLength, alpha, obj.m_data, 1);
+    } else {
+        obj._createTriplet();
+        obj.m_sparse = NULL;
+        obj.m_factor = NULL;
+        obj.m_dense = NULL;
+        for (int k = 0; k < obj.m_triplet->nnz; k++) {
+            ((double*) obj.m_triplet->x)[k] *= alpha;
+        }
     }
-
 }
 

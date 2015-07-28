@@ -200,6 +200,11 @@ void TestQuadratic::testCallConj() {
     double fstar;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar));
 
+    Quadratic quadratic2(quadratic);
+    double fstar2;
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic2.callConj(x, fstar2));
+    _ASSERT_EQ(fstar, fstar2);
+    
     double expected = 421.0;
     const double rel_tol = 1e-5;
     _ASSERT(std::fabs(expected - fstar) / expected < rel_tol);

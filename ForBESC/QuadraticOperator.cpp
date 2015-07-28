@@ -19,7 +19,7 @@ int QuadraticOperator::call(Matrix& x, double& f, Matrix& grad) {
 
 int QuadraticOperator::call(Matrix& x, double& f) {
     Matrix grad;
-    int status = call(x, f);
+    int status = call(x, f, grad);
     return status;
 }
 

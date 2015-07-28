@@ -23,15 +23,18 @@ using namespace std;
 
 int main(int argc, char** argv) {
     size_t n = 10;
-   
-    Matrix A = MatrixFactory::MakeRandomMatrix(n,n,0.0, 1.0, Matrix::MATRIX_LOWERTR);
-    Matrix B = A;
-    B.transpose();
-    B *= -10.0;    
 
-    std::cout << A;
-    std::cout << B;
-    
+    Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_LOWERTR);
+    Matrix A0 = A;
+    A += A;
+
+    for (size_t i = 0; i < A.getNrows(); i++) {
+        for (size_t j = 0; j < A.getNrows(); j++) {
+             std::cout << (2*A0.get(i,j) - A.get(i,j)) << "\n";
+        }
+    }
+
+
     return (0);
 }
 

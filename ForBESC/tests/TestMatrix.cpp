@@ -1793,6 +1793,27 @@ void TestMatrix::test_ASX() {
     }
 }
 
+
+void TestMatrix::test_AXX() {
+    size_t n = 120;
+    size_t nnz = 60;
+    const double tol = 1e-10;
+    Matrix X1 = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_DIAGONAL);
+    Matrix X2 = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_DIAGONAL);
+
+    Matrix R;
+    _ASSERT_OK(R = X1 + X2); // DIAGONAL + DIAGONAL = DIAGONAL
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, R.getType());
+    _ASSERT_EQ(n, R.getNrows());
+    _ASSERT_EQ(n, R.getNcols());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(X1.get(i, j) + X2.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+
 void TestMatrix::test_CD() {
     size_t n = 120;
     const double tol = 1e-10;
@@ -1822,3 +1843,17 @@ void TestMatrix::test_CH() {
     }
 }
 
+void TestMatrix::test_CS() {
+    size_t n = 200;
+    size_t nnz = 60;
+    const double tol = 1e-10;
+    double alpha = -2.3456;
+    Matrix S = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 1.0);
+    Matrix SS = S;
+    S *= alpha;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(alpha * SS.get(i, j), S.get(i, j), tol);
+        }
+    }
+}
