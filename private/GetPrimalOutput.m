@@ -48,7 +48,9 @@ function out = GetPrimalOutput(prob, dualprob, dualout)
     out.y = y;
     out.iterations = dualout.iterations;
     if isfield(dualout, 'operations'), out.operations = dualout.operations; end
+    if isfield(dualout, 'record'), out.record = dualout.record; end
     out.residual = dualout.residual;
     out.ts = dualout.ts;
     out.prob = prob;
+    out.dual = dualout;
 end
