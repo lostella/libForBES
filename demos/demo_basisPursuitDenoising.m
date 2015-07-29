@@ -26,7 +26,7 @@ opt.maxit = 10000;
 opt.tol = 1e-12;
 opt.linesearch = 'lemarechal';
 opt.adaptive = 1;
-opt.display = 2;
+opt.display = 1;
 
 fprintf('\nFast FBS\n');
 opt_fbs = opt;
