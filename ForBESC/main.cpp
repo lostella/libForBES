@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     };
     Matrix B(n, 1, b, Matrix::MATRIX_DENSE);
 
-    int status2 = LAPACKE_dsytrs(LAPACK_COL_MAJOR, 'L', n, 1, a, n, ipiv, b, n);
+        int status2 = LAPACKE_dsytrs(LAPACK_COL_MAJOR, 'L', n, 1, a, n, ipiv, b, n);
 
 
     std::cout << std::endl;
@@ -83,20 +83,14 @@ int main(int argc, char** argv) {
     Matrix ERR = B - A*X;
     std::cout << ERR;
     
-    LDLFactorization LDL(A);
-    LDL.factorize();
-    double * ldlData = LDL.getLDL();
+    FactoredSolver *ldlSolver = new LDLFactorization(A);
+    ldlSolver->factorize();
+    Matrix SOL;
+    ldlSolver->solve(B, SOL);
     
-    j=0;
-    for (size_t i = 0; i < n * n; i++) {
-        std::cout << std::setw(8) << std::setprecision(4) << ldlData[i] << " ";
-        j++;
-        if (j == 3) {
-            std::cout << std::endl;
-            j = 0;
-        }
-    }
-
+    Matrix ERR2 = B - A*SOL;
+    std::cout << ERR2;
+    
     return (0);
 }
 
