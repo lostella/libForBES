@@ -410,6 +410,11 @@ public:
      */
     friend Matrix& operator*=(Matrix& obj, double alpha);
     
+    friend Matrix operator*(double alpha, Matrix& obj);
+    
+    
+    
+    
     
 
     /**

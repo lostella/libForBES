@@ -15,6 +15,7 @@
 
 #include "cholmod.h"
 #include "MatrixFactory.h"
+#include "LDLFactorization.h"
 
 #include <set>
 
@@ -22,18 +23,79 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    size_t n = 10;
 
-    Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_LOWERTR);
-    Matrix A0 = A;
-    A += A;
+    const size_t n = 3;
+    double a[n * n] = {
+        10, 20, 30,
+        20, 45, 80,
+        30, 80, 171
+    };
 
-    for (size_t i = 0; i < A.getNrows(); i++) {
-        for (size_t j = 0; j < A.getNrows(); j++) {
-             std::cout << (2*A0.get(i,j) - A.get(i,j)) << "\n";
+    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
+
+    int j = 0;
+    for (size_t i = 0; i < n * n; i++) {
+        std::cout << std::setw(8) << std::setprecision(4) << a[i] << " ";
+        j++;
+        if (j == 3) {
+            std::cout << std::endl;
+            j = 0;
+        }
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    int ipiv[n];
+    int status = LAPACKE_dsytrf(LAPACK_COL_MAJOR, 'L', n, a, n, ipiv);
+
+
+    for (size_t i = 0; i < n * n; i++) {
+        std::cout << std::setw(8) << std::setprecision(4) << a[i] << " ";
+        j++;
+        if (j == 3) {
+            std::cout << std::endl;
+            j = 0;
         }
     }
 
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < n; i++) {
+        std::cout << ipiv[i] << " ";
+    }
+
+    double b[n] = {
+        1.2, 3.4, -0.5
+    };
+    Matrix B(n, 1, b, Matrix::MATRIX_DENSE);
+
+    int status2 = LAPACKE_dsytrs(LAPACK_COL_MAJOR, 'L', n, 1, a, n, ipiv, b, n);
+
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+    for (size_t i = 0; i < n; i++) {
+        std::cout << "x[" << i << "] = " << b[i] << "\n";
+    }
+    Matrix X(n, 1, b, Matrix::MATRIX_DENSE);
+
+    Matrix ERR = B - A*X;
+    std::cout << ERR;
+    
+    LDLFactorization LDL(A);
+    LDL.factorize();
+    double * ldlData = LDL.getLDL();
+    
+    j=0;
+    for (size_t i = 0; i < n * n; i++) {
+        std::cout << std::setw(8) << std::setprecision(4) << ldlData[i] << " ";
+        j++;
+        if (j == 3) {
+            std::cout << std::endl;
+            j = 0;
+        }
+    }
 
     return (0);
 }

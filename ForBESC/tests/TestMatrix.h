@@ -30,14 +30,13 @@
 class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrix);
 
-    CPPUNIT_TEST(testMultiplication);
+
     CPPUNIT_TEST(testGetSet);
     CPPUNIT_TEST(testQuadratic);
     CPPUNIT_TEST(testQuadratic2);
     CPPUNIT_TEST(testAssignment);
     CPPUNIT_TEST(testQuadratic3);
     CPPUNIT_TEST(testAdditionBad);
-    CPPUNIT_TEST(testAddition);
     CPPUNIT_TEST(testFBMatrix);
     CPPUNIT_TEST(testMakeRandomFBMatrix);
     CPPUNIT_TEST(testGetData);
@@ -63,10 +62,6 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSymmetric_getSet);
     CPPUNIT_TEST(testSymmetricCholesky);
     CPPUNIT_TEST(testTranspose);
-    CPPUNIT_TEST(testDiagonalTimesSymmetric);
-    CPPUNIT_TEST(testDiagonalTimesLowerTri);
-    CPPUNIT_TEST(testDenseTimesSymmetric);
-    CPPUNIT_TEST(testDenseTimesLowerTriangular);
     CPPUNIT_TEST(testLeftTransposeMultiply);
     CPPUNIT_TEST(testRightTransposeMultiply);
     CPPUNIT_TEST(testLowerTriangularTraspose_getSet);
@@ -74,7 +69,6 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSparseGetSet);
     CPPUNIT_TEST(testSparseCholesky);
     CPPUNIT_TEST(testSparseDenseMultiply);
-    CPPUNIT_TEST(testSparseSparseMultiply);
     CPPUNIT_TEST(testSparseAddDense);
     CPPUNIT_TEST(testSparseAddSparse);
     CPPUNIT_TEST(testSparseAddSparse2);
@@ -84,7 +78,8 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSparseDotProd);
 
 
-    CPPUNIT_TEST(test_ADD);
+    CPPUNIT_TEST(test_ADD1);
+    CPPUNIT_TEST(test_ADD2);
     CPPUNIT_TEST(test_ADS);
     CPPUNIT_TEST(test_ADH);
     CPPUNIT_TEST(test_ADX);
@@ -99,26 +94,32 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ADWT);
 
     CPPUNIT_TEST(test_AHH);
-    CPPUNIT_TEST(test_AHX);    
-    CPPUNIT_TEST(test_AHL);    
+    CPPUNIT_TEST(test_AHX);
+    CPPUNIT_TEST(test_AHL);
     CPPUNIT_TEST(test_AHS);
-    
-    CPPUNIT_TEST(test_ASD);    
-    CPPUNIT_TEST(test_ASH);    
-    CPPUNIT_TEST(test_ASX);    
-    
-    CPPUNIT_TEST(test_AXX);    
+
+    CPPUNIT_TEST(test_ASD);
+    CPPUNIT_TEST(test_ASH);
+    CPPUNIT_TEST(test_ASX);
+    CPPUNIT_TEST(test_ASL);
+
+    CPPUNIT_TEST(test_AXX);
 
     CPPUNIT_TEST(test_EH);
     CPPUNIT_TEST(test_EHT);
+    CPPUNIT_TEST(test_EDT);
     CPPUNIT_TEST(test_EL);
-    
+
     CPPUNIT_TEST(test_CD);
     CPPUNIT_TEST(test_CH);
     CPPUNIT_TEST(test_CS);
-    
-    
 
+    CPPUNIT_TEST(test_MDD1);
+    CPPUNIT_TEST(test_MSS);
+    CPPUNIT_TEST(test_MXH);
+    CPPUNIT_TEST(test_MXL);
+    CPPUNIT_TEST(test_MDH);
+    CPPUNIT_TEST(test_MDL);
 
 
     CPPUNIT_TEST_SUITE_END();
@@ -130,14 +131,13 @@ public:
     void tearDown();
 
 private:
-    void testMultiplication();
     void testQuadratic();
     void testQuadratic2();
     void testQuadratic3();
     void testQuadraticDot();
     void testGetSet();
     void testAssignment();
-    void testAddition();
+    void test_ADD1();
     void testAdditionBad();
     void testFBMatrix();
     void testMakeRandomFBMatrix();
@@ -163,10 +163,6 @@ private:
     void testLowerTriangularTraspose_getSet();
     void testSymmetric_getSet();
     void testSymmetricCholesky();
-    void testDiagonalTimesSymmetric();
-    void testDiagonalTimesLowerTri();
-    void testDenseTimesSymmetric();
-    void testDenseTimesLowerTriangular();
     void testTranspose();
     void testLeftTransposeMultiply();
     void testRightTransposeMultiply();
@@ -174,7 +170,7 @@ private:
     void testSparseGetSet();
     void testSparseCholesky();
     void testSparseDenseMultiply();
-    void testSparseSparseMultiply();
+    void test_MSS();
     void testSparseAddDense();
     void testSparseAddSparse();
     void testSparseAddSparse2();
@@ -203,18 +199,20 @@ private:
      * Copy-constructor and operator=
      */
     void test_EH();
-    void test_EHT();
     void test_EL();
     void test_EX();
-    
+    void test_ES();
+
+    void test_EHT();
+    void test_EDT();
     /*
      * Addition: X = A + B 
      */
-    
+
     /*
      * DENSE + (?)
      */
-    void test_ADD();
+    void test_ADD2();
     void test_ADS();
     void test_ADH();
     void test_ADX();
@@ -231,7 +229,7 @@ private:
     void test_ADXT();
     void test_ADLT();
     void test_ADWT();
-    
+
     /*
      * SYMMETRIC + (?) 
      */
@@ -251,8 +249,8 @@ private:
     void test_ASX();
     void test_ASL();
     void test_ASW();
-    
-    
+
+
     /*
      * DIAGONAL + (?)
      */
@@ -262,7 +260,7 @@ private:
     void test_AXX();
     void test_AXL();
     void test_AXW();
-    
+
     /*
      * alpha * X
      */
@@ -271,7 +269,16 @@ private:
     void test_CL();
     void test_CS();
     void test_CX();
-    
+
+    /*
+     * MULTIPLICATION TESTS
+     */
+    void test_MDD1();
+
+    void test_MXH();
+    void test_MXL();
+    void test_MDH();
+    void test_MDL();
 };
 
 #endif	/* TESTMATRIX_H */

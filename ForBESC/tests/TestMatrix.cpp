@@ -116,7 +116,7 @@ void TestMatrix::testQuadraticDot() {
     _ASSERT_EQ(-72.0, r[0]);
 }
 
-void TestMatrix::testMultiplication() {
+void TestMatrix::test_MDD1() {
     double fdata[9] = {-1.0, 3.0, 1.0, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
     double xdata[3] = {1.0, 2.0, 3.0};
 
@@ -188,10 +188,10 @@ void TestMatrix::testAdditionBad() {
     CPPUNIT_ASSERT_THROW(A -= B, std::invalid_argument);
 }
 
-void TestMatrix::testAddition() {
-    const int nRows = 3;
-    const int nCols = 2;
-    const int size = nRows * nCols;
+void TestMatrix::test_ADD1() {
+    const size_t nRows = 3;
+    const size_t nCols = 2;
+    const size_t size = nRows * nCols;
     double *a, *b;
     a = new double[size];
     b = new double[size];
@@ -207,10 +207,14 @@ void TestMatrix::testAddition() {
     Matrix C;
     C = A + B;
 
-    for (int i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++) {
         _ASSERT_EQ(a[i] + b[i], C[i]);
     }
 
+    Matrix D = A + B + C;
+    for (size_t i = 0; i < size; i++) {
+        _ASSERT_EQ(2 * C[i], D[i]);
+    }
     delete[] a;
     delete[] b;
 }
@@ -545,6 +549,9 @@ void TestMatrix::testCholesky() {
         }
     }
 
+    Matrix G = MatrixFactory::MakeRandomMatrix(n, n + 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    _ASSERT_EXCEPTION(G.cholesky(L), std::invalid_argument);
+
 
 }
 
@@ -743,7 +750,7 @@ void TestMatrix::testTranspose() {
 
 }
 
-void TestMatrix::testDiagonalTimesSymmetric() {
+void TestMatrix::test_MXH() {
     int n = 10;
     Matrix D(n, n, Matrix::MATRIX_DIAGONAL);
     for (int i = 0; i < n; i++) {
@@ -767,7 +774,7 @@ void TestMatrix::testDiagonalTimesSymmetric() {
     }
 }
 
-void TestMatrix::testDiagonalTimesLowerTri() {
+void TestMatrix::test_MXL() {
     size_t n = 6;
     Matrix D(n, n, Matrix::MATRIX_DIAGONAL);
     for (int i = 0; i < n; i++) {
@@ -794,7 +801,7 @@ void TestMatrix::testDiagonalTimesLowerTri() {
     }
 }
 
-void TestMatrix::testDenseTimesSymmetric() {
+void TestMatrix::test_MDH() {
     const size_t n = 4;
     double a[n * n] = {5, 11, -2, -1,
         6, 3, 7, -1,
@@ -830,7 +837,7 @@ void TestMatrix::testDenseTimesSymmetric() {
     }
 }
 
-void TestMatrix::testDenseTimesLowerTriangular() {
+void TestMatrix::test_MDL() {
     const int n = 4;
     double a[n * n] = {5, 11, -2, -1,
         6, 3, 7, -1,
@@ -1093,7 +1100,7 @@ void TestMatrix::testSparseDenseMultiply() {
 
 }
 
-void TestMatrix::testSparseSparseMultiply() {
+void TestMatrix::test_MSS() {
     const size_t n = 10;
     const size_t m = 12;
     const size_t k = 9;
@@ -1324,7 +1331,7 @@ void TestMatrix::testSparseDotProd() {
 
 /* Tests R = DENSE + (?) */
 
-void TestMatrix::test_ADD() {
+void TestMatrix::test_ADD2() {
     size_t n = 80;
     size_t m = 5;
     const double tol = 1e-10;
@@ -1498,6 +1505,22 @@ void TestMatrix::test_EHT() {
             _ASSERT_EQ(H.get(i, j), H2.get(j, i));
             _ASSERT_EQ(H.get(i, j), H3.get(i, j));
             _ASSERT_EQ(H.get(i, j), H3.get(j, i));
+        }
+    }
+}
+
+void TestMatrix::test_EDT() {
+    size_t n = 100;
+    const double tol = 1e-10;
+    Matrix D = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_DENSE);
+    Matrix D1 = D;
+    Matrix D2(D);
+    D1.transpose();
+    D2.transpose();
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_EQ(D.get(i, j), D1.get(j, i));
+            _ASSERT_EQ(D.get(i, j), D2.get(j, i));
         }
     }
 }
@@ -1793,6 +1816,24 @@ void TestMatrix::test_ASX() {
     }
 }
 
+void TestMatrix::test_ASL() {
+    size_t n = 120;
+    size_t nnz = 60;
+    const double tol = 1e-10;
+    Matrix S = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 1.0);
+    Matrix L = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
+
+    Matrix R;
+    _ASSERT_OK(R = S + L); // SPARSE + LOWER TRIANGULAR = SPARSE
+    _ASSERT_EQ(Matrix::MATRIX_SPARSE, R.getType());
+    _ASSERT_EQ(n, R.getNrows());
+    _ASSERT_EQ(n, R.getNcols());
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(S.get(i, j) + L.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
 
 void TestMatrix::test_AXX() {
     size_t n = 120;
@@ -1812,7 +1853,6 @@ void TestMatrix::test_AXX() {
         }
     }
 }
-
 
 void TestMatrix::test_CD() {
     size_t n = 120;
@@ -1857,3 +1897,5 @@ void TestMatrix::test_CS() {
         }
     }
 }
+
+

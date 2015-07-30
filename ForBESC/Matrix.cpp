@@ -365,6 +365,9 @@ double Matrix::quad(Matrix& x, Matrix & q) {
 }
 
 int Matrix::cholesky(Matrix & L) {
+    if (m_nrows != m_ncols)
+        throw std::invalid_argument("Method `cholesky` can only be applied to square matrices!");
+
     if (m_type == MATRIX_SPARSE) {
         // Cholesky decomposition of a SPARSE matrix:
         L = *this;
@@ -375,9 +378,6 @@ int Matrix::cholesky(Matrix & L) {
         return (L.m_factor->minor == L.m_nrows) ? 0 : 1; /* Success: status = 0, else 1*/
     } else { // If this is any non-sparse matrix:
         L = *this;
-        if (m_nrows != m_ncols) {
-            throw std::invalid_argument("Method `cholesky` can only be applied to square matrices!");
-        }
         int info;
 #ifdef USE_LIBS
         if (m_type == MATRIX_DENSE) {
@@ -651,6 +651,16 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
                 _addIJ(i, i, rhs.get(i, i));
             }
         }
+    } else if (rhs.m_type == MATRIX_LOWERTR) { /* SPARSE + LOWER TRI = SPARSE */
+        _createTriplet();
+        if (m_triplet != NULL) {
+            for (size_t i = 0; i < m_nrows; i++) {
+                for (size_t j = (rhs.m_transpose ? i : 0); 
+                        j <= (rhs.m_transpose ? rhs.m_ncols : i); j++) {
+                    _addIJ(i, j, rhs.get(i, j));
+                }
+            }
+        }
     } else if (rhs.m_type == MATRIX_DENSE) { /* For any type of non-sparse right-summands */
         /* Sparse + Dense = Dense */
         m_type = MATRIX_DENSE;
@@ -709,7 +719,7 @@ Matrix& Matrix::operator+=(Matrix & right) {
     }
 
     if (&right == this) {
-        this *= 2.0;
+        *this *= 2.0;
         return *this;
     }
 
@@ -1089,4 +1099,11 @@ Matrix& operator*=(Matrix& obj, double alpha) {
         }
     }
 }
+
+Matrix operator*(double alpha, Matrix& obj) {
+    Matrix M(obj);
+    M *= alpha;
+    return (M);
+}
+
 

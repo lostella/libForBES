@@ -137,14 +137,27 @@
  * Matrix C = A * B;
  * \endcode
  * 
+ * You can also perform scalar multiplications
+ * 
+ * \code{.cpp}
+ * Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
+ * A *= 3.465;              // A = A * 3.465
+ * Matrix B = 7.0 * A;
+ * Matrix C = 3.5 * B + A;
+ * \endcode
+ * 
  * 
  * \subsection cholesky Cholesky factorization
  * The Cholesky factorization of a symmetric positive definite matrix can be computed
  * using <code>Matrix::cholesky()</code>. 
  * 
- *  Let us go through an example where we 
+ * Let us go through an example where we 
  * define a matrix <code>A</code>, we compute its Cholesky factor <code>L</code> 
- * and we then verify that <code>A=L*L'</code>.
+ * and we then verify that \f$A=LL'\f$.
+ * 
+ * The Cholesky factorization is computed using lapack's <code>dpotrf</code>
+ * for dense matrices or <code>dpptrf</code> for symmetric matrices (in packed 
+ * storage form) and cholmod's factorization routines for sparse matrices.  
  * 
  * \code{.cpp}
  * const size_t n = 3;
@@ -173,7 +186,7 @@
  * 
  * 
  * The Cholesky factor of a matrix can be used to solve a linear system of
- * equations of the form <code>A*x=b</code>. 
+ * equations of the form \f$Ax=b\f$. 
  * 
  * Once we have computed <code>L</code> we can use the method <code>Matrix::solveCholesky()</code>
  * as in the following example:
@@ -228,7 +241,11 @@
  * \endcode
  * 
  * \subsection qad Quadratic Forms
- * It may be often needed to compute quadratic forms <code>F(x) = (1/2)*x'Qx + q'x</code>.
+ * It may be often needed to compute quadratic forms
+ * 
+ * \f[
+ *  F(x) = \frac{1}{2}x'Qx + q'x
+ * \f]
  * 
  * To this end, two methods in <code>Matrix</code> have been implemented, both named
  * <code>Matrix::quad()</code>. Here is an example of use:
@@ -257,12 +274,25 @@
  * 
  * \section linop-sec Linear Operator
  * 
- * A linear operator may not always be available in the explicit form of a 
- * matrix, but in some implicit form to which we don't have direct access. Think
- * of a linear operator <code>T</code> as a black box function for which we only
- * know that it is linear and we can evaluate its value <code>T(x)</code> at a given
- * vector <code>x</code> and, sometimes, the value <code>T*(x)</code> of its adjoint
+ * A linear operator \f$T:\mathbb{R}^n \to \mathbb{R}^m\f$ may not always be 
+ * available in the explicit form of a 
+ * matrix, but in some implicit form to which we don't have direct access. 
+ * 
+ * Think of a linear operator <code>T</code> as a black box function for which we only
+ * know that it is linear and we can evaluate its value \f$T(x)\f$ at a given
+ * vector <code>x</code> and, sometimes, the value \f$T^*(x^*)\f$ of its adjoint
  * operator (which is again defined implicitly).
+ * 
+ * You can extends the class LinearOperator to define your own linear operators.
+ * You will then need to implement the following methods:
+ * 
+ * \code{.cpp}
+ * virtual Matrix call(Matrix& x) = 0;              // define T(x)
+ * virtual Matrix callAdjoint(Matrix& x) = 0;       // define T^*(y)
+ * virtual bool isSelfAdjoint() = 0;                // is it a self-adjoint operator?
+ * virtual size_t dimensionIn() = 0;                // x - dimension
+ * virtual size_t dimensionOut() = 0;               // T(x) - dimension
+ * \endcode
  */
 
 /*! \page functs Functions
@@ -313,7 +343,9 @@
  * std::cout << grad;   // print out the gradient
  * \endcode
  * 
- * 
+ * The invocation of <code>callConj</code> involves the computation of a Cholesky
+ * factor of <code>Q</code> which is stored internally in the instance of our 
+ * quadratic function.
  * 
  * 
  * \subsection genquad-fun-sec Generalized Quadratic 
@@ -365,7 +397,7 @@
  * \f[
  * \delta(x|E) = \begin{cases}
  * 1, \text{ if } x \in E,\\
- * 0, \text{ otherwise} 
+ * \infty, \text{ otherwise} 
  * \end{cases}
  * \f]
  * 
@@ -388,7 +420,16 @@
  * Here is an example of use
  * 
  * \code{.cpp}
- * Function *F = new QuadOverAffine(Q, q, A, b);
+ * // First, define matrices Q, q, A and b
+ * Matrix Q = ...;
+ * Matrix q = ...;
+ * Matrix A = ...;
+ * Matrix b = ...;
+ * Function *F = new QuadOverAffine(Q, q, A, b); // define the function as QuadOverAffine
+ * Matrix y = ...;
+ * double f_star;
+ * Matrix grad;
+ * int status = F->callConj(y, f_star, grad);
  * \endcode
  * 
  * 
@@ -424,7 +465,7 @@
  * of a box which is given by:
  * 
  * \f[
- * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x; l, u)
+ * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x; l, u) = \min (\max(x, l), u)
  * \f]
  * 
  * 
