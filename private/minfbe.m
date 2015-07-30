@@ -107,7 +107,7 @@ function out = minfbe(prob, opt)
                     break;
                 end
             else
-                if it > 1 && opt.term(prob, it, gam, cache_0, cache_current, cnt)
+                if opt.term(prob, it, gam, cache_0, cache_current, cnt)
                     msgTerm = 'reached optimum (custom criterion)';
                     flagTerm = 0;
                     break;
@@ -270,6 +270,10 @@ function out = minfbe(prob, opt)
 
         %% perform the line search
         switch opt.linesearch
+            case 0 % NO LINE SEARCH - UNIT STEPSIZE
+                [cache_tau, cntLS] = CacheFBE(prob, gam, cache_current.x+dir);
+                tau = 1.0;
+                info = 0;
             case 1 % BACKTRACKING (ARMIJO COND.)
                 [cache_tau, tau, cntLS, info] = ArmijoLS(prob, gam, cache_current, slope, tau0, lsopt);
             case 3 % LEMARECHAL (ARMIJO + WOLF COND.)

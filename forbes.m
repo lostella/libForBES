@@ -158,9 +158,9 @@ function prob = MakeProb(fs, gs, init, aff, constr, opt)
         end
     end
     prob.id = flagconstr+1;
-    prob.x0 = init;
     switch prob.id
         case 1
+            prob.x0 = init;
             for i = 1:M
                 if isfield(fs{i}, 'isQuadratic') && fs{i}.isQuadratic
                     prob.f1 = fs{i};
@@ -196,6 +196,7 @@ function prob = MakeProb(fs, gs, init, aff, constr, opt)
                 prob.g = separableSum(gs, ns);
             end
         case 2
+            prob.y0 = init;
             if flagaff
                 error('cannot have both constraints and affine mappings');
             end
