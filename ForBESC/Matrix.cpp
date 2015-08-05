@@ -364,91 +364,6 @@ double Matrix::quad(Matrix& x, Matrix & q) {
     return t;
 }
 
-int Matrix::cholesky(Matrix & L) {
-    if (m_nrows != m_ncols)
-        throw std::invalid_argument("Method `cholesky` can only be applied to square matrices!");
-
-    if (m_type == MATRIX_SPARSE) {
-        // Cholesky decomposition of a SPARSE matrix:
-        L = *this;
-        m_sparse = cholmod_triplet_to_sparse(m_triplet, m_triplet->nzmax, Matrix::cholmod_handle());
-        L.m_factor = cholmod_analyze(m_sparse, Matrix::cholmod_handle()); // analyze
-        cholmod_factorize(m_sparse, L.m_factor, Matrix::cholmod_handle()); // factorize        
-        L.m_sparseStorageType = CHOLMOD_TYPE_FACTOR;
-        return (L.m_factor->minor == L.m_nrows) ? 0 : 1; /* Success: status = 0, else 1*/
-    } else { // If this is any non-sparse matrix:
-        L = *this;
-        int info;
-#ifdef USE_LIBS
-        if (m_type == MATRIX_DENSE) {
-            // Cholesky decomposition of a DENSE matrix:
-#ifdef DEBUG_VERBOSE
-            std::cerr << "[Warning] Applying Cholesky on a possibly non-symmetric matrix!" << std::endl;
-#endif /* END DEBUG_VERBOSE */
-            info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data, m_nrows);
-            for (size_t i = 0; i < m_nrows; i++) {
-                for (size_t j = i + 1; j < m_ncols; j++) {
-                    L.set(i, j, 0.0f);
-                }
-            }
-#else /* ELSE (!USE_LIBS) [and this is a dense matrix]*/
-        //TODO: Make fail-safe (return proper status code!)
-        info = 0;
-        for (int i = 0; i < m_nrows; i++) {
-            for (int j = 0; j < (i + 1); j++) {
-                double s = 0;
-                for (int k = 0; k < j; k++)
-                    s += L[k * m_nrows + i] * L[k * m_nrows + j];
-                L[j * m_nrows + i] = (i == j) ?
-                        std::sqrt(m_data[i * m_nrows + i] - s) :
-                        (1.0 / L[j * m_nrows + j] * (m_data[i * m_nrows + j] - s));
-            }
-        }
-#endif /* END USE_LIBS */
-        } else if (m_type == MATRIX_SYMMETRIC) {
-#ifdef USE_LIBS
-            info = LAPACKE_dpptrf(LAPACK_COL_MAJOR, 'L', m_nrows, L.m_data);
-            L.m_type = MATRIX_LOWERTR;
-#else /* Symmetric matrix - no libs */
-
-            throw std::logic_error("Symmetric matrix - no LAPACK: Unsupported operation!");
-#endif
-        }
-        return info;
-    }
-}
-
-int Matrix::solveCholeskySystem(Matrix& solution, const Matrix & rhs) const {
-    if (getType() == MATRIX_SPARSE) {
-        cholmod_dense *x;
-        cholmod_dense *b;
-        b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
-        for (size_t k = 0; k < rhs.getNrows(); k++) {
-            ((double*) b->x)[k] = rhs.get(k, 0);
-        }
-        x = cholmod_solve(CHOLMOD_A, m_factor, b, Matrix::cholmod_handle());
-        solution = Matrix(rhs.m_nrows, rhs.m_ncols);
-        for (size_t k = 0; k < x->nzmax; k++) {
-            solution.m_data[k] = ((double*) x->x)[k];
-        }
-        cholmod_free_dense(&x, Matrix::cholmod_handle());
-        return 0;
-    } else {
-        int info = 1;
-        solution = Matrix(rhs);
-        if (m_nrows != m_ncols) {
-
-            throw std::invalid_argument("Method `solveCholesky` can only be applied to square matrices!");
-        }
-#ifdef USE_LIBS
-        info = LAPACKE_dpotrs(LAPACK_COL_MAJOR, 'L', m_nrows, rhs.m_ncols, m_data, m_nrows, solution.m_data, m_nrows);
-#else
-        // Custom implementation!
-#endif  
-        return info;
-    }
-}
-
 /********* OPERATORS ************/
 bool Matrix::operator==(const Matrix & right) const {
     const double tol = 1e-9;
@@ -1066,9 +981,6 @@ void Matrix::_createSparse() {
     if (m_dense != NULL) { // from dense
         m_sparse = cholmod_dense_to_sparse(m_dense, true, Matrix::cholmod_handle());
         return;
-    }
-    if (m_factor != NULL) { // from factor
-        m_sparse = cholmod_factor_to_sparse(m_factor, Matrix::cholmod_handle());
     }
 }
 

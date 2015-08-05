@@ -54,8 +54,9 @@
 
 
 
+/* Matrices */
 
-/*! \page ex-matrix How to use Matrices
+/*! \page doc-matrix How to use Matrices
  * 
  * \brief Matrices and %Matrix operations in libforbes
  * 
@@ -147,98 +148,6 @@
  * \endcode
  * 
  * 
- * \subsection cholesky Cholesky factorization
- * The Cholesky factorization of a symmetric positive definite matrix can be computed
- * using <code>Matrix::cholesky()</code>. 
- * 
- * Let us go through an example where we 
- * define a matrix <code>A</code>, we compute its Cholesky factor <code>L</code> 
- * and we then verify that \f$A=LL'\f$.
- * 
- * The Cholesky factorization is computed using lapack's <code>dpotrf</code>
- * for dense matrices or <code>dpptrf</code> for symmetric matrices (in packed 
- * storage form) and cholmod's factorization routines for sparse matrices.  
- * 
- * \code{.cpp}
- * const size_t n = 3;
- * 
- * // We specify the data of A (%Matrix data are always in column-major order):
- * double a[n * n] = {
- *      14, 32, 2,
- *      32, 77, 5,
- *      2, 5, 3};
- * 
- * Matrix A(n, n, a, Matrix::MATRIX_DENSE); // Introduce Matrix A
- * Matrix L;
- * int info = A.cholesky(L);                // Compute L so that L*L' = A
- * assert(info == ForBESUtils::STATUS_OK);  // Check whether the computation succeeded
- * Matrix Lt(L);                            // Define Lt = L
- * Lt.transpose();                          // Lt = Lt'
- * Matrix Err = A - L*Lt;                   // Err = A - L*Lt
- * 
- * const double tol = 1e-8;
- * for (size_t i = 0; i < n; i++) {
- *  for (size_t j = 0; j < n; j++) {
- *    assert(std::abs(Err.get(i,j)) < tol); // Verify that |Err(i,j)| < tol
- *  }
- * }
- * \endcode
- * 
- * 
- * The Cholesky factor of a matrix can be used to solve a linear system of
- * equations of the form \f$Ax=b\f$. 
- * 
- * Once we have computed <code>L</code> we can use the method <code>Matrix::solveCholesky()</code>
- * as in the following example:
- * 
- * \code{.cpp}
- * const size_t n = 3;
- * double a[n * n] = {14, 32, 2, 32, 77, 5, 2, 5, 3};
- * Matrix A(n, n, a, Matrix::MATRIX_DENSE);
- * Matrix L;
- * assert(ForBESUtils::STATUS_OK == A.cholesky(L));
- * 
- * double bData[n] = {-1, 2, -3};   // right hand side data
- * Matrix b(n, 1, bData);           // right hand side matrix (vector)
- * Matrix x;                        // the solution!
- * double tol = 1e-7;               // Acceptable tolerance
- * assert(ForBESUtils::STATUS_OK == L.solveCholeskySystem(x, b));
- * 
- * Matrix Err = A * x - b;
- * for (size_t i = 0; i < n; i++) {
- *   assert(std:abs(Err[i]) < tol);
- * }
- * \endcode
- * 
- * And here is an example with a sparse LHS:
- * 
- * \code{.cpp}
- * const size_t n = 3;
- * const size_t max_nnz = 4;
- * Matrix A = MatrixFactory::MakeSparse(n, n, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
- * 
- * A.set(0, 0, 40);
- * A.set(1, 0, 10); // A is declared as SPARSE_SYMMETRIC_L - no need to define A(0,1).
- * A.set(1, 1, 50);
- * A.set(2, 2, 100);
- * 
- * Matrix L;
- * assert(ForBESUtils::STATUS_OK == A.cholesky(L));
- * 
- * Matrix rhs(3, 1);
- * rhs.set(0, 0, 10.);
- * rhs.set(1, 0, 10.);
- * rhs.set(2, 0, 10.);
- * 
- * Matrix xsol;
- * assert(ForBESUtils::STATUS_OK == L.solveCholeskySystem(xsol, rhs));
- * 
- * const double tol = 1e-7;
- * Matrix Err = rhs - A*xsol;
- * for (size_t i = 0; i < Err.getNrows(); i++) {
- *  assert(std::abs(Err.get(i,0)) < tol);
- * }
- * \endcode
  * 
  * \subsection qad Quadratic Forms
  * It may be often needed to compute quadratic forms
@@ -264,9 +173,58 @@
  * 
  */
 
+/* Matrix factorizations and solvers */
 
+/*! \page doc-factorization Factorization of matrices
+ *
+ * \brief %Matrix factorizations and solvers
+ * 
+ * A matrix factorization is, in general, the procedure of decomposing a given 
+ * matrix into a sum or product or other combination of two or more matrices which
+ * possess favourable properties which can be exploited for instance to solve a 
+ * linear system.
+ * 
+ * The ForBES API offers a simple interface to factor-solve procedures exporting 
+ * to the client only what is necessary: a factor and a solve step. 
+ * 
+ * This is done by the abstract methods \c factorize() and \c solve() in FactoredSolver
+ * which are implemented by derived classes.
+ * 
+ * \code
+ * Matrix Q = ...;                      // A symmetric positive definite matrix
+ * FactoredSolver * solver = new ...;   // Some factored solver
+ * solver->factorize();                 // Factorize once
+ * solver->solve(b, x);                 // Solve the system A*x = b
+ * solver->solve(c, x);                 // Solve A*x = c
+ * delete solver;                       // Release resources
+ * \endcode
+ * 
+ * \tableofcontents 
+ * 
+ * \section Cholesky
+ * The Cholesky factorization can be applied to any symmetric positive definite
+ * matrix. 
+ * 
+ * A symmetric positive definite matrix \f$A\f$ can be written as \f$A=LL'\f$, where
+ * \f$L\f$ is a lower-triangular matrix. 
+ * 
+ * Using this matrix one can solve linear systems of the form \f$Ax=b\f$ (for a given \f$b\f$)
+ * at the cost of a forward and a backward substitution.
+ * 
+ * \section LDL-sec LDL factorization
+ * The LDL factorization (often referred to as \f$LDL'\f$ can be applied to any
+ * symmetric matrix. A given symmetric matrix \f$A\f$ is decomposed as \f$A=LDL'\f$
+ * where \f$L\f$ is lower-triangular and \f$D\f$ is a diagonal matrix.
+ * 
+ * This is evidently similar to the Cholesky factorization described
+ * above, but does not require that the factorized matrix be positive definite. 
+ * LDL can be applied to any symmetric matrix.
+ * 
+ */
 
-/*! \page linops Linear Operators
+/* Linear operators */
+
+/*! \page doc-linops Linear Operators
  *
  * \brief Working with linear operators
  * 
@@ -295,7 +253,9 @@
  * \endcode
  */
 
-/*! \page functs Functions
+/* FUNCTIONS*/
+
+/*! \page doc-functs Functions
  *
  * \brief ForBES functions
  * 
@@ -471,9 +431,7 @@
  * 
  */
 
-
-
-
+/* GROUPS */
 
 /** \defgroup Functions ForBES Functions
  *

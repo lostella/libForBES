@@ -527,86 +527,86 @@ void TestMatrix::testSubtract() {
 
 }
 
-void TestMatrix::testCholesky() {
-    const size_t n = 3;
-    double a[n * n] = {14, 32, 2,
-        32, 77, 5,
-        2, 5, 3};
-    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
-    Matrix L;
-    int info = A.cholesky(L);
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
-    _ASSERT_EQ(n, L.getNcols());
-    _ASSERT_EQ(n, L.getNrows());
-    _ASSERT_EQ(Matrix::MATRIX_DENSE, L.getType());
-    Matrix Lt(L);
-    Lt.transpose();
-    Matrix Err = A - L*Lt;
-    const double tol = 1e-8;
-    for (size_t i = 0; i < n; i++) {
-        for (size_t j = 0; j < n; j++) {
-            _ASSERT_NUM_EQ(0.0, Err.get(i, j), tol);
-        }
-    }
-
-    Matrix G = MatrixFactory::MakeRandomMatrix(n, n + 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-    _ASSERT_EXCEPTION(G.cholesky(L), std::invalid_argument);
-
-
-}
-
-void TestMatrix::testSolveCholesky() {
-    const int n = 3;
-    double a[n * n] = {14, 32, 2,
-        32, 77, 5,
-        2, 5, 3};
-    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
-    Matrix L;
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, A.cholesky(L));
-
-    double bData[n] = {-1, 2, -3};
-    Matrix b(n, 1, bData);
-    Matrix x; // the solution!
-    double tol = 1e-7;
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, L.solveCholeskySystem(x, b));
-    _ASSERT_NUM_EQ(-2.75f, x[0], tol);
-    _ASSERT_NUM_EQ(1.25f, x[1], tol);
-    _ASSERT_NUM_EQ(-1.25f, x[2], tol);
-
-    Matrix C = A * x - b;
-    for (int i = 0; i < n; i++) {
-        _ASSERT(std::fabs(C[i]) < tol);
-    }
-}
-
-void TestMatrix::testSolveCholeskyMulti() {
-    const int n = 4;
-    const int m = 2;
-    double a[n * n] = {7, 2, -2, -1,
-        2, 3, 0, -1,
-        -2, 0, 3, -1,
-        -1, -1, -1, 1};
-    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
-    Matrix L;
-    _ASSERT_EQ(0, A.cholesky(L));
-    double tol = 1e-6;
-    _ASSERT_NUM_EQ(2.64575131, L[0], tol);
-    _ASSERT_NUM_EQ(0.7559289, L[1], tol);
-
-    double bData[n * m] = {1, 2.5, 3, 4,
-        -1, -2.5, -3, -4};
-    Matrix b(n, m, bData);
-    Matrix x; // the solution!
-
-    _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
-
-    Matrix C = A * x - b;
-    for (int i = 0; i < C.getNrows(); i++) {
-        for (int j = 0; j < C.getNcols(); j++) {
-            _ASSERT(std::fabs(C.get(i, j)) < tol);
-        }
-    }
-}
+//void TestMatrix::testCholesky() {
+//    const size_t n = 3;
+//    double a[n * n] = {14, 32, 2,
+//        32, 77, 5,
+//        2, 5, 3};
+//    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
+//    Matrix L;
+//    int info = A.cholesky(L);
+//    _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
+//    _ASSERT_EQ(n, L.getNcols());
+//    _ASSERT_EQ(n, L.getNrows());
+//    _ASSERT_EQ(Matrix::MATRIX_DENSE, L.getType());
+//    Matrix Lt(L);
+//    Lt.transpose();
+//    Matrix Err = A - L*Lt;
+//    const double tol = 1e-8;
+//    for (size_t i = 0; i < n; i++) {
+//        for (size_t j = 0; j < n; j++) {
+//            _ASSERT_NUM_EQ(0.0, Err.get(i, j), tol);
+//        }
+//    }
+//
+//    Matrix G = MatrixFactory::MakeRandomMatrix(n, n + 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+//    _ASSERT_EXCEPTION(G.cholesky(L), std::invalid_argument);
+//
+//
+//}
+//
+//void TestMatrix::testSolveCholesky() {
+//    const int n = 3;
+//    double a[n * n] = {14, 32, 2,
+//        32, 77, 5,
+//        2, 5, 3};
+//    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
+//    Matrix L;
+//    _ASSERT_EQ(ForBESUtils::STATUS_OK, A.cholesky(L));
+//
+//    double bData[n] = {-1, 2, -3};
+//    Matrix b(n, 1, bData);
+//    Matrix x; // the solution!
+//    double tol = 1e-7;
+//    _ASSERT_EQ(ForBESUtils::STATUS_OK, L.solveCholeskySystem(x, b));
+//    _ASSERT_NUM_EQ(-2.75f, x[0], tol);
+//    _ASSERT_NUM_EQ(1.25f, x[1], tol);
+//    _ASSERT_NUM_EQ(-1.25f, x[2], tol);
+//
+//    Matrix C = A * x - b;
+//    for (int i = 0; i < n; i++) {
+//        _ASSERT(std::fabs(C[i]) < tol);
+//    }
+//}
+//
+//void TestMatrix::testSolveCholeskyMulti() {
+//    const int n = 4;
+//    const int m = 2;
+//    double a[n * n] = {7, 2, -2, -1,
+//        2, 3, 0, -1,
+//        -2, 0, 3, -1,
+//        -1, -1, -1, 1};
+//    Matrix A(n, n, a, Matrix::MATRIX_DENSE);
+//    Matrix L;
+//    _ASSERT_EQ(0, A.cholesky(L));
+//    double tol = 1e-6;
+//    _ASSERT_NUM_EQ(2.64575131, L[0], tol);
+//    _ASSERT_NUM_EQ(0.7559289, L[1], tol);
+//
+//    double bData[n * m] = {1, 2.5, 3, 4,
+//        -1, -2.5, -3, -4};
+//    Matrix b(n, m, bData);
+//    Matrix x; // the solution!
+//
+//    _ASSERT_EQ(0, L.solveCholeskySystem(x, b));
+//
+//    Matrix C = A * x - b;
+//    for (int i = 0; i < C.getNrows(); i++) {
+//        for (int j = 0; j < C.getNcols(); j++) {
+//            _ASSERT(std::fabs(C.get(i, j)) < tol);
+//        }
+//    }
+//}
 
 void TestMatrix::testLowerTriangular_getSet() {
     for (int n = 1; n < 20; n++) {
@@ -671,37 +671,32 @@ void TestMatrix::testSymmetric_getSet() {
     size_t exp_length = n * (n + 1) / 2;
     _ASSERT_EQ(exp_length, A->length());
 
-    Matrix *L = new Matrix();
-    int status = A -> cholesky(*L); // A is not positive definite (Cholesky shouldn't be allowed!)
-    _ASSERT_NEQ(0, status);
-    delete L;
-
     delete A;
 }
 
-void TestMatrix::testSymmetricCholesky() {
-    const int n = 4;
-    Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
-    _ASSERT(A->isSymmetric());
-    _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, A -> getType());
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j <= i; j++) {
-            A -> set(i, j, 3.2 * i + 0.2 * j + 0.45);
-            if (i == j) A -> set(i, i, A->get(i, i) + 20.0);
-        }
-    }
-
-    Matrix L;
-    _ASSERT_EQ(0, A -> cholesky(L));
-    const double tol = 1e-5;
-    _ASSERT_NUM_EQ(4.52217, L.get(0, 0), tol);
-    _ASSERT_NUM_EQ(0.807135, L.get(1, 0), tol);
-    _ASSERT_NUM_EQ(1.51476, L.get(2, 0), tol);
-    _ASSERT_NUM_EQ(2.22239, L.get(3, 0), tol);
-    _ASSERT_NUM_EQ(4.81649, L.get(1, 1), tol);
-
-    delete A;
-}
+//void TestMatrix::testSymmetricCholesky() {
+//    const int n = 4;
+//    Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
+//    _ASSERT(A->isSymmetric());
+//    _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, A -> getType());
+//    for (int i = 0; i < n; i++) {
+//        for (int j = 0; j <= i; j++) {
+//            A -> set(i, j, 3.2 * i + 0.2 * j + 0.45);
+//            if (i == j) A -> set(i, i, A->get(i, i) + 20.0);
+//        }
+//    }
+//
+//    Matrix L;
+//    _ASSERT_EQ(0, A -> cholesky(L));
+//    const double tol = 1e-5;
+//    _ASSERT_NUM_EQ(4.52217, L.get(0, 0), tol);
+//    _ASSERT_NUM_EQ(0.807135, L.get(1, 0), tol);
+//    _ASSERT_NUM_EQ(1.51476, L.get(2, 0), tol);
+//    _ASSERT_NUM_EQ(2.22239, L.get(3, 0), tol);
+//    _ASSERT_NUM_EQ(4.81649, L.get(1, 1), tol);
+//
+//    delete A;
+//}
 
 void TestMatrix::testTranspose() {
     size_t n = 5;
@@ -1020,44 +1015,44 @@ void TestMatrix::testSparseGetSet() {
 
 }
 
-void TestMatrix::testSparseCholesky() {
-
-    const size_t n = 3;
-    const size_t m = 3;
-    const size_t max_nnz = 4;
-
-    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
-    _ASSERT(A.isSymmetric());
-    A.set(0, 0, 40.);
-    A.set(1, 0, 10.); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
-    A.set(1, 1, 50.);
-    A.set(2, 2, 100.);
-
-    Matrix L;
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, A.cholesky(L));
-
-    Matrix rhs(3, 1);
-    rhs.set(0, 0, 10.);
-    rhs.set(1, 0, 10.);
-    rhs.set(2, 0, 10.);
-
-    Matrix xsol;
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, L.solveCholeskySystem(xsol, rhs));
-
-
-    const double tol = 1e-7;
-    _ASSERT_NUM_EQ(0.21052632, xsol.get(0, 0), tol);
-    _ASSERT_NUM_EQ(0.15789474, xsol[1], tol);
-    _ASSERT_NUM_EQ(0.1, xsol[2], tol);
-
-    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
-
-    Matrix Err = rhs - A*xsol;
-    for (size_t i = 0; i < Err.getNrows(); i++) {
-        _ASSERT_NUM_EQ(0.0, Err.get(i, 0), tol);
-    }
-
-}
+//void TestMatrix::testSparseCholesky() {
+//
+//    const size_t n = 3;
+//    const size_t m = 3;
+//    const size_t max_nnz = 4;
+//
+//    Matrix A = MatrixFactory::MakeSparse(n, m, max_nnz, Matrix::SPARSE_SYMMETRIC_L);
+//    _ASSERT(A.isSymmetric());
+//    A.set(0, 0, 40.);
+//    A.set(1, 0, 10.); // A is declared as SPARSE_SYMMETRIC - no need to define A(0,1).
+//    A.set(1, 1, 50.);
+//    A.set(2, 2, 100.);
+//
+//    Matrix L;
+//    _ASSERT_EQ(ForBESUtils::STATUS_OK, A.cholesky(L));
+//
+//    Matrix rhs(3, 1);
+//    rhs.set(0, 0, 10.);
+//    rhs.set(1, 0, 10.);
+//    rhs.set(2, 0, 10.);
+//
+//    Matrix xsol;
+//    _ASSERT_EQ(ForBESUtils::STATUS_OK, L.solveCholeskySystem(xsol, rhs));
+//
+//
+//    const double tol = 1e-7;
+//    _ASSERT_NUM_EQ(0.21052632, xsol.get(0, 0), tol);
+//    _ASSERT_NUM_EQ(0.15789474, xsol[1], tol);
+//    _ASSERT_NUM_EQ(0.1, xsol[2], tol);
+//
+//    _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
+//
+//    Matrix Err = rhs - A*xsol;
+//    for (size_t i = 0; i < Err.getNrows(); i++) {
+//        _ASSERT_NUM_EQ(0.0, Err.get(i, 0), tol);
+//    }
+//
+//}
 
 void TestMatrix::testSparseDenseMultiply() {
 

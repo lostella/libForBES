@@ -24,6 +24,7 @@
 
 #include "Function.h"
 #include "Matrix.h"
+#include "CholeskyFactorization.h"
 #include <iostream>
 
 /**
@@ -45,7 +46,7 @@ public:
      * zero linear term.
      */
     Quadratic();
-    
+
     /**
      * Create a quadratic function of the form <code>f(x) = 0.5*x'*Q*x</code>, where
      * <code>Q</code> is a square matrix.
@@ -53,7 +54,7 @@ public:
      * @param Q Matrix Q.
      */
     Quadratic(Matrix&Q);
-    
+
     /**
      * Create a quadratic-plus-linear function of the form <code>f(x) = 0.5*x'*Q*x + q'*x</code>,
      * where <code>Q</code> is a square matrix and <code>q</code> is a vector.
@@ -61,13 +62,8 @@ public:
      * @param q A vector
      */
     Quadratic(Matrix& Q, Matrix& q); // both Q and q    
-    
-    /**
-     * The copy constructor of this class.
-     * @param orig Instance of Quadratic to be copied.
-     */
-    Quadratic(const Quadratic& orig);
-    
+
+
     /**
      * Destructor.
      */
@@ -83,7 +79,7 @@ public:
 
     void setQ(Matrix& Q);
     void setq(Matrix& q);
-    
+
     /**
      * Returns the value of function f which is computed as <code>Q(x)=0.5*x'*Q*x + q'*x</code>.
      * 
@@ -102,21 +98,21 @@ public:
      */
     virtual int call(Matrix& x, double& f);
     virtual int call(Matrix& x, double& f, Matrix& grad);
-    
-    
-    
+
+
+
     virtual int callConj(const Matrix& x, double& f_star);
-    
+
     virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
 
 
 
 private:
-    Matrix *Q;      /**< Matrix Q */
-    Matrix *q;      /**< Vector q*/
-    Matrix *L;      /**< Cholesky factor L */
-    bool is_Q_eye;  /**< TRUE if Q is the identity matrix */
-    bool is_q_zero; /**< TRUE is q is the zero vector */
+    Matrix *Q;                  /**< Matrix Q */
+    Matrix *q;                  /**< Vector q*/
+    FactoredSolver *m_solver;   /**< Cholesky factor L */
+    bool is_Q_eye;              /**< TRUE if Q is the identity matrix */
+    bool is_q_zero;             /**< TRUE is q is the zero vector */
 
     virtual int computeGradient(Matrix& x, Matrix& grad);
 

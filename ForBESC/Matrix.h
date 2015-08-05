@@ -309,47 +309,6 @@ public:
      */
     double quad(Matrix& x, Matrix& q);
 
-    /**
-     * Computes the Cholesky factorization of this matrix. 
-     * 
-     * <p>If this is a <code>MATRIX_DENSE</code>
-     * matrix, then it is assumed it is symmetric (but there is no verification) and
-     * only its lower triangular part is considered. Notice that the Cholesky factorization
-     * can only be applied to symmetric and positive definite matrices.</p>
-     * 
-     * <p>This method, when applied on a <code>MATRIX_DENSE</code> matrix, the produced matrix <code>L</code>
-     * will be of type <code>MATRIX_DENSE</code>. It is advisable to apply this method only
-     * on matrices of type <code>MATRIX_SYMMETRIC</code>.</p>
-     * 
-     * <p>Note that this is not a <code>const</code> method since, especially in the
-     * case of sparse matrices, it may update the internal state of the matrix to 
-     * facilitate and speed-up computations</p>
-     * 
-     * @param L the Cholesky factor of this matrix. 
-     * @return status code. Returns <code>0</code> if the factorization succeeded.
-     * 
-     * \todo Make this function fail-safe: it should return the right status code
-     * when BLAS and LAPACK are deactivated.
-     * 
-     */
-    int cholesky(Matrix& L);
-
-    /**
-     * Solves the linear system <code>L*L'*x = b</code>, where <code>L</code> is the
-     * current matrix, <code>b</code> is a given right-hand side vector or matrix
-     * (given as an instance of <code>Martrix</code>) and <code>x</code> is the
-     * solution which is returned by this method.
-     * 
-     * Note that if this is a <code>MATRIX_DENSE</code> matrix, then it is assumed it is 
-     * lower triangular (but there is no verification) and only its lower triangular 
-     * part is considered.
-     * 
-     * @param solution the solution of the linear system as an instance of <code>Matrix</code>
-     * @param rhs The right-hand side vector or matrix
-     * 
-     * @return Returns <code>0</code> if the solution of the system has succeeded.
-     */
-    int solveCholeskySystem(Matrix& solution, const Matrix& rhs) const;
 
 
     /* Operators */
@@ -446,6 +405,7 @@ public:
 private:
     /* MatrixFactory is allowed to access these private fields! */
     friend class MatrixFactory;
+    friend class CholeskyFactorization;
 
     size_t m_nrows; /*< Number of rows */
     size_t m_ncols; /*< Number of columns */

@@ -90,7 +90,7 @@ void TestQuadratic::testQuadratic3() {
     for (size_t i = 0; i < n - 1; ++i) {
         Q.set(i, i, 1.5);
     }
-    Function *F = new Quadratic(Q);
+    Quadratic *F = new Quadratic(Q);
     Matrix x(n, 1);
     double fval;
     int status = F->callConj(x, fval);
@@ -100,33 +100,33 @@ void TestQuadratic::testQuadratic3() {
     Q.set(1, 0, 0.1);
     Q.set(0, 1, 0.1);
 
-    static_cast<Quadratic*> (F)->setQ(Q);
+    F->setQ(Q);
     _ASSERT_OK(status = F->callConj(x, fval));
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-
-    Matrix q(n, 1);
-    for (size_t i = 0; i < n; ++i) {
-        q.set(i, 0, i + 1);
-        x.set(i, 0, 2 * i + 1);
-    }
-
-
-    Matrix grad;
-    static_cast<Quadratic*> (F)->setq(q);
-
-    _ASSERT_OK(status = F->callConj(x, fval, grad));
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-
-    const double fval_exp = 190.002976190476;
-    const double tol = 1e-8;
-
-    _ASSERT_NUM_EQ(fval_exp, fval, tol);
-
-    double grad0_exp = -0.0446428571428572;
-    _ASSERT_NUM_EQ(grad0_exp, grad.get(0, 0), tol);
-
-    std::cout << fval;
-    _ASSERT_OK(delete F);
+    //
+    //    Matrix q(n, 1);
+    //    for (size_t i = 0; i < n; ++i) {
+    //        q.set(i, 0, i + 1);
+    //        x.set(i, 0, 2 * i + 1);
+    //    }
+    //
+    //
+    //    Matrix grad;
+    //    static_cast<Quadratic*> (F)->setq(q);
+    //
+    //    _ASSERT_OK(status = F->callConj(x, fval, grad));
+    //    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    //
+    //    const double fval_exp = 190.002976190476;
+    //    const double tol = 1e-8;
+    //
+    //    _ASSERT_NUM_EQ(fval_exp, fval, tol);
+    //
+    //    double grad0_exp = -0.0446428571428572;
+    //    _ASSERT_NUM_EQ(grad0_exp, grad.get(0, 0), tol);
+    //
+    //    std::cout << fval;
+    //    _ASSERT_OK(delete F);
 }
 
 void TestQuadratic::testCallProx() {
@@ -199,12 +199,8 @@ void TestQuadratic::testCallConj() {
     Quadratic quadratic(Q, q);
     double fstar;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar));
+        
 
-    Quadratic quadratic2(quadratic);
-    double fstar2;
-    _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic2.callConj(x, fstar2));
-    _ASSERT_EQ(fstar, fstar2);
-    
     double expected = 421.0;
     const double rel_tol = 1e-5;
     _ASSERT(std::fabs(expected - fstar) / expected < rel_tol);
@@ -354,7 +350,7 @@ void TestQuadratic::testCallConjSparse() {
         Qsp.set(i, i - 1, 0.5);
     }
 
-    _ASSERT_OK(F = new Quadratic(Qsp));
+    F = new Quadratic(Qsp);
     _ASSERT_OK(status = F->callConj(x, fstar));
     _ASSERT_NEQ(-1, fstar);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);

@@ -12,22 +12,18 @@
 
 class FactoredSolver {
 public:
-    
 
-    FactoredSolver(Matrix& m_matrix) :
-    m_matrix(m_matrix) {
-    }
-
+    FactoredSolver(Matrix& m_matrix) : m_matrix(m_matrix) {}
 
     virtual ~FactoredSolver();
 
-    virtual int factorize(void) =0;
-    virtual int solve(const Matrix& rhs, Matrix& solution)=0;
+    virtual int factorize(void) = 0;
+    virtual int solve(const Matrix& rhs, Matrix& solution) const = 0;
 
 private:
 
-protected:    
-    
+protected:
+
     Matrix& m_matrix;
 
 };

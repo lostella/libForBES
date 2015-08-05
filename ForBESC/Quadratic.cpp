@@ -25,7 +25,7 @@ using namespace std;
 Quadratic::Quadratic() {
     is_Q_eye = true;
     is_q_zero = true;
-    L = NULL;
+    m_solver = NULL;
     Q = NULL;
     q = NULL;
 }
@@ -34,36 +34,29 @@ Quadratic::Quadratic(Matrix& QQ) {
     Q = &QQ;
     is_Q_eye = false;
     is_q_zero = true;
-    L = NULL;
+    m_solver = NULL;
     q = NULL;
 }
 
 Quadratic::Quadratic(Matrix& QQ, Matrix& qq) {
     q = &qq;
     Q = &QQ;
-    L = NULL;
+    m_solver = NULL;
     is_Q_eye = false;
     is_q_zero = false;
 }
 
-Quadratic::Quadratic(const Quadratic& orig) {
-    q = orig.q;
-    Q = orig.Q;
-    L = new Matrix(*(orig.L));
-    is_Q_eye = orig.is_Q_eye;
-    is_q_zero = orig.is_q_zero;
-}
 
 Quadratic::~Quadratic() {
-    if (L != NULL) {
-        delete L;
+    if (m_solver != NULL) {
+        delete m_solver;
     }
 }
 
 void Quadratic::setQ(Matrix& Q) {
     is_Q_eye = false;
     this->Q = &Q;
-    this->L = NULL;
+    this->m_solver = NULL;
 }
 
 void Quadratic::setq(Matrix& q) {
@@ -77,7 +70,7 @@ int Quadratic::call(Matrix& x, double& f, Matrix& grad) {
         return statusComputeGrad;
     }
     // f = (1/2)*(grad+q)'*x
-    f = (  (is_q_zero ? grad : grad + (*q)) * x).get(0, 0)/2;
+    f = ((is_q_zero ? grad : grad + (*q)) * x).get(0, 0) / 2;
     return ForBESUtils::STATUS_OK;
 }
 
@@ -109,13 +102,11 @@ int Quadratic::callConj(const Matrix& y, double& f_star) {
 
 int Quadratic::callConj(const Matrix& y, double& f_star, Matrix& g) {
     Matrix z = (is_q_zero || q == NULL) ? y : y - *q; // z = y    
-
     if (is_Q_eye || Q == NULL) {
         g = z;
         f_star = (z * z).get(0, 0);
         return ForBESUtils::STATUS_OK;
     }
-
     if (Q != NULL && Matrix::MATRIX_DIAGONAL == Q->getType()) {
         /* Q is diagonal */
         g = z;
@@ -127,15 +118,15 @@ int Quadratic::callConj(const Matrix& y, double& f_star, Matrix& g) {
         return ForBESUtils::STATUS_OK;
     }
 
-    if (L == NULL) {
-        L = new Matrix();
-        int status = Q->cholesky(*L);
+    if (m_solver == NULL) {
+        m_solver = new CholeskyFactorization(*Q);
+        int status = m_solver->factorize();
         if (0 != status) {
             return ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
         }
     }
 
-    L->solveCholeskySystem(g, z); // g = Q \ z 
+    m_solver->solve(z, g); // Q*g = z   OR  g = Q \ z
     f_star = (z * g).get(0, 0); // fstar = z' *g 
     return ForBESUtils::STATUS_OK;
 }
