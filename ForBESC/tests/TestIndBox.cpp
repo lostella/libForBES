@@ -131,4 +131,30 @@ void TestIndBox::testCall3() {
     _ASSERT_OK(delete F);
 }
 
+void TestIndBox::testCallProx() {
+    const double tol = 1e-10;
+    double lb = -1.0;
+    double ub = 4.0;
+    Function *F = new IndBox(lb, ub);
+
+    Matrix x(2, 1);
+    x[0] = lb - 1.0;
+    x[1] = (lb + ub) / 2.0;
+
+    double gamma = 1.5;
+
+    Matrix prox(2, 1);
+    double fprox;
+
+    int status = F->callProx(x, gamma, prox, fprox);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(0.0, fprox, tol);
+
+    _ASSERT_NUM_EQ(lb, prox.get(0,0), tol);
+    _ASSERT_NUM_EQ(x.get(1,0), prox.get(1,0), tol);
+
+    _ASSERT_OK(delete F);
+}
+
+
 

@@ -20,6 +20,7 @@ class TestIndBox : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testCall2);
     CPPUNIT_TEST(testCall3);
+    CPPUNIT_TEST(testCallProx);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -33,6 +34,7 @@ private:
     void testCall();
     void testCall2();
     void testCall3();
+    void testCallProx();
 
 };
 

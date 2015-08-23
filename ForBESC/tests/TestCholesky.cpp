@@ -56,14 +56,14 @@ void TestCholesky::testCholeskyDense() {
 
 void TestCholesky::testCholeskySparse() {
     const double tol = 1e-7;
-    size_t n = 5;
+    size_t n = 25;
     size_t nnz = 2 * n - 1;
     Matrix A = MatrixFactory::MakeSparseSymmetric(n, nnz);
     _ASSERT_EQ(Matrix::MATRIX_SPARSE, A.getType());
     Matrix b(n, 1);
 
     for (size_t i = 0; i < n; i++) {
-        A.set(i, i, 10.0);
+        A.set(i, i, n + 2.5);
         b.set(i, 0, i + 1);
     }
     for (size_t i = 1; i < n; i++) { /* Set the LT part only */

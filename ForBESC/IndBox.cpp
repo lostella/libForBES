@@ -5,6 +5,8 @@
  * Created on July 26, 2015, 5:22 PM
  */
 
+#include <algorithm>
+
 #include "IndBox.h"
 
 IndBox::IndBox(double& uniform_lb, double& uniform_ub) : Function() {
@@ -74,6 +76,37 @@ int IndBox::call(Matrix& x, double& f) {
     }
     f = isInside ? 1.0 : INFINITY;
     return ForBESUtils::STATUS_OK;
+}
+
+int IndBox::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+    f_at_prox = 0.0;
+    assert(x.isColumnVector());
+
+    // Step 1
+    // prox = max(LB, x)
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        if (m_lb != NULL) {
+            prox.set(i, 0, std::max(m_lb->get(i, 0), x.get(i, 0)));
+        } else if (m_uniform_lb != NULL) {
+            prox.set(i, 0, std::max(*m_uniform_lb, x.get(i, 0)));
+        }
+    }
+
+    // Step 2
+    // prox = min(UB, prox)
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        if (m_ub != NULL) {
+            prox.set(i, 0, std::min(m_ub->get(i, 0), prox.get(i, 0)));
+        } else if (m_uniform_ub != NULL) {
+            prox.set(i, 0, std::min(*m_uniform_ub, prox.get(i, 0)));
+        }
+    }
+    return ForBESUtils::STATUS_OK;
+}
+
+int IndBox::callProx(const Matrix& x, double gamma, Matrix& prox) {
+    double val;
+    return callProx(x, gamma, prox, val);
 }
 
 /* PROTECTED METHODS */
