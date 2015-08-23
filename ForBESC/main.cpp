@@ -24,32 +24,35 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    size_t n = 8;
-    Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
-    Matrix At = A;
-    At.transpose();
-    A += At;
-    A *= 0.5;
-    for (int i = 0; i < n; i++) {
-        A.set(i, i, A.get(i, i) + 50.0);
+    const double tol = 1e-7;
+    size_t n = 5;
+    size_t nnz = 2 * n - 1;
+    Matrix A = MatrixFactory::MakeSparseSymmetric(n, nnz);    
+    Matrix b(n, 1);
+
+    for (size_t i = 0; i < n; i++) {
+        A.set(i, i, 10.0);
+        b.set(i, 0, i + 1);
     }
-    std::cout << A;
+    for (size_t i = 1; i < n; i++) { /* Set the LT part only */
+        A.set(i, i - 1, 0.5);
+    }
 
-    Matrix b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-
-    CholeskyFactorization * cholFactorization = new CholeskyFactorization(A);
-    int status = cholFactorization ->factorize();
-    std::cout << "status = " << status << "\n";
 
     Matrix x;
-    int status2 = cholFactorization ->solve(b, x);
+    CholeskyFactorization * solver = new CholeskyFactorization(A);
+    solver -> factorize();
+    solver -> solve(b, x);
 
-    Matrix err = A * x - b;
+    std::cout << b;
+    
+    Matrix ax = A * x;
+    for (size_t i = 0; i < n; i++) {
+        std::cout << ax.get(i,0) << ", " << (std::abs(ax.get(i, 0) - i - 1.0)) << "\n";
+    }
 
-    std::cout << err;
 
 
-    delete cholFactorization;
 
     return (0);
 }

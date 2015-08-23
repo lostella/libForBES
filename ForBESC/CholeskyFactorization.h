@@ -11,17 +11,18 @@
 #include "FactoredSolver.h"
 #include <cstring>
 
-
 class CholeskyFactorization : public FactoredSolver {
 public:
 
     CholeskyFactorization(Matrix& m_matrix) :
     FactoredSolver(m_matrix) {
-        this->m_L = new double[m_matrix.length()]();
+        if (m_matrix.getType() != Matrix::MATRIX_SPARSE) {
+            this->m_L = new double[m_matrix.length()]();
+        }
     }
 
     virtual ~CholeskyFactorization();
-    
+
     /**
      * Computes the Cholesky factorization of this matrix. 
      * 

@@ -80,7 +80,7 @@ void TestCholesky::testCholeskySparse() {
     for (size_t i = 0; i < n; i++) {
         _ASSERT(std::abs(ax.get(i, 0) - i - 1.0) < tol);
     }
-
+    delete solver;
 }
 
 void TestCholesky::testCholeskySymmetric2() {
