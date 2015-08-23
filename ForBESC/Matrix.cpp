@@ -972,7 +972,7 @@ void Matrix::_createSparse() {
     }
 }
 
-void Matrix::_createTriplet() {
+inline void Matrix::_createTriplet() {
     _createSparse();
     if (m_sparse != NULL) { /* make triplets from sparse */
         m_triplet = cholmod_sparse_to_triplet(m_sparse, Matrix::cholmod_handle());

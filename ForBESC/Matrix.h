@@ -431,7 +431,7 @@ private:
      * using CHOLMOD's <code>cholmod_triplet_to_sparse</code>. Can only be
      * applied to sparse matrices.
      */
-    inline void _createSparse();
+    void _createSparse();
 
 
     /**
@@ -522,10 +522,11 @@ private:
     inline void _addIJ(size_t i, size_t j, double a);
     
     /**
-     * v1 += v2
-     * @param len
-     * @param pV1
-     * @param pV2
+     * Adds two vectors as in <code>v1 += v2</code> where <code>v1</code> is a vector
+     * to be updated whereas <code>v2</code> is a constant vector.
+     * @param len Length of vectors
+     * @param pV1 pointer to <code>v1</code>
+     * @param pV2 pointer to <code>v2</code>
      */
     static inline void vectorAdd(size_t len, double * pV1, const double * pV2);
 
