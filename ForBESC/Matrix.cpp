@@ -102,9 +102,6 @@ Matrix::Matrix(const Matrix& orig) {
         if (orig.m_dense != NULL) {
             m_dense = cholmod_copy_dense(orig.m_dense, Matrix::cholmod_handle());
         }
-        if (orig.m_factor != NULL) {
-            m_factor = cholmod_copy_factor(orig.m_factor, Matrix::cholmod_handle());
-        }
     }
 }
 
@@ -123,9 +120,6 @@ Matrix::~Matrix() {
     if (m_sparse != NULL) {
         cholmod_free_sparse(&m_sparse, Matrix::cholmod_handle());
         m_sparse = NULL;
-    }
-    if (m_factor != NULL) {
-        cholmod_free_factor(&m_factor, Matrix::cholmod_handle());
     }
     if (m_dense != NULL) {
         cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
@@ -277,12 +271,8 @@ void Matrix::set(size_t i, size_t j, double v) {
         if (m_dense != NULL) {
             cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
         }
-        if (m_factor != NULL) {
-            cholmod_free_factor(&m_factor, Matrix::cholmod_handle());
-        }
         m_sparse = NULL;
-        m_dense = NULL;
-        m_factor = NULL;
+        m_dense = NULL;        
     } else {
 
         throw std::invalid_argument("Illegal operation");
@@ -388,10 +378,6 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     }
     const char * const types[] = {"Dense", "Sparse", "Diagonal", "Lower Triangular", "Symmetric"};
     os << "Type: " << types[obj.m_type] << std::endl;
-    if (obj.m_type == Matrix::MATRIX_SPARSE && obj.m_sparseStorageType == Matrix::CHOLMOD_TYPE_FACTOR) {
-        os << "CHOLMOD Factor - Successful: " << ((obj.m_factor->minor == obj.m_ncols) ? "YES" : "NO") << std::endl;
-        return os;
-    }
     if (obj.m_type == Matrix::MATRIX_SPARSE && obj.m_triplet == NULL && obj.m_sparse != NULL) {
         os << "Storage type: Packed Sparse" << std::endl;
         for (size_t j = 0; j < obj.m_ncols; j++) {
@@ -436,12 +422,7 @@ inline void Matrix::_addD(Matrix& rhs) { /* DENSE += (?) */
     assert(MATRIX_DENSE == m_type);
     if (rhs.m_type == MATRIX_DENSE && m_transpose == rhs.m_transpose) {
         /* RHS is also dense and of same transpose-type (D+D or D'+D') */
-#ifdef USE_LIBS 
-        cblas_daxpy(length(), 1.0, rhs.m_data, 1, m_data, 1); // data = data + right.data
-#else
-        for (int i = 0; i < length(); i++)
-            m_data[i] += rhs[i];
-#endif
+        vectorAdd(length(), m_data, rhs.m_data);
     } else if (rhs.getType() == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
         for (size_t i = 0; i < m_nrows; i++) {
             _addIJ(i, i, rhs.get(i, i));
@@ -479,23 +460,18 @@ inline void Matrix::_addD(Matrix& rhs) { /* DENSE += (?) */
 inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
     assert(MATRIX_SYMMETRIC == m_type);
     if (rhs.m_type == MATRIX_SYMMETRIC) {
-#ifdef USE_LIBS 
-        cblas_daxpy(length(), 1.0, rhs.m_data, 1, m_data, 1); // data = data + right.data
-#else
-        for (int i = 0; i < length(); i++)
-            m_data[i] += rhs[i];
-#endif        
+        vectorAdd(length(), m_data, rhs.m_data);
     } else if (rhs.m_type == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
         for (size_t i = 0; i < m_ncols; i++) {
             _addIJ(i, i, rhs.get(i, i));
         }
-    } else if (rhs.m_type == MATRIX_LOWERTR || rhs.m_type == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI = DENSE */
+    } else if (rhs.m_type == MATRIX_LOWERTR || rhs.m_type == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI/DENSE = DENSE */
         m_dataLength = m_ncols * m_nrows; /* SYMMETRIC + DENSE = DENSE     */
         double * newData = new double[m_dataLength]; // realloc data
         for (size_t i = 0; i < m_nrows; i++) {
             for (size_t j = 0; j < m_ncols; j++) {
                 newData[i + j * m_nrows] = get(i, j); // load data (recast into full storage format)
-                if (rhs.m_type == MATRIX_DENSE ? i >= j : true) {
+                if ((m_type == MATRIX_LOWERTR && rhs.m_type == MATRIX_DENSE) ? i >= j : true) {
                     newData[i + j * m_nrows] += rhs.get(i, j); // add RHS elements
                 }
             }
@@ -532,8 +508,26 @@ inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
     }
 }
 
+inline void Matrix::vectorAdd(size_t len, double* pV1, const double* pV2) {
+#ifdef USE_LIBS 
+    cblas_daxpy(len, 1.0, pV2, 1, pV1, 1); // data = data + right.data
+#else
+    for (int i = 0; i < len; i++)
+        pV1[i] += pV2[i];
+#endif
+}
+
 inline void Matrix::_addL(Matrix& rhs) { /* LOWER += (?) */
     assert(m_type == MATRIX_LOWERTR);
+    if (rhs.m_type == Matrix::MATRIX_LOWERTR) { /* LOWER + LOWER = LOWER */
+        vectorAdd(length(), m_data, rhs.m_data);
+    } else if (rhs.m_type == Matrix::MATRIX_DIAGONAL) {
+        for (size_t i = 0; i < m_nrows; i++) {
+            _addIJ(i, i, rhs.get(i, i));
+        }
+    } else {
+        throw std::logic_error("Lower-triangular + Non-lower triangular): not supported yet!");
+    }
 }
 
 inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
@@ -570,7 +564,7 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
         _createTriplet();
         if (m_triplet != NULL) {
             for (size_t i = 0; i < m_nrows; i++) {
-                for (size_t j = (rhs.m_transpose ? i : 0); 
+                for (size_t j = (rhs.m_transpose ? i : 0);
                         j <= (rhs.m_transpose ? rhs.m_ncols : i); j++) {
                     _addIJ(i, j, rhs.get(i, j));
                 }
@@ -619,12 +613,9 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
 void Matrix::_addX(Matrix& rhs) {
     assert(m_type == MATRIX_DIAGONAL);
     if (MATRIX_DIAGONAL == rhs.m_type) { /* Diagonal += Diagonal */
-#ifdef USE_LIBS 
-        cblas_daxpy(length(), 1.0, rhs.m_data, 1, m_data, 1); // data = data + right.data
-#else
-        for (int i = 0; i < length(); i++)
-            m_data[i] += rhs[i];
-#endif
+        vectorAdd(length(), m_data, rhs.m_data);
+    } else {
+        throw std::logic_error("Diagonal + Non-diagonal: not supported yet!");
     }
 }
 
@@ -754,9 +745,6 @@ Matrix & Matrix::operator=(const Matrix & right) {
         }
         if (right.m_dense != NULL) {
             m_dense = cholmod_copy_dense(right.m_dense, Matrix::cholmod_handle());
-        }
-        if (right.m_factor != NULL) {
-            m_factor = cholmod_copy_factor(right.m_factor, Matrix::cholmod_handle());
         }
     }
     if (Matrix::MATRIX_SPARSE != right.getType() && right.m_data != NULL) {
@@ -1004,7 +992,6 @@ Matrix& operator*=(Matrix& obj, double alpha) {
     } else {
         obj._createTriplet();
         obj.m_sparse = NULL;
-        obj.m_factor = NULL;
         obj.m_dense = NULL;
         for (int k = 0; k < obj.m_triplet->nnz; k++) {
             ((double*) obj.m_triplet->x)[k] *= alpha;

@@ -89,6 +89,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ADWT);
 
     CPPUNIT_TEST(test_AHH);
+    CPPUNIT_TEST(test_AHD);
     CPPUNIT_TEST(test_AHX);
     CPPUNIT_TEST(test_AHL);
     CPPUNIT_TEST(test_AHS);
@@ -97,10 +98,14 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ASH);
     CPPUNIT_TEST(test_ASX);
     CPPUNIT_TEST(test_ASL);
+    
+    CPPUNIT_TEST(test_ALL);
+    CPPUNIT_TEST(test_ALX);
 
     CPPUNIT_TEST(test_AXX);
 
     CPPUNIT_TEST(test_EH);
+    CPPUNIT_TEST(test_EX);
     CPPUNIT_TEST(test_EHT);
     CPPUNIT_TEST(test_EDT);
     CPPUNIT_TEST(test_EL);
@@ -250,6 +255,12 @@ private:
     void test_AXX();
     void test_AXL();
     void test_AXW();
+    
+    /*
+     * LOWER_TR + (?)
+     */
+    void test_ALX();
+    void test_ALL();
 
     /*
      * alpha * X

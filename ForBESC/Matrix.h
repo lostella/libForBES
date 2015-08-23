@@ -420,7 +420,6 @@ private:
     /* CSparse members */
     cholmod_triplet *m_triplet = NULL; /*< Sparse triplets */
     cholmod_sparse *m_sparse = NULL; /*< A sparse matrix */
-    cholmod_factor *m_factor = NULL; /*< Cholesky factor */
     cholmod_dense *m_dense = NULL; /*< A dense CHOLMOD matrix */
 
 
@@ -502,8 +501,7 @@ private:
     enum SparseMatrixStorageType {
         CHOLMOD_TYPE_TRIPLET = 444,
         CHOLMOD_TYPE_SPARSE = 555,
-        CHOLMOD_TYPE_DENSE = 666,
-        CHOLMOD_TYPE_FACTOR = 777
+        CHOLMOD_TYPE_DENSE = 666        
     };
 
     /**
@@ -522,6 +520,14 @@ private:
    
 
     inline void _addIJ(size_t i, size_t j, double a);
+    
+    /**
+     * v1 += v2
+     * @param len
+     * @param pV1
+     * @param pV2
+     */
+    static inline void vectorAdd(size_t len, double * pV1, const double * pV2);
 
 
     /**

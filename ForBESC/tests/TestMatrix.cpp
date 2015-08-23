@@ -1697,7 +1697,7 @@ void TestMatrix::test_AHD() {
 
     Matrix R;
     _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, H.getType());
-    _ASSERT_OK(R = H + D);
+    R = H + D;
     _ASSERT_EQ(Matrix::MATRIX_DENSE, R.getType()); /* H + D = D */
     _ASSERT_EQ(n, R.getNrows());
     _ASSERT_EQ(n, R.getNcols());
@@ -1845,6 +1845,34 @@ void TestMatrix::test_AXX() {
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
             _ASSERT_NUM_EQ(X1.get(i, j) + X2.get(i, j), R.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_ALL() {
+    size_t n = 120;
+    const double tol = 1e-10;
+    Matrix L1 = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
+    Matrix L2 = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
+    Matrix L;
+    L = L1 + L2;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(L1.get(i, j) + L2.get(i, j), L.get(i, j), tol);
+        }
+    }
+}
+
+void TestMatrix::test_ALX() {
+    size_t n = 120;
+    const double tol = 1e-10;
+    Matrix L = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
+    Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
+    Matrix R;
+    R = L + X;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(L.get(i, j) + X.get(i, j), R.get(i, j), tol);
         }
     }
 }
