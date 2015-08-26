@@ -161,6 +161,11 @@ void Matrix::transpose() {
     if (m_type == MATRIX_DIAGONAL || m_type == MATRIX_SYMMETRIC) {
         return;
     }
+    
+    if (m_type == MATRIX_SPARSE) {
+        _createSparse();
+        m_sparse = cholmod_transpose(m_sparse, 1, cholmod_handle());
+    }
     if (this -> m_transpose) {
         this -> m_transpose = false;
     } else {
@@ -272,7 +277,7 @@ void Matrix::set(size_t i, size_t j, double v) {
             cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
         }
         m_sparse = NULL;
-        m_dense = NULL;        
+        m_dense = NULL;
     } else {
 
         throw std::invalid_argument("Illegal operation");
@@ -541,6 +546,7 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
 
         if (rhs.m_sparse == NULL)
             rhs._createSparse(); /* Likewise for the RHS */
+
 
         m_sparse = cholmod_add(m_sparse,
                 rhs.m_sparse,

@@ -23,6 +23,7 @@ class TestLDL : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSolveDense);
     CPPUNIT_TEST(testSolveSymmetric);
     CPPUNIT_TEST(testSolveSparse);
+    CPPUNIT_TEST(testSolveSparse2);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -36,6 +37,7 @@ private:
     void testSolveDense();
     void testSolveSymmetric();
     void testSolveSparse();
+    void testSolveSparse2();
 
 };
 

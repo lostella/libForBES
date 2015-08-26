@@ -1921,4 +1921,41 @@ void TestMatrix::test_CS() {
     }
 }
 
+void TestMatrix::test_ASST() {
+    const size_t n = 10;
+    const size_t m = n + 2;
+    const size_t nnz = 2 * n + 10;
+    const double tol = 1e-10;
 
+    Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 1.0);
+    Matrix At(A);
+    At.transpose();
+
+    A += At;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(A.get(i, j), A.get(j, i), tol);
+        }
+    }
+
+    // and some more testing:
+    const unsigned int repetitions = 20;
+    Matrix B, C, Corig, X;
+    for (unsigned int k = 0; k < repetitions; k++) {
+        B = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
+        C = MatrixFactory::MakeRandomSparse(m, n, nnz, 0.0, 1.0);
+        Corig = C;
+        C.transpose(); // C is now n-by-m
+        _ASSERT_EQ(n, C.getNrows());
+        _ASSERT_EQ(m, C.getNcols());
+
+        X = B + C;
+
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < m; j++) {
+                _ASSERT_NUM_EQ(X.get(i, j), B.get(i, j) + Corig.get(j, i), tol);
+            }
+        }        
+    }
+
+}

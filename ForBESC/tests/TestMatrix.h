@@ -103,6 +103,10 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ALX);
 
     CPPUNIT_TEST(test_AXX);
+    
+    CPPUNIT_TEST(test_ASST);
+    
+    
 
     CPPUNIT_TEST(test_EH);
     CPPUNIT_TEST(test_EX);
@@ -255,6 +259,11 @@ private:
     void test_AXX();
     void test_AXL();
     void test_AXW();
+    
+    /*
+     * SPARSE + (?)'
+     */
+    void test_ASST();
     
     /*
      * LOWER_TR + (?)

@@ -105,7 +105,8 @@ void TestLDL::testSolveSparse() {
 
 
     LDLFactorization * solver = new LDLFactorization(A);
-    int status = solver->factorize();
+    int status = -123;
+    _ASSERT_OK(status = solver->factorize());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
@@ -126,5 +127,40 @@ void TestLDL::testSolveSparse() {
     delete solver;
 }
 
+void TestLDL::testSolveSparse2() {
+    const double tol = 1e-7;
+    const size_t N = 40;
+    const size_t NNZ = 2 * N;
+    Matrix A = MatrixFactory::MakeRandomSparse(N, N, NNZ, 0.0, 1.0);
+    for (int i = 0; i < N; i++) {
+        A.set(i, i, A.get(i, i) + 1.5 * N);
+    }
+    Matrix At(A);
+    At.transpose();
+    A += At;
+    
+
+    FactoredSolver * solver = new LDLFactorization(A);
+    int status = -123;
+    status = solver->factorize();
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    Matrix b = MatrixFactory::MakeRandomMatrix(N, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix c = MatrixFactory::MakeRandomMatrix(N, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+
+    Matrix sol_b(N, 1);
+    Matrix sol_c(N, 1);
+    solver->solve(b, sol_b);
+    solver->solve(c, sol_c);
+
+    Matrix err_b = A * sol_b - b;
+    Matrix err_c = A * sol_c - c;
+    for (size_t i = 0; i < N; i++){
+        _ASSERT(std::abs(err_b.get(i, 0)) < tol);
+        _ASSERT(std::abs(err_c.get(i, 0)) < tol);
+    }
+
+    delete solver;
+}
 
 

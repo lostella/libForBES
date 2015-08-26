@@ -15,6 +15,8 @@ class MatrixWriter {
 public:
     MatrixWriter(Matrix& m_matrix);
     virtual ~MatrixWriter();
+    
+    void write(FILE* fp);
 private:
     
     Matrix& m_matrix;
