@@ -1,6 +1,6 @@
 /*
  * File:   TestLDL.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Aug 4, 2015, 8:18:33 PM
  */

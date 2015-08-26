@@ -1,6 +1,6 @@
 /* 
  * File:   QuadOverAffine.h
- * Author: Chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 24, 2015, 4:55 PM
  * 
@@ -25,16 +25,16 @@
 
 /**
  * \class QuadOverAffine
- * \brief %Function <code>F(x) = x'*Q*x + q'*x + delta(x|Z)</code>
+ * \brief %Function <code>F(x) = 0.5*x'*Q*x + q'*x + delta(x|Z)</code>
  * \version 0.0-tentative
  * \author Pantelis Sopasakis
  * \date Created on July 24, 2015, 4:55 PM
  * 
  * Quadratic-over-affine function.
  * 
- * This is the function <code>F(x) = x'*Q*x + q'*x + delta(x|Z)</code> where 
- * <code>delta(.|Z)</code> is the indicator function of an affine space <code>Z</code>
- * defined by <code>Z = {z: Az + b = 0}</code>.
+ * This is the function \f$F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|Z)\f$ where 
+ * \f$\delta(\cdot|Z)\f$ is the indicator function of an affine space \f$Z\f$
+ * defined by \f$Z = \{z: Az - b = 0\}\f$
  * 
  * This class implements only the computation of the conjugate of quadratic-over-affine
  * as well as its gradient.

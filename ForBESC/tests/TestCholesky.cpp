@@ -1,6 +1,6 @@
 /*
  * File:   TestCholesky.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Aug 5, 2015, 12:28:55 AM
  */
@@ -72,7 +72,7 @@ void TestCholesky::testCholeskySparse() {
 
 
     Matrix x;
-    CholeskyFactorization * solver = new CholeskyFactorization(A);
+    FactoredSolver * solver = new CholeskyFactorization(A);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, solver -> factorize());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, solver -> solve(b, x));
 

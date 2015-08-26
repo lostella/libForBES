@@ -1,6 +1,6 @@
 /* 
  * File:   MatrixOperator.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 24, 2015, 7:31 PM
  *

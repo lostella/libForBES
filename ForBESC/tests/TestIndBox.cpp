@@ -1,6 +1,6 @@
 /*
  * File:   TestIndBox.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 26, 2015, 5:41:14 PM
  */
@@ -152,7 +152,13 @@ void TestIndBox::testCallProx() {
 
     _ASSERT_NUM_EQ(lb, prox.get(0,0), tol);
     _ASSERT_NUM_EQ(x.get(1,0), prox.get(1,0), tol);
-
+    
+    status = F->callProx(x, gamma, prox);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    
+    _ASSERT_NUM_EQ(lb, prox.get(0,0), tol);
+    _ASSERT_NUM_EQ(x.get(1,0), prox.get(1,0), tol);
+    
     _ASSERT_OK(delete F);
 }
 

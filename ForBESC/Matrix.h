@@ -1,6 +1,6 @@
 /* 
  * File:   Matrix.h
- * Author: Chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 7, 2015, 8:02 PM
  * 
@@ -371,10 +371,6 @@ public:
     
     friend Matrix operator*(double alpha, Matrix& obj);
     
-    
-    
-    
-    
 
     /**
      * Assignment operator.
@@ -406,6 +402,7 @@ private:
     /* MatrixFactory is allowed to access these private fields! */
     friend class MatrixFactory;
     friend class CholeskyFactorization;
+    friend class LDLFactorization;
 
     size_t m_nrows; /*< Number of rows */
     size_t m_ncols; /*< Number of columns */

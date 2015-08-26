@@ -1,6 +1,6 @@
 /*
  * File:   TestQuadratic.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 9, 2015, 4:14:39 AM
  */

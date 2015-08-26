@@ -1,6 +1,6 @@
 /* 
  * File:   Matrix.cpp
- * Author: Chung
+ * Author: Pantelis Sopasakis
  *
  * Created on June 30, 2015, 12:34 PM
  * 

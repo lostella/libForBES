@@ -1,6 +1,6 @@
 /* 
  * File:   CholeskyFactorization.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on August 4, 2015, 8:14 PM
  */

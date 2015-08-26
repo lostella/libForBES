@@ -1,6 +1,6 @@
 /*
  * File:   TestCholeskyRunner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Aug 5, 2015, 12:28:55 AM
  */

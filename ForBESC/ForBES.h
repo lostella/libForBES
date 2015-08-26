@@ -1,6 +1,6 @@
 /* 
  * File:   ForBES.h
- * Author: Chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 22, 2015, 12:25 PM
  * 
@@ -425,7 +425,7 @@
  * of a box which is given by:
  * 
  * \f[
- * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x; l, u) = \min (\max(x, l), u)
+ * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x^*; l, u) = \min (\max(x^*, l), u)
  * \f]
  * 
  * 

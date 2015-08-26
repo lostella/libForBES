@@ -1,6 +1,6 @@
 /* 
  * File:   Function.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on July 9, 2015, 3:35 AM
  * 

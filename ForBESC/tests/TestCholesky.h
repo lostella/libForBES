@@ -1,6 +1,6 @@
 /*
  * File:   TestCholesky.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Aug 5, 2015, 12:28:54 AM
  */

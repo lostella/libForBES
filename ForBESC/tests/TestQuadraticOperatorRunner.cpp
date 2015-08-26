@@ -1,6 +1,6 @@
 /*
  * File:   TestQuadraticOperatorRunner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 24, 2015, 8:52:27 PM
  */

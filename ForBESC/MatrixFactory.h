@@ -1,6 +1,6 @@
 /* 
  * File:   MatrixFactory.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 12, 2015, 7:50 PM
  * 

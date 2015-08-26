@@ -1,6 +1,6 @@
 /*
  * File:   TestMatrixFactory.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 13, 2015, 1:03:10 PM
  */

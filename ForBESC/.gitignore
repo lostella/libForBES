@@ -22,3 +22,4 @@ coverage/**
 dist/**
 *.info
 html/*
+octave-workspace

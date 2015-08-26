@@ -1,6 +1,6 @@
 /* 
  * File:   LDLFactorization.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 30, 2015, 3:02 AM
  */
@@ -10,8 +10,10 @@
 
 #include <cstring>
 
+#include "ForBESUtils.h"
 #include "Matrix.h"
 #include "FactoredSolver.h"
+#include "ldl.h"
 
 class LDLFactorization : public FactoredSolver {
 public:
@@ -21,9 +23,9 @@ public:
     virtual ~LDLFactorization();
 
     virtual int factorize(void);
-    
+
     virtual int solve(const Matrix& rhs, Matrix& solution) const;
-    
+
     double* getLDL() const;
 
     int* getIpiv() const;
@@ -31,8 +33,25 @@ public:
 private:
 
 
-    double* LDL = NULL;
-    int* ipiv = NULL;
+    double* LDL = NULL; /* LDL factorization computed by lapack */
+    int* ipiv = NULL; /* Pivots for the LDL factorization computed by lapack */
+
+    /**
+     * A sparse LDL factorization
+     */
+    typedef struct sparse_ldl_factor_struct {
+        double * Lx; /**< Values of L */
+        int * Li; /**< i-pointers of L */
+        int * Lp;/**< p-pointers of L */
+        double * D; /**< Diagonal part of the LDL factorization*/
+    } sparse_ldl_factor;
+
+    /**
+     * Pointer to a sparse LDL factorization.
+     */
+    sparse_ldl_factor * m_sparse_ldl_factor = NULL;
+
+    
 
 };
 

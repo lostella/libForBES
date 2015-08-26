@@ -1,6 +1,6 @@
 /*
  * File:   TestMatrixOperator.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 24, 2015, 8:39:54 PM
  */

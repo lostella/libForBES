@@ -1,6 +1,6 @@
 /*
  * File:   TestIndBoxRunner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 26, 2015, 5:41:14 PM
  */

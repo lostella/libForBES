@@ -1,6 +1,6 @@
 /* 
  * File:   QuadraticOperator.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on July 24, 2015, 8:49 PM
  */

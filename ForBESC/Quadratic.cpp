@@ -1,6 +1,6 @@
 /* 
  * File:   Quadratic.cpp
- * Author: Chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on July 9, 2015, 3:36 AM
  * 

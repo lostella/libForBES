@@ -1,6 +1,6 @@
 /* 
  * File:   FactoredSolver.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on July 30, 2015, 3:18 AM
  */

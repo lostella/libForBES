@@ -1,6 +1,6 @@
 /* 
  * File:   IndBox.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on July 26, 2015, 5:22 PM
  */

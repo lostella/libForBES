@@ -1,6 +1,6 @@
 /* 
  * File:   LinearOperator.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on July 24, 2015, 8:44 PM
  */

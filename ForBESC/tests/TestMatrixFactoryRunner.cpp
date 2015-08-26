@@ -1,6 +1,6 @@
 /*
  * File:   TestMatrixFactoryRunner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Jul 13, 2015, 1:03:11 PM
  */

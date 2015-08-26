@@ -1,6 +1,6 @@
 /* 
  * File:   QuadraticOperator.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on July 24, 2015, 8:49 PM
  */
@@ -18,11 +18,15 @@
  * \version 0.0
  * \date Created on July 24, 2015, 8:49 PM
  * 
- * A quadratic operator is a function of the form <code>Q(x) = 0.5*x'*T(x)</code>,
- * where <code>T</code> is a given linear operator. Operator <code>T</code> produces 
- * a column vector of the same dimension as <code>x</code>. It is assumed that 
- * <code>T</code> is a symmetric operator, therefore the derivative of <code>Q(x)</code>
- * is computed as <code>Q'(x) = T(x)</code>.
+ * A quadratic operator is a function of the form \f$Q(x) = \frac{1}{2} x' T(x)\f$,
+ * where \f$T\f$ is a given linear operator. 
+ * 
+ * Operator \f$T:\mathbb{R}^n \to \mathbb{R}^n\f$ produces 
+ * a column vector of the same dimension as \f$x\f$. 
+ * 
+ * It is assumed that 
+ * \f$T\f$ is a symmetric operator, therefore the derivative of \f$Q(x)\f$
+ * is computed as \f$Q'(x) = T(x)\f$.
  * 
  * \ingroup Functions
  * 
