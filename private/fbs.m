@@ -61,7 +61,7 @@ function out = fbs(prob, opt)
         residual(1, it) = norm(cache_yk.diff, inf)/gam;
         objective(1, it) = cache_yk.FBE;
         if opt.toRecord
-            record = [record, opt.record(it, gam, cache_yk, cnt)];
+            record = [record, opt.record(prob, it, gam, cache_0, cache_yk, cnt)];
         end
 
         if ~opt.customTerm
@@ -76,7 +76,7 @@ function out = fbs(prob, opt)
                 break;
             end
         else
-            if opt.term(cache_0, cache_yk, gam)
+            if opt.term(prob, it, gam, cache_0, cache_yk, cnt)
                 msgTerm = [msgTerm, 'reached optimum (custom criterion)'];
                 flagTerm = 0;
                 break;

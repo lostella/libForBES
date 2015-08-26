@@ -56,6 +56,7 @@ function out = minfbe(prob, opt)
         record = [];
     end
     
+    skipCount = 0;
     rejCount = 0;
     flagChangedGamma = 0;
     
@@ -89,7 +90,7 @@ function out = minfbe(prob, opt)
         residual(1, it) = norm(cache_current.diff, inf)/gam;
         objective(1, it) = cache_current.FBE;
         if opt.toRecord
-            record = [record, opt.record(it, gam, cache_current, cnt)];
+            record = [record, opt.record(prob, it, gam, cache_0, cache_current, cnt)];
         end
         
         %% check for termination
@@ -106,7 +107,7 @@ function out = minfbe(prob, opt)
                     break;
                 end
             else
-                if it > 1 && opt.term(cache_0, cache_current, gam)
+                if opt.term(prob, it, gam, cache_0, cache_current, cnt)
                     msgTerm = 'reached optimum (custom criterion)';
                     flagTerm = 0;
                     break;
@@ -137,6 +138,8 @@ function out = minfbe(prob, opt)
                         S(:,LBFGS_col) = Sk;
                         Y(:,LBFGS_col) = Yk;
                         YS(LBFGS_col) = YSk;
+                    else
+                        skipCount = skipCount+1;
                     end
                     if LBFGS_mem > 0
                         H = YS(LBFGS_col)/(Y(:,LBFGS_col)'*Y(:,LBFGS_col));
@@ -164,6 +167,8 @@ function out = minfbe(prob, opt)
                     sBs = Sk'*Bs;
                     if YSk > 0
                         R = cholupdate(cholupdate(R,Yk/sqrt(YSk)),Bs/sqrt(sBs),'-');
+                    else
+                        skipCount = skipCount+1;
                     end
                     dir = -linsolve(R,linsolve(R,cache_current.gradFBE,opt.optsL),opt.optsU);
                     %                     dir = -R\(R'\cache_current.gradFBE);
@@ -180,6 +185,10 @@ function out = minfbe(prob, opt)
                     etak = -1/(norm(dir)*min(0.01,norm(cache_current.gradFBE)));
                     beta = max(beta,etak);
                     dir = -cache_current.gradFBE + beta*dir;
+                    if dir'*cache_current.gradFBE >= 0 % restart if not descent direction
+                        dir = -cache_current.gradFBE;
+                        skipCount = skipCount+1;
+                    end
                 end
             case 4 % CG-PRP
                 if it == 1 || flagChangedGamma
@@ -188,6 +197,10 @@ function out = minfbe(prob, opt)
                     yy = cache_current.gradFBE - cache_previous.gradFBE;
                     beta = max((cache_current.gradFBE'*yy)/(cache_previous.gradFBE'*cache_previous.gradFBE),0);
                     dir = -cache_current.gradFBE + beta*dir;
+                    if dir'*cache_current.gradFBE >= 0 % restart if not descent direction
+                        dir = -cache_current.gradFBE;
+                        skipCount = skipCount+1;
+                    end
                 end
             case 5 % CG-DYHS
                 if it == 1 || flagChangedGamma
@@ -198,6 +211,10 @@ function out = minfbe(prob, opt)
                     betaHS = (cache_current.gradFBE'*yy)/(dir'*yy);
                     beta = max(0,min(betaHS,betaDY));
                     dir = -cache_current.gradFBE + beta*dir;
+                    if dir'*cache_current.gradFBE >= 0 % restart if not descent direction
+                        dir = -cache_current.gradFBE;
+                        skipCount = skipCount+1;
+                    end
                 end
             otherwise
                 error('search direction not implemented')
@@ -253,6 +270,10 @@ function out = minfbe(prob, opt)
 
         %% perform the line search
         switch opt.linesearch
+            case 0 % NO LINE SEARCH - UNIT STEPSIZE
+                [cache_tau, cntLS] = CacheFBE(prob, gam, cache_current.x+dir);
+                tau = 1.0;
+                info = 0;
             case 1 % BACKTRACKING (ARMIJO COND.)
                 [cache_tau, tau, cntLS, info] = ArmijoLS(prob, gam, cache_current, slope, tau0, lsopt);
             case 3 % LEMARECHAL (ARMIJO + WOLF COND.)
@@ -339,6 +360,7 @@ function out = minfbe(prob, opt)
     if opt.toRecord
         out.record = record;
     end
+    out.skip = skipCount;
 end
 
 function gam = SelectGamma(prob, opt)

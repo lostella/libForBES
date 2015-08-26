@@ -29,7 +29,7 @@ function obj = quadLoss(w, p)
     if nargin < 1, w = 1; end
     if nargin < 2, p = 0; end
     if any(w < 0)
-        error('second argument should be a nonnegative');
+        error('first argument should be a nonnegative');
     end
     if isscalar(w)
         obj.Q = w;
