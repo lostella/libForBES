@@ -39,12 +39,23 @@ LDLFactorization::~LDLFactorization() {
 
 int LDLFactorization::solve(const Matrix& rhs, Matrix& solution) const {
     size_t n = m_matrix.getNrows();
-    solution = Matrix(rhs);
+    solution = Matrix(n, 1, Matrix::MATRIX_DENSE); // solution = rhs (DENSE)
+    for (size_t i = 0; i < n; i++) {
+        solution.set(i, 0, rhs.get(i, 0));
+    }
     int status;
     if (Matrix::MATRIX_DENSE == m_matrix.getType()) {
         status = LAPACKE_dsytrs(LAPACK_COL_MAJOR, 'L', n, 1, LDL, n, ipiv, solution.getData(), n);
     } else if (Matrix::MATRIX_SYMMETRIC == m_matrix.getType()) {
         status = LAPACKE_dsptrs(LAPACK_COL_MAJOR, 'L', n, 1, LDL, ipiv, solution.getData(), n);
+    } else if (Matrix::MATRIX_SPARSE == m_matrix.getType()) {
+        double * b = solution.getData();
+        ldl_lsolve(n, b,
+                m_sparse_ldl_factor->Lp,
+                m_sparse_ldl_factor->Li,
+                m_sparse_ldl_factor->Lx);
+        ldl_dsolve(n, b, m_sparse_ldl_factor->D);
+        ldl_ltsolve(n, b, m_sparse_ldl_factor->Lp, m_sparse_ldl_factor->Li, m_sparse_ldl_factor->Lx);
     }
     return status;
 }
@@ -85,8 +96,8 @@ int LDLFactorization::factorize() {
         m_sparse_ldl_factor->Lx = new double[lnz];
         m_sparse_ldl_factor->D = new double[n];
 
-        double * Y = new double[n];
-        int * Pattern = new int[n];
+        double Y[n];
+        int Pattern[n];
 
         d = ldl_numeric(n,
                 (int*) (m_matrix.m_sparse->p),

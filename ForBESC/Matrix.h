@@ -111,8 +111,18 @@ public:
      */
     enum SparseMatrixType {
         SPARSE_UNSYMMETRIC = 0, /**< Not symmetric sparse */
-        SPARSE_SYMMETRIC_L = 1, /**< Symmetric sparse (lower-triangular part is used) */
-        SPARSE_SYMMETRIC_R = -1 /**< Symmetric sparse (upper-triangular part is used) */
+        /** 
+         * Symmetric sparse and entries in the lower triangular
+         * part are transposed and added to the upper triangular part when
+         * the matrix is converted to cholmod_sparse form. 
+         */
+        SPARSE_SYMMETRIC_L = 1,
+        /**   
+         * Symmetric sparse and entries in the upper triangular
+         * part are transposed and added to the lower triangular part when
+         * the matrix is converted to cholmod_sparse form. 
+         */
+        SPARSE_SYMMETRIC_R = -1
     };
 
     /* Constructors and destructors */
@@ -361,16 +371,16 @@ public:
      * @return the result of the multiplication of two matrices
      */
     Matrix operator*(Matrix& right);
-    
+
     /**
      * Operator *= with a scalar - scale a matrix.
      * @param right
      * @return 
      */
     friend Matrix& operator*=(Matrix& obj, double alpha);
-    
+
     friend Matrix operator*(double alpha, Matrix& obj);
-    
+
 
     /**
      * Assignment operator.
@@ -480,8 +490,8 @@ private:
      * @return the result of the multiplication (this)*(right) as a new Matrix.
      */
     inline Matrix multiplyLeftSparse(Matrix& right);
-    
-    
+
+
 
 
     /**
@@ -498,7 +508,7 @@ private:
     enum SparseMatrixStorageType {
         CHOLMOD_TYPE_TRIPLET = 444,
         CHOLMOD_TYPE_SPARSE = 555,
-        CHOLMOD_TYPE_DENSE = 666        
+        CHOLMOD_TYPE_DENSE = 666
     };
 
     /**
@@ -514,10 +524,10 @@ private:
      * @return 
      */
     inline double quadFromTriplet(const Matrix& x) const;
-   
+
 
     inline void _addIJ(size_t i, size_t j, double a);
-    
+
     /**
      * Adds two vectors as in <code>v1 += v2</code> where <code>v1</code> is a vector
      * to be updated whereas <code>v2</code> is a constant vector.

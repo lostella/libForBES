@@ -52,12 +52,23 @@ int main(int argc, char** argv) {
     A.set(4, 9, 0.53);
     A.set(6, 9, 0.56);
     A.set(7, 8, 0.11);
-    
+
+
     std::cout << A;
     LDLFactorization * solver = new LDLFactorization(A);
     int status = solver->factorize();
     std::cout << "status = " << status << "\n";
+
+    double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
+    Matrix rhs(N, 1, b);
+    
+    Matrix sol;
+    solver->solve(rhs, sol);
+    
+    std::cout << sol;
     delete solver;
+
+
 
     //
     //    /* only the upper triangular part of A is required */
@@ -88,4 +99,5 @@ int main(int argc, char** argv) {
 
     return (0);
 }
+
 

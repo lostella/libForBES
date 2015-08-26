@@ -76,4 +76,55 @@ void TestLDL::testSolveSymmetric() {
     }
 }
 
+void TestLDL::testSolveSparse() {
+    const double tol = 1e-7;
+    const size_t N = 10;
+    const size_t NNZ = 19;
+
+    Matrix A = MatrixFactory::MakeSparse(N, N, NNZ, Matrix::SPARSE_SYMMETRIC_L);
+    A.set(0, 0, 1.7);
+    A.set(0, 8, 0.13);
+    A.set(1, 1, 1.0);
+    A.set(1, 9, 0.01);
+    A.set(2, 2, 1.5);
+    A.set(3, 3, 1.1);
+    A.set(4, 4, 2.6);
+    A.set(5, 5, 1.2);
+    A.set(6, 6, 1.3);
+    A.set(6, 6, 1.3);
+    A.set(7, 7, 1.6);
+    A.set(8, 8, 1.4);
+    A.set(9, 9, 3.1);
+    A.set(1, 4, 0.02);
+    A.set(4, 6, 0.16);
+    A.set(4, 7, 0.09);
+    A.set(4, 8, 0.52);
+    A.set(4, 9, 0.53);
+    A.set(6, 9, 0.56);
+    A.set(7, 8, 0.11);
+
+
+    LDLFactorization * solver = new LDLFactorization(A);
+    int status = solver->factorize();
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
+    Matrix rhs(N, 1, b);
+
+    Matrix sol;
+    status = solver->solve(rhs, sol);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+
+    for (size_t i = 0; i < N; i++)
+        _ASSERT_NUM_EQ((i + 1.0) / 10.0, sol.get(i, 0), tol);
+
+    Matrix err = A * sol - rhs;
+    for (size_t i = 0; i < N; i++)
+        _ASSERT(std::abs(err.get(i, 0)) < tol);
+
+    delete solver;
+}
+
+
 
