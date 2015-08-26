@@ -55,7 +55,8 @@ int main(int argc, char** argv) {
     
     std::cout << A;
     LDLFactorization * solver = new LDLFactorization(A);
-    solver->factorize();
+    int status = solver->factorize();
+    std::cout << "status = " << status << "\n";
     delete solver;
 
     //

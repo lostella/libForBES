@@ -7,7 +7,6 @@
 
 #include "LDLFactorization.h"
 
-
 LDLFactorization::LDLFactorization(Matrix& matr) : FactoredSolver(matr) {
     if (matr.getType() == Matrix::MATRIX_LOWERTR) {
         throw std::invalid_argument("LDL factorization cannot be applied to non-symmetric matrices (e.g., Lower/Upper triangular)");
@@ -73,15 +72,36 @@ int LDLFactorization::factorize() {
         int Lnz[n];
         int Flag[n];
         m_sparse_ldl_factor->Lp = new int[n + 1];
-        ldl_symbolic(n, 
-                (int*)(m_matrix.m_sparse->p), 
-                (int*)(m_matrix.m_sparse->i), 
-                m_sparse_ldl_factor->Lp, 
-                Parent, 
-                Lnz, 
+        ldl_symbolic(n,
+                (int*) (m_matrix.m_sparse->p),
+                (int*) (m_matrix.m_sparse->i),
+                m_sparse_ldl_factor->Lp,
+                Parent,
+                Lnz,
                 Flag, NULL, NULL);
-        int llz = m_sparse_ldl_factor->Lp[n];
-        std::cout << "llz = " << llz << "\n";
+        int lnz = m_sparse_ldl_factor->Lp[n];
+        int d;
+        m_sparse_ldl_factor->Li = new int[lnz];
+        m_sparse_ldl_factor->Lx = new double[lnz];
+        m_sparse_ldl_factor->D = new double[n];
+
+        double * Y = new double[n];
+        int * Pattern = new int[n];
+
+        d = ldl_numeric(n,
+                (int*) (m_matrix.m_sparse->p),
+                (int*) (m_matrix.m_sparse->i),
+                (double*) (m_matrix.m_sparse->x),
+                m_sparse_ldl_factor->Lp,
+                Parent,
+                Lnz,
+                m_sparse_ldl_factor->Li,
+                m_sparse_ldl_factor->Lx,
+                m_sparse_ldl_factor->D,
+                Y, Pattern, Flag, NULL, NULL);
+
+        return d == n ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
+
     }
     return status;
 }
