@@ -98,6 +98,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ASH);
     CPPUNIT_TEST(test_ASX);
     CPPUNIT_TEST(test_ASL);
+    CPPUNIT_TEST(test_ASS);   
     
     CPPUNIT_TEST(test_ALL);
     CPPUNIT_TEST(test_ALX);
@@ -286,8 +287,7 @@ private:
     /*
      * MULTIPLICATION TESTS
      */
-    void test_MDD1();
-
+    void test_MDD1();    
     void test_MXH();
     void test_MXL();
     void test_MDH();

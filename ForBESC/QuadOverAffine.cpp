@@ -19,7 +19,7 @@
  */
 
 #include "QuadOverAffine.h"
-
+#include "LDLFactorization.h"
 
 QuadOverAffine::QuadOverAffine() {
 }
@@ -28,13 +28,74 @@ QuadOverAffine::QuadOverAffine(const QuadOverAffine& orig) {
 }
 
 QuadOverAffine::~QuadOverAffine() {
+    if (Fsolver != NULL) {
+        delete Fsolver;
+    }
+    if (F != NULL) {
+        delete F;
+    }
+}
+
+void checkConstructorArguments(const Matrix& Q, const Matrix& q, const Matrix& A, const Matrix& b) {
+    if (Q.getNrows() != Q.getNcols()) {
+        throw std::invalid_argument("Matrix Q is not square");
+    }
+    if (!q.isColumnVector()) {
+        throw std::invalid_argument("q is not a column vector");
+    }
+    if (!b.isColumnVector()) {
+        throw std::invalid_argument("b is not a column vector");
+    }
+    if (Q.getNcols() != q.getNrows()) {
+        throw std::invalid_argument("Q and q have incompatible dimensions");
+    }
+    if (Q.getNcols() != A.getNcols()) {
+        throw std::invalid_argument("Q and A have incompatible dimensions");
+    }
+    if (A.getNcols() != b.getNrows()) {
+        throw std::invalid_argument("A and b have incompatible dimensions");
+    }
 }
 
 QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
+    checkConstructorArguments(Q, q, A, b);
     this->Q = &Q;
     this->q = &q;
     this->A = &A;
-    this->b = &b;    
+    this->b = &b;
+    size_t n = Q.getNrows();
+    size_t s = A.getNrows();
+    if (Q.getType() == Matrix::MATRIX_DENSE) {
+        F = new Matrix(n + s, n + s, Matrix::MATRIX_DENSE);
+        /*
+         * F = [Q  * ; *  *]
+         */
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < n; j++) {
+                F->set(i, j, Q.get(i, j));
+            }
+        }
+        /*
+         * F = [Q  A ; A'  *]
+         */
+        for (size_t i = 0; i < s; i++) {
+            for (size_t j = 0; j < n; j++) {
+                F->set(i + n, j, A.get(i, j));
+                F->set(j, i + n, A.get(i, j));
+            }
+        }
+    }
+    if (F != NULL) {
+        Fsolver = new LDLFactorization(*F);
+        int status = Fsolver -> factorize();
+        if (ForBESUtils::STATUS_OK != status) {
+            throw std::invalid_argument("LDL factorization failed - invalid arguments Q and A");
+        }
+    }
+}
+
+int QuadOverAffine::category() {
+    return CAT_UNCATEGORIZED;
 }
 
 

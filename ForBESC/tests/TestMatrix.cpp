@@ -1506,7 +1506,6 @@ void TestMatrix::test_EHT() {
 
 void TestMatrix::test_EDT() {
     size_t n = 100;
-    const double tol = 1e-10;
     Matrix D = MatrixFactory::MakeRandomMatrix(n, n, -5.0, 6.0, Matrix::MATRIX_DENSE);
     Matrix D1 = D;
     Matrix D2(D);
@@ -1961,9 +1960,9 @@ void TestMatrix::test_ASST() {
 }
 
 void TestMatrix::test_EST() {
-    size_t n = 100;
-    size_t m = 80;
-    size_t nnz = 300;
+    const size_t n = 100;
+    const size_t m = 80;
+    const size_t nnz = 300;
     Matrix S = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
     Matrix S1 = S;
     Matrix S2(S);
@@ -1978,9 +1977,9 @@ void TestMatrix::test_EST() {
 }
 
 void TestMatrix::test_ES() {
-    size_t n = 100;
-    size_t m = 80;
-    size_t nnz = 300;
+    const size_t n = 100;
+    const size_t m = 80;
+    const size_t nnz = 300;
     Matrix S = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
     Matrix S1 = S;
     Matrix S2(S);
@@ -1988,6 +1987,21 @@ void TestMatrix::test_ES() {
         for (size_t j = 0; j < m; j++) {
             _ASSERT_EQ(S.get(i, j), S1.get(i, j));
             _ASSERT_EQ(S.get(i, j), S2.get(i, j));
+        }
+    }
+}
+
+void TestMatrix::test_ASS() {
+    const double tol = 1e-8;
+    const size_t n = 100;
+    const size_t m = 80;
+    const size_t nnz = 300;
+    Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
+    Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
+    Matrix X = A + B;
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            _ASSERT_NUM_EQ(A.get(i, j)+B.get(i,j), X.get(i, j), tol);
         }
     }
 }

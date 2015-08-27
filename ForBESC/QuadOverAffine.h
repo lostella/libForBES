@@ -22,6 +22,7 @@
 #define	QUADOVERAFFINE_H
 
 #include "Function.h"
+#include "FactoredSolver.h"
 
 /**
  * \class QuadOverAffine
@@ -57,17 +58,21 @@ public:
     
     virtual ~QuadOverAffine();
     
+
+    virtual int category();
+
     
 private:
     
     QuadOverAffine();
     
-    Matrix *Q;
-    Matrix *q;
-    Matrix *A;
-    Matrix *b;
+    Matrix *Q = NULL;
+    Matrix *q = NULL;
+    Matrix *A = NULL;
+    Matrix *b = NULL;
     
-    Matrix *F;
+    Matrix *F = NULL; // F = [Q A'; A 0]
+    FactoredSolver * Fsolver = NULL;
 };
 
 #endif	/* QUADOVERAFFINE_H */
