@@ -113,6 +113,8 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_EHT);
     CPPUNIT_TEST(test_EDT);
     CPPUNIT_TEST(test_EL);
+    CPPUNIT_TEST(test_ES);
+    CPPUNIT_TEST(test_EST);
 
     CPPUNIT_TEST(test_CD);
     CPPUNIT_TEST(test_CH);
@@ -204,6 +206,7 @@ private:
 
     void test_EHT();
     void test_EDT();
+    void test_EST();
     /*
      * Addition: X = A + B 
      */

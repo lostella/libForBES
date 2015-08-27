@@ -1955,7 +1955,40 @@ void TestMatrix::test_ASST() {
             for (size_t j = 0; j < m; j++) {
                 _ASSERT_NUM_EQ(X.get(i, j), B.get(i, j) + Corig.get(j, i), tol);
             }
-        }        
+        }
     }
 
 }
+
+void TestMatrix::test_EST() {
+    size_t n = 100;
+    size_t m = 80;
+    size_t nnz = 300;
+    Matrix S = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
+    Matrix S1 = S;
+    Matrix S2(S);
+    S1.transpose();
+    S2.transpose();
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            _ASSERT_EQ(S.get(i, j), S1.get(j, i));
+            _ASSERT_EQ(S.get(i, j), S2.get(j, i));
+        }
+    }
+}
+
+void TestMatrix::test_ES() {
+    size_t n = 100;
+    size_t m = 80;
+    size_t nnz = 300;
+    Matrix S = MatrixFactory::MakeRandomSparse(n, m, nnz, 0.0, 1.0);
+    Matrix S1 = S;
+    Matrix S2(S);
+    for (size_t i = 0; i < n; i++) {
+        for (size_t j = 0; j < m; j++) {
+            _ASSERT_EQ(S.get(i, j), S1.get(i, j));
+            _ASSERT_EQ(S.get(i, j), S2.get(i, j));
+        }
+    }
+}
+
