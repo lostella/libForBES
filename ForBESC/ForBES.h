@@ -340,19 +340,19 @@
  * 
  * \subsection quadoveraff-fun-sec Quadratic-over affine
  * 
- * A quadratic-over-affine function is a function <code>F</code> is the form
+ * A quadratic-over-affine function is a function \f$F:\mathbb{R}^n \to \mathbb{R}\cup\{+\infty\}\f$ is the form
  * 
  * \f[
  * F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|E),
  * \f]
  * 
- * where <code>E</code> is an affine space
+ * where \f$E\f$ is an affine space
  * 
  * \f[
  * E = \{x: Ax = b\}
  * \f]
  * 
- * and delta is the indicator function
+ * where \f$A\in\mathbb{R}^{s\times n}\f$ and \f$b\in\mathbb{R}^s\f$ and \f$\delta(\cdot|E)\f$ is the indicator function
  * 
  * \f[
  * \delta(x|E) = \begin{cases}
@@ -372,10 +372,13 @@
  * 
  * then, the conjugate of <code>F</code> is
  * 
- * \f{align*}{
- * S g(x^*) &=  \begin{bmatrix}x^*-q\\b\end{bmatrix}\\
- * F^*(x^*) &= -\frac{1}{2} \left(g(x^*)'Qg(x^*) + (q-x^*)'g(x^*)\right)
- * \f}
+ * \f[
+ * S g(x^*) =  \begin{bmatrix}x^*-q\\b\end{bmatrix}
+ * \f]
+ * and let \f$\gamma(x^*)\f$ be the vector comprising the first n entries of \f$g(x^*)\f$. Then,
+ * \f[
+ * F^*(x^*) = -\frac{1}{2} \left(\gamma(x^*)'Q\gamma(x^*) + (q-x^*)'\gamma(x^*)\right)
+ * \f]
  * 
  * Here is an example of use
  * 

@@ -31,6 +31,9 @@ QuadOverAffine::~QuadOverAffine() {
     if (F != NULL) {
         delete F;
     }
+    if (sigma != NULL){
+        delete sigma;
+    }
 }
 
 void checkConstructorArguments(const Matrix& Q, const Matrix& q, const Matrix& A, const Matrix& b) {
@@ -101,9 +104,12 @@ int QuadOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
     for (size_t i = 0; i < Q->getNrows(); i++) {
         sigma->set(i, 0, y.get(i, 0) - q->get(i, 0));
     }
+    /* Solve F*grad = sigma */
     int status = Fsolver->solve(*sigma, grad);
+    /* Take the first n elements of grad */
     grad.reshape(Q->getNrows(), 1);
-    f_star = Q->quad(grad);
+    /* f_star = grad' * Q * grad / 2.0 */
+    f_star = Q->quad(grad);    
     for (size_t i = 0; i < grad.getNrows(); i++) {
         f_star += grad.get(i, 0) * (q->get(i, 0) - y.get(i, 0));
     }
