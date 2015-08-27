@@ -413,6 +413,7 @@ private:
     friend class MatrixFactory;
     friend class CholeskyFactorization;
     friend class LDLFactorization;
+    friend class MatrixWriter;
 
     size_t m_nrows; /*< Number of rows */
     size_t m_ncols; /*< Number of columns */

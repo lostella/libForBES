@@ -19,6 +19,7 @@
 #include "CholeskyFactorization.h"
 
 #include "ldl.h"
+#include "MatrixWriter.h"
 
 #include <set>
 
@@ -52,6 +53,14 @@ int main(int argc, char** argv) {
     A.set(4, 9, 0.53);
     A.set(6, 9, 0.56);
     A.set(7, 8, 0.11);
+    
+    FILE *f = fopen("./matrices/F000005436.txt", "w");
+    MatrixWriter writer(A);
+    writer.enforceDenseMode(true);
+    writer.setWriteFormat(MatrixWriter::JSON);
+    writer.write(f);
+    fclose(f);
+    
 
 
     std::cout << A;

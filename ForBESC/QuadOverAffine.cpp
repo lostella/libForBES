@@ -110,7 +110,7 @@ int QuadOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
     grad.reshape(Q->getNrows(), 1);
     /* f_star = grad' * Q * grad / 2.0 */
     f_star = Q->quad(grad);    
-    for (size_t i = 0; i < grad.getNrows(); i++) {
+    for (size_t i = 0; i < grad.getNrows(); i++) { /* Dot product */
         f_star += grad.get(i, 0) * (q->get(i, 0) - y.get(i, 0));
     }
     f_star = -f_star;
