@@ -24,6 +24,7 @@
 
 #include "Matrix.h"
 #include "ForBESUtils.h"
+
 /**
  * \class Function
  * \brief A ForBES function.
@@ -39,26 +40,32 @@
  */
 class Function {
 public:
-    
+
     /**
      * Destructor for this class.
      */
     virtual ~Function();
-    
-   
 
     /**
      * A quadratic function.
      */
     const static int CAT_QUADRATIC;
-    
+
+    /**
+     * The indicator function of a set.
+     */
     const static int CAT_INDICATOR;
-    
+
     /**
      * An uncategorized function.
      */
     const static int CAT_UNCATEGORIZED;
-    
+
+    /**
+     * Quadratic over an affine subspace.
+     */
+    const static int CAT_QUAD_OVER_AFFINE;
+
 
     /**
      * The function category. Functions may define a function category so that
@@ -74,8 +81,6 @@ public:
      * @return Function category as <code>int</code>
      */
     virtual int category() = 0; // abstract method
-    
-    
 
     /**
      * Returns the value of function f.
@@ -171,7 +176,7 @@ public:
     virtual int callConj(const Matrix& x, double& f_star) {
         return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     }; // conjugate of f at x: f*(x)
-    
+
     /**
      * Computes the conjugate of this function at a point <code>x</code> as well 
      * as the corresponding gradient.
@@ -193,8 +198,8 @@ public:
 
 
 private:
-    
-      
+
+
 
 protected:
     /*
@@ -202,10 +207,9 @@ protected:
      * It is not allowed to instantiate objects of this class directly.
      * Use its subclasses/implementations.
      */
-    
-    Function();                         /**< Default constructor */
-    Function(const Function& orig);     /**< Default copy-constructor */  
-    
+
+    Function(); /**< Default constructor */
+
     /**
      * Computes the gradient of this function at a given vector x. 
      * @param x The vector x where the gradient of f should be computed.
@@ -218,7 +222,7 @@ protected:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int computeGradient(Matrix& x, Matrix& grad){
+    virtual int computeGradient(Matrix& x, Matrix& grad) {
         return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     };
 

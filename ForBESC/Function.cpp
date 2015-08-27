@@ -24,14 +24,11 @@ const int Function::CAT_QUADRATIC = 100;
 
 const int Function::CAT_INDICATOR = 150;
 
+const int Function::CAT_QUAD_OVER_AFFINE = 200;
+
 const int Function::CAT_UNCATEGORIZED = 9999;
 
-Function::Function() {
-
-}
-
-Function::Function(const Function& orig) {
-}
+Function::Function() { }
 
 Function::~Function() {
 }

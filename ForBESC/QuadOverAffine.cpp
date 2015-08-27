@@ -21,10 +21,7 @@
 #include "QuadOverAffine.h"
 #include "LDLFactorization.h"
 
-QuadOverAffine::QuadOverAffine() {
-}
-
-QuadOverAffine::QuadOverAffine(const QuadOverAffine& orig) {
+QuadOverAffine::QuadOverAffine() : Function() {
 }
 
 QuadOverAffine::~QuadOverAffine() {
@@ -52,7 +49,7 @@ void checkConstructorArguments(const Matrix& Q, const Matrix& q, const Matrix& A
     if (Q.getNcols() != A.getNcols()) {
         throw std::invalid_argument("Q and A have incompatible dimensions");
     }
-    if (A.getNcols() != b.getNrows()) {
+    if (A.getNrows() != b.getNrows()) { // A and b must have the same number of rows
         throw std::invalid_argument("A and b have incompatible dimensions");
     }
 }
@@ -65,8 +62,9 @@ QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
     this->b = &b;
     size_t n = Q.getNrows();
     size_t s = A.getNrows();
+    size_t nF = n + s;
     if (Q.getType() == Matrix::MATRIX_DENSE) {
-        F = new Matrix(n + s, n + s, Matrix::MATRIX_DENSE);
+        F = new Matrix(nF, nF, Matrix::MATRIX_DENSE);
         /*
          * F = [Q  * ; *  *]
          */
@@ -76,7 +74,7 @@ QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
             }
         }
         /*
-         * F = [Q  A ; A'  *]
+         * F = [Q  A' ; A  *]
          */
         for (size_t i = 0; i < s; i++) {
             for (size_t j = 0; j < n; j++) {
@@ -89,13 +87,32 @@ QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
         Fsolver = new LDLFactorization(*F);
         int status = Fsolver -> factorize();
         if (ForBESUtils::STATUS_OK != status) {
-            throw std::invalid_argument("LDL factorization failed - invalid arguments Q and A");
+            throw std::invalid_argument("LDL factorization failed for matrix F = [Q A'; A 0] (dense) - invalid arguments Q and A");
         }
+    }
+    sigma = new Matrix(nF, 1, Matrix::MATRIX_DENSE);
+    for (size_t i = 0; i < s; i++) {
+        sigma->set(i + n, 0, b.get(i, 0));
     }
 }
 
+int QuadOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
+    /* Update sigma(x) */
+    for (size_t i = 0; i < Q->getNrows(); i++) {
+        sigma->set(i, 0, y.get(i, 0) - q->get(i, 0));
+    }
+    int status = Fsolver->solve(*sigma, grad);
+    grad.reshape(Q->getNrows(), 1);
+    f_star = Q->quad(grad);
+    for (size_t i = 0; i < grad.getNrows(); i++) {
+        f_star += grad.get(i, 0) * (q->get(i, 0) - y.get(i, 0));
+    }
+    f_star = -f_star;
+    return status;
+}
+
 int QuadOverAffine::category() {
-    return CAT_UNCATEGORIZED;
+    return CAT_QUAD_OVER_AFFINE;
 }
 
 

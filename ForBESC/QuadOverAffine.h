@@ -52,12 +52,11 @@ public:
      * @param A
      * @param b
      */
-    QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b);
-    
-    QuadOverAffine(const QuadOverAffine& orig);
+    QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b);    
     
     virtual ~QuadOverAffine();
     
+    virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);
 
     virtual int category();
 
@@ -66,13 +65,14 @@ private:
     
     QuadOverAffine();
     
-    Matrix *Q = NULL;
-    Matrix *q = NULL;
-    Matrix *A = NULL;
-    Matrix *b = NULL;
+    Matrix *Q = NULL;   /**< Matrix Q (Hessian) */
+    Matrix *q = NULL;   /**< Vector q (Linear term) */
+    Matrix *A = NULL;   /**< Matrix A */
+    Matrix *b = NULL;   /**< Matrix b */
     
-    Matrix *F = NULL; // F = [Q A'; A 0]
-    FactoredSolver * Fsolver = NULL;
+    Matrix *F = NULL;                   /**< Matrix <code>F = [Q A'; A 0]</code> */
+    Matrix *sigma = NULL;
+    FactoredSolver * Fsolver = NULL;    /**< Factorizer for matrix F */
 };
 
 #endif	/* QUADOVERAFFINE_H */
