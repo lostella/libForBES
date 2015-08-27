@@ -23,3 +23,5 @@ dist/**
 *.info
 html/*
 octave-workspace
+.~lock*
+*.odt
