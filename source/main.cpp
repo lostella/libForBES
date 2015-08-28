@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     A.set(6, 9, 0.56);
     A.set(7, 8, 0.11);
     
-    FILE *f = fopen("/home/chung/Documents/MATLAB/ForBES/matrices/F000005436.txt", "w");
+    FILE *f = fopen("/home/chung/Documents/MATLAB/libforbes/matrices/F000005436.txt", "w");
     MatrixWriter writer(A);
     writer.enforceDenseMode(true);
     writer.setWriteFormat(MatrixWriter::PLAIN_TXT);
