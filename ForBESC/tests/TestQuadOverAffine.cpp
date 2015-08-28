@@ -33,7 +33,9 @@ void TestQuadOverAffine::testQuadOverAffine() {
     Matrix q = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix b = MatrixFactory::MakeRandomMatrix(s, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 
-    QuadOverAffine * qoa = new QuadOverAffine(Q, q, A, b);
+    QuadOverAffine * qoa;
+    _ASSERT_OK(qoa = new QuadOverAffine(Q, q, A, b));
+    _ASSERT_NEQ(NULL, qoa);
 
     Matrix y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     double fstar = 0.0;
@@ -41,7 +43,7 @@ void TestQuadOverAffine::testQuadOverAffine() {
     int status = qoa->callConj(y, fstar, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NOT(std::abs(fstar) < 1e-7);
-    
+
     _ASSERT_OK(delete qoa);
 
 }

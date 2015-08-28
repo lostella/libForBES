@@ -56,55 +56,11 @@ int main(int argc, char** argv) {
     
     FILE *f = fopen("./matrices/F000005436.txt", "w");
     MatrixWriter writer(A);
-    writer.enforceDenseMode(true);
-    writer.setWriteFormat(MatrixWriter::JSON);
+    //writer.enforceDenseMode(true);
+    writer.setWriteFormat(MatrixWriter::PLAIN_TXT);
     writer.write(f);
     fclose(f);
-    
-
-
-    std::cout << A;
-    LDLFactorization * solver = new LDLFactorization(A);
-    int status = solver->factorize();
-    std::cout << "status = " << status << "\n";
-
-    double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
-    Matrix rhs(N, 1, b);
-    
-    Matrix sol;
-    solver->solve(rhs, sol);
-    
-    std::cout << sol;
-    delete solver;
-
-
-
-    //
-    //    /* only the upper triangular part of A is required */
-    //    int Ap [N + 1] = {0, 1, 2, 3, 4, 6, 7, 9, 11, 15, ANZ};
-    //    int Ai[ANZ] =    {0, 1, 2, 3, 1, 4, 5, 4, 6, 4, 7, 0, 4, 7, 8, 1, 4, 6, 9};
-    //    double Ax[ANZ] = {1.7, 1., 1.5, 1.1, .02, 2.6, 1.2, .16, 1.3, .09, 1.6,
-    //        .13, .52, .11, 1.4, .01, .53, .56, 3.1};
-    //    double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
-    //
-    //    double Lx [LNZ], D [N], Y [N];
-    //    int Li [LNZ], Lp [N + 1], Parent [N], Lnz [N], Flag [N], Pattern [N], d, i;
-    //
-    //    /* factorize A into LDL’ (P and Pinv not used) */
-    //    ldl_symbolic(N, Ap, Ai, Lp, Parent, Lnz, Flag, NULL, NULL);
-    //    printf("Non-zeros in L, excluding diagonal: %d\n", Lp [N]);
-    //
-    //    d = ldl_numeric(N, Ap, Ai, Ax, Lp, Parent, Lnz, Li, Lx, D, Y, Pattern,
-    //            Flag, NULL, NULL);
-    //    if (d == N) {
-    //        /* solve Ax=b, overwriting b with the solution x */
-    //        ldl_lsolve(N, b, Lp, Li, Lx);
-    //        ldl_dsolve(N, b, D);
-    //        ldl_ltsolve(N, b, Lp, Li, Lx);
-    //        for (i = 0; i < N; i++) printf("x [%d] = %g\n", i, b [i]);
-    //    } else {
-    //        printf("ldl_numeric failed, D (%d,%d) is zero\n", d, d);
-    //    }
+   
 
     return (0);
 }

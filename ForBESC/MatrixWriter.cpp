@@ -45,8 +45,8 @@ void MatrixWriter::printJSON(FILE* fp) {
 }
 
 void MatrixWriter::printTXT(FILE* fp) {
-    fprintf(fp, "%d\n", (int) (m_matrix.getType()));
-    fprintf(fp, "%zu\n", m_matrix.getNrows());
+    fprintf(fp, "%d ", (int) (m_matrix.getType()));
+    fprintf(fp, "%zu ", m_matrix.getNrows());
     fprintf(fp, "%zu\n", m_matrix.getNcols());
 
     if (m_matrix.getType() == Matrix::MATRIX_DENSE || m_enforceDenseMode) {
@@ -69,6 +69,7 @@ void MatrixWriter::write(FILE* fp) {
             printTXT(fp);
         }
     } else if (m_matrix.getType() == Matrix::MATRIX_SPARSE) {
+        
         throw std::logic_error("Sparse serialization - not implemented yet!");
     }
 
