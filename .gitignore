@@ -1,5 +1,7 @@
 build/
+dist/
 nbproject/
+source/nbproject
 *.tag
 *.o
 *.d

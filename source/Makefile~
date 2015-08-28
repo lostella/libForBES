@@ -1,0 +1,51 @@
+CXX = g++
+
+OBJ_DIR = build/Debug/GNU-Linux-x86
+OBJ_TEST_DIR = build/Debug/GNU-Linux-x86/Test
+BIN_DIR = dist/Debug/GNU-Linux-x86
+BIN_TEST_DIR = dist/Debug/GNU-Linux-x86/Test
+
+TEST_DIR = tests
+
+SS_DIR = /home/chung/Documents/MATLAB/SuiteSparse
+
+CFLAGS = -c -Wall -DUSE_LIBS
+
+IFLAGS = -I. -I$(SS_DIR)/CHOLMOD/Include -I$(SS_DIR)/LDL/Include -I$(SS_DIR)/SuiteSparse_config -I/usr/include/lapacke
+
+lFLAGS = -lldl -lcholmod -lamd -lcolamd -lsuitesparseconfig -lccolamd -lcamd -llapacke -lblas -llapack -lopenblas -lm -lrt
+
+LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib -L$(SS_DIR)/AMD/Lib -L$(SS_DIR)/COLAMD/Lib -L$(SS_DIR)/SuiteSparse_config -L$(SS_DIR)/CCOLAMD/Lib -L$(SS_DIR)/CAMD/Lib -L$(SS_DIR)/LDL/Lib -L/usr/lib64
+
+SOURCES = ForBESUtils.cpp Function.cpp Matrix.cpp MatrixFactory.cpp Quadratic.cpp \
+	QuadOverAffine.cpp LinearOperator.cpp QuadraticOperator.cpp FactoredSolver.cpp \
+	CholeskyFactorization.cpp LDLFactorization.cpp IndBox.cpp MatrixOperator.cpp
+
+OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
+
+TESTS = TestCholesky.test TestMatrix.test TestMatrixFactory.test TestMatrixOperator.test \
+	TestLDL.test TestIndBox.test TestQuadOverAffine.test TestQuadratic.test TestQuadraticOperator.test
+
+### TEST TARGETS
+
+build-tests: dirs $(TESTS)
+
+%.test: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
+	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*.o $(TEST_DIR)/$*.cpp
+	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*Runner.o $(TEST_DIR)/$*Runner.cpp
+	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
+
+$(OBJ_DIR)/%.o: %.cpp
+	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
+			
+### DIRECTORIES
+
+dirs:						
+	mkdir -p $(OBJ_DIR); mkdir -p $(OBJ_TEST_DIR); mkdir -p $(BIN_DIR); mkdir -p $(BIN_TEST_DIR)
+
+### CLEAN
+
+clean:				
+	rm -r $(OBJ_DIR)/*.o $(OBJ_TEST_DIR)/*.o $(BIN_DIR)/*
+
+.SECONDARY: 

@@ -31,7 +31,7 @@ using namespace std;
 #define LNZ 13 /* # of nonzeros below the diagonal of L */
 
 int main(int argc, char** argv) {
-    std::cout << "libforbes v0.1\n";
+
     Matrix A = MatrixFactory::MakeSparse(10, 10, 19, Matrix::SPARSE_SYMMETRIC_L);
     A.set(0, 0, 1.7);
     A.set(0, 8, 0.13);

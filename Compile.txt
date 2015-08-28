@@ -1,0 +1,136 @@
+1. Libraries (in this order):
+
+-lldl
+-lcholmod 
+-lamd 
+-lcolamd 
+-lsuitesparseconfig 
+-lccolamd 
+-lcamd 
+-llapacke 
+-lblas 
+-llapack 
+-lopenblas 
+-lm 
+-lrt
+
+-----------------------
+
+
+
+2. Library directories:
+
+{Suite Sparse Base}/CHOLMOD/Lib 
+{Suite Sparse Base}/AMD/Lib 
+{Suite Sparse Base}/COLAMD/Lib 
+{Suite Sparse Base}/SuiteSparse_config 
+{Suite Sparse Base}/CCOLAMD/Lib 
+{Suite Sparse Base}/CAMD/Lib
+
+-----------------------
+
+
+3. Include directories:
+
+{Suite Sparse Base}/CHOLMOD/Include
+
+-----------------------
+
+
+
+
+4. Netbeans compilation commands:
+
+SOURCE_DIR="/home/chung/Documents/MATLAB/ForBES/source/"
+OBJ_DIR="build/Debug/GNU-Linux-x86/"
+
+# Compiler options
+COPS="-fprofile-arcs -ftest-coverage   -c -g -DUSE_LIBS"
+
+FORBES_OPTIONS="-fprofile-arcs -ftest-coverage   -c -g -DUSE_LIBS -I/home/chung/Documents/MATLAB/SuiteSparse/CHOLMOD/Include  \
+-I/home/chung/Documents/MATLAB/SuiteSparse/SuiteSparse_config  \
+-I/home/chung/Documents/MATLAB/SuiteSparse/LDL/Include -MMD -MP -MF"
+
+# Compile ForBESUtils.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}ForBESUtils.o.d" -o ${OBJ_DIR}ForBESUtils.o ${SOURCE_DIR}ForBESUtils.cpp
+
+# Compile MatrixOperator.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}MatrixOperator.o.d" -o ${OBJ_DIR}MatrixOperator.o ${SOURCE_DIR}MatrixOperator.cpp
+
+# Compile QuadOverAffine.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}QuadOverAffine.o.d" -o ${OBJ_DIR}QuadOverAffine.o ${SOURCE_DIR}QuadOverAffine.cpp
+
+
+# Compile CholeskyFactorization.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}CholeskyFactorization.o.d" -o ${OBJ_DIR}CholeskyFactorization.o ${SOURCE_DIR}CholeskyFactorization.cpp
+
+
+# Compile FactoredSolver.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}FactoredSolver.o.d" -o ${OBJ_DIR}FactoredSolver.o ${SOURCE_DIR}FactoredSolver.cpp
+
+# Compile Function.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}Function.o.d" -o ${OBJ_DIR}Function.o ${SOURCE_DIR}Function.cpp
+
+
+# Compile IndBox.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}IndBox.o.d" -o ${OBJ_DIR}IndBox.o ${SOURCE_DIR}IndBox.cpp
+
+# Compile IndPos.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}IndPos.o.d" -o ${OBJ_DIR}IndPos.o ${SOURCE_DIR}IndPos.cpp
+
+# Compile LDLFactorization.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}LDLFactorization.o.d" -o ${OBJ_DIR}LDLFactorization.o ${SOURCE_DIR}LDLFactorization.cpp
+
+# Compile LinearOperator.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}LinearOperator.o.d" -o ${OBJ_DIR}LinearOperator.o ${SOURCE_DIR}LinearOperator.cpp
+
+# Compile Matrix.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}Matrix.o.d" -o ${OBJ_DIR}Matrix.o ${SOURCE_DIR}Matrix.cpp
+
+
+# Compile MatrixFactory.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}MatrixFactory.o.d" -o ${OBJ_DIR}MatrixFactory.o ${SOURCE_DIR}MatrixFactory.cpp
+
+# Compile MatrixWriter.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}MatrixWriter.o.d" -o ${OBJ_DIR}MatrixWriter.o ${SOURCE_DIR}MatrixWriter.cpp
+
+# Compile Quadratic.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}Quadratic.o.d" -o ${OBJ_DIR}Quadratic.o ${SOURCE_DIR}Quadratic.cpp
+
+# Compile QuadraticOperator.cpp
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}QuadraticOperator.o.d" -o ${OBJ_DIR}QuadraticOperator.o ${SOURCE_DIR}QuadraticOperator.cpp
+
+# MAIN
+g++  ${FORBES_OPTIONS} "${OBJ_DIR}main.o.d" -o ${OBJ_DIR}main.o ${SOURCE_DIR}main.cpp
+
+# Libraries
+LIBS="-lldl -lcholmod -lamd -lcolamd -lsuitesparseconfig -lccolamd -lcamd -llapacke -lblas -llapack -lopenblas -lm -lrt"
+
+# Link
+g++ -fprofile-arcs -ftest-coverage \
+-o dist/Debug/GNU-Linux-x86/forbesc build/Debug/GNU-Linux-x86//ForBESUtils.o \
+build/Debug/GNU-Linux-x86//MatrixOperator.o \
+build/Debug/GNU-Linux-x86//QuadOverAffine.o \
+build/Debug/GNU-Linux-x86/CholeskyFactorization.o \
+build/Debug/GNU-Linux-x86/FactoredSolver.o build/Debug/GNU-Linux-x86/Function.o \
+build/Debug/GNU-Linux-x86/IndBox.o build/Debug/GNU-Linux-x86/IndPos.o build/Debug/GNU-Linux-x86/LDLFactorization.o \
+build/Debug/GNU-Linux-x86/LinearOperator.o build/Debug/GNU-Linux-x86/Matrix.o \
+build/Debug/GNU-Linux-x86/MatrixFactory.o build/Debug/GNU-Linux-x86/MatrixWriter.o \
+build/Debug/GNU-Linux-x86/Quadratic.o build/Debug/GNU-Linux-x86/QuadraticOperator.o \
+build/Debug/GNU-Linux-x86/main.o -L/home/chung/Documents/MATLAB/SuiteSparse/CHOLMOD/Lib \
+-L/home/chung/Documents/MATLAB/SuiteSparse/AMD/Lib \
+-L/home/chung/Documents/MATLAB/SuiteSparse/COLAMD/Lib \
+-L/home/chung/Documents/MATLAB/SuiteSparse/SuiteSparse_config \
+-L/home/chung/Documents/MATLAB/SuiteSparse/CCOLAMD/Lib \
+-L/home/chung/Documents/MATLAB/SuiteSparse/CAMD/Lib \
+-L/home/chung/Documents/MATLAB/SuiteSparse/LDL/Lib -Wl,-rpath,. \
+${LIBS}
+
+-----------------------
+
+
+
+5. (Optional) Preprocessor directives:
+
+USE_LIBS        :   Use BLAS and LAPACKE (Recommended) 
+DEBUG_VERBOSE   :   Show debug messages
