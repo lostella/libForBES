@@ -27,3 +27,4 @@ html/*
 octave-workspace
 .~lock*
 *.odt
+*~
