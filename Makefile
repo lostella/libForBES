@@ -89,6 +89,13 @@ test:
 	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestLDL
 	${BIN_TEST_DIR}/TestCholesky
+	${BIN_TEST_DIR}/TestIndBox  
+	${BIN_TEST_DIR}/TestMatrixFactory  
+	${BIN_TEST_DIR}/TestMatrixOperator  
+	${BIN_TEST_DIR}/TestQuadOverAffine  
+	${BIN_TEST_DIR}/TestQuadratic  
+	${BIN_TEST_DIR}/TestQuadraticOperator
+
 	
 
 .SECONDARY: 
