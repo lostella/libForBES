@@ -37,7 +37,7 @@ int CholeskyFactorization::factorize() {
 #ifdef SET_L_OFFDIAG_TO_ZERO
             for (size_t i = 0; i < n; i++) {
                 for (size_t j = i + 1; j < n; j++) {
-                    L.set(i, j, 0.0f);
+                    L.set(i, j, 0.0);
                 }
             }
 #endif
@@ -46,9 +46,6 @@ int CholeskyFactorization::factorize() {
         }
         return info;
     }
-
-
-
 }
 
 int CholeskyFactorization::solve(const Matrix& rhs, Matrix& solution) const {

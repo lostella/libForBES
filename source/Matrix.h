@@ -237,6 +237,8 @@ public:
      * @return 
      */
     MatrixType getType() const;
+    
+    std::string getTypeString() const;
 
     /* Utilities */
 

@@ -34,6 +34,7 @@ Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
 }
 
 Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale) {
+    std::srand((unsigned int)std::time(0)); 
     Matrix R = MakeSparse(nrows, ncols, nnz, Matrix::SPARSE_UNSYMMETRIC);
     std::set<nice_pair> s;
     nice_pair p;

@@ -30,37 +30,38 @@ using namespace std;
 #define ANZ 19 /* # of nonzeros on diagonal and upper triangular part of A */
 #define LNZ 13 /* # of nonzeros below the diagonal of L */
 
-int main(int argc, char** argv) {
-    std::cout << "libforbes v0.1\n";
-    Matrix A = MatrixFactory::MakeSparse(10, 10, 19, Matrix::SPARSE_SYMMETRIC_L);
-    A.set(0, 0, 1.7);
-    A.set(0, 8, 0.13);
-    A.set(1, 1, 1.0);
-    A.set(1, 9, 0.01);
-    A.set(2, 2, 1.5);
-    A.set(3, 3, 1.1);
-    A.set(4, 4, 2.6);
-    A.set(5, 5, 1.2);
-    A.set(6, 6, 1.3);
-    A.set(6, 6, 1.3);
-    A.set(7, 7, 1.6);
-    A.set(8, 8, 1.4);
-    A.set(9, 9, 3.1);
-    A.set(1, 4, 0.02);
-    A.set(4, 6, 0.16);
-    A.set(4, 7, 0.09);
-    A.set(4, 8, 0.52);
-    A.set(4, 9, 0.53);
-    A.set(6, 9, 0.56);
-    A.set(7, 8, 0.11);
-    
-    FILE *f = fopen("/home/chung/Documents/MATLAB/libforbes/matrices/F000005436.txt", "w");
-    MatrixWriter writer(A);
-    writer.enforceDenseMode(true);
-    writer.setWriteFormat(MatrixWriter::PLAIN_TXT);
+void createMatFile(const char * fname, Matrix F) {
+    FILE *f;
+    char buff[150];
+    sprintf(buff, "/home/chung/Documents/MATLAB/libforbes/matrices/%s.mtx", fname);
+    std::cout << buff << "\n";
+    f = fopen(buff, "w");
+    MatrixWriter writer(F);
+    writer.enforceDenseMode(false);
+    writer.setWriteFormat(MatrixWriter::JSON);
     writer.write(f);
     fclose(f);
-   
+}
+
+int main(int argc, char** argv) {
+    std::cout << "libforbes v0.2\n";
+    Matrix D = MatrixFactory::MakeRandomMatrix(3, 7, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix L = MatrixFactory::MakeRandomMatrix(5, 5, 0.0, 1.0, Matrix::MATRIX_LOWERTR);
+    Matrix H = MatrixFactory::MakeRandomMatrix(5, 5, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
+    Matrix X = MatrixFactory::MakeRandomMatrix(5, 5, 0.0, 1.0, Matrix::MATRIX_DIAGONAL);
+    Matrix S = MatrixFactory::MakeRandomSparse(20, 20, 12, 0.0, 1.0);
+    
+    createMatFile("FDense", D);
+    createMatFile("FLower", L);
+    createMatFile("FSymmetric", H);
+    createMatFile("FDiagonal", X);
+    createMatFile("FSparse", S);
+    
+    std::cout << D.getTypeString() << std::endl;
+    std::cout << H.getTypeString() << std::endl;
+    std::cout << S.getTypeString() << std::endl;
+    std::cout << L.getTypeString() << std::endl;
+    std::cout << X.getTypeString() << std::endl;
 
     return (0);
 }

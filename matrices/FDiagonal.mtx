@@ -1,0 +1,8 @@
+{
+  "type":"diagonal",
+  "nrows":5,
+  "ncols":5,
+  "datalength":5,
+  "enforceDenseMode":0,
+  "data":[0.0860558, 0.192214, 0.663227, 0.890233, 0.348893]
+}

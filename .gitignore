@@ -19,7 +19,6 @@ nbproject/**
 various/**
 ./.*
 .*
-Makefile
 coverage/**
 dist/**
 *.info

@@ -161,7 +161,7 @@ void Matrix::transpose() {
     if (m_type == MATRIX_DIAGONAL || m_type == MATRIX_SYMMETRIC) {
         return;
     }
-    
+
     if (m_type == MATRIX_SPARSE) {
         _createSparse();
         m_sparse = cholmod_transpose(m_sparse, 1, cholmod_handle());
@@ -1011,4 +1011,17 @@ Matrix operator*(double alpha, Matrix& obj) {
     return (M);
 }
 
+std::string Matrix::getTypeString() const {
+    const char names[5][10] = {
+        "dense",
+        "sparse",
+        "diagonal",
+        "lower",
+        "symmetric"
+    };
 
+    int i = static_cast<int> (getType());
+    std::string s = std::string(names[i]);
+    return s;
+
+}
