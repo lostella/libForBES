@@ -10,6 +10,8 @@ BIN_TEST_DIR = ${BIN_DIR}/Test
 
 TEST_DIR = tests
 
+ARCHIVE = ${BIN_DIR}/libforbes.a
+
 CFLAGS = -c -DUSE_LIBS
 
 IFLAGS = -I. -I./source -I$(SS_DIR)/CHOLMOD/Include -I$(SS_DIR)/LDL/Include -I$(SS_DIR)/SuiteSparse_config -I/usr/include/lapacke
@@ -58,34 +60,14 @@ TESTS = \
 	TestQuadratic.test \
 	TestQuadraticOperator.test
 
-build-tests: dirs $(TESTS)
+TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
+	
+$(ARCHIVE): $(OBJECTS)
+	ar rcs $(ARCHIVE) $(OBJECTS)
 
-%.test: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
-	@echo Compiling $*
-	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*.o $(TEST_DIR)/$*.cpp
-	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*Runner.o $(TEST_DIR)/$*Runner.cpp
-	@echo Linking $*
-	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
+build-tests: dirs $(TEST_BINS)
 
-$(OBJ_DIR)/%.o: source/%.cpp
-	@echo Compiling $*
-	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
-			
-
-dirs:						
-	@echo Creating directories
-	mkdir -p $(OBJ_DIR); 
-	mkdir -p $(OBJ_TEST_DIR); 
-	mkdir -p $(BIN_DIR); 
-	mkdir -p $(BIN_TEST_DIR)
-
-clean:				
-	@echo Cleaning
-	rm -rf $(OBJ_DIR)/*.o ;
-	rm -rf $(OBJ_TEST_DIR)/*.o; 
-	rm -rf $(BIN_DIR)/*;
-
-test:
+test: build-tests
 	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestLDL
 	${BIN_TEST_DIR}/TestCholesky
@@ -96,6 +78,35 @@ test:
 	${BIN_TEST_DIR}/TestQuadratic  
 	${BIN_TEST_DIR}/TestQuadraticOperator
 
-	
+$(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
+	@echo Compiling $*
+	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*.o $(TEST_DIR)/$*.cpp
+	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*Runner.o $(TEST_DIR)/$*Runner.cpp
+	@echo Linking $*
+	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
+
+$(OBJ_DIR)/%.o: source/%.cpp
+	@echo Compiling $*
+	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
+
+dirs: $(OBJ_DIR) $(OBJ_TEST_DIR) $(BIN_DIR) $(BIN_TEST_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(OBJ_TEST_DIR):
+	mkdir -p $(OBJ_TEST_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(BIN_TEST_DIR):
+	mkdir -p $(BIN_TEST_DIR)
+
+clean:				
+	@echo Cleaning
+	rm -rf $(OBJ_DIR)/*.o ;
+	rm -rf $(OBJ_TEST_DIR)/*.o; 
+	rm -rf $(BIN_DIR)/*;
 
 .SECONDARY: 
