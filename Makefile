@@ -62,10 +62,10 @@ TESTS = \
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 	
-$(ARCHIVE): $(OBJECTS)
+$(ARCHIVE): dirs $(OBJECTS)
 	ar rcs $(ARCHIVE) $(OBJECTS)
 
-build-tests: dirs $(TEST_BINS)
+build-tests: $(ARCHIVE) $(TEST_BINS)
 
 test: build-tests
 	${BIN_TEST_DIR}/TestMatrix
