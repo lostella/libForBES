@@ -30,6 +30,7 @@
  * \version 0.0-tentative
  * \author Pantelis Sopasakis
  * \date Created on July 24, 2015, 7:31 PM
+ * \ingroup LinOp
  */
 class MatrixOperator : public LinearOperator {
 public:

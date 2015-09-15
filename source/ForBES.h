@@ -503,6 +503,11 @@
  * 
  */
 
+/** \defgroup LinOp Linear Operators
+ *
+ * \brief Linear operators
+ */
+
 
 /*
  * This is a header you may include to your project - it will include all those

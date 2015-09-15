@@ -55,6 +55,7 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
 }
 
 Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type) {
+    std::srand((unsigned int)std::time(0)); 
     int len = 0;
     switch (type) {
         case Matrix::MATRIX_DENSE:
