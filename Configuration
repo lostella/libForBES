@@ -1,2 +1,2 @@
 # Path to your SuiteSparse directory
-SS_DIR = /home/lorenzo/SuiteSparse
+SS_DIR = /home/chung/Documents/MATLAB/SuiteSparse

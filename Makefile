@@ -103,6 +103,8 @@ $(ARCHIVE): dirs $(OBJECTS)
 	@echo "\nArchiving..."
 	ar rcs $(ARCHIVE) $(OBJECTS)
 
+all: $(ARCHIVE)
+	
 build-tests: $(ARCHIVE) $(TEST_BINS)
 
 test: build-tests
@@ -154,6 +156,7 @@ help:
 	@echo "Makefile targets for libforbes:\n"
 	@echo "make                     - Compiles, links and archives [creates libforbes.a]"
 	@echo "make clean               - Cleans all previously built files"
+	@echo "make all                 - Same as make (tests are not built)"	
 	@echo "make build-tests         - Compiles and links the tests"
 	@echo "make test                - Compiles [if necessary] and runs all tests"
 	@echo "make help                - This help message\n"
