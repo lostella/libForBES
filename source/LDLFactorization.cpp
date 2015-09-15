@@ -56,6 +56,7 @@ int LDLFactorization::solve(const Matrix& rhs, Matrix& solution) const {
                 m_sparse_ldl_factor->Lx);
         ldl_dsolve(n, b, m_sparse_ldl_factor->D);
         ldl_ltsolve(n, b, m_sparse_ldl_factor->Lp, m_sparse_ldl_factor->Li, m_sparse_ldl_factor->Lx);
+        status = ForBESUtils::STATUS_OK;
     }
     return status;
 }
@@ -84,8 +85,8 @@ int LDLFactorization::factorize() {
         int Flag[n];
         m_sparse_ldl_factor->Lp = new int[n + 1];
         ldl_symbolic(n,
-                (int*) (m_matrix.m_sparse->p),
-                (int*) (m_matrix.m_sparse->i),
+                static_cast<int*>(m_matrix.m_sparse->p),
+                static_cast<int*>(m_matrix.m_sparse->i),
                 m_sparse_ldl_factor->Lp,
                 Parent,
                 Lnz,
@@ -100,9 +101,9 @@ int LDLFactorization::factorize() {
         int Pattern[n];
 
         d = ldl_numeric(n,
-                (int*) (m_matrix.m_sparse->p),
-                (int*) (m_matrix.m_sparse->i),
-                (double*) (m_matrix.m_sparse->x),
+                static_cast<int*>(m_matrix.m_sparse->p),
+                static_cast<int*>(m_matrix.m_sparse->i),
+                static_cast<double*>(m_matrix.m_sparse->x),
                 m_sparse_ldl_factor->Lp,
                 Parent,
                 Lnz,
@@ -110,10 +111,9 @@ int LDLFactorization::factorize() {
                 m_sparse_ldl_factor->Lx,
                 m_sparse_ldl_factor->D,
                 Y, Pattern, Flag, NULL, NULL);
-
         return d == n ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
 
-    }
+    }    
     return status;
 }
 

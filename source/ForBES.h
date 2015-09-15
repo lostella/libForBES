@@ -338,21 +338,22 @@
  * delete F;
  * \endcode
  * 
- * \subsection quadoveraff-fun-sec Quadratic-over affine
+ * \subsection quadoveraff-fun-sec Quadratic-over-affine
  * 
- * A quadratic-over-affine function is a function \f$F:\mathbb{R}^n \to \mathbb{R}\cup\{+\infty\}\f$ is the form
+ * A quadratic-over-affine function, or, a quadratic function plus the indicator of an affine subspace, 
+ * is a function \f$F:\mathbb{R}^n \to \mathbb{R}\cup\{+\infty\}\f$ is the form
  * 
  * \f[
  * F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|E),
  * \f]
  * 
- * where \f$E\f$ is an affine space
+ * where \f$E\f$ is the affine space
  * 
  * \f[
  * E = \{x: Ax = b\}
  * \f]
  * 
- * where \f$A\in\mathbb{R}^{s\times n}\f$ and \f$b\in\mathbb{R}^s\f$ and \f$\delta(\cdot|E)\f$ is the indicator function
+ * and \f$A\in\mathbb{R}^{s\times n}\f$, \f$b\in\mathbb{R}^s\f$ and \f$\delta(\cdot|E)\f$ is the indicator function
  * 
  * \f[
  * \delta(x|E) = \begin{cases}
@@ -432,6 +433,58 @@
  * \f]
  * 
  * 
+ * \subsection distance Various distance functions
+ * 
+ * \subsection logloss Log-logistic loss
+ * The log-logistic loss function is a function \f$f:\mathbb{R}^n\to \mathbb{R}\f$
+ * defined as follows. 
+ * 
+ * For \f$x\in\mathbb{R}^n\f$ let \f$e(x)\f$ be a vector whose
+ * \f$i\f$-th entry is equal to \f$e^{x_i}\f$, where \f$x_i\f$ is the \f$i\f$-th
+ * element of \f$x\f$. Let
+ * 
+ * \f[
+ * (p(x))_i = \frac{(e(x))_i}{1+(e(x))_i}
+ * \f]
+ * 
+ * where \f$(p(x))_i\f$ and \f$(e(x))_i\f$ stand for the \f$i\f$-th entries in
+ * \f$p(x)\f$ and \f$e(x)\f$ respectively.
+ * 
+ * Then, the log-logistic function with parameter \f$\mu\f$ is defined as
+ * 
+ * \f[
+ * f(x; \mu) = -\mu \sum_{i=1}^{n}\log((p(x))_i)
+ * \f]
+ * 
+ * The gradient of \f$f\f$ is then 
+ * 
+ * \f[
+ * (\nabla f(x; \mu))_i = \mu((p(x))_i-1)
+ * \f]
+ * 
+ * and its Hessian is
+ * 
+ * \f[
+ * (\nabla^2 f(x; \mu))_i = \mathrm{diag} \{ \mu \frac{(e(x))_i}{[(e(x))_i + 1]^2} \}
+ * \f]
+ * 
+ * 
+ * 
+ * \subsection hingeloss Hingle loss
+ * 
+ * \subsection huberloss Huber loss
+ * 
+ * \subsection quadloss Quadratic loss
+ * 
+ * \subsection quadoveraffineloss Quadratic-over-affine loss
+ * 
+ * \subsection elasticnet Elastic net
+ * 
+ * \subsection vectornorms Vector norms
+ * 
+ * \subsection nuclearnorm Nuclear norm
+ * 
+ * \subsection zerofunction Zero function
  */
 
 /* GROUPS */

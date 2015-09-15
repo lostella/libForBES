@@ -57,6 +57,8 @@ int main(int argc, char** argv) {
     createMatFile("FDiagonal", X);
     createMatFile("FSparse", S);
     
+    
+    
     std::cout << D.getTypeString() << std::endl;
     std::cout << H.getTypeString() << std::endl;
     std::cout << S.getTypeString() << std::endl;

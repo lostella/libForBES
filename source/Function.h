@@ -35,6 +35,8 @@
  * 
  * \todo Implement indBox, indPos, indNeg and indBall.
  * 
+ * \todo Return, when possible, the Hessian as a linear operator.
+ * 
  * This is a generic API for ForBES functions. Constructors for this class are
  * protected.
  */
