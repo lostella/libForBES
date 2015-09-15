@@ -1,6 +1,6 @@
 /* 
  * File:   OpSum.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on September 14, 2015, 9:25 PM
  */

@@ -1,6 +1,6 @@
 /* 
  * File:   OpTotalVariation.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on September 15, 2015, 2:50 PM
  */

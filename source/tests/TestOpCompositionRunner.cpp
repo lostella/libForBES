@@ -1,6 +1,6 @@
 /*
  * File:   TestOpCompositionRunner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Sep 15, 2015, 2:40:14 AM
  */

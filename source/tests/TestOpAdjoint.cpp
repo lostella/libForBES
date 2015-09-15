@@ -1,6 +1,6 @@
 /*
  * File:   TestOpAdjoint.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Sep 15, 2015, 3:01:47 PM
  */

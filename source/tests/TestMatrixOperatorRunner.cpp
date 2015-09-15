@@ -1,6 +1,6 @@
 /*
  * File:   TestMatrixOperatorRunner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Sep 14, 2015, 4:04:22 PM
  */

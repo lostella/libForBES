@@ -1,6 +1,6 @@
 /* 
  * File:   OpReverseVector.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on September 15, 2015, 12:57 PM
  */
@@ -8,7 +8,7 @@
 #include "OpReverseVector.h"
 
 OpReverseVector::OpReverseVector() {
-    m_vectorDim = -1;
+    m_vectorDim = 0;
 }
 
 OpReverseVector::~OpReverseVector() {

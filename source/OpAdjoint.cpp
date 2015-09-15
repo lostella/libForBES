@@ -1,6 +1,6 @@
 /* 
  * File:   OpAdjoint.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on September 15, 2015, 2:57 PM
  */

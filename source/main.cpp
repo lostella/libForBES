@@ -31,15 +31,18 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+    size_t o = 0;
+    std::cout << o << std::endl;
+
     LinearOperator * rev = new OpReverseVector();
-    
-    
+
+
     Matrix x = MatrixFactory::MakeRandomMatrix(5, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix xrev = rev->call(x);
-    
+
     std::cout << x;
     std::cout << xrev;
-    
+
     return (0);
 }
 

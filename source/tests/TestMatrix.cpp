@@ -1,6 +1,6 @@
 /*
  * File:   TestMatrix.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Sep 14, 2015, 3:34:41 PM
  */

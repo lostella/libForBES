@@ -1,6 +1,6 @@
 /*
  * File:   TestOpDCT2Runner.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Sep 15, 2015, 4:24:45 PM
  */

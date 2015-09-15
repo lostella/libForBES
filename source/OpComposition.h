@@ -1,6 +1,6 @@
 /* 
  * File:   OpComposition.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on September 14, 2015, 9:26 PM
  */

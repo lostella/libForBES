@@ -1,6 +1,6 @@
 /* 
  * File:   MatrixWriter.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on August 26, 2015, 7:55 PM
  */

@@ -1,6 +1,6 @@
 /*
  * File:   TestQuadOverAffine.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Aug 27, 2015, 2:19:01 PM
  */

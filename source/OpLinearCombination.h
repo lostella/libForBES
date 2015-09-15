@@ -1,6 +1,6 @@
 /* 
  * File:   OpLinearCombination.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on September 14, 2015, 9:25 PM
  */
@@ -24,11 +24,15 @@
 class OpLinearCombination : public LinearOperator {
     
 public:
-    OpLinearCombination();
-    OpLinearCombination(const OpLinearCombination& orig);
+    
+    OpLinearCombination(LinearOperator& A, LinearOperator& B, double a, double b);
+
     virtual ~OpLinearCombination();
 private:
-
+    LinearOperator& A;
+    LinearOperator& B;
+    double a;
+    double b;
 };
 
 #endif	/* OPLINEARCOMBINATION_H */

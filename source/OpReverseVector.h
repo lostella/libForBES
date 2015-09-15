@@ -1,6 +1,6 @@
 /* 
  * File:   OpReverseVector.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on September 15, 2015, 12:57 PM
  */

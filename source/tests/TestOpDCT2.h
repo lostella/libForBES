@@ -1,13 +1,18 @@
 /*
  * File:   TestOpDCT2.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Sep 15, 2015, 4:24:44 PM
  */
 
 #ifndef TESTOPDCT2_H
 #define	TESTOPDCT2_H
+#define FORBES_TEST_UTILS
 
+#include "ForBES.h"
+#include "LinearOperator.h"
+#include "OpDCT2.h"
+#include "MatrixFactory.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 class TestOpDCT2 : public CPPUNIT_NS::TestFixture {
