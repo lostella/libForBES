@@ -1,29 +1,12 @@
 /*
  * File:   TestMatrix.cpp
- * Author: Pantelis Sopasakis
+ * Author: chung
  *
- * Created on Jul 7, 2015, 8:07:04 PM
- * 
- * ForBES is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * ForBES is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+ * Created on Sep 14, 2015, 3:34:41 PM
  */
 
 #include "TestMatrix.h"
 
-#include <cstdlib>
-#include <stdlib.h>
-#include <cmath>
-#include <time.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestMatrix);
 
@@ -34,11 +17,29 @@ TestMatrix::~TestMatrix() {
 }
 
 void TestMatrix::setUp() {
-    srand((unsigned) time(NULL));
 }
 
 void TestMatrix::tearDown() {
 }
+
+void TestMatrix::testGetSet() {
+    Matrix f(10, 10);
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            f.set(i, j, static_cast<double> (3 * i + 5 * j + 13));
+        }
+    }
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+            _ASSERT_EQ(static_cast<double> (3 * i + 5 * j + 13), f.get(i, j));
+        }
+    }
+
+    Matrix o;
+    _ASSERT(o.isEmpty());
+    _ASSERT_EXCEPTION(o.get(0, 0), std::out_of_range);
+}
+
 
 void TestMatrix::testQuadratic() {
     /* Test quadratic with diagonal matrices */
@@ -140,24 +141,6 @@ void TestMatrix::test_MDD1() {
     Matrix B(3, 5);
     Matrix C;
     _ASSERT_EXCEPTION(C = A*B, std::invalid_argument);
-}
-
-void TestMatrix::testGetSet() {
-    Matrix f(10, 10);
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            f.set(i, j, static_cast<double> (3 * i + 5 * j + 13));
-        }
-    }
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            _ASSERT_EQ(static_cast<double> (3 * i + 5 * j + 13), f.get(i, j));
-        }
-    }
-
-    Matrix o;
-    _ASSERT(o.isEmpty());
-    _ASSERT_EXCEPTION(o.get(0, 0), std::out_of_range);
 }
 
 void TestMatrix::testAssignment() {
@@ -2005,4 +1988,3 @@ void TestMatrix::test_ASS() {
         }
     }
 }
-

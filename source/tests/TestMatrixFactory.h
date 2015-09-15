@@ -42,4 +42,3 @@ private:
 };
 
 #endif	/* TESTMATRIXFACTORY_H */
-

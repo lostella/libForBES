@@ -1,8 +1,8 @@
 /*
- * File:   TestMatrixFactoryRunner.cpp
- * Author: Pantelis Sopasakis
+ * File:   TestMatrixOperatorRunner.cpp
+ * Author: chung
  *
- * Created on Jul 13, 2015, 1:03:11 PM
+ * Created on Sep 14, 2015, 4:04:22 PM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

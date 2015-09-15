@@ -57,4 +57,3 @@ void TestQuadraticOperator::testCall() {
     _ASSERT_OK(delete F);
     _ASSERT_OK(delete F2);
 }
-

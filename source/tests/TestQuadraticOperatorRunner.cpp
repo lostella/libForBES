@@ -1,8 +1,8 @@
 /*
- * File:   TestQuadraticRunner.cpp
+ * File:   TestQuadraticOperatorRunner.cpp
  * Author: Pantelis Sopasakis
  *
- * Created on Jul 9, 2015, 4:14:39 AM
+ * Created on Jul 24, 2015, 8:52:27 PM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

@@ -32,4 +32,3 @@ private:
 };
 
 #endif	/* TESTQUADOVERAFFINE_H */
-

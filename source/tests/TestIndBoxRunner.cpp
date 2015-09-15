@@ -1,8 +1,8 @@
 /*
- * File:   TestQuadraticOperatorRunner.cpp
+ * File:   TestCholeskyRunner.cpp
  * Author: Pantelis Sopasakis
  *
- * Created on Jul 24, 2015, 8:52:27 PM
+ * Created on Aug 5, 2015, 12:28:55 AM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

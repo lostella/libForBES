@@ -1,8 +1,8 @@
 /*
- * File:   TestIndBoxRunner.cpp
- * Author: Pantelis Sopasakis
+ * File:   TestQuadOverAffineRunner.cpp
+ * Author: chung
  *
- * Created on Jul 26, 2015, 5:41:14 PM
+ * Created on Aug 27, 2015, 2:19:01 PM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

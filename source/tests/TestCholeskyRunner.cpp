@@ -1,8 +1,8 @@
 /*
- * File:   TestLDLRunner.cpp
+ * File:   TestCholeskyRunner.cpp
  * Author: Pantelis Sopasakis
  *
- * Created on Aug 4, 2015, 8:18:33 PM
+ * Created on Aug 5, 2015, 12:28:55 AM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

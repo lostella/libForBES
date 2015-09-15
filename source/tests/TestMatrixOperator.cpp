@@ -70,4 +70,3 @@ void TestMatrixOperator::testCallAdjoint() {
     delete T;
 }
 
-

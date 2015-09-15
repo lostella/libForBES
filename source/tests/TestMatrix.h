@@ -1,23 +1,9 @@
-/* 
+/*
  * File:   TestMatrix.h
- * Author: Pantelis Sopasakis
+ * Author: chung
  *
- * Created on Jul 7, 2015, 8:07:04 PM
- * 
- * ForBES is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *  
- * ForBES is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+ * Created on Sep 14, 2015, 3:34:41 PM
  */
-
 
 #ifndef TESTMATRIX_H
 #define	TESTMATRIX_H
@@ -27,10 +13,16 @@
 #define FORBES_TEST_UTILS
 #include "ForBES.h"
 
+#include <cstdlib>
+#include <stdlib.h>
+#include <cmath>
+#include <time.h>
+
 class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrix);
 
-
+    
+    
     CPPUNIT_TEST(testGetSet);
     CPPUNIT_TEST(testQuadratic);
     CPPUNIT_TEST(testQuadratic2);
@@ -128,9 +120,10 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_MDH);
     CPPUNIT_TEST(test_MDL);
 
-
     CPPUNIT_TEST_SUITE_END();
 
+        
+    
 public:
     TestMatrix();
     virtual ~TestMatrix();
@@ -138,6 +131,9 @@ public:
     void tearDown();
 
 private:
+    void testMethod();
+    void testFailedMethod();
+
     void testQuadratic();
     void testQuadratic2();
     void testQuadratic3();
@@ -263,12 +259,12 @@ private:
     void test_AXX();
     void test_AXL();
     void test_AXW();
-    
+
     /*
      * SPARSE + (?)'
      */
     void test_ASST();
-    
+
     /*
      * LOWER_TR + (?)
      */
@@ -287,7 +283,7 @@ private:
     /*
      * MULTIPLICATION TESTS
      */
-    void test_MDD1();    
+    void test_MDD1();
     void test_MXH();
     void test_MXL();
     void test_MDH();

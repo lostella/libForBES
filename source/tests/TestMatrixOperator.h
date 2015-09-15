@@ -36,4 +36,3 @@ private:
 };
 
 #endif	/* TESTMATRIXOPERATOR_H */
-

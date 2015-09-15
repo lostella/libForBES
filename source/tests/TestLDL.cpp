@@ -105,8 +105,9 @@ void TestLDL::testSolveSparse() {
 
 
     LDLFactorization * solver = new LDLFactorization(A);
-    int status = -123;
+    int status = 9999;
     _ASSERT_OK(status = solver->factorize());
+    
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
@@ -141,7 +142,7 @@ void TestLDL::testSolveSparse2() {
     
 
     FactoredSolver * solver = new LDLFactorization(A);
-    int status = -123;
+    int status = 9999;
     status = solver->factorize();
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
@@ -162,5 +163,4 @@ void TestLDL::testSolveSparse2() {
 
     delete solver;
 }
-
 

@@ -41,4 +41,3 @@ private:
 };
 
 #endif	/* TESTCHOLESKY_H */
-

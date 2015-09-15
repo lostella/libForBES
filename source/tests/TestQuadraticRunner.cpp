@@ -1,8 +1,8 @@
 /*
- * File:   TestQuadOverAffineRunner.cpp
- * Author: chung
+ * File:   TestQuadraticRunner.cpp
+ * Author: Pantelis Sopasakis
  *
- * Created on Aug 27, 2015, 2:19:01 PM
+ * Created on Jul 9, 2015, 4:14:39 AM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

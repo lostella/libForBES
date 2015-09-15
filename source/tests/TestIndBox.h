@@ -39,4 +39,3 @@ private:
 };
 
 #endif	/* TESTINDBOX_H */
-
