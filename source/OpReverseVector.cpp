@@ -8,13 +8,14 @@
 #include "OpReverseVector.h"
 
 OpReverseVector::OpReverseVector() {
+    m_vectorDim = -1;
 }
 
 OpReverseVector::~OpReverseVector() {
 }
 
 OpReverseVector::OpReverseVector(size_t n) {
-
+    this->m_vectorDim = n;
 }
 
 Matrix OpReverseVector::call(Matrix& x) {
@@ -33,11 +34,11 @@ Matrix OpReverseVector::callAdjoint(Matrix& x) {
 }
 
 size_t OpReverseVector::dimensionIn() {
-    return 0;
+    return m_vectorDim;
 }
 
 size_t OpReverseVector::dimensionOut() {
-    return 0;
+    return m_vectorDim;
 }
 
 bool OpReverseVector::isSelfAdjoint() {

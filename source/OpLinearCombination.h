@@ -8,6 +8,9 @@
 #ifndef OPLINEARCOMBINATION_H
 #define	OPLINEARCOMBINATION_H
 
+#include "LinearOperator.h"
+
+
 
 /**
  * \class OpLinearCombination

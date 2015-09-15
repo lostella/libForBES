@@ -15,7 +15,7 @@
 
 /**
  * \class OpReverseVector
- * \brief A linear operator </code>T(x)</code> which reverses the order of elements in <code>x</code>
+ * \brief A linear operator <code>T(x)</code> which reverses the order of elements in <code>x</code>
  * \version 0.0-tentative
  * \author Pantelis Sopasakis
  * \date Created on September 15, 2015, 12:57 PM

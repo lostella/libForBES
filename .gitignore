@@ -27,3 +27,6 @@ octave-workspace
 .~lock*
 *.odt
 *~
+Configuration
+main.cpp
+source/main.cpp

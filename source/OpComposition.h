@@ -41,14 +41,7 @@ public:
 
     virtual Matrix callAdjoint(Matrix& x);
 
-
-
-
-
-
 private:
-
-
 
     LinearOperator& A;
     LinearOperator& B;
