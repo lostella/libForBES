@@ -1,20 +1,50 @@
+# LIBFORBES MAKEFILE
+
 include Configuration
 
+#
+# Configurable properties
+#
+
+# C++ compiler
 CXX = g++
 
+# Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
+# To create a test coverage report add: -fprofile-arcs -ftest-coverage
+CFLAGS_ADDITIONAL = -O3 -fprofile-arcs -ftest-coverage
+
+# Additional link flags
+# To create a test coverage report add: -fprofile-arcs
+LFLAGS_ADDITIONAL = -fprofile-arcs
+
+# Lapacke Include directory on your system
+LAPACKE_INCLUDE = /usr/include/lapacke
+
+
+
+
+#                         #
+# Do not modify this file #
+#                         #
 OBJ_DIR = build/Debug
 BIN_DIR = dist/Debug
 
 OBJ_TEST_DIR = ${OBJ_DIR}/Test
 BIN_TEST_DIR = ${BIN_DIR}/Test
 
-TEST_DIR = tests
+TEST_DIR = source/tests
 
 ARCHIVE = ${BIN_DIR}/libforbes.a
 
-CFLAGS = -c -DUSE_LIBS
+CFLAGS = -c -DUSE_LIBS $(CFLAGS_ADDITIONAL)
 
-IFLAGS = -I. -I./source -I$(SS_DIR)/CHOLMOD/Include -I$(SS_DIR)/LDL/Include -I$(SS_DIR)/SuiteSparse_config -I/usr/include/lapacke
+IFLAGS = \
+	 -I. \
+	 -I./source \
+	 -I$(SS_DIR)/CHOLMOD/Include \
+	 -I$(SS_DIR)/LDL/Include \
+	 -I$(SS_DIR)/SuiteSparse_config \
+	 -I$(LAPACKE_INCLUDE)
 
 lFLAGS = \
 	-lldl \
@@ -28,9 +58,16 @@ lFLAGS = \
 	-lblas \
 	-llapack \
 	-lopenblas \
-	-lm -lrt
+	-lm -lrt \
+	$(LFLAGS_ADDITIONAL)
 
-LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib -L$(SS_DIR)/AMD/Lib -L$(SS_DIR)/COLAMD/Lib -L$(SS_DIR)/SuiteSparse_config -L$(SS_DIR)/CCOLAMD/Lib -L$(SS_DIR)/CAMD/Lib -L$(SS_DIR)/LDL/Lib -L/usr/lib64
+LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
+	 -L$(SS_DIR)/AMD/Lib \
+	 -L$(SS_DIR)/COLAMD/Lib \
+	 -L$(SS_DIR)/SuiteSparse_config \
+	 -L$(SS_DIR)/CCOLAMD/Lib \
+	 -L$(SS_DIR)/CAMD/Lib \
+	 -L$(SS_DIR)/LDL/Lib
 
 SOURCES = \
 	ForBESUtils.cpp \
@@ -63,6 +100,7 @@ TESTS = \
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 	
 $(ARCHIVE): dirs $(OBJECTS)
+	@echo "\nArchiving..."
 	ar rcs $(ARCHIVE) $(OBJECTS)
 
 build-tests: $(ARCHIVE) $(TEST_BINS)
@@ -79,13 +117,16 @@ test: build-tests
 	${BIN_TEST_DIR}/TestQuadraticOperator
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
+	@echo 
 	@echo Compiling $*
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*.o $(TEST_DIR)/$*.cpp
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*Runner.o $(TEST_DIR)/$*Runner.cpp
+	@echo 
 	@echo Linking $*
 	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
 
 $(OBJ_DIR)/%.o: source/%.cpp
+	@echo 
 	@echo Compiling $*
 	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
 
@@ -104,9 +145,18 @@ $(BIN_TEST_DIR):
 	mkdir -p $(BIN_TEST_DIR)
 
 clean:				
-	@echo Cleaning
+	@echo Cleaning...
 	rm -rf $(OBJ_DIR)/*.o ;
 	rm -rf $(OBJ_TEST_DIR)/*.o; 
 	rm -rf $(BIN_DIR)/*;
 
+help:
+	@echo "Makefile targets for libforbes:\n"
+	@echo "make                     - Compiles, links and archives [creates libforbes.a]"
+	@echo "make clean               - Cleans all previously built files"
+	@echo "make build-tests         - Compiles and links the tests"
+	@echo "make test                - Compiles [if necessary] and runs all tests"
+	@echo "make help                - This help message\n"
+	
+	
 .SECONDARY: 
