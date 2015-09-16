@@ -31,7 +31,7 @@ int CholeskyFactorization::factorize() {
         return (m_factor->minor == m_matrix.m_nrows) ? 0 : 1; /* Success: status = 0, else 1*/
     } else { /* If this is any non-sparse matrix: */
         memcpy(m_L, m_matrix.getData(), m_matrix.length() * sizeof (double)); /* m_L := m_matrix.m_data */
-        int info;
+        int info = ForBESUtils::STATUS_OK;
         if (m_matrix.getType() == Matrix::MATRIX_DENSE) { /* This is a dense matrix */
             info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', n, m_L, n);
 #ifdef SET_L_OFFDIAG_TO_ZERO

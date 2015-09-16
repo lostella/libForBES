@@ -43,7 +43,7 @@ int LDLFactorization::solve(const Matrix& rhs, Matrix& solution) const {
     for (size_t i = 0; i < n; i++) {
         solution.set(i, 0, rhs.get(i, 0));
     }
-    int status;
+    int status = ForBESUtils::STATUS_OK;
     if (Matrix::MATRIX_DENSE == m_matrix.getType()) {
         status = LAPACKE_dsytrs(LAPACK_COL_MAJOR, 'L', n, 1, LDL, n, ipiv, solution.getData(), n);
     } else if (Matrix::MATRIX_SYMMETRIC == m_matrix.getType()) {

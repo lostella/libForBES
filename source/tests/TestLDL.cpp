@@ -50,8 +50,9 @@ void TestLDL::testSolveDense() {
 
         Matrix err = A * x - b;
 
-        for (size_t i = 0; i < n; i++)
+        for (size_t i = 0; i < n; i++) {
             _ASSERT(std::abs(err.get(i, 0)) < tol);
+        }
 
         delete ldlSolver;
     }
@@ -107,7 +108,7 @@ void TestLDL::testSolveSparse() {
     LDLFactorization * solver = new LDLFactorization(A);
     int status = 9999;
     _ASSERT_OK(status = solver->factorize());
-    
+
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     double b[N] = {.287, .22, .45, .44, 2.486, .72, 1.55, 1.424, 1.621, 3.759};
@@ -133,13 +134,13 @@ void TestLDL::testSolveSparse2() {
     const size_t N = 40;
     const size_t NNZ = 2 * N;
     Matrix A = MatrixFactory::MakeRandomSparse(N, N, NNZ, 0.0, 1.0);
-    for (int i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
         A.set(i, i, A.get(i, i) + 1.5 * N);
     }
     Matrix At(A);
     At.transpose();
     A += At;
-    
+
 
     FactoredSolver * solver = new LDLFactorization(A);
     int status = 9999;
@@ -156,7 +157,7 @@ void TestLDL::testSolveSparse2() {
 
     Matrix err_b = A * sol_b - b;
     Matrix err_c = A * sol_c - c;
-    for (size_t i = 0; i < N; i++){
+    for (size_t i = 0; i < N; i++) {
         _ASSERT(std::abs(err_b.get(i, 0)) < tol);
         _ASSERT(std::abs(err_c.get(i, 0)) < tol);
     }

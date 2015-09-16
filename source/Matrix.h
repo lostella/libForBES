@@ -333,7 +333,7 @@ public:
      * @param sub index
      * @return reference to matrix data
      */
-    double &operator[](const int sub) const; //overloading []    
+    double &operator[](const size_t sub) const; //overloading []    
 
     /**
      * Summation operator.

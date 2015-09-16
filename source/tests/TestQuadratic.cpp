@@ -43,15 +43,18 @@ void TestQuadratic::testQuadratic() {
 
     Matrix Q = Matrix(4, 4, Qdata);
     Matrix x = Matrix(4, 1, xdata);
-    Function *quad;
+    Function *quad = NULL;
     _ASSERT_OK(quad = new Quadratic(Q));
-
+    _ASSERT_NEQ(quad, NULL);
+    
     double f;
     int info;
     _ASSERT_OK(info = quad -> call(x, f));
     _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
 
-    delete quad;
+    if (quad != NULL) {
+        delete quad;
+    }
 }
 
 void TestQuadratic::testQuadratic2() {
@@ -199,7 +202,7 @@ void TestQuadratic::testCallConj() {
     Quadratic quadratic(Q, q);
     double fstar;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar));
-        
+
 
     double expected = 421.0;
     const double rel_tol = 1e-5;

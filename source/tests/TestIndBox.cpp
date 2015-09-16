@@ -60,10 +60,10 @@ void TestIndBox::testCall() {
 }
 
 void TestIndBox::testCall2() {
-    const size_t n = 10;
+    const long n = 10;
     Matrix lb(n, 1);
     Matrix ub(n, 1);
-    for (int i = 0; i < n; i++) {
+    for (long i = 0; i < n; i++) {
         lb[i] = -i - 1;
         ub[i] = i + 1;
     }
@@ -100,10 +100,10 @@ void TestIndBox::testCall2() {
 }
 
 void TestIndBox::testCall3() {
-    const size_t n = 30;
+    const long n = 30;
     Matrix lb(n, 1);
     Matrix ub(n, 1);
-    for (int i = 0; i < n - 1; i++) {
+    for (long i = 0; i < n - 1; i++) {
         lb[i] = -i - 1;
         ub[i] = i + 1;
     }

@@ -210,7 +210,8 @@ double Matrix::get(const size_t i, const size_t j) const {
         return m_transpose
                 ? (j >= i) ? m_data[j + m_ncols * i - i * (i + 1) / 2] : 0.0f
                 : (i >= j) ? m_data[i + m_nrows * j - j * (j + 1) / 2] : 0.0f;
-    } else if (m_type == MATRIX_SPARSE) {
+    } else { 
+        /* if (m_type == MATRIX_SPARSE) */
         if (m_triplet == NULL) {
             throw std::logic_error("not supported yet");
         }
@@ -227,6 +228,7 @@ double Matrix::get(const size_t i, const size_t j) const {
         }
         return val;
     }
+    
 } /* END GET */
 
 void Matrix::set(size_t i, size_t j, double v) {
@@ -252,7 +254,7 @@ void Matrix::set(size_t i, size_t j, double v) {
         }
 
         int k_found = -1;
-        for (int s = 0; s < m_triplet->nnz; s++) {
+        for (size_t s = 0; s < m_triplet->nnz; s++) {
             if (i == (static_cast<int*> (m_triplet->i))[s] && j == (static_cast<int*> (m_triplet->j))[s]) {
                 k_found = s;
                 break;
@@ -368,7 +370,7 @@ bool Matrix::operator==(const Matrix & right) const {
     for (unsigned int i = 0; i < m_nrows; i++) {
         for (size_t j = 0; j < m_ncols; j++) {
 
-            result = result && (std::abs(get(i, j) - right.get(i, j)) < 1e-9);
+            result = result && (std::abs(get(i, j) - right.get(i, j)) < tol);
         }
     }
     return result;
@@ -410,9 +412,8 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
 }
 //LCOV_EXCL_STOP
 
-double &Matrix::operator[](int sub) const {
+double &Matrix::operator[](size_t sub) const {
     if (sub < 0 || sub >= length()) {
-
         throw std::out_of_range("Exception: Index out of range for Matrix");
     }
     return m_data[sub];
@@ -448,7 +449,7 @@ inline void Matrix::_addD(Matrix& rhs) { /* DENSE += (?) */
     } else if (rhs.getType() == MATRIX_SPARSE) {
         rhs._createTriplet();
         assert(rhs.m_triplet != NULL);
-        for (int k = 0; k < rhs.m_triplet->nnz; k++) {
+        for (size_t k = 0; k < rhs.m_triplet->nnz; k++) {
             int i_ = ((int*) rhs.m_triplet->i)[k];
             int j_ = ((int*) rhs.m_triplet->j)[k];
             _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, ((double*) rhs.m_triplet->x)[k]);
@@ -503,7 +504,7 @@ inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
 
         m_type = MATRIX_DENSE;
 
-        for (int k = 0; k < rhs.m_triplet->nnz; k++) {
+        for (size_t k = 0; k < rhs.m_triplet->nnz; k++) {
             int i_ = ((int*) rhs.m_triplet->i)[k];
             int j_ = ((int*) rhs.m_triplet->j)[k];
             _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, ((double*) rhs.m_triplet->x)[k]);
@@ -581,8 +582,8 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
         m_type = MATRIX_DENSE;
         m_dataLength = m_ncols * m_nrows;
         m_data = new double[m_ncols * m_nrows];
-        for (int i = 0; i < m_nrows; i++) {
-            for (int j = 0; j < m_ncols; j++) {
+        for (size_t i = 0; i < m_nrows; i++) {
+            for (size_t j = 0; j < m_ncols; j++) {
                 set(i, j, rhs.get(i, j));
             }
         }
@@ -591,7 +592,7 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
             /* Add triplets */
             int i = -1, j = -1;
             double v = 0.0;
-            for (int k = 0; k < m_triplet->nnz; k++) {
+            for (size_t k = 0; k < m_triplet->nnz; k++) {
                 i = ((int*) m_triplet->i)[k];
                 j = ((int*) m_triplet->j)[k];
                 v = ((double*) m_triplet->x)[k];
@@ -608,7 +609,7 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
             }
         }
         _createTriplet();
-        for (int k = 0; k < m_triplet->nnz; k++) {
+        for (size_t k = 0; k < m_triplet->nnz; k++) {
             _addIJ(((int*) m_triplet->i)[k], ((int*) m_triplet->j)[k], ((double*) m_triplet->x)[k]);
         }
 
@@ -718,8 +719,9 @@ Matrix Matrix::operator*(Matrix & right) {
             break;
         case MATRIX_SPARSE:
             result = multiplyLeftSparse(right);
-
             break;
+        case MATRIX_LOWERTR:
+            throw std::logic_error("Lower triangular multiplication not implemented yet");
     }
     return result;
 }
@@ -803,8 +805,8 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
         return result;
     } else if (MATRIX_DIAGONAL == right.m_type) { // {DENSE} * {DIAGONAL} = {DENSE} - RHS is diagonal
         Matrix result(*this);
-        for (int j = 0; j < m_ncols; j++) {
-            for (int i = 0; i < m_nrows; i++) {
+        for (size_t j = 0; j < m_ncols; j++) {
+            for (size_t i = 0; i < m_nrows; i++) {
                 result.set(i, j, result.get(i, j) * right.get(j, j));
             }
         }
@@ -898,7 +900,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
 
         if (right.m_dense == NULL) {
             right.m_dense = cholmod_allocate_dense(right.m_nrows, right.m_ncols, right.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
-            for (int k = 0; k < right.length(); k++) {
+            for (size_t k = 0; k < right.length(); k++) {
                 ((double*) right.m_dense->x)[k] = right.m_data[k];
             }
         }
@@ -999,10 +1001,11 @@ Matrix& operator*=(Matrix& obj, double alpha) {
         obj._createTriplet();
         obj.m_sparse = NULL;
         obj.m_dense = NULL;
-        for (int k = 0; k < obj.m_triplet->nnz; k++) {
+        for (size_t k = 0; k < obj.m_triplet->nnz; k++) {
             ((double*) obj.m_triplet->x)[k] *= alpha;
         }
     }
+    return obj;
 }
 
 Matrix operator*(double alpha, Matrix& obj) {

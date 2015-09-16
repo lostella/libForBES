@@ -15,7 +15,6 @@ OpDCT2::OpDCT2(size_t n) {
     m_dimension = n;
 }
 
-
 OpDCT2::~OpDCT2() {
 }
 
@@ -34,7 +33,7 @@ Matrix OpDCT2::call(Matrix& x) {
 }
 
 Matrix OpDCT2::callAdjoint(Matrix& x) {
-    size_t n = x.length();    
+    size_t n = x.length();
     Matrix Yadj(n, 1);
     double yk;
     for (size_t k = 0; k < n; k++) {

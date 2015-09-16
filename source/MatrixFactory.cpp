@@ -27,7 +27,7 @@ typedef std::pair<int, int> nice_pair;
 
 Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
     Matrix mat(n, n, Matrix::MATRIX_DIAGONAL);
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         mat[i] = alpha;
     }
     return mat;
@@ -56,7 +56,7 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
 
 Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type) {
     std::srand((unsigned int)std::time(0)); 
-    int len = 0;
+    size_t len = 0;
     switch (type) {
         case Matrix::MATRIX_DENSE:
             len = nrows * ncols;
@@ -73,7 +73,7 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
             break;
     }
     Matrix mat(nrows, ncols, type);
-    for (int j = 0; j < len; j++) {
+    for (size_t j = 0; j < len; j++) {
         mat[j] = offset + scale * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
     }
     return mat;
