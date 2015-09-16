@@ -20,6 +20,9 @@ OpDCT3::~OpDCT3() {
 
 Matrix OpDCT3::call(Matrix& x) {
     size_t n = x.length();
+    if (m_dimension != 0 && n != m_dimension) {
+        throw std::invalid_argument("x-dimension is invalid");
+    }
     Matrix Tx(n, 1);
     double yk;
     double x0_2 = x.get(0, 0) / 2.0;
@@ -33,9 +36,26 @@ Matrix OpDCT3::call(Matrix& x) {
     return Tx;
 }
 
-Matrix OpDCT3::callAdjoint(Matrix& x) {
-    Matrix s;
-    return s;
+Matrix OpDCT3::callAdjoint(Matrix& y) {
+    size_t n = y.length();
+    if (m_dimension != 0 && n != m_dimension) {
+        throw std::invalid_argument("x-dimension is invalid");
+    }
+    Matrix Tstar_y(n, 1);
+    double tk = 0.0;
+    for (size_t i = 0; i < n; i++) {
+        tk += y.get(i, 0) / 2.0;
+    }
+    Tstar_y.set(0, 0, tk);
+    for (size_t k = 1; k < n; k++) {
+        tk = 0.0;
+        for (size_t i = 0; i < n; i++) {
+            tk += (y.get(i, 0) * std::cos(k * M_PI * (i + 0.5) / n));
+        }
+        Tstar_y.set(k, 0, tk);
+    }
+
+    return Tstar_y;
 }
 
 size_t OpDCT3::dimensionIn() {
