@@ -74,6 +74,7 @@ SOURCES = \
 	Function.cpp \
 	Matrix.cpp \
 	MatrixFactory.cpp \
+	MatrixWriter.cpp \
 	Quadratic.cpp \
 	QuadOverAffine.cpp \
 	LinearOperator.cpp \
@@ -82,17 +83,33 @@ SOURCES = \
 	CholeskyFactorization.cpp \
 	LDLFactorization.cpp \
 	IndBox.cpp \
-	MatrixOperator.cpp
+	MatrixOperator.cpp \
+	OpAdjoint.cpp \
+	OpDCT2.cpp \
+	OpDCT3.cpp \
+	OpGradient.cpp \
+	OpGradient2D.cpp \
+	OpLinearCombination.cpp \
+	OpReverseVector.cpp \
+	OpComposition.cpp \
+	OpSum.cpp
+	
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
 TESTS = \
 	TestCholesky.test \
+	TestIndBox.test \
+	TestLDL.test \
 	TestMatrix.test \
 	TestMatrixFactory.test \
 	TestMatrixOperator.test \
-	TestLDL.test \
-	TestIndBox.test \
+	TestOpAdjoint.test \
+	TestOpComposition.test \
+	TestOpDCT2.test \
+	TestOpDCT3.test \
+	TestOpGradient.test \
+	TestOpReverseVector.test \
 	TestQuadOverAffine.test \
 	TestQuadratic.test \
 	TestQuadraticOperator.test
@@ -108,15 +125,23 @@ all: $(ARCHIVE)
 build-tests: $(ARCHIVE) $(TEST_BINS)
 
 test: build-tests
-	${BIN_TEST_DIR}/TestMatrix
-	${BIN_TEST_DIR}/TestLDL
 	${BIN_TEST_DIR}/TestCholesky
-	${BIN_TEST_DIR}/TestIndBox  
-	${BIN_TEST_DIR}/TestMatrixFactory  
-	${BIN_TEST_DIR}/TestMatrixOperator  
-	${BIN_TEST_DIR}/TestQuadOverAffine  
-	${BIN_TEST_DIR}/TestQuadratic  
+	${BIN_TEST_DIR}/TestIndBox
+	${BIN_TEST_DIR}/TestLDL
+	${BIN_TEST_DIR}/TestMatrix
+	${BIN_TEST_DIR}/TestMatrixFactory
+	${BIN_TEST_DIR}/TestMatrixOperator
+	${BIN_TEST_DIR}/TestOpAdjoint
+	${BIN_TEST_DIR}/TestOpComposition
+	${BIN_TEST_DIR}/TestOpDCT2
+	${BIN_TEST_DIR}/TestOpDCT3
+	${BIN_TEST_DIR}/TestOpGradient
+	${BIN_TEST_DIR}/TestOpReverseVector
+	${BIN_TEST_DIR}/TestQuadOverAffine
+	${BIN_TEST_DIR}/TestQuadratic
 	${BIN_TEST_DIR}/TestQuadraticOperator
+	
+	
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo 
