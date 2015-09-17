@@ -30,6 +30,26 @@ OpGradient::OpGradient(size_t n) : LinearOperator(), m_dimension(n) {
 OpGradient::~OpGradient() {
 }
 
+/**
+ * Calls OpGradient when the input is 1D
+ * @param Tx matrix (vector) to store the result
+ * @param x input vector x
+ * @param n size of x
+ */
+void call_1d(Matrix & Tx, Matrix& x, const size_t n) {
+    for (size_t i = 0; i < n - 1; i++) {
+        Tx.set(i, 0, x.get(i + 1, 0) - x.get(i, 0));
+    }
+}
+
+void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n) {
+    Tstar_x.set(0, 0, -y.get(0, 0));
+    for (size_t i = 1; i < n - 1; i++) {
+        Tstar_x.set(i, 0, y.get(i - 1, 0) - y.get(i, 0));
+    }
+    Tstar_x.set(n - 1, 0, y.get(n - 2, 0));
+}
+
 Matrix OpGradient::call(Matrix& x) {
     const size_t n = x.length();
     if (m_dimension != 0 && n != m_dimension) {
@@ -39,9 +59,7 @@ Matrix OpGradient::call(Matrix& x) {
     if (n <= 1) {
         return Tx;
     }
-    for (size_t i = 0; i < n - 1; i++) {
-        Tx.set(i, 0, x.get(i + 1, 0) - x.get(i, 0));
-    }
+    call_1d(Tx, x, n);
     return Tx;
 }
 
@@ -51,11 +69,7 @@ Matrix OpGradient::callAdjoint(Matrix& y) {
         throw std::invalid_argument("x-dimension is invalid");
     }
     Matrix Tstar_x(n, 1);
-    Tstar_x.set(0, 0, -y.get(0, 0));
-    for (size_t i = 1; i < n - 1; i++) {
-        Tstar_x.set(i, 0, y.get(i - 1, 0) - y.get(i, 0));
-    }
-    Tstar_x.set(n - 1, 0, y.get(n - 2, 0));
+    callAdjoint_1d(Tstar_x, y, n);
     return Tstar_x;
 }
 

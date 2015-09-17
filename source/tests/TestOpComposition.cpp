@@ -83,15 +83,18 @@ void TestOpComposition::testCallAdjoint() {
 
     Matrix A = MatrixFactory::MakeRandomMatrix(p, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     LinearOperator * op = new MatrixOperator(A);
+    
+    _ASSERT_EQ(op->dimensionIn(), n);
+    _ASSERT_EQ(op->dimensionOut(), p);
 
     Matrix y = MatrixFactory::MakeRandomMatrix(p, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 
 
-    A.transpose();
-    Matrix expected = A*y;
-    A.transpose();
+    A.transpose();         // A becomes A'
+    Matrix expected = A*y; // compute A'*y
+    A.transpose();         // A' becomes A
 
-    Matrix op_star_x = op->callAdjoint(y);
+    Matrix op_star_x = op->callAdjoint(y);    
 
     for (size_t i = 0; i < p; i++) {
         _ASSERT_NUM_EQ(expected.get(i, 0), op_star_x.get(i, 0), tol);

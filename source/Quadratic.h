@@ -21,7 +21,6 @@
 #ifndef QUADRATIC_H
 #define	QUADRATIC_H
 
-
 #include "Function.h"
 #include "Matrix.h"
 #include "CholeskyFactorization.h"
@@ -88,7 +87,7 @@ public:
      * @param f The computed value of f(x)
      * 
      * @return
-     * status code which is equal to <code>STATUS_OK</code> if the computation
+     * Status code which is equal to <code>STATUS_OK</code> if the computation
      * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if
      * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS</code>
      * if some numerical problems prevented the computation of a reliable result. 
@@ -97,14 +96,12 @@ public:
      * 
      */
     virtual int call(Matrix& x, double& f);
+
     virtual int call(Matrix& x, double& f, Matrix& grad);
-
-
 
     virtual int callConj(const Matrix& x, double& f_star);
 
     virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
-
 
 
 private:

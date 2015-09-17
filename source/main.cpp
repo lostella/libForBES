@@ -25,6 +25,7 @@
 #include "OpReverseVector.h"
 #include "OpGradient.h"
 #include "OpDCT3.h"
+#include "OpDCT2.h"
 
 #include <set>
 
@@ -33,25 +34,22 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    size_t n = 8;
+    size_t n = 10;
 
-    LinearOperator * op = new OpDCT3(n);
+    LinearOperator * op = new OpDCT2();
 
     Matrix x(n, 1);
-    Matrix y(n, 1);
     
 
     for (size_t i = 0; i < n; i++) {
-        x.set(i, 0, 0.9*i + 1.1);
-        y.set(i, 0, 3*i + 0.5);
+        x.set(i, 0, i + 1.0);
     }
         
     Matrix Tx = op->call(x);
-    Matrix Tstar_y = op->callAdjoint(y);
-
-    Matrix err = y*Tx - x*Tstar_y;
     
-    std::cout << err;
+    
+    std::cout << x;
+    std::cout << Tx;
     
 
     delete op;

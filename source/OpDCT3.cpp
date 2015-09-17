@@ -72,11 +72,11 @@ Matrix OpDCT3::callAdjoint(Matrix& y) {
 }
 
 size_t OpDCT3::dimensionIn() {
-    return 0;
+    return m_dimension;
 }
 
 size_t OpDCT3::dimensionOut() {
-    return 0;
+    return m_dimension;
 }
 
 bool OpDCT3::isSelfAdjoint() {

@@ -18,6 +18,8 @@ class TestOpGradient : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestOpGradient);
 
     CPPUNIT_TEST(testCall);
+    CPPUNIT_TEST(testLinearity);
+    CPPUNIT_TEST(testAdjointLinearity);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -29,6 +31,8 @@ public:
 
 private:
     void testCall();
+    void testLinearity();
+    void testAdjointLinearity();
 
 };
 
