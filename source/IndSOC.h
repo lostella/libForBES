@@ -24,6 +24,15 @@
 #include "Matrix.h"
 #include "Function.h"
 
+/*
+ * The following class implements the indicator function of second order cones.
+ * If n is the dimension of the considered space, then this is
+ *
+ *		SOC(n) = {(x, t) in R^n : x in R^(n-1) and norm(x) <= t}
+ *
+ * The dimension n must be given to the (only) constructor.
+ */
+
 class IndSOC : public Function {
 public:
 
