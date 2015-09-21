@@ -1,7 +1,5 @@
 # LIBFORBES MAKEFILE
 
-include Configuration
-
 #
 # Configurable properties
 #
@@ -20,8 +18,7 @@ LFLAGS_ADDITIONAL = -fprofile-arcs
 # Lapacke Include directory on your system
 LAPACKE_INCLUDE = /usr/include/lapacke
 
-
-
+include Configuration
 
 #                         #
 # Do not modify this file #
@@ -70,36 +67,37 @@ LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
 	 -L$(SS_DIR)/LDL/Lib
 
 SOURCES = \
+    CholeskyFactorization.cpp \
+    FactoredSolver.cpp \
 	ForBESUtils.cpp \
 	Function.cpp \
+	IndBox.cpp \
+	IndSOC.cpp \
+	LDLFactorization.cpp \
+	LinearOperator.cpp \
 	Matrix.cpp \
 	MatrixFactory.cpp \
-	MatrixWriter.cpp \
-	Quadratic.cpp \
-	QuadOverAffine.cpp \
-	LinearOperator.cpp \
-	QuadraticOperator.cpp \
-	FactoredSolver.cpp \
-	CholeskyFactorization.cpp \
-	LDLFactorization.cpp \
-	IndBox.cpp \
 	MatrixOperator.cpp \
+	MatrixWriter.cpp \
 	OpAdjoint.cpp \
+	OpComposition.cpp \
 	OpDCT2.cpp \
 	OpDCT3.cpp \
 	OpGradient.cpp \
 	OpGradient2D.cpp \
 	OpLinearCombination.cpp \
 	OpReverseVector.cpp \
-	OpComposition.cpp \
-	OpSum.cpp
-	
+	OpSum.cpp \
+	QuadOverAffine.cpp \
+	QuadraticOperator.cpp \
+	Quadratic.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
 TESTS = \
 	TestCholesky.test \
 	TestIndBox.test \
+	TestIndSOC.test \
 	TestLDL.test \
 	TestMatrix.test \
 	TestMatrixFactory.test \
@@ -127,6 +125,7 @@ build-tests: $(ARCHIVE) $(TEST_BINS)
 test: build-tests
 	${BIN_TEST_DIR}/TestCholesky
 	${BIN_TEST_DIR}/TestIndBox
+	${BIN_TEST_DIR}/TestIndSOC
 	${BIN_TEST_DIR}/TestLDL
 	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestMatrixFactory
