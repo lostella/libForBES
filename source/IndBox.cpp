@@ -74,7 +74,7 @@ int IndBox::call(Matrix& x, double& f) {
             i++;
         }
     }
-    f = isInside ? 1.0 : INFINITY;
+    f = isInside ? 0.0 : INFINITY;
     return ForBESUtils::STATUS_OK;
 }
 

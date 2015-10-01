@@ -37,7 +37,7 @@ void TestIndBox::testCall() {
 
     double fval = -1;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
-    _ASSERT_EQ(1.0, fval);
+    _ASSERT_EQ(0.0, fval);
 
     x[1] = 5.0;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
@@ -47,11 +47,11 @@ void TestIndBox::testCall() {
     x[1] = 3.1;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
     _ASSERT_NOT(isinf(fval));
-    _ASSERT_EQ(1.0, fval);
+    _ASSERT_EQ(0.0, fval);
 
     x[0] = -1 - 1e-9;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
-    _ASSERT_NEQ(1.0, fval);
+    _ASSERT_NEQ(0.0, fval);
     _ASSERT(isinf(fval));
 
 
@@ -75,15 +75,15 @@ void TestIndBox::testCall2() {
 
     double fval = -1;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
-    _ASSERT_EQ(1.0, fval);
+    _ASSERT_EQ(0.0, fval);
 
     x = ub;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
-    _ASSERT_EQ(1.0, fval);
+    _ASSERT_EQ(0.0, fval);
 
     x = lb;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
-    _ASSERT_EQ(1.0, fval);
+    _ASSERT_EQ(0.0, fval);
 
 
     Matrix y(n, n);
@@ -118,11 +118,11 @@ void TestIndBox::testCall3() {
     double f;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, f));
 
-    _ASSERT_EQ(1.0, f);
+    _ASSERT_EQ(0.0, f);
 
     lb[n - 1] = 0.0;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, f));
-    _ASSERT_EQ(1.0, f);
+    _ASSERT_EQ(0.0, f);
 
     x[n - 1] = -0.1;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, f));
