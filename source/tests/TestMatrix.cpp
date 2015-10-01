@@ -54,7 +54,6 @@ void TestMatrix::testGetSet() {
     _ASSERT_EXCEPTION(o.get(0, 0), std::out_of_range);
 }
 
-
 void TestMatrix::testQuadratic() {
     /* Test quadratic with diagonal matrices */
     Matrix *f;
@@ -234,9 +233,9 @@ void TestMatrix::testFBMatrix() {
     for (size_t i = 0; i < n; i++) {
         _ASSERT_EQ(static_cast<double> (1 + 7 * i), f[i]);
     }
-    
+
     double s = 0.0;
-    
+
     _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_DIAGONAL), std::invalid_argument);
     _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_SYMMETRIC), std::invalid_argument);
     _ASSERT_EXCEPTION(fBMatrix = new Matrix(3, 4, Matrix::MATRIX_LOWERTR), std::invalid_argument);
@@ -525,7 +524,6 @@ void TestMatrix::testSubtract() {
     }
 
 }
-
 
 void TestMatrix::testLowerTriangular_getSet() {
     for (size_t n = 1; n < 20; n++) {
@@ -909,7 +907,6 @@ void TestMatrix::testSparseGetSet() {
 
 
 }
-
 
 void TestMatrix::testSparseDenseMultiply() {
 
@@ -1856,7 +1853,31 @@ void TestMatrix::test_ASS() {
     Matrix X = A + B;
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < m; j++) {
-            _ASSERT_NUM_EQ(A.get(i, j)+B.get(i,j), X.get(i, j), tol);
+            _ASSERT_NUM_EQ(A.get(i, j) + B.get(i, j), X.get(i, j), tol);
         }
     }
+}
+
+void TestMatrix::testColSubmatrix() {
+    const double tol = 1e-12;
+
+    const size_t n = 14;
+    const size_t m = 11;
+
+    const size_t row_start = 1;
+    const size_t row_end = 1;
+    const size_t col_start = 8;
+    const size_t col_end = 8;
+
+    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 10.0, Matrix::MATRIX_DENSE);
+    Matrix subA = A.submatrixCopy(row_start, row_end, col_start, col_end);
+    _ASSERT_EQ(row_end - row_start + 1, subA.getNrows());
+    _ASSERT_EQ(col_end - col_start + 1, subA.getNcols());
+
+    for (size_t i = 0; i < subA.getNrows(); i++) {
+        for (size_t j = 0; j < subA.getNcols(); j++) {
+            _ASSERT_NUM_EQ(A.get(row_start + i, col_start + j), subA.get(i, j), tol);
+        }
+    }
+
 }

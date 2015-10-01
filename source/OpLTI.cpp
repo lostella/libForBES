@@ -1,8 +1,8 @@
 /* 
- * File:   OpGradient2D.cpp
+ * File:   OpLTI.cpp
  * Author: chung
  * 
- * Created on September 16, 2015, 6:20 PM
+ * Created on September 30, 2015, 6:20 PM
  * 
  * ForBES is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,31 +18,43 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "OpGradient2D.h"
+#include "OpLTI.h"
 
-OpGradient2D::OpGradient2D() {
+OpLTI::OpLTI(Matrix& A, Matrix& B) : LinearOperator(), A(A), B(B) {
+    if (A.getNrows() != B.getNrows()){
+        throw std::invalid_argument("A and B have incompatible dimensions");
+    }
 }
 
-OpGradient2D::~OpGradient2D() {
+OpLTI::~OpLTI() {
 }
 
-Matrix OpGradient2D::call(Matrix& x) {
+Matrix OpLTI::call(Matrix& u) {
+    size_t n = A.getNrows();
+    size_t m = B.getNcols();
+    
+    if (u.isColumnVector()){
+        
+    } else {
+        
+    }    
     throw std::logic_error("NIY");
 }
 
-Matrix OpGradient2D::callAdjoint(Matrix& x) {
+Matrix OpLTI::callAdjoint(Matrix& x) {
     throw std::logic_error("NIY");
 }
 
-size_t OpGradient2D::dimensionIn() {
-    throw std::logic_error("NIY");
+size_t OpLTI::dimensionIn() {
+    return 0;
 }
 
-size_t OpGradient2D::dimensionOut() {
-    throw std::logic_error("NIY");
+size_t OpLTI::dimensionOut() {
+    return 0;
 }
 
-bool OpGradient2D::isSelfAdjoint() {
-    throw std::logic_error("NIY");
+bool OpLTI::isSelfAdjoint() {
+    return false;
 }
+
 

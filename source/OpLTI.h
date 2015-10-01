@@ -1,8 +1,8 @@
-/*
- * File:   TestOpDCT2.h
+/* 
+ * File:   OpLTI.h
  * Author: Pantelis Sopasakis
  *
- * Created on Sep 15, 2015, 4:24:44 PM
+ * Created on September 30, 2015, 6:20 PM
  * 
  * ForBES is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,37 +18,43 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TESTOPDCT2_H
-#define	TESTOPDCT2_H
-#define FORBES_TEST_UTILS
+#ifndef OPLTI_H
+#define	OPLTI_H
 
-#include "ForBES.h"
 #include "LinearOperator.h"
-#include "OpDCT2.h"
-#include "MatrixFactory.h"
-#include <cppunit/extensions/HelperMacros.h>
 
-class TestOpDCT2 : public CPPUNIT_NS::TestFixture {
-    CPPUNIT_TEST_SUITE(TestOpDCT2);
-
-    CPPUNIT_TEST(testCall);   
-    CPPUNIT_TEST(testLinearity);   
-    CPPUNIT_TEST(testAdjointLinearity);   
-
-    CPPUNIT_TEST_SUITE_END();
-
+/**
+ * \class OpLTI
+ * \brief %OpLTI simulates a LTI system with zero initial condition
+ * \version 0.0
+ * \author Pantelis Sopasakis
+ * \date Created on September 30, 2015, 6:20 PM
+ * 
+ * \ingroup LinOp
+ */
+class OpLTI : public LinearOperator {
 public:
-    TestOpDCT2();
-    virtual ~TestOpDCT2();
-    void setUp();
-    void tearDown();
+
+    OpLTI(Matrix& A, Matrix& B);
+
+    virtual ~OpLTI();
+
+    virtual Matrix call(Matrix& x);
+
+    virtual Matrix callAdjoint(Matrix& x);
+
+    virtual size_t dimensionIn();
+
+    virtual size_t dimensionOut();
+
+    virtual bool isSelfAdjoint();
 
 private:
-    void testCall();
-    void testLinearity();
-    void testAdjointLinearity();
-    
+
+    Matrix & A;
+    Matrix & B;
+
 };
 
-#endif	/* TESTOPDCT2_H */
+#endif	/* OPLTI_H */
 

@@ -107,8 +107,8 @@ Matrix::Matrix(const Matrix& orig) {
 
 /********* DENSTRUCTOR ************/
 Matrix::~Matrix() {
-    this -> m_ncols = -1;
-    this -> m_nrows = -1;
+    this -> m_ncols = 0;
+    this -> m_nrows = 0;
     if (m_data != NULL) {
         delete[] m_data;
     }
@@ -210,7 +210,7 @@ double Matrix::get(const size_t i, const size_t j) const {
         return m_transpose
                 ? (j >= i) ? m_data[j + m_ncols * i - i * (i + 1) / 2] : 0.0f
                 : (i >= j) ? m_data[i + m_nrows * j - j * (j + 1) / 2] : 0.0f;
-    } else { 
+    } else {
         /* if (m_type == MATRIX_SPARSE) */
         if (m_triplet == NULL) {
             throw std::logic_error("not supported yet");
@@ -228,7 +228,7 @@ double Matrix::get(const size_t i, const size_t j) const {
         }
         return val;
     }
-    
+
 } /* END GET */
 
 void Matrix::set(size_t i, size_t j, double v) {
@@ -1027,4 +1027,37 @@ std::string Matrix::getTypeString() const {
     std::string s = std::string(names[i]);
     return s;
 
+}
+
+Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) const {
+    if (row_end < row_start || col_end < col_start) {
+        throw std::invalid_argument("Matrix::submatrixCopy:: start > end is not allowed");
+    }
+    size_t rows = row_end - row_start + 1;
+    size_t cols = col_end - col_start + 1;
+
+    Matrix M(rows, cols, m_type);
+    if (m_type == Matrix::MATRIX_DENSE) {
+        /*
+         * void LAPACK_dlacpy( char* uplo, 
+         *      lapack_int* m, 
+         *      lapack_int* n, 
+         *      const double* a,
+         *      lapack_int* lda, 
+         *      double* b, 
+         *      lapack_int* ldb );
+         * 
+         */
+        dlacpy_((char*) "A",
+                reinterpret_cast<int*> (&rows),
+                reinterpret_cast<int*> (&cols),
+                m_data + row_start + col_start* m_nrows,
+                const_cast<int*> (reinterpret_cast<const int*> (&m_nrows)),
+                M.m_data,
+                reinterpret_cast<int*> (&rows)
+                );
+    } else {
+        throw std::logic_error("submatrixCopy for non-dense matrices has not been implemented yet.");
+    }
+    return M;
 }

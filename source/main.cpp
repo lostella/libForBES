@@ -3,6 +3,19 @@
  * Author: Pantelis Sopasakis
  *
  * Created on July 7, 2015, 7:47 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdlib.h>
@@ -34,25 +47,12 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    size_t n = 10;
-
-    LinearOperator * op = new OpDCT2();
-
-    Matrix x(n, 1);
-    
-
-    for (size_t i = 0; i < n; i++) {
-        x.set(i, 0, i + 1.0);
-    }
-        
-    Matrix Tx = op->call(x);
-    
-    
-    std::cout << x;
-    std::cout << Tx;
-    
-
-    delete op;
+       const size_t n = 14;
+    const size_t m = 11;
+    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 10.0, Matrix::MATRIX_DENSE);
+    std::cout << A;
+    Matrix subA = A.submatrixCopy(1, 2, 4, 8);
+        std::cout << subA;
 
     return (0);
 }
