@@ -433,7 +433,12 @@ public:
 
     /**
      * 
-     * @param rhs
+     * Multiply a submatrix of the current <code>Matrix</code> object with a 
+     * submatrix of a given Matrix.
+     * 
+     * @param rhs Matrix which contains the right-hand side of the multiplication as 
+     * a submatrix.
+     * 
      * @param left_row_start
      * @param left_row_end
      * @param left_col_start
@@ -442,7 +447,7 @@ public:
      * @param right_row_end
      * @param right_col_start
      * @param right_col_end
-     * @return 
+     * @return The result as a newly created Matrix object.
      */
     Matrix multiplySubmatrix(
             Matrix& rhs,
@@ -454,7 +459,7 @@ public:
             const size_t right_row_end,
             const size_t right_col_start,
             const size_t right_col_end);
-
+    
 
 
 private:

@@ -78,6 +78,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSparseDotProd);
     CPPUNIT_TEST(testSubmatrix);
     CPPUNIT_TEST(testSubmatrixTranspose);
+    CPPUNIT_TEST(testSubmatrixMultiply);
 
 
     CPPUNIT_TEST(test_ADD1);
@@ -192,6 +193,7 @@ private:
     void testSparseDotProd();
     void testSubmatrix();
     void testSubmatrixTranspose();
+    void testSubmatrixMultiply();
 
     /*
      * A: add

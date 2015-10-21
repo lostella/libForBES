@@ -1882,13 +1882,12 @@ void TestMatrix::testSubmatrix() {
 }
 
 void TestMatrix::testSubmatrixTranspose() {
-    const size_t n = 54;
-    const size_t m = 91;
+    const size_t n = 36;
+    const size_t m = 25;
     const double tol = 1e-12;
     Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 10.0, Matrix::MATRIX_DENSE);
 
     A.transpose();
-
 
     size_t row_start_tr;
     size_t col_start_tr;
@@ -1911,6 +1910,42 @@ void TestMatrix::testSubmatrixTranspose() {
         }
     }
 
+}
 
+void TestMatrix::testSubmatrixMultiply() {
+    const size_t MA = 16;
+    const size_t NA = 25;
+    const size_t MB = 20;
+    const size_t NB = 23;
+
+    Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
+    Matrix Asub;
+    Matrix Bsub;
+    Matrix exact;
+    Matrix result;
+
+
+    for (size_t k = 0; k < 5; k++) {
+        for (size_t ds = 0; ds < 4; ds++) {
+            for (size_t s = 0; s < NA - ds - 1; s++) {
+                for (size_t dj = 0; dj < 4; dj++) {
+                    for (size_t j = 0; j < NB - dj - 1; j++) {
+                        for (size_t di = 0; di < 4; di++) {
+                            for (size_t i = 0; i < MA - di - 1; i++) {
+                                Asub = A.submatrixCopy(i, i + di, s, s + ds);
+                                Bsub = B.submatrixCopy(k, k + ds, j, j + dj);
+                                exact = Asub*Bsub;
+                                result = A.multiplySubmatrix(B,
+                                        i, i + di, s, s + ds,
+                                        k, k + ds, j, j + dj);
+                                _ASSERT_EQ(exact, result);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 

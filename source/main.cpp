@@ -51,8 +51,9 @@ int main(int argc, char** argv) {
 
     Matrix A = MatrixFactory::MakeRandomMatrix(20, 30, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(10, 11, 0.0, 2.0, Matrix::MATRIX_DENSE);
-    
-    
+    B.transpose();
+    A.transpose();
+        
     Matrix Asub = A.submatrixCopy(1, 3, 2, 5);  // 3 x 4
     Matrix Bsub = B.submatrixCopy(3, 6, 9, 10);  // 4 x 2
     Matrix exact = Asub*Bsub;

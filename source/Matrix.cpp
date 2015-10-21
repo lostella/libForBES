@@ -1040,7 +1040,7 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
     if (col_end > m_ncols) {
         throw std::invalid_argument("Matrix::submatrixCopy:: col_end > total number of columns");
     }
-    
+
     size_t rows = row_end - row_start + 1;
     size_t cols = col_end - col_start + 1;
 
@@ -1098,10 +1098,7 @@ Matrix Matrix::multiplySubmatrix(
         const size_t right_col_end) {
 
     if (MATRIX_DENSE == m_type && MATRIX_DENSE == right.m_type) {
-
-        //TODO tests!!!
-        //TODO transposes!!!
-
+        //TODO tests and transposes!!!
         size_t left_cols = left_col_end - left_col_start + 1;
         size_t left_rows = left_row_end - left_row_start + 1;
 
@@ -1112,44 +1109,29 @@ Matrix Matrix::multiplySubmatrix(
             throw std::invalid_argument("Dimension of sub-matrix mismatch (left_cols!=right_rows)");
         }
 
-        size_t left_start_idx = left_row_start + left_col_start * m_nrows;
-        size_t right_start_idx = right_row_start + right_col_start * right.m_nrows;
+        size_t left_start_idx =
+                m_transpose
+                ? left_row_start * m_ncols + left_col_start
+                : left_row_start + left_col_start * m_nrows;
+        size_t right_start_idx =
+                right.m_transpose
+                ? right_row_start * right.m_ncols + right_col_start
+                : right_row_start + right_col_start * right.m_nrows;
 
         Matrix result(left_rows, right_cols, MATRIX_DENSE);
 
-
-
-        /*
-         * C := beta*C + alpha*A*B
-         * 
-         * void cblas_dgemm(
-         *  const enum CBLAS_ORDER Order,           CblasColMajor as always here
-         *  const enum CBLAS_TRANSPOSE TransA,      is A traspose?
-         *  const enum CBLAS_TRANSPOSE TransB,      is B traspose?
-         *  const int M,                            # rows of matrix C
-         *  const int N,                            # columns of matrix C
-         *  const int K,                            # number of rows of matrix op(B)
-         *  const double alpha,                     scalar alpha
-         *  const double *A,                        matrix A
-         *  const int lda,                          leading dimension of A
-         *  const double *B,                        matrix B
-         *  const int ldb,                          leading dimension of B
-         *  const double beta,                      scalar beta (multiplies C)
-         *  double *C,                              output matrix C
-         *  const int ldc                           leading dimension of C
-         * );
-         */
-
         cblas_dgemm(
-                CblasColMajor, CblasNoTrans, CblasNoTrans,
+                CblasColMajor,
+                m_transpose ? CblasTrans : CblasNoTrans,
+                right.m_transpose ? CblasTrans : CblasNoTrans,
                 left_rows,
                 right_cols,
                 left_cols,
                 1.0f,
                 m_data + left_start_idx,
-                m_nrows,
+                m_transpose ? m_ncols : m_nrows,
                 right.m_data + right_start_idx,
-                right.m_nrows,
+                right.m_transpose ? right.m_ncols : right.m_nrows,
                 0.0f,
                 result.m_data,
                 left_rows);
@@ -1159,3 +1141,7 @@ Matrix Matrix::multiplySubmatrix(
         throw std::logic_error("Matrix::multiplySubmatrix is implemented only for dense matrix multiplication.");
     }
 }
+
+
+
+
