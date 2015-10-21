@@ -1029,11 +1029,18 @@ std::string Matrix::getTypeString() const {
 
 }
 
-Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) const {
+Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) {
     /* DONE: Fully tested */
     if (row_end < row_start || col_end < col_start) {
         throw std::invalid_argument("Matrix::submatrixCopy:: start > end is not allowed");
     }
+    if (row_end > m_nrows) {
+        throw std::invalid_argument("Matrix::submatrixCopy:: row_end > total number of rows");
+    }
+    if (col_end > m_ncols) {
+        throw std::invalid_argument("Matrix::submatrixCopy:: col_end > total number of columns");
+    }
+    
     size_t rows = row_end - row_start + 1;
     size_t cols = col_end - col_start + 1;
 
@@ -1058,8 +1065,97 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
                 M.m_data,
                 reinterpret_cast<int*> (m_transpose ? &cols : &rows));
         M.m_transpose = m_transpose;
+    } else if (m_type == Matrix::MATRIX_SPARSE) {
+        int * rs = new int[rows];
+        int * cs = new int[cols];
+        for (int i = 0; i <= rows; i++) {
+            rs[i] = row_start + i;
+        }
+        for (int j = 0; j <= cols; j++) {
+            cs[j] = col_start + j;
+        }
+        this->_createSparse();
+        int nnz = std::max(1, (int) (rows * cols / 20));
+        cholmod_sparse *sp = cholmod_allocate_sparse(rows, cols, nnz, 1, 1, m_sparse->stype, m_sparse->xtype, cholmod_handle());
+        sp = cholmod_submatrix(m_sparse, rs, rows, cs, cols, 1, 1, Matrix::cholmod_handle());
+        M.m_sparse = sp;
+        M._createTriplet();
     } else {
-        throw std::logic_error("submatrixCopy for non-dense matrices has not been implemented yet.");
+        throw std::logic_error("Matrix::submatrixCopy is available only for MATRIX_DENSE and MATRIX_SPARSE type matrices.");
     }
     return M;
+}
+
+Matrix Matrix::multiplySubmatrix(
+        Matrix& right,
+        const size_t left_row_start,
+        const size_t left_row_end,
+        const size_t left_col_start,
+        const size_t left_col_end,
+        const size_t right_row_start,
+        const size_t right_row_end,
+        const size_t right_col_start,
+        const size_t right_col_end) {
+
+    if (MATRIX_DENSE == m_type && MATRIX_DENSE == right.m_type) {
+
+        //TODO tests!!!
+        //TODO transposes!!!
+
+        size_t left_cols = left_col_end - left_col_start + 1;
+        size_t left_rows = left_row_end - left_row_start + 1;
+
+        size_t right_cols = right_col_end - right_col_start + 1;
+        size_t right_rows = right_row_end - right_row_start + 1;
+
+        if (left_cols != right_rows) {
+            throw std::invalid_argument("Dimension of sub-matrix mismatch (left_cols!=right_rows)");
+        }
+
+        size_t left_start_idx = left_row_start + left_col_start * m_nrows;
+        size_t right_start_idx = right_row_start + right_col_start * right.m_nrows;
+
+        Matrix result(left_rows, right_cols, MATRIX_DENSE);
+
+
+
+        /*
+         * C := beta*C + alpha*A*B
+         * 
+         * void cblas_dgemm(
+         *  const enum CBLAS_ORDER Order,           CblasColMajor as always here
+         *  const enum CBLAS_TRANSPOSE TransA,      is A traspose?
+         *  const enum CBLAS_TRANSPOSE TransB,      is B traspose?
+         *  const int M,                            # rows of matrix C
+         *  const int N,                            # columns of matrix C
+         *  const int K,                            # number of rows of matrix op(B)
+         *  const double alpha,                     scalar alpha
+         *  const double *A,                        matrix A
+         *  const int lda,                          leading dimension of A
+         *  const double *B,                        matrix B
+         *  const int ldb,                          leading dimension of B
+         *  const double beta,                      scalar beta (multiplies C)
+         *  double *C,                              output matrix C
+         *  const int ldc                           leading dimension of C
+         * );
+         */
+
+        cblas_dgemm(
+                CblasColMajor, CblasNoTrans, CblasNoTrans,
+                left_rows,
+                right_cols,
+                left_cols,
+                1.0f,
+                m_data + left_start_idx,
+                m_nrows,
+                right.m_data + right_start_idx,
+                right.m_nrows,
+                0.0f,
+                result.m_data,
+                left_rows);
+        return result;
+
+    } else {
+        throw std::logic_error("Matrix::multiplySubmatrix is implemented only for dense matrix multiplication.");
+    }
 }

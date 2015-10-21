@@ -47,13 +47,24 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    const size_t n = 14;
-    const size_t m = 11;
-    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 10.0, Matrix::MATRIX_DENSE);
-    A.transpose();
-    std::cout << A;
-    Matrix subA = A.submatrixCopy(1, 3, 2, 5);
-        std::cout << subA;
+    
+
+    Matrix A = MatrixFactory::MakeRandomMatrix(20, 30, 0.0, 10.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(10, 11, 0.0, 2.0, Matrix::MATRIX_DENSE);
+    
+    
+    Matrix Asub = A.submatrixCopy(1, 3, 2, 5);  // 3 x 4
+    Matrix Bsub = B.submatrixCopy(3, 6, 9, 10);  // 4 x 2
+    Matrix exact = Asub*Bsub;
+    
+
+    std::cout << B;
+    std::cout << Bsub;
+    
+    
+    std::cout << "\n";
+    Matrix result = A.multiplySubmatrix(B, 1,3,2,5, 3,6,9,10);
+    std::cout << result-exact;
 
     return (0);
 }

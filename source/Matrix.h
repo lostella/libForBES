@@ -429,7 +429,7 @@ public:
      * 
      * @return New matrix object with copied data
      */
-    Matrix submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) const;
+    Matrix submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end);
 
     /**
      * 
