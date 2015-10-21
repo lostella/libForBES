@@ -1030,6 +1030,7 @@ std::string Matrix::getTypeString() const {
 }
 
 Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) const {
+    /* DONE: Fully tested */
     if (row_end < row_start || col_end < col_start) {
         throw std::invalid_argument("Matrix::submatrixCopy:: start > end is not allowed");
     }
@@ -1039,7 +1040,8 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
     Matrix M(rows, cols, m_type);
     if (m_type == Matrix::MATRIX_DENSE) {
         /*
-         * void LAPACK_dlacpy( char* uplo, 
+         * void dlacpy_( 
+         *      char* uplo, 
          *      lapack_int* m, 
          *      lapack_int* n, 
          *      const double* a,
@@ -1049,13 +1051,13 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
          * 
          */
         dlacpy_((char*) "A",
-                reinterpret_cast<int*> (&rows),
-                reinterpret_cast<int*> (&cols),
-                m_data + row_start + col_start* m_nrows,
-                const_cast<int*> (reinterpret_cast<const int*> (&m_nrows)),
+                reinterpret_cast<int*> (m_transpose ? &cols : &rows),
+                reinterpret_cast<int*> (m_transpose ? &rows : &cols),
+                m_data + (m_transpose ? row_start * m_ncols + col_start : row_start + col_start * m_nrows),
+                const_cast<int*> (reinterpret_cast<const int*> (m_transpose ? &m_ncols : &m_nrows)),
                 M.m_data,
-                reinterpret_cast<int*> (&rows)
-                );
+                reinterpret_cast<int*> (m_transpose ? &cols : &rows));
+        M.m_transpose = m_transpose;
     } else {
         throw std::logic_error("submatrixCopy for non-dense matrices has not been implemented yet.");
     }

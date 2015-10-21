@@ -1858,7 +1858,7 @@ void TestMatrix::test_ASS() {
     }
 }
 
-void TestMatrix::testColSubmatrix() {
+void TestMatrix::testSubmatrix() {
     const double tol = 1e-12;
 
     const size_t n = 14;
@@ -1879,5 +1879,38 @@ void TestMatrix::testColSubmatrix() {
             _ASSERT_NUM_EQ(A.get(row_start + i, col_start + j), subA.get(i, j), tol);
         }
     }
+}
+
+void TestMatrix::testSubmatrixTranspose() {
+    const size_t n = 54;
+    const size_t m = 91;
+    const double tol = 1e-12;
+    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 10.0, Matrix::MATRIX_DENSE);
+
+    A.transpose();
+
+
+    size_t row_start_tr;
+    size_t col_start_tr;
+    size_t rows_tr;
+    size_t cols_tr;
+    Matrix subA;
+
+    for (rows_tr = 0; rows_tr <= 4; rows_tr++) {
+        for (cols_tr = 0; cols_tr <= 4; cols_tr++) {
+            for (row_start_tr = 0; row_start_tr < n - rows_tr - 1; row_start_tr++) {
+                for (col_start_tr = 0; col_start_tr < m - cols_tr - 1; col_start_tr++) {
+                    subA = A.submatrixCopy(row_start_tr, row_start_tr + rows_tr, col_start_tr, col_start_tr + cols_tr);
+                    for (size_t i = 0; i < subA.getNrows(); i++) {
+                        for (size_t j = 0; j < subA.getNcols(); j++) {
+                            _ASSERT_NUM_EQ(A.get(row_start_tr + i, col_start_tr + j), subA.get(i, j), tol);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
 }
+

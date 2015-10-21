@@ -17,33 +17,43 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #ifndef INDSOC_H
 #define	INDSOC_H
 
 #include "Matrix.h"
 #include "Function.h"
 
-/*
- * The following class implements the indicator function of second order cones.
- * If n is the dimension of the considered space, then this is
+/**
+ * \class IndSOC
+ * \brief %Indicator of a second-order cone
+ * \version 0.0
+ * \author Lorenzo Stella
+ * \date Created on September 21, 2015, 10:07 AM
+ * 
+ * This class implements the indicator function of second order cones (SOC).
+ * If \c  n is the dimension of the considered space, then the SOC is the set:
  *
- *		SOC(n) = {(x, t) in R^n : x in R^(n-1) and norm(x) <= t}
+ * \f[
+ *    \mathrm{SOC}(n) = \left\{(x, t) \in \mathbb{R}^n : 
+ *      x \in \mathbb{R}^{n-1}, \text{and } \|x\| \leq  t\right\}
+ * \f]
  *
- * The dimension n must be given to the (only) constructor.
+ * The dimension \c n must be given to the constructor.
+ * 
+ * \ingroup Functions
  */
-
 class IndSOC : public Function {
 public:
 
     IndSOC(int n);
 
     virtual ~IndSOC();
-    
+
     virtual int call(Matrix& x, double& f);
-    
+
     virtual int category();
-    
+
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox);

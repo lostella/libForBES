@@ -242,7 +242,7 @@ public:
      * @return 
      */
     MatrixType getType() const;
-    
+
     std::string getTypeString() const;
 
     /* Utilities */
@@ -412,20 +412,25 @@ public:
      * @param obj Matrix object
      */
     friend std::ostream& operator<<(std::ostream& os, const Matrix& obj);
-    
+
     /**
-     * Copy a sub-matrix of the current Matrix object into a new matrix.
+     * Copy a sub-matrix of the current Matrix object into a new matrix. 
      * 
-     * For dense matrices, 
+     * For dense matrices, this method makes use of LAPACK's <code>dlacpy</code> and
+     * is applicable to transpose matrices as well. 
+     * 
+     * This method is not supported yet for non-dense matrices (e.g., sparse, 
+     * diagonal, etc).
      * 
      * @param row_start row start
      * @param row_end row end
      * @param col_start column start
      * @param col_end column end
+     * 
      * @return New matrix object with copied data
      */
     Matrix submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) const;
-    
+
     /**
      * 
      * @param rhs
@@ -440,14 +445,14 @@ public:
      * @return 
      */
     Matrix multiplySubmatrix(
-            Matrix& rhs, 
-            const size_t left_row_start, 
-            const size_t left_row_end, 
-            const size_t left_col_start, 
+            Matrix& rhs,
+            const size_t left_row_start,
+            const size_t left_row_end,
+            const size_t left_col_start,
             const size_t left_col_end,
-            const size_t right_row_start, 
-            const size_t right_row_end, 
-            const size_t right_col_start, 
+            const size_t right_row_start,
+            const size_t right_row_end,
+            const size_t right_col_start,
             const size_t right_col_end);
 
 
@@ -462,7 +467,7 @@ private:
     size_t m_nrows; /*< Number of rows */
     size_t m_ncols; /*< Number of columns */
     bool m_transpose; /*< Whether this matrix is transposed */
-    MatrixType m_type; /*< Matrix type */    
+    MatrixType m_type; /*< Matrix type */
 
     /* For dense matrices: */
 
