@@ -1912,14 +1912,7 @@ void TestMatrix::testSubmatrixTranspose() {
 
 }
 
-void TestMatrix::testSubmatrixMultiply() {
-    const size_t MA = 16;
-    const size_t NA = 25;
-    const size_t MB = 20;
-    const size_t NB = 23;
-
-    Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
-    Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
+void _testSubmatrix(Matrix& A, Matrix& B) {
     Matrix Asub;
     Matrix Bsub;
     Matrix exact;
@@ -1928,11 +1921,11 @@ void TestMatrix::testSubmatrixMultiply() {
 
     for (size_t k = 0; k < 5; k++) {
         for (size_t ds = 0; ds < 4; ds++) {
-            for (size_t s = 0; s < NA - ds - 1; s++) {
+            for (size_t s = 0; s < A.getNcols() - ds - 1; s++) {
                 for (size_t dj = 0; dj < 4; dj++) {
-                    for (size_t j = 0; j < NB - dj - 1; j++) {
+                    for (size_t j = 0; j < B.getNcols() - dj - 1; j++) {
                         for (size_t di = 0; di < 4; di++) {
-                            for (size_t i = 0; i < MA - di - 1; i++) {
+                            for (size_t i = 0; i < A.getNrows() - di - 1; i++) {
                                 Asub = A.submatrixCopy(i, i + di, s, s + ds);
                                 Bsub = B.submatrixCopy(k, k + ds, j, j + dj);
                                 exact = Asub*Bsub;
@@ -1948,4 +1941,31 @@ void TestMatrix::testSubmatrixMultiply() {
         }
     }
 }
+
+void TestMatrix::testSubmatrixMultiply() {
+    const size_t MA = 16;
+    const size_t NA = 25;
+    const size_t MB = 20;
+    const size_t NB = 23;
+    Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
+    _testSubmatrix(A, B);
+}
+
+void TestMatrix::testSubmatrixMultiplyTr() {
+    const size_t MA = 20;
+    const size_t NA = 18;
+    const size_t MB = 40;
+    const size_t NB = 19;
+    Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
+    A.transpose();          
+    _testSubmatrix(A, B);   // A is transposed
+    A.transpose();
+    B.transpose();          
+    _testSubmatrix(A, B);   // B is transposed
+    A.transpose();
+    _testSubmatrix(A, B);   // both A and B are transposed
+}
+
 

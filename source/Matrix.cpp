@@ -1098,7 +1098,6 @@ Matrix Matrix::multiplySubmatrix(
         const size_t right_col_end) {
 
     if (MATRIX_DENSE == m_type && MATRIX_DENSE == right.m_type) {
-        //TODO tests and transposes!!!
         size_t left_cols = left_col_end - left_col_start + 1;
         size_t left_rows = left_row_end - left_row_start + 1;
 
