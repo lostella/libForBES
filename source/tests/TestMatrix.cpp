@@ -1912,7 +1912,7 @@ void TestMatrix::testSubmatrixTranspose() {
 
 }
 
-void _testSubmatrix(Matrix& A, Matrix& B) {
+void _testSubmatrixMultiply(Matrix& A, Matrix& B) {
     Matrix Asub;
     Matrix Bsub;
     Matrix exact;
@@ -1933,6 +1933,8 @@ void _testSubmatrix(Matrix& A, Matrix& B) {
                                         i, i + di, s, s + ds,
                                         k, k + ds, j, j + dj);
                                 _ASSERT_EQ(exact, result);
+                                _ASSERT_EQ(di + 1, result.getNrows());
+                                _ASSERT_EQ(dj + 1, result.getNcols());
                             }
                         }
                     }
@@ -1949,7 +1951,7 @@ void TestMatrix::testSubmatrixMultiply() {
     const size_t NB = 23;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
-    _testSubmatrix(A, B);
+    _testSubmatrixMultiply(A, B);
 }
 
 void TestMatrix::testSubmatrixMultiplyTr() {
@@ -1959,13 +1961,37 @@ void TestMatrix::testSubmatrixMultiplyTr() {
     const size_t NB = 19;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
-    A.transpose();          
-    _testSubmatrix(A, B);   // A is transposed
     A.transpose();
-    B.transpose();          
-    _testSubmatrix(A, B);   // B is transposed
+    _testSubmatrixMultiply(A, B); // A is transposed
     A.transpose();
-    _testSubmatrix(A, B);   // both A and B are transposed
+    B.transpose();
+    _testSubmatrixMultiply(A, B); // B is transposed
+    A.transpose();
+    _testSubmatrixMultiply(A, B); // both A and B are transposed
 }
+
+void TestMatrix::testSubmatrixSparse() {
+    const double tol = 1e-12;
+
+    const size_t n = 14;
+    const size_t m = 11;
+
+    const size_t row_start = 1;
+    const size_t row_end = 1;
+    const size_t col_start = 8;
+    const size_t col_end = 8;
+
+    Matrix A = MatrixFactory::MakeRandomSparse(m, n, m + n, 0.0, 1.0);
+    Matrix subA = A.submatrixCopy(row_start, row_end, col_start, col_end);
+    _ASSERT_EQ(row_end - row_start + 1, subA.getNrows());
+    _ASSERT_EQ(col_end - col_start + 1, subA.getNcols());
+
+    for (size_t i = 0; i < subA.getNrows(); i++) {
+        for (size_t j = 0; j < subA.getNcols(); j++) {
+            _ASSERT_NUM_EQ(A.get(row_start + i, col_start + j), subA.get(i, j), tol);
+        }
+    }
+}
+
 
 
