@@ -1,2 +1,6 @@
 # Path to your SuiteSparse directory
-SS_DIR = /home/chung/Documents/MATLAB/SuiteSparse
+SS_DIR = /Users/lorenzo/SuiteSparse
+
+# Extra headers and libraries paths
+IEXTRA = /Users/lorenzo/include
+LEXTRA = /Users/lorenzo/lib
