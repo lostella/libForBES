@@ -1945,10 +1945,10 @@ void _testSubmatrixMultiply(Matrix& A, Matrix& B) {
 }
 
 void TestMatrix::testSubmatrixMultiply() {
-    const size_t MA = 16;
-    const size_t NA = 25;
-    const size_t MB = 20;
-    const size_t NB = 23;
+    const size_t MA = 13;
+    const size_t NA = 8;
+    const size_t MB = 12;
+    const size_t NB = 214;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
     _testSubmatrixMultiply(A, B);
