@@ -59,12 +59,6 @@
  * <p>To construct a Matrix you can use one of this class's constructors. However,
  * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.</p>
  *
- * \todo Implement LDL factorization
- * \todo Implement LDL-based system solution
- * \todo Since addition is a symmetric operation, we can simply create methods like
- * <code>addDenseDense(Matrix& d1, Matrix& d2)</code>, <code>addDenseSymmetric(Matrix& dense, Matrix &symmetric)</code>
- * and so on and rewrite <code>operator+=</code> using these functions; an additional argument should indicate whether addition
- * or subtraction is done so as to easily implement <code>operator-=</code>.
  */
 class Matrix {
 public:

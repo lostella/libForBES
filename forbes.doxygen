@@ -138,7 +138,7 @@ FILE_PATTERNS          = *.c \
                          *.as \
                          *.js
 RECURSIVE              = YES
-EXCLUDE                = 
+EXCLUDE                = README.md
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = Test*
 EXCLUDE_SYMBOLS        = 

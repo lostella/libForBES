@@ -330,7 +330,7 @@ double Matrix::quad(Matrix & x) {
         if (m_triplet != NULL) {
             result = quadFromTriplet(x);
         } else {
-            /* TODO: Implement quadFromSparse */
+            /* \todo Implement quadFromSparse */
             throw std::logic_error("Quad on sparse matrix - no triplets found (not implemented yet)");
         }
     }

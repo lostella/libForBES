@@ -1,0 +1,46 @@
+/*! \page doc-factorization Factorization of matrices
+ *
+ * \brief %Matrix factorizations and solvers
+ * 
+ * A matrix factorization is, in general, the procedure of decomposing a given 
+ * matrix into a sum or product or other combination of two or more matrices which
+ * possess favourable properties which can be exploited for instance to solve a 
+ * linear system.
+ * 
+ * The ForBES API offers a simple interface to factor-solve procedures exporting 
+ * to the client only what is necessary: a factor and a solve step. 
+ * 
+ * This is done by the abstract methods \c factorize() and \c solve() in FactoredSolver
+ * which are implemented by derived classes.
+ * 
+ * \code
+ * Matrix Q = ...;                      // A symmetric positive definite matrix
+ * FactoredSolver * solver = new ...;   // Some factored solver
+ * solver->factorize();                 // Factorize once
+ * solver->solve(b, x);                 // Solve the system A*x = b
+ * solver->solve(c, x);                 // Solve A*x = c
+ * delete solver;                       // Release resources
+ * \endcode
+ * 
+ * \tableofcontents 
+ * 
+ * \section Cholesky
+ * The Cholesky factorization can be applied to any symmetric positive definite
+ * matrix. 
+ * 
+ * A symmetric positive definite matrix \f$A\f$ can be written as \f$A=LL'\f$, where
+ * \f$L\f$ is a lower-triangular matrix. 
+ * 
+ * Using this matrix one can solve linear systems of the form \f$Ax=b\f$ (for a given \f$b\f$)
+ * at the cost of a forward and a backward substitution.
+ * 
+ * \section LDL-sec LDL factorization
+ * The LDL factorization (often referred to as \f$LDL'\f$ can be applied to any
+ * symmetric matrix. A given symmetric matrix \f$A\f$ is decomposed as \f$A=LDL'\f$
+ * where \f$L\f$ is lower-triangular and \f$D\f$ is a diagonal matrix.
+ * 
+ * This is evidently similar to the Cholesky factorization described
+ * above, but does not require that the factorized matrix be positive definite. 
+ * LDL can be applied to any symmetric matrix.
+ * 
+ */

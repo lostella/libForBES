@@ -1,0 +1,30 @@
+/* Linear operators */
+
+/*! \page doc-linops Linear Operators
+ *
+ * \brief Working with linear operators
+ * 
+ * \tableofcontents 
+ * 
+ * \section linop-sec Linear Operator
+ * 
+ * A linear operator \f$T:\mathbb{R}^n \to \mathbb{R}^m\f$ may not always be 
+ * available in the explicit form of a 
+ * matrix, but in some implicit form to which we don't have direct access. 
+ * 
+ * Think of a linear operator <code>T</code> as a black box function for which we only
+ * know that it is linear and we can evaluate its value \f$T(x)\f$ at a given
+ * vector <code>x</code> and, sometimes, the value \f$T^*(x^*)\f$ of its adjoint
+ * operator (which is again defined implicitly).
+ * 
+ * You can extends the class LinearOperator to define your own linear operators.
+ * You will then need to implement the following methods:
+ * 
+ * \code{.cpp}
+ * virtual Matrix call(Matrix& x) = 0;              // define T(x)
+ * virtual Matrix callAdjoint(Matrix& x) = 0;       // define T^*(y)
+ * virtual bool isSelfAdjoint() = 0;                // is it a self-adjoint operator?
+ * virtual size_t dimensionIn() = 0;                // x - dimension
+ * virtual size_t dimensionOut() = 0;               // T(x) - dimension
+ * \endcode
+ */

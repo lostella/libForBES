@@ -1,0 +1,19 @@
+/* GROUPS */
+
+/** \defgroup Functions ForBES Functions
+ *
+ * \brief ForBES functions
+ * 
+ */
+
+
+/** \defgroup Matrix Matrix
+ *
+ * \brief Matrices and utilities
+ * 
+ */
+
+/** \defgroup LinOp Linear Operators
+ *
+ * \brief Linear operators
+ */

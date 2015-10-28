@@ -1,0 +1,119 @@
+/* Matrices */
+
+/*! \page doc-matrix How to use Matrices
+ * 
+ * \brief Matrices and %Matrix operations in libforbes
+ * 
+ * \tableofcontents
+ * Here we provide some examples on how to make the most out of the class
+ * Matrix.
+ * \section mat-sec0 Working with matrices
+ * \subsection subsection1 First steps
+ * Create an empty matrix and access its elements:
+ * 
+ * \code{.cpp} 
+ * size_t n = 5, m = 7;
+ * 
+ * // Create an empty dense matrix 5-by-7:
+ * Matrix A(n, m, Matrix::MATRIX_DENSE); 
+ * 
+ * // Set A(1,0) to a value:
+ * A.set(1, 0, 10.56);
+ * 
+ * // retrieve the value of A(1,0):
+ * double value = A.get(1, 0); 
+ * \endcode
+ * 
+ * 
+ * But you can also very easily create a random matrix:
+ * 
+ * \code{.cpp}
+ * size_t n = 8;
+ * 
+ * // Make a random symmetric matrix:
+ * Matrix S = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
+ * 
+ * // Make a random lower triangular matrix and random entries in [1, 3]:
+ * Matrix L = MatrixFactory::MakeRandomMatrix(n, n, 1.0, 2.0, Matrix::MATRIX_LOWERTR);
+ * 
+ * // Make a random sparse matrix with given number of non-zero entries:
+ * size_t nnz = 10;
+ * Matrix Y = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.01, 1.5);
+ * \endcode
+ * 
+ * You can very easily access the dimensions of a matrix:
+ * \code{.cpp}
+ * Matrix A;
+ * size_t nrows = A.getNrows();
+ * size_t ncols = A.getNcols();
+ * \endcode
+ *  
+ * 
+ * \subsection matops Matrix operations
+ * Matrix addition, subtraction and multiplication is supported for all types of
+ * matrices. You can check the type of the produced matrix using <code>getType</code>.
+ * For instance, when adding or multiplying two sparse matrices, the result is a sparse matrix and
+ * when adding two symmetric matrices, the result is a symmetric matrix.
+ * Here is an example:
+ * 
+ * \code{.cpp}
+ * size_t n = 30;
+ * size_t nnz = 80;
+ * Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.01, 1.5);
+ * Matrix B = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.01, 1.5);
+ * Matrix C = A + B;
+ * Matrix D = A - B;
+ * \endcode
+ * 
+ * The operators <code>+=</code> and <code>-=</code> can also be used.
+ * 
+ * \code{.cpp}
+ * // Matrix Multiplication
+ * size_t n = 6;      // rows of A
+ * size_t m = 4;      // cols of A, rows of B
+ * size_t k = 5;      // cols of B
+ * size_t nnz_A = 9;  // no. non-zero entries in A
+ * size_t nnz_B = 7;  // no. non-zero entries in B
+ * 
+ * Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz_A, 0.01, 1.5);
+ * Matrix B = MatrixFactory::MakeRandomSparse(m, k, nnz_B, 0.01, 1.5);
+ * 
+ * // Matrix C is n-by-k sparse:
+ * Matrix C = A * B;
+ * \endcode
+ * 
+ * You can also perform scalar multiplications
+ * 
+ * \code{.cpp}
+ * Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
+ * A *= 3.465;              // A = A * 3.465
+ * Matrix B = 7.0 * A;
+ * Matrix C = 3.5 * B + A;
+ * \endcode
+ * 
+ * 
+ * 
+ * \subsection qad Quadratic Forms
+ * It may be often needed to compute quadratic forms
+ * 
+ * \f[
+ *  F(x) = \frac{1}{2}x'Qx + q'x
+ * \f]
+ * 
+ * To this end, two methods in <code>Matrix</code> have been implemented, both named
+ * <code>Matrix::quad()</code>. Here is an example of use:
+ * 
+ * \code{.cpp}
+ * const size_t n = 10;
+ * Matrix Q = Matrix::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
+ * Matrix x = Matrix::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
+ * 
+ * double f = Q.quad(x); // compute f = x'*Q*x
+ * 
+ * Matrix q = Matrix::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
+ * 
+ * double g = Q.quad(x, q); // compute f = (1/2)*x'*Q*x + q'*x
+ * \endcode
+ * 
+ */
+

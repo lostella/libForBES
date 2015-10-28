@@ -1,0 +1,233 @@
+/* FUNCTIONS*/
+
+/*! \page doc-functs Functions
+ *
+ * \brief ForBES functions
+ * 
+ * \tableofcontents 
+ * 
+ * \section functions-sec Functions
+ * 
+ * The ForBES function API blah blah
+ * 
+ * \subsection quad-fun-sec Quadratic
+ * A quadratic function is a function of the form
+ * 
+ * \f[
+ * F(x) = \frac{1}{2}x'Qx + q'x,
+ * \f]
+ * 
+ * where <code>Q</code> is a symmetric positive definite matrix whose conjugate is given by
+ * 
+ * \f[
+ * F^*(x^*) = (x^*-q)'Q^{-1}(x^*-q).
+ * \f]
+ * 
+ * Here is a simple example:
+ * \code
+ * size_t n = 10;
+ * Matrix Q = MatrixFactory::MakeRandomSparse(n, n, 20, 0.0, 1.0);
+ * Matrix Eye = MatrixFactory::MakeIdentity(n, 10.0);
+ * 
+ * Matrix Qt(Q);        // Qt= Q
+ * Qt.transpose();      // Qt = Qt'
+ * Q += Qt;             // Q = Q + Qt (this will make Q a symmetric matrix)
+ * 
+ * Q += Eye;            // with this we ensure Q is positive definite
+ *
+ * Function *F = new Quadratic(Q); // F(x) = 0.5*x'Qx
+ * Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+ * 
+ * double f;            // value F(x)
+ * double f_star;       // value F*(x) (conjugate of F at x)
+ * Matrix grad;         // gradient of F* and x
+ * 
+ * int status = F->call(x, f);
+ * status = F->callConj(x, f_star, grad);
+ * 
+ * std::cout << grad;   // print out the gradient
+ * \endcode
+ * 
+ * The invocation of <code>callConj</code> involves the computation of a Cholesky
+ * factor of <code>Q</code> which is stored internally in the instance of our 
+ * quadratic function.
+ * 
+ * 
+ * \subsection genquad-fun-sec Generalized Quadratic 
+ * 
+ * A generalized quadratic function is a function of the form
+ * 
+ * \f[
+ * F(x) = \frac{1}{2}\langle x, T(x) \rangle
+ * \f]
+ * 
+ * where <code>T</code> is a linear operator (here, an instance of LinearOperator).
+ * This operator is expected to be self-adjoint.
+ * 
+ * 
+ * Here is a very simple example of use where <code>T</code> is an instance of MatrixOperator.
+ * 
+ * \code
+ * double fval;                         // the value of F at x, F(x) - to be computed
+ * Matrix grad;                         // the gradient of F at x - to be computed
+ * 
+ * Matrix Q;
+ * Matrix x;
+ * 
+ * LinearOperator *T = new MatrixOperator(Q);
+ * Function *F = new QuadraticOperator(T);
+ * 
+ * int info = F -> call(x, fval, grad); // compute its value at x, F(x) and its gradient grad(F)(x)
+ * 
+ * delete T;
+ * delete F;
+ * \endcode
+ * 
+ * \subsection quadoveraff-fun-sec Quadratic-over-affine
+ * 
+ * A quadratic-over-affine function, or, a quadratic function plus the indicator of an affine subspace, 
+ * is a function \f$F:\mathbb{R}^n \to \mathbb{R}\cup\{+\infty\}\f$ is the form
+ * 
+ * \f[
+ * F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|E),
+ * \f]
+ * 
+ * where \f$E\f$ is the affine space
+ * 
+ * \f[
+ * E = \{x: Ax = b\}
+ * \f]
+ * 
+ * and \f$A\in\mathbb{R}^{s\times n}\f$, \f$b\in\mathbb{R}^s\f$ and \f$\delta(\cdot|E)\f$ is the indicator function
+ * 
+ * \f[
+ * \delta(x|E) = \begin{cases}
+ * 1, \text{ if } x \in E,\\
+ * \infty, \text{ otherwise} 
+ * \end{cases}
+ * \f]
+ * 
+ * Let us define the matrix
+ * 
+ * \f[
+ * S = \begin{bmatrix}
+ * Q & A'\\
+ * A & 0
+ * \end{bmatrix},
+ * \f]
+ * 
+ * then, the conjugate of <code>F</code> is
+ * 
+ * \f[
+ * S g(x^*) =  \begin{bmatrix}x^*-q\\b\end{bmatrix}
+ * \f]
+ * and let \f$\gamma(x^*)\f$ be the vector comprising the first n entries of \f$g(x^*)\f$. Then,
+ * \f[
+ * F^*(x^*) = -\frac{1}{2} \left(\gamma(x^*)'Q\gamma(x^*) + (q-x^*)'\gamma(x^*)\right)
+ * \f]
+ * 
+ * Here is an example of use
+ * 
+ * \code{.cpp}
+ * // First, define matrices Q, q, A and b
+ * Matrix Q = ...;
+ * Matrix q = ...;
+ * Matrix A = ...;
+ * Matrix b = ...;
+ * Function *F = new QuadOverAffine(Q, q, A, b); // define the function as QuadOverAffine
+ * Matrix y = ...;
+ * double f_star;
+ * Matrix grad;
+ * int status = F->callConj(y, f_star, grad);
+ * \endcode
+ * 
+ * 
+ * \subsection indbox Indicator functions
+ * There are four types of indicator functions implemented in ForBES, namely
+ * (i) the indicator of a rectangle, that is a set of the form \f$B_{[l,u]}=\{x: l \leq x \leq u\}\f$,
+ * (ii) the indicator of a set \f$B_{\geq l}=\{x: x \geq l\}\f$, (iii) or of a set \f$B_{\leq u}=\{x: x \leq u\}\f$
+ * and (iv) the indicator of a ball \f$B_c=\{x: \|x\| \leq c\}\f$.
+ * 
+ * Here is an example:
+ * 
+ * \code{.cpp}
+ * double lb = -1.0;    // uniform lower bound (-1.0)
+ * double ub = 4.0;     // uniform upper bound (4.0)
+ * 
+ * Function *F = new IndBox(lb, ub);    // define the indicator function of a box
+ * Matrix x(2, 1);
+ * x[0] = -1.0;
+ * x[1] = 4.0;
+ * 
+ * double fval;         // value F(x)
+ * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
+ * assert(fval == 1.0);                                 // here F(x) = 1.0
+ * 
+ * x[0] = -1.1;
+ * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
+ * assert(isinf(fval));                                 // here F(x) = infinity
+ * 
+ * delete F;
+ * \endcode
+ * 
+ * One can use IndBox::callConj to compute the conjugate of the indicator function
+ * of a box which is given by:
+ * 
+ * \f[
+ * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x^*; l, u) = \min (\max(x^*, l), u)
+ * \f]
+ * 
+ * 
+ * \subsection distance Various distance functions
+ * 
+ * \subsection logloss Log-logistic loss
+ * The log-logistic loss function is a function \f$f:\mathbb{R}^n\to \mathbb{R}\f$
+ * defined as follows. 
+ * 
+ * For \f$x\in\mathbb{R}^n\f$ let \f$e(x)\f$ be a vector whose
+ * \f$i\f$-th entry is equal to \f$e^{x_i}\f$, where \f$x_i\f$ is the \f$i\f$-th
+ * element of \f$x\f$. Let
+ * 
+ * \f[
+ * (p(x))_i = \frac{(e(x))_i}{1+(e(x))_i}
+ * \f]
+ * 
+ * where \f$(p(x))_i\f$ and \f$(e(x))_i\f$ stand for the \f$i\f$-th entries in
+ * \f$p(x)\f$ and \f$e(x)\f$ respectively.
+ * 
+ * Then, the log-logistic function with parameter \f$\mu\f$ is defined as
+ * 
+ * \f[
+ * f(x; \mu) = -\mu \sum_{i=1}^{n}\log((p(x))_i)
+ * \f]
+ * 
+ * The gradient of \f$f\f$ is then 
+ * 
+ * \f[
+ * (\nabla f(x; \mu))_i = \mu((p(x))_i-1)
+ * \f]
+ * 
+ * and its Hessian is
+ * 
+ * \f[
+ * (\nabla^2 f(x; \mu))_i = \mathrm{diag} \{ \mu \frac{(e(x))_i}{[(e(x))_i + 1]^2} \}
+ * \f]
+ * 
+ * 
+ * 
+ * \subsection hingeloss Hingle loss
+ * 
+ * \subsection huberloss Huber loss
+ * 
+ * \subsection quadloss Quadratic loss
+ * 
+ * \subsection quadoveraffineloss Quadratic-over-affine loss
+ * 
+ * \subsection elasticnet Elastic net
+ * 
+ * \subsection vectornorms Vector norms
+ * 
+ * \subsection nuclearnorm Nuclear norm
+ * 
+ * \subsection zerofunction Zero function
+ */
