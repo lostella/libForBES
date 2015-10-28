@@ -114,9 +114,12 @@ public:
 
 
 
+
 private:
     
-    int compute_dx(Matrix& x, Matrix& dx) const;
+    int compute_dx(const Matrix& x, const size_t n, Matrix& dx) const;
+    int compute_grad(Matrix& dx, const size_t n, Matrix& grad) const;
+    int compute_fun(const Matrix& dx, const size_t n, double& f) const;
 
     bool m_is_weights_equal; /**< Whether all weights are equal to each other. */
     bool m_is_bounds_uniform; /**< Whether box bounds are uniform. */
