@@ -127,7 +127,8 @@ TESTS = \
 	TestDistanceToBox.test \
 	TestElasticNet.test \
 	TestQuadraticLoss.test \
-	TestLogLogisticLoss.test
+	TestLogLogisticLoss.test \
+	TestHingeLoss.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -161,6 +162,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestElasticNet
 	${BIN_TEST_DIR}/TestQuadraticLoss
 	${BIN_TEST_DIR}/TestLogLogisticLoss
+	${BIN_TEST_DIR}/TestHingeLoss
 
 
 

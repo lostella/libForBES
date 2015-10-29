@@ -145,8 +145,13 @@ void TestQuadraticLoss::testCallConj() {
         -3.666260687225234
     };
     Matrix grad_expected(n, 1, grad_expected_data);
-    
+
     _ASSERT_EQ(grad_expected, grad);
+
+    double f_star2;
+    status = quadLoss->callConj(x, f_star2);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(f_star, f_star2, tol);
 
     delete quadLoss;
 }

@@ -218,6 +218,30 @@
  * 
  * 
  * \subsection hingeloss Hingle loss
+ * The class HingeLoss extends the class Function and implements the Hinge loss
+ * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
+ * 
+ * \f[
+ *  f(x) = \mu \sum_{i=1}^{n} \max(0, 1-Bx),
+ * \f]
+ *
+ * where \f$B=\mathrm{diag}(b)\f$ is a diagonal matrix - where \f$b\in\mathbb{R}^n\f$.
+ * 
+ * Note that in the above expression, \f$z=Bx\in\mathbb{R}^n\f$ is a vector and \f$1-z\f$ 
+ * is the vector whose i-th entry is \f$1-z_i\f$. What is more, \f$\max(0, 1-Bx)\f$
+ * is also a vector whose i-th entry is \f$\max(0, 1-b_ix_i)\f$.
+ * 
+ * The proximal operator of the Hinge loss function is given by
+ * 
+ * \f[
+ *  \mathrm{prox}_{\gamma f}(v)_i = 
+ *   \begin{cases}
+ *     b_i \min(1, b_i + \gamma \mu), &\text{if } b_i x_i < 1\\
+ *     x_i, &\text{otherwise}
+ *   \end{cases}
+ * \f]
+ * 
+ *
  * 
  * \subsection huberloss Huber loss
  * 

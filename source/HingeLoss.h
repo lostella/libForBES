@@ -44,25 +44,38 @@
  * is the vector whose i-th entry is \f$1-z_i\f$. What is more, \f$\max(0, 1-Bx)\f$
  * is also a vector whose i-th entry is \f$\max(0, 1-b_ix_i)\f$.
  * 
+ * The proximal operator of the Hinge loss function is given by
+ * 
+ * \f[
+ *  \mathrm{prox}_{\gamma f}(v)_i = 
+ *   \begin{cases}
+ *     b_i \min(1, b_i + \gamma \mu), &\text{if } b_i x_i < 1\\
+ *     x_i, &\text{otherwise}
+ *   \end{cases}
+ * \f]
  * 
  */
 class HingeLoss : public Function {
+    
 public:
 
     /**
      * Create a new instance of HingleLoss providing the parameters b and mu.
      * @param b Vector b
-     * @param mu Parameter \$\mu\$
+     * @param mu Parameter \f$ \mu\f$
      */
     HingeLoss(Matrix* b, double mu);
 
     /**
      * Create a new instance of HingleLoss providing the parameter b while it is
-     * assumed that \$\mu=1\f$.
+     * assumed that mu is equal to 1.
      * @param b Vector b
      */
     HingeLoss(Matrix* b);
 
+    /**
+     * Destructor
+     */
     virtual ~HingeLoss();
 
     virtual int call(Matrix& x, double& f);
@@ -75,8 +88,6 @@ public:
 
 
 private:
-
-    HingeLoss();
 
     double m_mu;
     Matrix * m_b;

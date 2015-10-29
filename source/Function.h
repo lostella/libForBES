@@ -73,7 +73,7 @@ public:
      * status codes.
      * 
      */
-    virtual int call(Matrix& x, double& f);;
+    virtual int call(Matrix& x, double& f);
 
     /**
      * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
@@ -110,7 +110,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);; // returns the value of prox_{gamma f}
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox); // returns the value of prox_{gamma f}
 
     /**     
      * 

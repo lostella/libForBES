@@ -19,10 +19,7 @@
  */
 
 #include "HingeLoss.h"
-
-HingeLoss::HingeLoss() : Function() {
-    m_mu = 1.0;
-}
+#include <iostream>
 
 HingeLoss::HingeLoss(Matrix* b, double mu) :
 Function(), m_b(b), m_mu(mu) {
@@ -53,7 +50,23 @@ int HingeLoss::call(Matrix& x, double& f) {
 }
 
 int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox) {
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    if (!x.isColumnVector()) {
+        throw std::invalid_argument("x must be a column-vector");
+    }
+    double bxi = 0.0;
+    double bi;
+    double gm = gamma*m_mu;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        bi = m_b->get(i, 0);
+        bxi = bi * x.get(i, 0);
+        if (bxi < 1) {
+            prox.set(i, 0, bi * std::min(1.0, bxi + gm));
+        } else {
+            prox.set(i, 0, x.get(i, 0));
+        }
+
+    }
+    return ForBESUtils::STATUS_OK;
 }
 
 int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
