@@ -58,7 +58,7 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox, double& g_
         prox.set(i, 0, (xi < 0 ? -1 : 1) * yi);
         g_at_prox += mu * yi + (lambda / 2.0) * std::pow(yi, 2);
     }
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    return ForBESUtils::STATUS_OK;
 }
 
 int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox) {
@@ -74,5 +74,5 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox) {
         xi = x.get(i, 0);
         prox.set(i, 0, (xi < 0 ? -1 : 1) * max(0.0, abs(xi) - gm) / alpha);
     }
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    return ForBESUtils::STATUS_OK;
 }
