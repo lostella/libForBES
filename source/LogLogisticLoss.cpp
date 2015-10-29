@@ -29,7 +29,7 @@ int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
     for (size_t i = 0; i < x.getNrows(); i++) {
         si = std::exp(x.get(i, 0));
         si = si / (1 + si);
-        f += std::log(si);
+        f -= std::log(si);
         grad.set(i, 0, mu * (si - 1));
     }
     f *= mu;
@@ -47,7 +47,7 @@ int LogLogisticLoss::call(Matrix& x, double& f) {
     for (size_t i = 0; i < x.getNrows(); i++) {
         si = std::exp(x.get(i, 0));
         si = si / (1 + si);
-        f += std::log(si);
+        f -= std::log(si);
     }
     f *= mu;
     return ForBESUtils::STATUS_OK;

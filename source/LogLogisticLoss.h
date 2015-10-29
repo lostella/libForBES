@@ -35,7 +35,7 @@
  * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
  * 
  * \f[
- *  f(x) = \mu \sum_{i=1}^{n} \ln \sigma(x_i),
+ *  f(x) = -\mu \sum_{i=1}^{n} \ln \sigma(x_i),
  * \f]
  * 
  * where
@@ -50,12 +50,25 @@
  * \nabla f(x)_i = \mu ( \sigma(x_i) - 1 ).
  * \f]
  * 
+ * The Hessian of this function is a diagonal matrix with diagonal elements
+ * 
+ * \f[
+ *  (\nabla^2 f(x))_{ii} = \frac{\mu e^{x_i}}{(1+e^{x_i})^2}.
+ * \f]
  */
 
 class LogLogisticLoss : public Function {
 public:
+    
+    /**
+     * Create an instance of LogLogisticLoss assuming \f$\mu=1\f$
+     */
     LogLogisticLoss(); // with mu = 1    
     
+    /**
+     * Create an instance of LogLogisticLoss using a given value for \f$\mu\f$
+     * @param mu Parameter \f$\mu\f$ (positive)
+     */
     LogLogisticLoss(double mu);
 
     virtual ~LogLogisticLoss();
