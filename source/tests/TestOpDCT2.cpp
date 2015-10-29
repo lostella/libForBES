@@ -89,7 +89,7 @@ void TestOpDCT2::testCall() {
 
 void testOperatorLinearity(LinearOperator* op) {
     const size_t repeat = 300;
-    const double tol = 1e-12;
+    const double tol = 1e-10;
 
     Matrix *x = new Matrix();
     Matrix *y = new Matrix();

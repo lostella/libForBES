@@ -66,6 +66,7 @@
 #include "IndBox.h"                 /* Indicator of a box */ 
 #include "IndPos.h"                 /* Indicator of a halfspace */
 #include "IndSOC.h"                 /* Indicator of a second-order cone */
+#include "ElasticNet.h"             /* Elastic net regularization function */
 
 
 

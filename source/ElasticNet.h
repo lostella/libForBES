@@ -91,8 +91,17 @@
 class ElasticNet : public Function{
 public:
     
+    /**
+     * Create a new instance of ElasticNet with given parameters lambda and mu.
+     * 
+     * @param lambda parameter \f$\lambda\f$
+     * @param mu parameter \f$\mu\f$
+     */
     ElasticNet(double lambda, double mu);
     
+    /**
+     * Destructor
+     */
     virtual ~ElasticNet();
 
     virtual int call(Matrix& x, double& f);

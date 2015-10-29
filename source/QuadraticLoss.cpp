@@ -1,0 +1,84 @@
+/* 
+ * File:   QuadraticLoss.cpp
+ * Author: Pantelis Sopasakis
+ * 
+ * Created on October 29, 2015, 5:47 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "QuadraticLoss.h"
+
+QuadraticLoss::QuadraticLoss() {
+    m_is_uniform_weights = true;
+    m_is_zero_p = true;
+    m_uniform_w = 1.0;
+}
+
+QuadraticLoss::QuadraticLoss(double w) :
+Function(), m_uniform_w(w) {
+    m_is_uniform_weights = true;
+    m_is_zero_p = true;
+}
+
+QuadraticLoss::QuadraticLoss(Matrix* w, Matrix* p) :
+Function(), m_p(p), m_w(w) {
+    if (w == NULL || p == NULL) {
+        throw std::invalid_argument("Arguments cannot be NULL in this constructor");
+    }
+    if (!w->isColumnVector() || !p->isColumnVector()) {
+        throw std::invalid_argument("Arguments w and p must be column-vectors");
+    }
+    if (w->getNrows() != p->getNrows()) {
+        throw std::invalid_argument("w and p must be of equal size");
+    }
+    m_is_uniform_weights = false;
+    m_is_zero_p = false;
+}
+
+QuadraticLoss::~QuadraticLoss() {
+}
+
+int QuadraticLoss::call(Matrix& x, double& f) {
+    f = 0.0;
+    double fi = 0.0;
+    for (size_t j = 0; j < x.getNrows(); j++) {
+        fi = x.get(j, 0);
+        if (!m_is_zero_p) {
+            fi -= m_p->get(j, 0);
+        }
+        fi *= fi;
+        if (!m_is_uniform_weights) {
+            fi *= m_w->get(j, 0);
+        }
+        f += fi;
+    }
+    if (m_is_uniform_weights) {
+        f *= m_uniform_w;
+    }
+    f /= 2.0;
+    return ForBESUtils::STATUS_OK;
+}
+
+int QuadraticLoss::callConj(const Matrix& x, double& f_star) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+int QuadraticLoss::callConj(const Matrix& x, double& f_star, Matrix& grad) {
+
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+
+

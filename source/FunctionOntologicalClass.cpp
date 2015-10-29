@@ -23,16 +23,16 @@ FunctionOntologicalClass::FunctionOntologicalClass(string name) : m_name(name) {
 
 std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) {
     os << "Function class : " << obj.m_name << "\n";
-    os << " * Defines conjugate : " << obj.m_defines_conjugate << "\n";
-    os << " * Defines function  : " << obj.m_defines_f << "\n";
-    os << " * Defines gradient  : " << obj.m_defines_grad << "\n";
-    os << " * Defines proximal  : " << obj.m_defines_prox << "\n";
+    os << " * f()              : " << (obj.m_defines_f ? "YES" : "NO") << "\n";
+    os << " * f*()             : " << (obj.m_defines_conjugate ? "YES" : "NO") << "\n";
+    os << " * grad(f)()        : " << (obj.m_defines_grad ? "YES" : "NO") << "\n";
+    os << " * prox(gamma*f)()  : " << (obj.m_defines_prox ? "YES" : "NO") << "\n";
     os << "Super-classes... \n";
     list<FunctionOntologicalClass> li = obj.superClasses;
     size_t i = 1;
     for (list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); it++) {
         FunctionOntologicalClass entry = *it;
-        cout << " "<< i << ". " << FunctionOntologyRegistry::nameSpace() << ":" << entry.getName() << "\n";
+        cout << " " << i << ". " << FunctionOntologyRegistry::nameSpace() << ":" << entry.getName() << "\n";
         i++;
     }
     return os;

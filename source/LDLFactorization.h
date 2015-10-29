@@ -15,6 +15,10 @@
 #include "FactoredSolver.h"
 #include "ldl.h"
 
+/**
+ * 
+ * \brief LDL factorization and solver.
+ */
 class LDLFactorization : public FactoredSolver {
 public:
 

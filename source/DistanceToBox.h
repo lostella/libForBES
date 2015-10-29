@@ -128,8 +128,6 @@ public:
      */
     DistanceToBox(double uniform_lb, double uniform_ub, double weight);
 
-
-
     virtual int call(Matrix& x, double& f, Matrix& grad);
 
     virtual int call(Matrix& x, double& f);

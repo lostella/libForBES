@@ -22,6 +22,9 @@
 
 void checkBounds(const Matrix* lb, const Matrix* ub) {
     //LCOV_EXCL_START
+    if (lb == NULL || ub == NULL){
+        throw std::invalid_argument("LB and UB cannot be NULL");
+    }
     if (lb->isEmpty()) {
         throw std::invalid_argument("Lower bound is not allowed to be empty");
     }

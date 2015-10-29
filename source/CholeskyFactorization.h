@@ -24,6 +24,10 @@
 #include "FactoredSolver.h"
 #include <cstring>
 
+/**
+ * 
+ * \brief Cholesky factorization and solver.
+ */
 class CholeskyFactorization : public FactoredSolver {
 public:
 

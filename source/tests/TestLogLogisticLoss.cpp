@@ -41,15 +41,38 @@ void TestLogLogisticLoss::testCall() {
     };
     Matrix x(n, 1, xdata);
     double f;
-    Matrix grad(n,1);
-    
+    Matrix grad(n, 1);
+
     const double tol = 1e-10;
     const double f_expected = 10.455339600285200;
+
+    const double grad_expected_data[n] = {
+        -0.553095647613005,
+        -0.206664161288562,
+        -1.358116380141062,
+        -0.445328215242575,
+        -0.631465046697517,
+        -1.180689100643326,
+        -0.910096624790372,
+        -0.622758155942074,
+        -0.040743067205105,
+        -0.088497390570449
+    };
+
+    Matrix grad_expected(n, 1, grad_expected_data);
 
     int status = logLogisticLoss->call(x, f, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_expected, f, tol);
+    _ASSERT_EQ(grad_expected, grad);
+
+
+    double f2;
+    status = logLogisticLoss->call(x, f2);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(f, f2, tol);
     
-    
+    delete logLogisticLoss;
+
 }
 

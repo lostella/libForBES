@@ -144,9 +144,11 @@
  * 
  * \subsection indbox Indicator functions
  * There are four types of indicator functions implemented in ForBES, namely
- * (i) the indicator of a rectangle, that is a set of the form \f$B_{[l,u]}=\{x: l \leq x \leq u\}\f$,
- * (ii) the indicator of a set \f$B_{\geq l}=\{x: x \geq l\}\f$, (iii) or of a set \f$B_{\leq u}=\{x: x \leq u\}\f$
- * and (iv) the indicator of a ball \f$B_c=\{x: \|x\| \leq c\}\f$.
+ *
+ * 1. the indicator of a rectangle \f$B_{[l,u]}=\{x: l \leq x \leq u\}\f$,
+ * 2. the indicator of a set \f$B_{\geq l}=\{x: x \geq l\}\f$, 
+ * 3. or of a set \f$B_{\leq u}=\{x: x \leq u\}\f$
+ * 4. the indicator of a ball \f$B_c=\{x: \|x\| \leq c\}\f$.
  * 
  * Here is an example:
  * 
@@ -220,6 +222,26 @@
  * \subsection huberloss Huber loss
  * 
  * \subsection quadloss Quadratic loss
+ * The class QuadraticLoss extends the class Function and implements the quadratic loss
+ * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
+ * 
+ * \f[
+ *  f(x) = \frac{1}{2} \sum_{i=1}^{n} w_i(x_i - p_i)^2,
+ * \f]
+ *
+ * where \f$w,p\in\mathbb{R}^n\f$ are given vectors.
+ * 
+ * The conjugate of this function is differentiable and its gradient is
+ * 
+ * \f[
+ * (\nabla f^*(y))_i = p_i + \frac{y_i}{w_i}.
+ * \f]
+ * 
+ * while the conjugate is computed as
+ * 
+ * \f[
+ * f^*(y) = \frac{1}{2} y' (\nabla f^*(y) + p).
+ * \f]
  * 
  * \subsection quadoveraffineloss Quadratic-over-affine loss
  * 
