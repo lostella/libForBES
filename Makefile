@@ -40,6 +40,13 @@ IFLAGS = \
 	 -I$(SS_DIR)/SuiteSparse_config \
 	 -I$(IEXTRA)
 
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+ # Use the real time POSIX library on Linux
+ LFLAGS_ADDITIONAL += -lrt
+endif
+
 lFLAGS = \
 	-lldl \
 	-lcholmod \
@@ -49,10 +56,9 @@ lFLAGS = \
 	-lccolamd \
 	-lcamd \
 	-llapacke \
-	-lblas \
 	-llapack \
 	-lopenblas \
-	-lm -lrt \
+	-lm \
 	$(LFLAGS_ADDITIONAL)
 
 LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
@@ -66,10 +72,7 @@ LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
 
 SOURCES = \
 	CholeskyFactorization.cpp \
-  FactoredSolver.cpp \
-	FBCache.cpp \
-	FBProblem.cpp \
-	FBSplitting.cpp \
+        FactoredSolver.cpp \
 	ForBESUtils.cpp \
 	Function.cpp \
 	IndBox.cpp \
@@ -92,7 +95,14 @@ SOURCES = \
 	QuadOverAffine.cpp \
 	QuadraticOperator.cpp \
 	Quadratic.cpp \
-	Solver.cpp
+	FunctionOntologicalClass.cpp \
+	FunctionOntologyRegistry.cpp \
+	DistanceToBox.cpp \
+	ElasticNet.cpp \
+	LogLogisticLoss.cpp \
+	QuadraticLoss.cpp \
+	HingeLoss.cpp
+ 
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
@@ -112,7 +122,12 @@ TESTS = \
 	TestOpReverseVector.test \
 	TestQuadOverAffine.test \
 	TestQuadratic.test \
-	TestQuadraticOperator.test
+	TestQuadraticOperator.test \
+	TestOntRegistry.test \
+	TestDistanceToBox.test \
+	TestElasticNet.test \
+	TestQuadraticLoss.test \
+	TestLogLogisticLoss.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -141,6 +156,11 @@ test: build-tests
 	${BIN_TEST_DIR}/TestQuadOverAffine
 	${BIN_TEST_DIR}/TestQuadratic
 	${BIN_TEST_DIR}/TestQuadraticOperator
+	${BIN_TEST_DIR}/TestDistanceToBox
+	${BIN_TEST_DIR}/TestOntRegistry
+	${BIN_TEST_DIR}/TestElasticNet
+	${BIN_TEST_DIR}/TestQuadraticLoss
+	${BIN_TEST_DIR}/TestLogLogisticLoss
 
 
 
