@@ -21,6 +21,7 @@
 #include "DistanceToBox.h"
 
 void checkBounds(const Matrix* lb, const Matrix* ub) {
+    //LCOV_EXCL_START
     if (lb->isEmpty()) {
         throw std::invalid_argument("Lower bound is not allowed to be empty");
     }
@@ -31,27 +32,45 @@ void checkBounds(const Matrix* lb, const Matrix* ub) {
         throw std::invalid_argument("UB and LB must be column vectors");
     }
     if (ub->getNcols() != lb->getNcols() || ub->getNrows() != lb->getNrows()) {
-        throw std::invalid_argument("UB and LB must be vectors of the same size");
+        throw std::invalid_argument("UB and LB and must be vectors of the same size");
     }
     if (lb->getType() != Matrix::MATRIX_DENSE || ub->getType() != Matrix::MATRIX_DENSE) {
         throw std::invalid_argument("UB and LB must be dense vectors - other types are not supported");
     }
+    //LCOV_EXCL_STOP
 }
+
+/*
+ * Constructors
+ */
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, Matrix* weights) :
 Function(), m_lb(lb), m_ub(ub), m_weights(weights) {
     checkBounds(lb, ub);
-    m_is_weights_equal = false;
+    m_is_weights_equal  = false;
+    m_is_bounds_uniform = false;
+    //LCOV_EXCL_START
+    if (!weights->isColumnVector() || weights->isEmpty() || weights->getNrows() != lb->getNrows()) {
+        throw std::invalid_argument("Invalid size of weights");
+    }
+    //LCOV_EXCL_STOP
 }
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, double weight) :
 Function(), m_lb(lb), m_ub(ub), m_weight(weight) {
     checkBounds(lb, ub);
-    m_is_weights_equal = true;
+    m_is_weights_equal  = true;
+    m_is_bounds_uniform = false;
+}
+
+DistanceToBox::DistanceToBox(double uniform_lb, double uniform_ub, double weight) :
+Function(), m_uniform_lb(uniform_lb), m_uniform_ub(uniform_ub), m_weight(weight) {
+    m_is_weights_equal  = true;
+    m_is_bounds_uniform = true;
 }
 
 DistanceToBox::~DistanceToBox() {
-
+    // nothing to delete
 }
 
 int DistanceToBox::compute_dx(const Matrix& x, const size_t n, Matrix& dx) const {
@@ -81,29 +100,26 @@ int DistanceToBox::compute_grad(Matrix& dx, const size_t n, Matrix& grad) const 
 int DistanceToBox::compute_fun(const Matrix& dx, const size_t n, double& f) const {
     f = 0.0;
     for (size_t i = 0; i < n; i++) {
-        f += m_weights->get(i, 0) * std::pow(dx.get(i, 0), 2);
+        f += (m_is_weights_equal ? m_weight : m_weights->get(i, 0)) * std::pow(dx.get(i, 0), 2);
     }
     f /= 2.0;
     return ForBESUtils::STATUS_OK;
 }
 
 int DistanceToBox::call(Matrix& x, double& f, Matrix& grad) {
-    const size_t n = x.getNrows();            // input dimension
-    Matrix dx(n, 1);                    // dx : n-by-1 (all zeros)
-    compute_dx(x, n, dx);               // compute d(x)
-    compute_grad(dx, n, grad);          // compute the gradient
-    compute_fun(dx, n, f);              // compute f(x)
-    return ForBESUtils::STATUS_OK;      // OK
+    const size_t n = x.getNrows(); // input dimension
+    Matrix dx(n, 1); // dx : n-by-1 (all zeros)
+    compute_dx(x, n, dx); // compute d(x)
+    compute_grad(dx, n, grad); // compute the gradient
+    compute_fun(dx, n, f); // compute f(x)
+    return ForBESUtils::STATUS_OK; // OK
 }
 
 int DistanceToBox::call(Matrix& x, double& f) {
-    const size_t n = x.getNrows();            // input dimension
-    Matrix dx(n, 1);                    // dx : n-by-1 (all zeros)
-    compute_dx(x, n, dx);               // compute d(x)
-    compute_fun(dx, n, f);              // compute f(x)
-    return ForBESUtils::STATUS_OK;      // OK
+    const size_t n = x.getNrows(); // input dimension
+    Matrix dx(n, 1); // dx : n-by-1 (all zeros)
+    compute_dx(x, n, dx); // compute d(x)
+    compute_fun(dx, n, f); // compute f(x)
+    return ForBESUtils::STATUS_OK; // OK
 }
 
-int DistanceToBox::category() {
-    return Function::CAT_UNCATEGORIZED;
-}

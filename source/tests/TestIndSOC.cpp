@@ -27,8 +27,6 @@ void TestIndSOC::tearDown() {
 
 void TestIndSOC::testCall() {
     Function * F = new IndSOC(5);
-    int funCat = F->category();
-    _ASSERT_EQ(Function::CAT_INDICATOR, funCat);
 
     Matrix x(5, 1);
     x[0] = 1.0;
@@ -56,10 +54,10 @@ void TestIndSOC::testCall() {
 
 void TestIndSOC::testCallProx() {
     Function * F = new IndSOC(5);
-    int funCat = F->category(), status, eqflag;
+    int status;
+    int eqflag;
     double fval;
     
-    _ASSERT_EQ(Function::CAT_INDICATOR, funCat);
 
     Matrix x(5, 1);
     x[0] = 1.0;

@@ -38,7 +38,7 @@ void TestOpDCT2::tearDown() {
 void TestOpDCT2::testCall() {
     const size_t n = 10;
     const size_t repeat = 100;
-    const double tol = 1e-8;
+    const double tol = 1e-7;
 
     LinearOperator * op = new OpDCT2(n);
 

@@ -20,14 +20,6 @@
 
 #include "Function.h"
 
-const int Function::CAT_QUADRATIC = 100;
-
-const int Function::CAT_INDICATOR = 150;
-
-const int Function::CAT_QUAD_OVER_AFFINE = 200;
-
-const int Function::CAT_UNCATEGORIZED = 9999;
-
 Function::Function() { }
 
 Function::~Function() {
@@ -45,3 +37,32 @@ int Function::call(Matrix& x, double& f, Matrix& grad)  {
     }    
     return ForBESUtils::STATUS_OK;
 }
+
+int Function::call(Matrix& x, double& f) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+int Function::callConj(const Matrix& x, double& f_star) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+int Function::callConj(const Matrix& x, double& f_star, Matrix& grad) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+int Function::callProx(const Matrix& x, double gamma, Matrix& prox) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+int Function::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+FunctionOntologicalClass Function::category() {
+    return FunctionOntologyRegistry::function();
+}
+
+int Function::computeGradient(Matrix& x, Matrix& grad) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+

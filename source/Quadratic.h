@@ -67,16 +67,14 @@ public:
      * Destructor.
      */
     virtual ~Quadratic();
+    
 
-    /**
-     * Category of this function. This is a quadratic function, therefore it 
-     * returns <code>CAT_QUADRATIC</code>.
-     * 
-     * @return Category index.
-     */
-    int category();
+    virtual FunctionOntologicalClass category();
+
+  
 
     void setQ(Matrix& Q);
+    
     void setq(Matrix& q);
 
     /**

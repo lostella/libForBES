@@ -46,7 +46,6 @@ Quadratic::Quadratic(Matrix& QQ, Matrix& qq) {
     is_q_zero = false;
 }
 
-
 Quadratic::~Quadratic() {
     if (m_solver != NULL) {
         delete m_solver;
@@ -88,10 +87,6 @@ int Quadratic::call(Matrix& x, double& f) {
         }
     }
     return ForBESUtils::STATUS_OK;
-}
-
-int Quadratic::category() {
-    return CAT_QUADRATIC;
 }
 
 int Quadratic::callConj(const Matrix& y, double& f_star) {
@@ -142,3 +137,8 @@ int Quadratic::computeGradient(Matrix& x, Matrix& grad) {
     }
     return ForBESUtils::STATUS_OK;
 }
+
+FunctionOntologicalClass Quadratic::category() {
+    return FunctionOntologyRegistry::quadratic();
+}
+

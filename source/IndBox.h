@@ -60,9 +60,7 @@ public:
 
     virtual ~IndBox();
     
-    virtual int call(Matrix& x, double& f);
-    
-    virtual int category();
+    virtual int call(Matrix& x, double& f);    
     
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 

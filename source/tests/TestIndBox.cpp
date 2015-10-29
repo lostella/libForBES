@@ -28,9 +28,6 @@ void TestIndBox::testCall() {
     double ub = 4.0;
     Function *F = new IndBox(lb, ub);
 
-    int funCat = F->category();
-    _ASSERT_EQ(Function::CAT_INDICATOR, funCat);
-
     Matrix x(2, 1);
     x[0] = -1.0;
     x[1] = 4.0;

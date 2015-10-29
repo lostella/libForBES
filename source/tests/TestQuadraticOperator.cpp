@@ -31,8 +31,7 @@ void TestQuadraticOperator::testCall() {
 
     LinearOperator *T = new MatrixOperator(Q);
 
-    Function *F = new QuadraticOperator(*T);
-    _ASSERT_EQ(Function::CAT_QUADRATIC, F->category());
+    Function *F = new QuadraticOperator(*T);    
     Function *F2 = new Quadratic(Q);
 
     double fval, fval2, fval3;

@@ -24,6 +24,8 @@
 
 #include "Matrix.h"
 #include "ForBESUtils.h"
+#include "FunctionOntologicalClass.h"
+#include "FunctionOntologyRegistry.h"
 
 /**
  * \class Function
@@ -38,7 +40,7 @@
  * \todo Return, when possible, the Hessian as a linear operator.
  * 
  * This is a generic API for ForBES functions. Constructors for this class are
- * protected.
+ * protected. Instances of this class can be created using any of its subclasses.
  */
 class Function {
 public:
@@ -49,40 +51,11 @@ public:
     virtual ~Function();
 
     /**
-     * A quadratic function.
-     */
-    const static int CAT_QUADRATIC;
-
-    /**
-     * The indicator function of a set.
-     */
-    const static int CAT_INDICATOR;
-
-    /**
-     * An uncategorized function.
-     */
-    const static int CAT_UNCATEGORIZED;
-
-    /**
-     * Quadratic over an affine subspace.
-     */
-    const static int CAT_QUAD_OVER_AFFINE;
-
-
-    /**
-     * The function category. Functions may define a function category so that
-     * the caller can know what type of function this is. For instance quadratic
-     * functions (e.g., our implementation <code>Quadratic</code>) return 
-     * <code>Function::CAT_QUADRATIC</code>. Users can define and use their own
-     * category indices. 
+     * Ontological categorization of the function.
      * 
-     * \todo also introduce super-classes like FunctionQuadratic to be able to cast
-     * functions of specific types accordingly and access additional methods (e.g.,
-     * getQ).
-     * 
-     * @return Function category as <code>int</code>
+     * @return function ontological class
      */
-    virtual int category() = 0; // abstract method
+    virtual FunctionOntologicalClass category();
 
     /**
      * Returns the value of function f.
@@ -100,9 +73,7 @@ public:
      * status codes.
      * 
      */
-    virtual int call(Matrix& x, double& f) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    };
+    virtual int call(Matrix& x, double& f);;
 
     /**
      * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
@@ -139,9 +110,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    }; // returns the value of prox_{gamma f}
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);; // returns the value of prox_{gamma f}
 
     /**     
      * 
@@ -158,9 +127,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    }; // prox_{gamma f} and value-at-prox
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);; // prox_{gamma f} and value-at-prox
 
     /**
      * Computes the conjugate of this function at a point <code>x</code>.
@@ -175,9 +142,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callConj(const Matrix& x, double& f_star) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    }; // conjugate of f at x: f*(x)
+    virtual int callConj(const Matrix& x, double& f_star);; // conjugate of f at x: f*(x)
 
     /**
      * Computes the conjugate of this function at a point <code>x</code> as well 
@@ -193,9 +158,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    }; // Nabla f*(x)
+    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);; // Nabla f*(x)
 
 
 
@@ -224,9 +187,7 @@ protected:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int computeGradient(Matrix& x, Matrix& grad) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
-    };
+    virtual int computeGradient(Matrix& x, Matrix& grad);;
 
 };
 

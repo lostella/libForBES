@@ -72,10 +72,11 @@
  * 
  * This class also allows the computation of the value of the function at a proximal
  * point, that is \f$g(\mathrm{prox}_{\gamma g}(v))\f$, as a function of \f$v\f$.
+ * 
  * This is given by
  * 
  * \f[
- *  g(\mathrm{prox}_{\gamma g}(v)) = \mu 1' t(v) + \frac{\lambda}{2}\|t(v)\|_2^2.
+ *  g(\mathrm{prox}_{\gamma g}(v)) = \mu 1' \frac{t(v)}{1+\lambda \gamma} + \frac{\lambda}{2}\|\frac{t(v)}{1+\lambda \gamma}\|_2^2.
  * \f]
  * 
  * This a simple MATLAB implementation of this function:
@@ -100,7 +101,6 @@ public:
     
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
     
-    virtual int category();
 
 
 

@@ -30,9 +30,6 @@ IndSOC::IndSOC(int n) : Function() {
 IndSOC::~IndSOC() {
 }
 
-int IndSOC::category() {
-    return Function::CAT_INDICATOR;
-}
 
 int IndSOC::call(Matrix& x, double& f) {
     if (!x.isColumnVector()) {

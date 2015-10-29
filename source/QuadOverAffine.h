@@ -58,8 +58,6 @@ public:
     
     virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);
 
-    virtual int category();
-
     
 private:
     

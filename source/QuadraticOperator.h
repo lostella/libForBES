@@ -46,7 +46,6 @@ public:
     virtual int call(Matrix& x, double& f);
     virtual int call(Matrix& x, double& f, Matrix& grad);
 
-    virtual int category();
 
 protected:
     virtual int computeGradient(Matrix& x, Matrix& grad);

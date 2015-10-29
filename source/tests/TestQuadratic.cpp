@@ -62,7 +62,6 @@ void TestQuadratic::testQuadratic2() {
     size_t n = 8;
     const double tol = 1e-7;
     Function *F = new Quadratic(); /* Q = I, q = 0. */
-    _ASSERT_EQ(Function::CAT_QUADRATIC, F->category());
 
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     x.set(0, 0, 666);
@@ -257,12 +256,6 @@ void TestQuadratic::testCallConj2() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F2->callConj(x, fstar));
     _ASSERT_NUM_EQ(fstar_exp / alpha, fstar, tol);
     _ASSERT_OK(delete F2);
-}
-
-void TestQuadratic::testCategory() {
-    Quadratic quadratic;
-    int cat = quadratic.category();
-    _ASSERT_EQ(Function::CAT_QUADRATIC, cat);
 }
 
 void TestQuadratic::testCallDiagonalMatrix() {

@@ -1919,7 +1919,7 @@ void _testSubmatrixMultiply(Matrix& A, Matrix& B) {
     Matrix result;
 
 
-    for (size_t k = 0; k < 5; k++) {
+    for (size_t k = 0; k < 4; k++) {
         for (size_t ds = 0; ds < 4; ds++) {
             for (size_t s = 0; s < A.getNcols() - ds - 1; s++) {
                 for (size_t dj = 0; dj < 4; dj++) {
@@ -1946,19 +1946,19 @@ void _testSubmatrixMultiply(Matrix& A, Matrix& B) {
 
 void TestMatrix::testSubmatrixMultiply() {
     const size_t MA = 13;
-    const size_t NA = 8;
+    const size_t NA = 14;
     const size_t MB = 12;
-    const size_t NB = 214;
+    const size_t NB = 17;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
     _testSubmatrixMultiply(A, B);
 }
 
 void TestMatrix::testSubmatrixMultiplyTr() {
-    const size_t MA = 20;
-    const size_t NA = 18;
-    const size_t MB = 40;
-    const size_t NB = 19;
+    const size_t MA = 10;
+    const size_t NA = 9;
+    const size_t MB = 16;
+    const size_t NB = 11;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
     A.transpose();

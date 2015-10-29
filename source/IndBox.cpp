@@ -29,9 +29,6 @@ IndBox::IndBox(Matrix& lb, Matrix& ub) : Function() {
 IndBox::~IndBox() {
 }
 
-int IndBox::category() {
-    return Function::CAT_INDICATOR;
-}
 
 int IndBox::call(Matrix& x, double& f) {
     if (!x.isColumnVector()) {

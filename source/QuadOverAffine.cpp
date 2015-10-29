@@ -117,8 +117,4 @@ int QuadOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
     return status;
 }
 
-int QuadOverAffine::category() {
-    return CAT_QUAD_OVER_AFFINE;
-}
-
 

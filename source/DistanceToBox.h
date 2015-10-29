@@ -80,7 +80,8 @@ public:
 
     /**
      * Construct a new instance of DistanceToBox with given lower and upper bounds
-     * for the box and weights.
+     * for the box and weights. Matrices <code>lb</code>, <code>ub</code> and 
+     * <code>weights</code> are expected to be column-vectors of equal sizes.
      * 
      * @param lb lower bound of the box
      * @param ub upper bound of the box
@@ -98,18 +99,41 @@ public:
      *  f(x) = \frac{w}{2}\min_{y\in B_{[l,u]}}\|y-x\|^2.
      * \f]
      * 
+     * Weights are typically expected to be positive, but in this implementation we
+     * perform no checks for their sign.
+     * 
      * @param lb lower bound of the box
      * @param ub upper bound of the box
      * @param weight scalar weight
      */
     DistanceToBox(Matrix* lb, Matrix* ub, double weight);
+    
+    /**
+     * Constructor for instances of DistanceToBox using uniform upper and lower
+     * bounds for the box and a uniform weight. The box is then defined as
+     * 
+     * \f[
+     * \mathcal{B}_{[l,u]} = \{x\in\mathbb{R}^n \mid l \leq x_i \leq u, \forall i=1,\ldots, n\}.
+     * \f]
+     * 
+     * and the function becomes
+     * 
+     * \f[
+     *  f(x) = \frac{w}{2}\min_{y\in B_{[l,u]}}\|y-x\|^2.
+     * \f]
+     * 
+     * @param uniform_lb uniform lower bound (scalar)
+     * @param uniform_ub uniform upper bound (scalar)
+     * @param weight the weight (scalar)
+     */
+    DistanceToBox(double uniform_lb, double uniform_ub, double weight);
+
 
 
     virtual int call(Matrix& x, double& f, Matrix& grad);
 
     virtual int call(Matrix& x, double& f);
 
-    virtual int category();
 
 
 

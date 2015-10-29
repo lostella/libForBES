@@ -51,6 +51,3 @@ int QuadraticOperator::computeGradient(Matrix& x, Matrix& grad) {
     return ForBESUtils::STATUS_OK;
 }
 
-int QuadraticOperator::category() {
-    return Function::CAT_QUADRATIC;
-}
