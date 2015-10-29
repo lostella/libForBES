@@ -76,8 +76,17 @@ int QuadraticLoss::callConj(const Matrix& x, double& f_star) {
 }
 
 int QuadraticLoss::callConj(const Matrix& x, double& f_star, Matrix& grad) {
-
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    double gradi = 0.0;
+    double pi = 0.0;
+    f_star = 0.0;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        pi = m_is_zero_p ? 0.0 : m_p->get(i, 0);
+        gradi = pi + x.get(i, 0) / (m_is_uniform_weights ? m_uniform_w : m_w->get(i, 0));
+        grad.set(i, 0, gradi);
+        f_star += x.get(i, 0)*(gradi + pi);
+    }
+    f_star /= 2.0;
+    return ForBESUtils::STATUS_OK;
 }
 
 

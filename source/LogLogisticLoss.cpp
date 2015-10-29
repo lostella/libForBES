@@ -25,7 +25,7 @@ int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
     }
     //LCOV_EXCL_STOP
     f = 0.0;
-    double si = 0.0;
+    long double si = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         si = std::exp(x.get(i, 0));
         si = si / (1 + si);

@@ -80,8 +80,74 @@ void TestQuadraticLoss::testCall() {
 }
 
 void TestQuadraticLoss::testCallConj() {
-//    if (true /*check result*/) {
-//        CPPUNIT_ASSERT(false);
-//    }
+    const size_t n = 10;
+    const double weights_data[n] = {
+        8.407172559836626,
+        2.542821789715310,
+        8.142848260688163,
+        2.435249687249893,
+        9.292636231872278,
+        3.499837659848088,
+        1.965952504312082,
+        2.510838579760311,
+        6.160446761466392,
+        4.732888489027292
+    };
+    const double p_data[n] = {
+        -11.658439314820487,
+        -11.479527788985941,
+        1.048747160164940,
+        7.222540322250016,
+        25.854912526162416,
+        -6.668906707013855,
+        1.873310245789398,
+        -0.824944253709554,
+        -19.330229178509867,
+        -4.389661539347733
+    };
+    Matrix w(n, 1, weights_data);
+    Matrix p(n, 1, p_data);
+
+    Function *quadLoss = new QuadraticLoss(&w, &p);
+
+    const double xdata[n] = {
+        -3.589357682910247,
+        1.680751059507811,
+        -1.776064164658021,
+        0.200185666278645,
+        -1.089057859981095,
+        0.607041589298709,
+        -1.200653124267468,
+        0.979930642347896,
+        1.478726247208948,
+        3.423775565963109
+    };
+    Matrix x(n, 1, xdata);
+
+    Matrix grad(n, 1);
+    double f_star;
+    double f_star_expected = -53.127646012575340;
+    const double tol = 1e-8;
+    int status = quadLoss->callConj(x, f_star, grad);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(f_star_expected, f_star, tol);
+
+    const double grad_expected_data[n] = {
+        -12.085379247046644,
+        -10.818549081667255,
+        0.830633779220282,
+        7.304743665638888,
+        25.737716734483215,
+        -6.495458207884025,
+        1.262586883127290,
+        -0.434664030103367,
+        -19.090193625170070,
+        -3.666260687225234
+    };
+    Matrix grad_expected(n, 1, grad_expected_data);
+    
+    _ASSERT_EQ(grad_expected, grad);
+
+    delete quadLoss;
 }
 

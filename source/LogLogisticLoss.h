@@ -35,7 +35,7 @@
  * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
  * 
  * \f[
- *  f(x) = -\mu \sum_{i=1}^{n} \ln \sigma(x_i),
+ *  f(x) = \mu \sum_{i=1}^{n} \ln \sigma(x_i),
  * \f]
  * 
  * where
