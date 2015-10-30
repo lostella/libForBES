@@ -67,3 +67,8 @@ int HuberLoss::call(Matrix& x, double& f, Matrix& grad) {
     return ForBESUtils::STATUS_OK;
 }
 
+FunctionOntologicalClass HuberLoss::category() {
+    return FunctionOntologyRegistry::loss();
+}
+
+

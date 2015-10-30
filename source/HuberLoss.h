@@ -62,14 +62,22 @@
 class HuberLoss : public Function {
 public:
     
+    /**
+     * Create a new instance of the Huber loss function with given parameter delta
+     * @param delta parameter delta
+     */
     HuberLoss(double delta);
     
+    /**
+     * Destructor
+     */
     virtual ~HuberLoss();
     
     virtual int call(Matrix& x, double& f);
     
     virtual int call(Matrix& x, double& f, Matrix& grad);
-
+    
+    virtual FunctionOntologicalClass category();
 
 private:
     double m_delta;

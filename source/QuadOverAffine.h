@@ -54,6 +54,9 @@ public:
      */
     QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b);    
     
+    /**
+     * Destructor
+     */
     virtual ~QuadOverAffine();
     
     virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);

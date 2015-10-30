@@ -34,6 +34,10 @@
 class QuadraticOperator : public Function {
 public:
 
+    /**
+     * Construct a new instance of QuadraticOperator given a linear operator 
+     * @param T linear operator
+     */
     QuadraticOperator(LinearOperator& T) :
     Function(), T(T) {
         if (T.dimensionIn() != T.dimensionOut()) {
@@ -41,6 +45,9 @@ public:
         }
     }
 
+    /**
+     * Destructor
+     */
     virtual ~QuadraticOperator();
 
     virtual int call(Matrix& x, double& f);

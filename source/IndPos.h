@@ -12,6 +12,9 @@
 #include "IndBox.h"
 
 
+/**
+ * 
+ */
 class IndPos : public IndBox {
 public:
     virtual ~IndPos();

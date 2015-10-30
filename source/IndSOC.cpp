@@ -18,9 +18,6 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
-#include <math.h>
-
 #include "IndSOC.h"
 
 IndSOC::IndSOC(int n) : Function() {
@@ -29,7 +26,6 @@ IndSOC::IndSOC(int n) : Function() {
 
 IndSOC::~IndSOC() {
 }
-
 
 int IndSOC::call(Matrix& x, double& f) {
     if (!x.isColumnVector()) {

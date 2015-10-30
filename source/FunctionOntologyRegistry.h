@@ -70,13 +70,13 @@ public:
     }
 
     static FunctionOntologicalClass loss() {
-        static FunctionOntologicalClass ind("lossFunction");
+        static FunctionOntologicalClass ind("LossFunction");
         ind.superClasses.push_back(function());
         return ind;
     }
 
     static FunctionOntologicalClass norm() {
-        static FunctionOntologicalClass ind("lossFunction");
+        static FunctionOntologicalClass ind("Norm");
         ind.superClasses.push_back(function());
         return ind;
     }

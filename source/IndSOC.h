@@ -23,6 +23,8 @@
 
 #include "Matrix.h"
 #include "Function.h"
+#include <algorithm>
+#include <math.h>
 
 /**
  * \class IndSOC
