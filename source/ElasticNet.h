@@ -23,7 +23,7 @@
 
 #include "Function.h"
 #include "FunctionOntologicalClass.h"
-
+#include <math.h>
 
 /**
  * \class ElasticNet
@@ -46,7 +46,7 @@
  * \mathrm{prox}_{\gamma g}(v) = \frac{t(v)}{1+\lambda \gamma}.
  * \f]
  * 
- * In order to define function \f$t::\mathbb{R}^n\to\mathbb{R}\f$ we need first to introduce 
+ * In order to define function \f$t:\mathbb{R}^n\to\mathbb{R}\f$ we need first to introduce 
  * the following function \f$\psi:\mathbb{R}^n\times\mathbb{R}^n \to \mathbb{R}^n\f$ as
  * 
  * \f[

@@ -67,6 +67,10 @@
 #include "IndPos.h"                 /* Indicator of a halfspace */
 #include "IndSOC.h"                 /* Indicator of a second-order cone */
 #include "ElasticNet.h"             /* Elastic net regularization function */
+#include "QuadraticLoss.h"          /* Quadratic loss function */
+#include "LogLogisticLoss.h"        /* Log-logistic function */
+#include "HingeLoss.h"              /* Hinge loss function */
+#include "HuberLoss.h"              /* Huber loss function */
 
 
 

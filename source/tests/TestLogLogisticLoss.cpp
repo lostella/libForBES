@@ -3,6 +3,19 @@
  * Author: chung
  *
  * Created on Oct 29, 2015, 7:38:05 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "TestLogLogisticLoss.h"
@@ -71,7 +84,21 @@ void TestLogLogisticLoss::testCall() {
     status = logLogisticLoss->call(x, f2);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f, f2, tol);
+
+    x.set(1, 0, 40);
+    x.set(2, 0, 34);
     
+    double f3;
+    status = logLogisticLoss->call(x, f3);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(6.695659275314881, f3, tol);
+    
+    double f4;
+    x.set(0, 0, -70);
+    status = logLogisticLoss->call(x, f4);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(1.110056258258362e+02, f4, tol);
+
     delete logLogisticLoss;
 
 }

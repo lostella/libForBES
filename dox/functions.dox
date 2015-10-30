@@ -244,6 +244,31 @@
  *
  * 
  * \subsection huberloss Huber loss
+ * HuberLoss extends the class Function and implements the Huber loss
+ * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
+ * 
+ * \f[
+ *  f(x) = \sum_{i=1}^{n} l_{\delta}(x_i),
+ * \f]
+ *
+ * where
+ * 
+ * \f[
+ *  l_{\delta}(x_i) = \begin{cases}
+ *   \frac{1}{2\delta}\|x_i\|^2,&\text{if } |x_i|\leq \delta \\
+ *   |x_i| - \frac{\delta}{2},&\text{otherwise}
+ * \end{cases}
+ * \f]
+ * 
+ * The gradient of the Huber loss function is given by
+ * 
+ * \f[
+ *  \nabla f(x)_i = \begin{cases}
+ *   \frac{|x_i|}{\delta},&\text{if } |x_i|\leq \delta \\
+ *   \mathrm{sign}(x_i),&\text{otherwise}
+ * \end{cases}
+ * \f]
+ *
  * 
  * \subsection quadloss Quadratic loss
  * The class QuadraticLoss extends the class Function and implements the quadratic loss

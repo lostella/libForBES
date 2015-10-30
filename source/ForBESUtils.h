@@ -21,6 +21,9 @@
 #ifndef FORBESUTILS_H
 #define	FORBESUTILS_H
 
+/**
+ * \brief ForBES utilities.
+ */
 class ForBESUtils {
 public:
     
@@ -42,7 +45,6 @@ public:
 private:
     
     ForBESUtils();
-    ForBESUtils(const ForBESUtils& orig);
     virtual ~ForBESUtils();
 
 };
