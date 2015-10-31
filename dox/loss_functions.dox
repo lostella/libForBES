@@ -1,0 +1,124 @@
+/* Loss functions */
+
+/*! \page doc-loss-functions Loss functions
+ *
+ * \brief Loss functions
+ * 
+ * \tableofcontents 
+ *
+ * \section loss-funs Loss Functions
+ * 
+ * \subsection logloss Log-logistic loss
+ * The log-logistic loss function is a function \f$f:\mathbb{R}^n\to \mathbb{R}\f$
+ * defined as follows. 
+ * 
+ * For \f$x\in\mathbb{R}^n\f$ let \f$e(x)\f$ be a vector whose
+ * \f$i\f$-th entry is equal to \f$e^{x_i}\f$, where \f$x_i\f$ is the \f$i\f$-th
+ * element of \f$x\f$. Let
+ * 
+ * \f[
+ * (p(x))_i = \frac{(e(x))_i}{1+(e(x))_i}
+ * \f]
+ * 
+ * where \f$(p(x))_i\f$ and \f$(e(x))_i\f$ stand for the \f$i\f$-th entries in
+ * \f$p(x)\f$ and \f$e(x)\f$ respectively.
+ * 
+ * Then, the log-logistic function with parameter \f$\mu\f$ is defined as
+ * 
+ * \f[
+ * f(x; \mu) = -\mu \sum_{i=1}^{n}\log((p(x))_i)
+ * \f]
+ * 
+ * The gradient of \f$f\f$ is then 
+ * 
+ * \f[
+ * (\nabla f(x; \mu))_i = \mu((p(x))_i-1)
+ * \f]
+ * 
+ * and its Hessian is
+ * 
+ * \f[
+ * (\nabla^2 f(x; \mu))_i = \mathrm{diag} \{ \mu \frac{(e(x))_i}{[(e(x))_i + 1]^2} \}
+ * \f]
+ * 
+ * 
+ * 
+ * \subsection hingeloss Hingle loss
+ * The class HingeLoss extends the class Function and implements the Hinge loss
+ * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
+ * 
+ * \f[
+ *  f(x) = \mu \sum_{i=1}^{n} \max(0, 1-Bx),
+ * \f]
+ *
+ * where \f$B=\mathrm{diag}(b)\f$ is a diagonal matrix - where \f$b\in\mathbb{R}^n\f$.
+ * 
+ * Note that in the above expression, \f$z=Bx\in\mathbb{R}^n\f$ is a vector and \f$1-z\f$ 
+ * is the vector whose i-th entry is \f$1-z_i\f$. What is more, \f$\max(0, 1-Bx)\f$
+ * is also a vector whose i-th entry is \f$\max(0, 1-b_ix_i)\f$.
+ * 
+ * The proximal operator of the Hinge loss function is given by
+ * 
+ * \f[
+ *  \mathrm{prox}_{\gamma f}(v)_i = 
+ *   \begin{cases}
+ *     b_i \min(1, b_i + \gamma \mu), &\text{if } b_i x_i < 1\\
+ *     x_i, &\text{otherwise}
+ *   \end{cases}
+ * \f]
+ * 
+ *
+ * 
+ * \subsection huberloss Huber loss
+ * HuberLoss extends the class Function and implements the Huber loss
+ * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
+ * 
+ * \f[
+ *  f(x) = \sum_{i=1}^{n} l_{\delta}(x_i),
+ * \f]
+ *
+ * where
+ * 
+ * \f[
+ *  l_{\delta}(x_i) = \begin{cases}
+ *   \frac{1}{2\delta}\|x_i\|^2,&\text{if } |x_i|\leq \delta \\
+ *   |x_i| - \frac{\delta}{2},&\text{otherwise}
+ * \end{cases}
+ * \f]
+ * 
+ * The gradient of the Huber loss function is given by
+ * 
+ * \f[
+ *  \nabla f(x)_i = \begin{cases}
+ *   \frac{|x_i|}{\delta},&\text{if } |x_i|\leq \delta \\
+ *   \mathrm{sign}(x_i),&\text{otherwise}
+ * \end{cases}
+ * \f]
+ *
+ *
+ * 
+ * \subsection quadLossFun Quadratic loss
+ *
+ * The class QuadraticLoss extends the class Function and implements the quadratic loss
+ * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
+ * 
+ * \f[
+ *  f(x) = \frac{1}{2} \sum_{i=1}^{n} w_i(x_i - p_i)^2,
+ * \f]
+ *
+ * where \f$w,p\in\mathbb{R}^n\f$ are given vectors.
+ * 
+ * The conjugate of this function is differentiable and its gradient is
+ * 
+ * \f[
+ * (\nabla f^*(y))_i = p_i + \frac{y_i}{w_i}.
+ * \f]
+ * 
+ * while the conjugate is computed as
+ * 
+ * \f[
+ * f^*(y) = \frac{1}{2} y' (\nabla f^*(y) + p).
+ * \f]
+ * 
+ * \subsection quadoveraffineloss Quadratic loss over affine space
+ */

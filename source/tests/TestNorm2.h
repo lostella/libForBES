@@ -1,43 +1,39 @@
 /*
- * File:   TestNorm1.h
+ * File:   TestNorm2.h
  * Author: chung
  *
- * Created on Oct 30, 2015, 6:15:56 PM
+ * Created on Oct 30, 2015, 9:53:13 PM
  */
 
-#ifndef TESTNORM1_H
-#define	TESTNORM1_H
+#ifndef TESTNORM2_H
+#define	TESTNORM2_H
 
 #define FORBES_TEST_UTILS
 #include "ForBES.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class TestNorm1 : public CPPUNIT_NS::TestFixture {
-    CPPUNIT_TEST_SUITE(TestNorm1);
+class TestNorm2 : public CPPUNIT_NS::TestFixture {
+    CPPUNIT_TEST_SUITE(TestNorm2);
 
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testCallProx);
-    CPPUNIT_TEST(testCallProx2);
     CPPUNIT_TEST(testDualNorm);
-    CPPUNIT_TEST(testConjugate);
 
     CPPUNIT_TEST_SUITE_END();
 
 public:
-    TestNorm1();
-    virtual ~TestNorm1();
+    TestNorm2();
+    virtual ~TestNorm2();
     void setUp();
     void tearDown();
 
 private:
     void testCall();
     void testCallProx();
-    void testCallProx2();
     void testDualNorm();
-    void testConjugate();
 
 };
 
-#endif	/* TESTNORM1_H */
+#endif	/* TESTNORM2_H */
 

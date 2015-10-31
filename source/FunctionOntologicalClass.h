@@ -33,15 +33,14 @@ using namespace std;
  * \see FunctionOntologyRegistry
  */
 class FunctionOntologicalClass {
-    
 public:
-    
+
     /**
      * Creates a new ontological class given its name/unique identifier.
      * @param name Name of the ontological class.
      */
     FunctionOntologicalClass(string name);
-    
+
     /**
      * Default destructor.
      */
@@ -52,8 +51,7 @@ public:
      * 
      * @return Unique name/identifier as a string
      */
-    string getName() const;    
-
+    string getName() const;
 
     /** 
      * Whether this function type defines f(x).
@@ -71,15 +69,15 @@ public:
     bool defines_grad() const {
         return m_defines_grad;
     }
-    
+
     /**
      * Whether this function type defines a conjugate \f$f^*(y)\f$
      * @return <code>true</code> if f*(y) is defined
      */
     bool defines_conjugate() const {
         return m_defines_conjugate;
-    }        
-    
+    }
+
     /**
      * Whether this function type defines the gradient of its conjugate \f$\nabla f^*(y)\f$
      * @return <code>true</code> if grad[f*](y) is defined
@@ -87,7 +85,6 @@ public:
     bool defines_conjugate_grad() const {
         return m_defines_conjugate_grad;
     }
-
 
     /**
      * Whether this function defines a proximal \f$\mathrm{prox}_{\gamma f}(v)\f$
@@ -100,24 +97,44 @@ public:
     list<FunctionOntologicalClass> getSuperclasses() const {
         return superClasses;
     }
-    
+
     friend std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj);
+
+    void set_defines_conjugate(bool defines_conjugate) {
+        m_defines_conjugate = defines_conjugate;
+    }
+
+    void set_defines_conjugate_grad(bool defines_conjugate_grad) {
+        m_defines_conjugate_grad = defines_conjugate_grad;
+    }
+
+    void set_defines_f(bool defines_f) {
+        m_defines_f = defines_f;
+    }
+
+    void set_defines_grad(bool defines_grad) {
+        m_defines_grad = defines_grad;
+    }
+
+    void set_defines_prox(bool defines_prox) {
+        m_defines_prox = defines_prox;
+    }
 
 
 private:
-    
+
     FunctionOntologicalClass();
-    
-    friend class FunctionOntologyRegistry; 
+
+    friend class FunctionOntologyRegistry;
 
     string m_name;
-    bool m_defines_f;               /**< Whether this function type defines f(x).                                       */
-    bool m_defines_grad;            /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
-    bool m_defines_conjugate;       /**< Whether this function type defines a conjugate f*(x)                           */
-    bool m_defines_conjugate_grad;  /**< Whether this function type defines the gradient of its conjugate grad[f*](x)   */   
-    bool m_defines_prox;            /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
+    bool m_defines_f; /**< Whether this function type defines f(x).                                       */
+    bool m_defines_grad; /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
+    bool m_defines_conjugate; /**< Whether this function type defines a conjugate f*(x)                           */
+    bool m_defines_conjugate_grad; /**< Whether this function type defines the gradient of its conjugate grad[f*](x)   */
+    bool m_defines_prox; /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
 
-    list<FunctionOntologicalClass> superClasses;    /**< List of super-classes */
+    list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
 
 };
 

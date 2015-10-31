@@ -3,6 +3,7 @@
  * \section firstSteps Getting started
  *
  * ForBES is a solver for smooth and non-smooth convex optimization problems. 
+ *
  * LibForBES is a C++ implementation of ForBES powered the high-performance 
  * computational routines of BLAS, LAPACK and SuiteSparse.
  *
@@ -10,6 +11,17 @@
  *
  * LibForBES is available as a static library which you can easily use in your
  * C++ code.
+ * 
+ * 5 steps to installation:
+ *  1. Download and install openblas and SuiteSparse
+ *  2. Download <a href="https://github.com/lostella/libForBES/archive/master.zip">libforbes</a>
+ *  3. Configure
+ *  4. Install using make
+ *  5. Verify your installation
+ *
+ * \section libforbes-api The libforbes API
+ * The two cornerstones of the libforbes API are the \ref doc-functs "Functions API"
+ * and the \ref doc-linops "Linear operators API".
  *  
  *
  */

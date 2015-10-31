@@ -33,18 +33,67 @@
  * 
  * Quadratic-over-affine function.
  * 
- * This is the function \f$F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|Z)\f$ where 
- * \f$\delta(\cdot|Z)\f$ is the indicator function of an affine space \f$Z\f$
- * defined by \f$Z = \{z: Az - b = 0\}\f$
+ * A quadratic-over-affine function, or, a quadratic function plus the indicator of an affine subspace, 
+ * is a function \f$F:\mathbb{R}^n \to \mathbb{R}\cup\{+\infty\}\f$ is the form
  * 
- * This class implements only the computation of the conjugate of quadratic-over-affine
- * as well as its gradient.
+ * \f[
+ * F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|E),
+ * \f]
+ * 
+ * where \f$E\f$ is the affine space
+ * 
+ * \f[
+ * E = \{x: Ax = b\}
+ * \f]
+ * 
+ * and \f$A\in\mathbb{R}^{s\times n}\f$, \f$b\in\mathbb{R}^s\f$ and \f$\delta(\cdot|E)\f$ is the indicator function
+ * 
+ * \f[
+ * \delta(x|E) = \begin{cases}
+ * 1, \text{ if } x \in E,\\
+ * \infty, \text{ otherwise} 
+ * \end{cases}
+ * \f]
+ * 
+ * Let us define the matrix
+ * 
+ * \f[
+ * S = \begin{bmatrix}
+ * Q & A'\\
+ * A & 0
+ * \end{bmatrix},
+ * \f]
+ * 
+ * then, the conjugate of <code>F</code> is
+ * 
+ * \f[
+ * S g(x^*) =  \begin{bmatrix}x^*-q\\b\end{bmatrix}
+ * \f]
+ * and let \f$\gamma(x^*)\f$ be the vector comprising the first n entries of \f$g(x^*)\f$. Then,
+ * \f[
+ * F^*(x^*) = -\frac{1}{2} \left(\gamma(x^*)'Q\gamma(x^*) + (q-x^*)'\gamma(x^*)\right)
+ * \f]
+ * 
+ * Here is an example of use
+ * 
+ * \code{.cpp}
+ * // First, define matrices Q, q, A and b
+ * Matrix Q = ...;
+ * Matrix q = ...;
+ * Matrix A = ...;
+ * Matrix b = ...;
+ * Function *F = new QuadOverAffine(Q, q, A, b); // define the function as QuadOverAffine
+ * Matrix y = ...;
+ * double f_star;
+ * Matrix grad;
+ * int status = F->callConj(y, f_star, grad);
+ * \endcode
  * 
  * \ingroup Functions
  */
 class QuadOverAffine : public Function {
 public:
-    
+
     /**
      * Define a new quadratic-over-affine function.
      * @param Q
@@ -52,28 +101,28 @@ public:
      * @param A
      * @param b
      */
-    QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b);    
-    
+    QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b);
+
     /**
      * Destructor
      */
     virtual ~QuadOverAffine();
-    
+
     virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);
 
-    
+
 private:
-    
+
     QuadOverAffine();
-    
-    Matrix *Q = NULL;   /**< Matrix Q (Hessian) */
-    Matrix *q = NULL;   /**< Vector q (Linear term) */
-    Matrix *A = NULL;   /**< Matrix A */
-    Matrix *b = NULL;   /**< Matrix b */
-    
-    Matrix *F = NULL;                   /**< Matrix <code>F = [Q A'; A 0]</code> */
+
+    Matrix *Q = NULL; /**< Matrix Q (Hessian) */
+    Matrix *q = NULL; /**< Vector q (Linear term) */
+    Matrix *A = NULL; /**< Matrix A */
+    Matrix *b = NULL; /**< Matrix b */
+
+    Matrix *F = NULL; /**< Matrix <code>F = [Q A'; A 0]</code> */
     Matrix *sigma = NULL;
-    FactoredSolver * Fsolver = NULL;    /**< Factorizer for matrix F */
+    FactoredSolver * Fsolver = NULL; /**< Factorizer for matrix F */
 };
 
 #endif	/* QUADOVERAFFINE_H */

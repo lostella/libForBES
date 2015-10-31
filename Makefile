@@ -77,6 +77,7 @@ SOURCES = \
 	Function.cpp \
 	IndBox.cpp \
 	IndSOC.cpp \
+	IndPos.cpp \
 	LDLFactorization.cpp \
 	LinearOperator.cpp \
 	Matrix.cpp \
@@ -101,7 +102,12 @@ SOURCES = \
 	ElasticNet.cpp \
 	LogLogisticLoss.cpp \
 	QuadraticLoss.cpp \
-	HingeLoss.cpp
+	HingeLoss.cpp \
+	HuberLoss.cpp \
+	Norm.cpp \
+	Norm1.cpp \
+	Norm2.cpp \
+	SeparableSum.cpp 
  
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
@@ -128,7 +134,10 @@ TESTS = \
 	TestElasticNet.test \
 	TestQuadraticLoss.test \
 	TestLogLogisticLoss.test \
-	TestHingeLoss.test
+	TestHingeLoss.test \
+	TestHuber.test \
+	TestNorm1.test \
+	TestNorm2.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -163,6 +172,9 @@ test: build-tests
 	${BIN_TEST_DIR}/TestQuadraticLoss
 	${BIN_TEST_DIR}/TestLogLogisticLoss
 	${BIN_TEST_DIR}/TestHingeLoss
+	${BIN_TEST_DIR}/TestHuber
+	${BIN_TEST_DIR}/TestNorm1
+	${BIN_TEST_DIR}/TestNorm2
 
 
 

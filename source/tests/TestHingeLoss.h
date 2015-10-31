@@ -30,6 +30,7 @@ class TestHingeLoss : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestHingeLoss);
 
     CPPUNIT_TEST(testCall);
+    CPPUNIT_TEST(testCall2);
     CPPUNIT_TEST(testCallProx);
 
     CPPUNIT_TEST_SUITE_END();
@@ -42,6 +43,7 @@ public:
 
 private:
     void testCall();
+    void testCall2();
     void testCallProx();
 
 };

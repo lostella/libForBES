@@ -1,8 +1,21 @@
 /* 
  * File:   Norm.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on October 30, 2015, 5:32 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef NORM_H
@@ -11,6 +24,14 @@
 #include "Function.h"
 #include <math.h>
 
+/**
+ * \class Norm
+ * \brief Abstract norm class
+ * \version version 0.1
+ * \ingroup Functions
+ * \date Created on October 30, 2015, 5:32 PM
+ * \author Pantelis Sopasakis
+ */
 class Norm : public Function {
 public:
 
@@ -47,6 +68,9 @@ public:
     virtual int dualNorm(const Matrix &x, double &norm);
 
     virtual int callConj(const Matrix& x, double& f_star);
+
+    virtual FunctionOntologicalClass category();
+
 
 protected:
     Norm();

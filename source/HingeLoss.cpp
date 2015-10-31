@@ -45,7 +45,7 @@ int HingeLoss::call(Matrix& x, double& f) {
             f += si;
         }
     }
-    f /= m_mu;
+    f *= m_mu;
     return ForBESUtils::STATUS_OK;
 }
 
@@ -70,9 +70,38 @@ int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox) {
 }
 
 int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    if (!x.isColumnVector()) {
+        throw std::invalid_argument("x must be a column-vector");
+    }
+    double bxi = 0.0;
+    double bi;
+    double gm = gamma*m_mu;
+    double pi;
+    double si = 0.0;
+    f_at_prox = 0.0;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        bi = m_b->get(i, 0);
+        bxi = bi * x.get(i, 0);
+        if (bxi < 1) {
+            pi = bi * std::min(1.0, bxi + gm);
+        } else {
+            pi = x.get(i, 0);
+        }
+        si = 1 - m_b->get(i, 0) * pi;
+        if (si > 0) {
+            f_at_prox += si;
+        }
+        prox.set(i, 0, pi);
+    }
+    f_at_prox *= m_mu;
+    return ForBESUtils::STATUS_OK;
 }
 
 FunctionOntologicalClass HingeLoss::category() {
-    return FunctionOntologyRegistry::loss();
+    FunctionOntologicalClass hingeLoss("HingeLoss");
+    hingeLoss.set_defines_f(true);
+    hingeLoss.set_defines_grad(true);
+    hingeLoss.set_defines_prox(true);
+    hingeLoss.getSuperclasses().push_back(FunctionOntologyRegistry::loss());
+    return hingeLoss;
 }

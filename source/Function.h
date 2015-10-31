@@ -60,9 +60,9 @@ public:
     /**
      * Returns the value of function f.
      * 
-     * @param x The vector x where f(x) should be computed.
+     * @param x The vector x where  \f$f(x)\f$ should be computed.
      * 
-     * @param f The computed value of f(x)
+     * @param f The computed value of  \f$f(x)\f$
      * 
      * @return
      * status code which is equal to <code>STATUS_OK</code> if the computation
@@ -77,13 +77,13 @@ public:
 
     /**
      * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
-     * also the gradient of f at x.
+     * also the gradient \f$\nabla f(x)\f$.
      * 
-     * @param x The vector x where f(x) should be computed.
+     * @param x The vector x where \f$f(x)\f$ should be computed.
      * 
-     * @param f The computed value of f(x)
+     * @param f The computed value of \f$f(x)\f$
      * 
-     * @param grad The gradient of f at x.
+     * @param grad The gradient of f at x, \f$\nabla f(x)\f$
      * 
      * @return 
      * status code which is equal to <code>STATUS_OK=0</code> if the computation
@@ -99,8 +99,8 @@ public:
      * Computes the proximal of this function at a point <code>x</code> with 
      * parameter <code>gamma</code>.
      * 
-     * @param x The vector x where f(x) should be computed.
-     * @param gamma The parameter <code>gamma</code> of <code>prox_(gamma*f)(x)</code>
+     * @param x The vector x where \f$\mathrm{prox}_{\gamma f}(x)\f$ should be computed.
+     * @param gamma The parameter \f$\gamma\f$ of \f$\mathrm{prox}_{\gamma f}\f$
      * @param prox The result of this operation
      * @return 
      * status code which is equal to <code>STATUS_OK=0</code> if the computation
@@ -114,10 +114,10 @@ public:
 
     /**     
      * 
-     * @param x The vector x where f(x) should be computed.
-     * @param gamma The parameter <code>gamma</code> of <code>prox_(gamma*f)(x)</code>
+     * @param x The vector x where \f$\mathrm{prox}_{\gamma f}(x)\f$ should be computed.
+     * @param gamma The parameter \f$\gamma\f$ of \f$\mathrm{prox}_{\gamma f}\f$
      * @param prox The result of this operation
-     * @param f_at_prox Value of this function at the proximal operator
+     * @param f_at_prox Value of this function at the proximal operator \f$f(\mathrm{prox}_{\gamma f}(x))\f$
      * 
      * @return 
      * status code which is equal to <code>STATUS_OK=0</code> if the computation
@@ -132,8 +132,8 @@ public:
     /**
      * Computes the conjugate of this function at a point <code>x</code>.
      * 
-     * @param x The vector x where <code>f_star(x)</code> should be computed.
-     * @param f_star the computed value <code>f_star(x)</code> 
+     * @param x The vector x where \f$f^*(x)\f$ should be computed.
+     * @param f_star the computed value \f$f^*(x)\f$
      * @return 
      * status code which is equal to <code>STATUS_OK=0</code> if the computation
      * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
@@ -148,8 +148,9 @@ public:
      * Computes the conjugate of this function at a point <code>x</code> as well 
      * as the corresponding gradient.
      * 
-     * @param x The vector x where <code>f_star(x)</code> should be computed.
-     * @param f_star the computed value <code>f_star(x)</code> 
+     * @param x The vector x where \f$f^*(x)\f$ should be computed.
+     * @param f_star the computed value \f$f^*(x)\f$
+     * @param grad the gradient of the conjugate function \f$\nabla f^*(x)\f$
      * @return 
      * status code which is equal to <code>STATUS_OK=0</code> if the computation
      * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if

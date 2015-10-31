@@ -19,13 +19,15 @@ FunctionOntologicalClass::FunctionOntologicalClass(string name) : m_name(name) {
     m_defines_grad = false;
     m_defines_prox = false;
     m_defines_conjugate = false;
+    m_defines_conjugate_grad = false;
 }
 
 std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) {
     os << "Function class : " << obj.m_name << "\n";
     os << " * f()              : " << (obj.m_defines_f ? "YES" : "NO") << "\n";
+    os << " * grad[f]()        : " << (obj.m_defines_grad ? "YES" : "NO") << "\n";
     os << " * f*()             : " << (obj.m_defines_conjugate ? "YES" : "NO") << "\n";
-    os << " * grad(f)()        : " << (obj.m_defines_grad ? "YES" : "NO") << "\n";
+    os << " * grad[f*]()       : " << (obj.m_defines_conjugate_grad ? "YES" : "NO") << "\n";
     os << " * prox(gamma*f)()  : " << (obj.m_defines_prox ? "YES" : "NO") << "\n";
     os << "Super-classes... \n";
     list<FunctionOntologicalClass> li = obj.superClasses;

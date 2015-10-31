@@ -2,351 +2,82 @@
 
 /*! \page doc-functs Functions
  *
- * \brief ForBES functions
+ * \brief The functions API
  * 
- * \tableofcontents 
  * 
- * \section functions-sec Functions
- * 
- * The ForBES function API blah blah
- * 
- * \subsection quad-fun-sec Quadratic
- * A quadratic function is a function of the form
- * 
- * \f[
- * F(x) = \frac{1}{2}x'Qx + q'x,
- * \f]
- * 
- * where <code>Q</code> is a symmetric positive definite matrix whose conjugate is given by
- * 
- * \f[
- * F^*(x^*) = (x^*-q)'Q^{-1}(x^*-q).
- * \f]
- * 
- * Here is a simple example:
- * \code
- * size_t n = 10;
- * Matrix Q = MatrixFactory::MakeRandomSparse(n, n, 20, 0.0, 1.0);
- * Matrix Eye = MatrixFactory::MakeIdentity(n, 10.0);
- * 
- * Matrix Qt(Q);        // Qt= Q
- * Qt.transpose();      // Qt = Qt'
- * Q += Qt;             // Q = Q + Qt (this will make Q a symmetric matrix)
- * 
- * Q += Eye;            // with this we ensure Q is positive definite
+ * The ForBES function API allows end-users to define their own functions and at 
+ * the same time provides a collection of functions that are frequently used and 
+ * have applications in machine learning, control and other applications of 
+ * optimization. A complete list of these functions can be found \ref Functions "here".
  *
- * Function *F = new Quadratic(Q); // F(x) = 0.5*x'Qx
- * Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
- * 
- * double f;            // value F(x)
- * double f_star;       // value F*(x) (conjugate of F at x)
- * Matrix grad;         // gradient of F* and x
- * 
- * int status = F->call(x, f);
- * status = F->callConj(x, f_star, grad);
- * 
- * std::cout << grad;   // print out the gradient
- * \endcode
- * 
- * The invocation of <code>callConj</code> involves the computation of a Cholesky
- * factor of <code>Q</code> which is stored internally in the instance of our 
- * quadratic function.
- * 
- * 
- * \subsection genquad-fun-sec Generalized Quadratic 
- * 
- * A generalized quadratic function is a function of the form
- * 
- * \f[
- * F(x) = \frac{1}{2}\langle x, T(x) \rangle
- * \f]
- * 
- * where <code>T</code> is a linear operator (here, an instance of LinearOperator).
- * This operator is expected to be self-adjoint.
- * 
- * 
- * Here is a very simple example of use where <code>T</code> is an instance of MatrixOperator.
- * 
- * \code
- * double fval;                         // the value of F at x, F(x) - to be computed
- * Matrix grad;                         // the gradient of F at x - to be computed
- * 
- * Matrix Q;
- * Matrix x;
- * 
- * LinearOperator *T = new MatrixOperator(Q);
- * Function *F = new QuadraticOperator(T);
- * 
- * int info = F -> call(x, fval, grad); // compute its value at x, F(x) and its gradient grad(F)(x)
- * 
- * delete T;
- * delete F;
- * \endcode
- * 
- * \subsection quadoveraff-fun-sec Quadratic-over-affine
- * 
- * A quadratic-over-affine function, or, a quadratic function plus the indicator of an affine subspace, 
- * is a function \f$F:\mathbb{R}^n \to \mathbb{R}\cup\{+\infty\}\f$ is the form
- * 
- * \f[
- * F(x) = \frac{1}{2}x'Qx + q'x + \delta(x|E),
- * \f]
- * 
- * where \f$E\f$ is the affine space
- * 
- * \f[
- * E = \{x: Ax = b\}
- * \f]
- * 
- * and \f$A\in\mathbb{R}^{s\times n}\f$, \f$b\in\mathbb{R}^s\f$ and \f$\delta(\cdot|E)\f$ is the indicator function
- * 
- * \f[
- * \delta(x|E) = \begin{cases}
- * 1, \text{ if } x \in E,\\
- * \infty, \text{ otherwise} 
- * \end{cases}
- * \f]
- * 
- * Let us define the matrix
- * 
- * \f[
- * S = \begin{bmatrix}
- * Q & A'\\
- * A & 0
- * \end{bmatrix},
- * \f]
- * 
- * then, the conjugate of <code>F</code> is
- * 
- * \f[
- * S g(x^*) =  \begin{bmatrix}x^*-q\\b\end{bmatrix}
- * \f]
- * and let \f$\gamma(x^*)\f$ be the vector comprising the first n entries of \f$g(x^*)\f$. Then,
- * \f[
- * F^*(x^*) = -\frac{1}{2} \left(\gamma(x^*)'Q\gamma(x^*) + (q-x^*)'\gamma(x^*)\right)
- * \f]
- * 
- * Here is an example of use
- * 
+ * Class Function has not public constructors, therefore, one cannot directly
+ * create function objects. Instances of this class are created using its subclasses,
+ * for example:
+ *
  * \code{.cpp}
- * // First, define matrices Q, q, A and b
- * Matrix Q = ...;
- * Matrix q = ...;
- * Matrix A = ...;
- * Matrix b = ...;
- * Function *F = new QuadOverAffine(Q, q, A, b); // define the function as QuadOverAffine
- * Matrix y = ...;
- * double f_star;
- * Matrix grad;
- * int status = F->callConj(y, f_star, grad);
+ *  double lambda = 1.0;
+ *  double mu = 0.8;
+ *  Function * elastic = new ElasticNet(lambda, mu);
  * \endcode
  * 
- * 
- * \subsection indbox Indicator functions
- * There are four types of indicator functions implemented in ForBES, namely
+ * The Function API contains the following methods which are implemented by subclasses
+ * of Function. 
  *
- * 1. the indicator of a rectangle \f$B_{[l,u]}=\{x: l \leq x \leq u\}\f$,
- * 2. the indicator of a set \f$B_{\geq l}=\{x: x \geq l\}\f$, 
- * 3. or of a set \f$B_{\leq u}=\{x: x \leq u\}\f$
- * 4. the indicator of a ball \f$B_c=\{x: \|x\| \leq c\}\f$.
- * 
- * Here is an example:
- * 
  * \code{.cpp}
- * double lb = -1.0;    // uniform lower bound (-1.0)
- * double ub = 4.0;     // uniform upper bound (4.0)
- * 
- * Function *F = new IndBox(lb, ub);    // define the indicator function of a box
- * Matrix x(2, 1);
- * x[0] = -1.0;
- * x[1] = 4.0;
- * 
- * double fval;         // value F(x)
- * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
- * assert(fval == 1.0);                                 // here F(x) = 1.0
- * 
- * x[0] = -1.1;
- * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
- * assert(isinf(fval));                                 // here F(x) = infinity
- * 
- * delete F;
+ * int call (Matrix &x, double &f); 
+ * int call (Matrix &x, double &f, Matrix &grad);
+ * int callConj (const Matrix &x, double &f_star);
+ * int callConj (const Matrix &x, double &f_star, Matrix &grad);
+ * int callProx (const Matrix &x, double gamma, Matrix &prox);
+ * int callProx (const Matrix &x, double gamma, Matrix &prox, double &f_at_prox);
  * \endcode
  * 
- * One can use IndBox::callConj to compute the conjugate of the indicator function
- * of a box which is given by:
+ * These methods provide the following functionality:
+ * 1. Compute the value of the function \f$f(x)\in\mathbb{R}\f$ for a given 
+ * vector \f$x\in\mathbb{R}^n\f$ or matrix \f$x\in\mathbb{R}^{n\times m}\f$
+ * 2. Compute the \f$f(x)\f$ as well as its gradient \f$\nabla f(x)\f$
+ * 3. Compute the value of the conjugate of the function \f$f^*(y)\f$ at a given point
+ * 4. Compute the value \f$f^*(y)\f$ and the gradient \f$\nabla f^*(y)\f$
+ * 5. Compute the value of the proximal operator \f$\mathrm{prox}_{\gamma f}(v)\f$ 
+ * 6. Compute the proximal operator and the value of the function at
+ * the proximal point, that is \f$f(\mathrm{prox}_{\gamma f}(v))\f$.
  * 
- * \f[
- * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x^*; l, u) = \min (\max(x^*, l), u)
- * \f]
- * 
- * 
- * \subsection distance Various distance functions
- * 
- * \subsection logloss Log-logistic loss
- * The log-logistic loss function is a function \f$f:\mathbb{R}^n\to \mathbb{R}\f$
- * defined as follows. 
- * 
- * For \f$x\in\mathbb{R}^n\f$ let \f$e(x)\f$ be a vector whose
- * \f$i\f$-th entry is equal to \f$e^{x_i}\f$, where \f$x_i\f$ is the \f$i\f$-th
- * element of \f$x\f$. Let
- * 
- * \f[
- * (p(x))_i = \frac{(e(x))_i}{1+(e(x))_i}
- * \f]
- * 
- * where \f$(p(x))_i\f$ and \f$(e(x))_i\f$ stand for the \f$i\f$-th entries in
- * \f$p(x)\f$ and \f$e(x)\f$ respectively.
- * 
- * Then, the log-logistic function with parameter \f$\mu\f$ is defined as
- * 
- * \f[
- * f(x; \mu) = -\mu \sum_{i=1}^{n}\log((p(x))_i)
- * \f]
- * 
- * The gradient of \f$f\f$ is then 
- * 
- * \f[
- * (\nabla f(x; \mu))_i = \mu((p(x))_i-1)
- * \f]
- * 
- * and its Hessian is
- * 
- * \f[
- * (\nabla^2 f(x; \mu))_i = \mathrm{diag} \{ \mu \frac{(e(x))_i}{[(e(x))_i + 1]^2} \}
- * \f]
- * 
- * 
- * 
- * \subsection hingeloss Hingle loss
- * The class HingeLoss extends the class Function and implements the Hinge loss
- * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
- * 
- * \f[
- *  f(x) = \mu \sum_{i=1}^{n} \max(0, 1-Bx),
- * \f]
+ * Not all of the above methods are always implemented. If a method is implemented
+ * and the computation succeeds it returns the status code \link ForBESUtils::STATUS_OK STATUS_OK\endlink.
  *
- * where \f$B=\mathrm{diag}(b)\f$ is a diagonal matrix - where \f$b\in\mathbb{R}^n\f$.
- * 
- * Note that in the above expression, \f$z=Bx\in\mathbb{R}^n\f$ is a vector and \f$1-z\f$ 
- * is the vector whose i-th entry is \f$1-z_i\f$. What is more, \f$\max(0, 1-Bx)\f$
- * is also a vector whose i-th entry is \f$\max(0, 1-b_ix_i)\f$.
- * 
- * The proximal operator of the Hinge loss function is given by
- * 
- * \f[
- *  \mathrm{prox}_{\gamma f}(v)_i = 
- *   \begin{cases}
- *     b_i \min(1, b_i + \gamma \mu), &\text{if } b_i x_i < 1\\
- *     x_i, &\text{otherwise}
- *   \end{cases}
- * \f]
- * 
+ * If instead the method is not implemented, it will return a status code
+ * \link ForBESUtils::STATUS_UNDEFINED_FUNCTION STATUS_UNDEFINED_FUNCTION\endlink. 
  *
- * 
- * \subsection huberloss Huber loss
- * HuberLoss extends the class Function and implements the Huber loss
- * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
- * 
- * \f[
- *  f(x) = \sum_{i=1}^{n} l_{\delta}(x_i),
- * \f]
+ * If the method is implemented, but the computation fails, the method will return the code
+ * \link ForBESUtils::STATUS_NUMERICAL_PROBLEMS STATUS_NUMERICAL_PROBLEMS\endlink.
  *
- * where
- * 
- * \f[
- *  l_{\delta}(x_i) = \begin{cases}
- *   \frac{1}{2\delta}\|x_i\|^2,&\text{if } |x_i|\leq \delta \\
- *   |x_i| - \frac{\delta}{2},&\text{otherwise}
- * \end{cases}
- * \f]
- * 
- * The gradient of the Huber loss function is given by
- * 
- * \f[
- *  \nabla f(x)_i = \begin{cases}
- *   \frac{|x_i|}{\delta},&\text{if } |x_i|\leq \delta \\
- *   \mathrm{sign}(x_i),&\text{otherwise}
- * \end{cases}
- * \f]
+ * It is of course possible to know whether a particular method is implemented for a 
+ * function using its \link Function::category category \endlink which returns the 
+ * \link FunctionOntologicalClass ontological class\endlink of a function; an object
+ * which contains meta information about the function. This is how to check whether
+ * a given %Function object implements the method <code>call</code>:
  *
- * 
- * \subsection quadloss Quadratic loss
- * The class QuadraticLoss extends the class Function and implements the quadratic loss
- * function which is a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ defined as 
- * 
- * \f[
- *  f(x) = \frac{1}{2} \sum_{i=1}^{n} w_i(x_i - p_i)^2,
- * \f]
- *
- * where \f$w,p\in\mathbb{R}^n\f$ are given vectors.
- * 
- * The conjugate of this function is differentiable and its gradient is
- * 
- * \f[
- * (\nabla f^*(y))_i = p_i + \frac{y_i}{w_i}.
- * \f]
- * 
- * while the conjugate is computed as
- * 
- * \f[
- * f^*(y) = \frac{1}{2} y' (\nabla f^*(y) + p).
- * \f]
- * 
- * \subsection quadoveraffineloss Quadratic-over-affine loss
- * 
- * \subsection elasticnet Elastic net
- *
- * The class ElasticNet extends the class Function and implements the elastic net regularization
- * function which is a function \f$g:\mathbb{R}^n\to\mathbb{R}_{+}\f$ defined as 
- * 
- * \f[
- *  g(x) = \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
- * \f]
- * 
- * Its proximal operator is then defined as
- * 
- * \f[
- * \mathrm{prox}_{\gamma g}(v) = \frac{t(v)}{1+\lambda \gamma}.
- * \f]
- * 
- * In order to define function \f$t::\mathbb{R}^n\to\mathbb{R}\f$ we need first to introduce 
- * the following function \f$\psi:\mathbb{R}^n\times\mathbb{R}^n \to \mathbb{R}^n\f$ as
- * 
- * \f[
- *  (\psi(z,v))_i = \begin{cases}
- * z_1,&\text{ if } v_i>0\\
- * -z_i,&\text{ if } v_i>0\\
- * 0,&\text{ otherwise}
- * \end{cases}
- * \f]
- * 
- * We also denote the element-wise absolute value of a vector \f$x\in\mathbb{R}^n\f$ by \f$|x|\f$ and
- * we define the function \f$\tau(v) = \max(0, |v|-\gamma\mu)\f$. Then
- * 
- * \f[
- * t(v) = \psi(\tau(v), v).
- * \f]
- * 
- * This class also allows the computation of the value of the function at a proximal
- * point, that is \f$g(\mathrm{prox}_{\gamma g}(v))\f$, as a function of \f$v\f$.
- * This is given by
- * 
- * \f[
- *  g(\mathrm{prox}_{\gamma g}(v)) = \mu 1' t(v) + \frac{\lambda}{2}\|t(v)\|_2^2.
- * \f]
- * 
- * This a simple MATLAB implementation of this function:
- * 
  * \code
- * function [prox, g] = elasticNetProx(x, gam, mu, lam)
- * uz = max(0, abs(x)-gam*mu)/(1+lam*gam);
- * prox = sign(x).*uz;
- * g = mu*sum(uz)+(0.5*lam)*(uz'*uz);
+ * double lambda = 1.0;
+ * double mu = 0.8;
+ * double fx;
+ * double xdata[2] = {2.0, 3.0};
+ * Matrix x(2, 1, xdata);
+ * Function * elastic = new ElasticNet(lambda, mu);
+ * if (elastic->category().defines_f()) {
+ *   int status = elastic -> call(x, fx);
+ *   if (ForBESUtils::STATUS_OK != status) {
+ *      // something went wrong!
+ *   }
+ * }
  * \endcode
- * 
- * \subsection vectornorms Vector norms
- * 
- * \subsection nuclearnorm Nuclear norm
- * 
- * \subsection zerofunction Zero function
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */

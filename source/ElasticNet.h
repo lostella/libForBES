@@ -110,7 +110,7 @@ public:
     
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
     
-
+    virtual FunctionOntologicalClass category();
 
 
 private:

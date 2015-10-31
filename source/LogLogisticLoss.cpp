@@ -75,7 +75,11 @@ int LogLogisticLoss::call(Matrix& x, double& f) {
 }
 
 FunctionOntologicalClass LogLogisticLoss::category() {
-    return FunctionOntologyRegistry::loss();
+    FunctionOntologicalClass logLogisticLoss("LogLogisticLoss");
+    logLogisticLoss.set_defines_f(true);
+    logLogisticLoss.set_defines_grad(true);
+    logLogisticLoss.getSuperclasses().push_back(FunctionOntologyRegistry::loss());
+    return logLogisticLoss;
 }
 
 

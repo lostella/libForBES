@@ -15,19 +15,38 @@
  * \class QuadraticOperator
  * \brief %Quadratic operator <code>F(x) = 0.5*x'*T(x)</code>, where <code>T</code> is a linear operator
  * \author Pantelis Sopasakis
- * \version 0.0
+ * \version 0.1
  * \date Created on July 24, 2015, 8:49 PM
  * 
- * A quadratic operator is a function of the form \f$Q(x) = \frac{1}{2} x' T(x)\f$,
- * where \f$T\f$ is a given linear operator. 
+ *
+ * A generalized quadratic function is a function of the form
  * 
- * Operator \f$T:\mathbb{R}^n \to \mathbb{R}^n\f$ produces 
- * a column vector of the same dimension as \f$x\f$. 
+ * \f[
+ * F(x) = \frac{1}{2}\langle x, T(x) \rangle
+ * \f]
  * 
- * It is assumed that 
- * \f$T\f$ is a symmetric operator, therefore the derivative of \f$Q(x)\f$
- * is computed as \f$Q'(x) = T(x)\f$.
+ * where f$T:\mathbb{R}^n \to \mathbb{R}^n\f$ is a linear operator (here, an instance of LinearOperator).
+ * This operator is expected to be self-adjoint.
  * 
+ * 
+ * Here is a very simple example of use where <code>T</code> is an instance of MatrixOperator.
+ * 
+ * \code
+ * double fval;                         // the value of F at x, F(x) - to be computed
+ * Matrix grad;                         // the gradient of F at x - to be computed
+ * 
+ * Matrix Q;
+ * Matrix x;
+ * 
+ * LinearOperator *T = new MatrixOperator(Q);
+ * Function *F = new QuadraticOperator(T);
+ * 
+ * int info = F -> call(x, fval, grad); // compute its value at x, F(x) and its gradient grad(F)(x)
+ * 
+ * delete T;
+ * delete F;
+ * \endcode
+ *  
  * \ingroup Functions
  * 
  */

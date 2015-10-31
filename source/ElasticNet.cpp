@@ -76,3 +76,14 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox) {
     }
     return ForBESUtils::STATUS_OK;
 }
+
+FunctionOntologicalClass ElasticNet::category() {
+    FunctionOntologicalClass ont("ElasticNet");
+    ont.set_defines_conjugate(false);
+    ont.set_defines_conjugate_grad(false);
+    ont.set_defines_f(true);
+    ont.set_defines_grad(false);
+    ont.set_defines_prox(true);
+    ont.getSuperclasses().push_back(FunctionOntologyRegistry::function());
+    return ont;
+}

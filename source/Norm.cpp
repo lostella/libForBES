@@ -27,8 +27,12 @@ int Norm::callConj(const Matrix& x, double& f_star) {
     return ForBESUtils::STATUS_OK;
 }
 
+//LCOV_EXCL_START
 int Norm::dualNorm(const Matrix& x, double& norm) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-
+FunctionOntologicalClass Norm::category() {
+    return FunctionOntologyRegistry::norm();
+}
+//LCOV_EXCL_STOP

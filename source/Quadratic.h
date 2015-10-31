@@ -30,13 +30,54 @@
  * 
  * \class Quadratic
  * \brief A quadratic function <code>F(x) = 0.5 * x'*Q*x + q'*x</code>
- * \version 0.0-tentative
+ * \version 0.1
  * \author Pantelis Sopasakis
  * \date Created on July 24, 2015, 4:55 PM
  * A Quadratic function of the form <code>Q(x) = 0.5 * x'*Q*x + q'*x</code>, where
  * <code>Q</code> is a square symmetric matrix and <code>q</code> is a vector. 
  * 
  * \ingroup Functions
+ * 
+ * A quadratic function is a function of the form
+ * 
+ * \f[
+ * F(x) = \frac{1}{2}x'Qx + q'x,
+ * \f]
+ * 
+ * where <code>Q</code> is a symmetric positive definite matrix whose conjugate is given by
+ * 
+ * \f[
+ * F^*(x^*) = (x^*-q)'Q^{-1}(x^*-q).
+ * \f]
+ * 
+ * Here is a simple example:
+ * \code
+ * size_t n = 10;
+ * Matrix Q = MatrixFactory::MakeRandomSparse(n, n, 20, 0.0, 1.0);
+ * Matrix Eye = MatrixFactory::MakeIdentity(n, 10.0);
+ * 
+ * Matrix Qt(Q);        // Qt= Q
+ * Qt.transpose();      // Qt = Qt'
+ * Q += Qt;             // Q = Q + Qt (this will make Q a symmetric matrix)
+ * 
+ * Q += Eye;            // with this we ensure Q is positive definite
+ *
+ * Function *F = new Quadratic(Q); // F(x) = 0.5*x'Qx
+ * Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+ * 
+ * double f;            // value F(x)
+ * double f_star;       // value F*(x) (conjugate of F at x)
+ * Matrix grad;         // gradient of F* and x
+ * 
+ * int status = F->call(x, f);
+ * status = F->callConj(x, f_star, grad);
+ * 
+ * std::cout << grad;   // print out the gradient
+ * \endcode
+ * 
+ * The invocation of <code>callConj</code> involves the computation of a Cholesky
+ * factor of <code>Q</code> which is stored internally in the instance of our 
+ * quadratic function.
  */
 class Quadratic : public Function {
 public:

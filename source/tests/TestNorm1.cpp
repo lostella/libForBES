@@ -40,6 +40,10 @@ void TestNorm1::testCall() {
     const Matrix x(n, 1, x_data);
     double mu = 0.8;
     Function * norm1_fun = new Norm1(mu);
+    double f;
+    int status = norm1_fun->call(const_cast<Matrix&>(x), f);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(3.550034050515676, f, 1e-12);
     delete norm1_fun;
 }
 
@@ -157,5 +161,27 @@ void TestNorm1::testDualNorm() {
     double normDual2;
     normFun2.dualNorm(x, normDual2);
     _ASSERT_NUM_EQ(normDual2 / mu, normDual, tol);
+}
+
+void TestNorm1::testConjugate() {
+    const size_t n = 2;
+    Matrix x(2,1); x[0] = 1;
+    Norm1 norm;
+    double f_1;
+    double f_inf;
+    double f_1_star;
+    norm.call(x,f_1);
+    norm.dualNorm(x, f_inf);
+    _ASSERT_EQ(1.0, f_1);
+    _ASSERT_EQ(1.0, f_inf);
+    
+    norm.callConj(x, f_1_star);
+    _ASSERT_EQ(0.0, f_1_star);
+    
+    x[0] = 2.0;
+    norm.callConj(x, f_1_star);
+    _ASSERT(std::isinf(f_1_star));
+    
+    
 }
 

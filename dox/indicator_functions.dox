@@ -1,0 +1,46 @@
+/* Indicator functions */
+
+/*! \page doc-ind-functions Indicator functions
+ *
+ * \brief Indicator functions
+ * 
+ * \tableofcontents 
+ *
+ * \section ind-funs Indicator Functions
+ *
+ * There are four types of indicator functions implemented in ForBES, namely
+ *
+ * 1. the indicator of a rectangle \f$B_{[l,u]}=\{x: l \leq x \leq u\}\f$,
+ * 2. the indicator of a set \f$B_{\geq l}=\{x: x \geq l\}\f$, 
+ * 3. or of a set \f$B_{\leq u}=\{x: x \leq u\}\f$
+ * 4. the indicator of a ball \f$B_c=\{x: \|x\| \leq c\}\f$.
+ * 
+ * Here is an example:
+ * 
+ * \code{.cpp}
+ * double lb = -1.0;    // uniform lower bound (-1.0)
+ * double ub = 4.0;     // uniform upper bound (4.0)
+ * 
+ * Function *F = new IndBox(lb, ub);    // define the indicator function of a box
+ * Matrix x(2, 1);
+ * x[0] = -1.0;
+ * x[1] = 4.0;
+ * 
+ * double fval;         // value F(x)
+ * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
+ * assert(fval == 1.0);                                 // here F(x) = 1.0
+ * 
+ * x[0] = -1.1;
+ * assert(ForBESUtils::STATUS_OK == F->call(x, fval));  // compute F(x)
+ * assert(isinf(fval));                                 // here F(x) = infinity
+ * 
+ * delete F;
+ * \endcode
+ * 
+ * One can use IndBox::callConj to compute the conjugate of the indicator function
+ * of a box which is given by:
+ * 
+ * \f[
+ * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x^*; l, u) = \min (\max(x^*, l), u)
+ * \f]
+ */

@@ -70,15 +70,22 @@ public:
     }
 
     static FunctionOntologicalClass loss() {
-        static FunctionOntologicalClass ind("LossFunction");
-        ind.superClasses.push_back(function());
-        return ind;
+        static FunctionOntologicalClass loss("LossFunction");
+        loss.superClasses.push_back(function());
+        loss.m_defines_f = true;
+        loss.m_defines_grad = true;
+        return loss;
     }
 
     static FunctionOntologicalClass norm() {
-        static FunctionOntologicalClass ind("Norm");
-        ind.superClasses.push_back(function());
-        return ind;
+        static FunctionOntologicalClass norm("Norm");
+        norm.superClasses.push_back(function());
+        norm.m_defines_conjugate = true;
+        norm.m_defines_conjugate_grad = false;
+        norm.m_defines_f = true;
+        norm.m_defines_grad = false;
+        norm.m_defines_prox = true;
+        return norm;
     }
 
 
