@@ -41,6 +41,7 @@ void TestNorm1::testCall() {
     double mu = 0.8;
     Function * norm1_fun = new Norm1(mu);
     double f;
+    _ASSERT(norm1_fun->category().defines_f());
     int status = norm1_fun->call(const_cast<Matrix&>(x), f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(3.550034050515676, f, 1e-12);
@@ -84,6 +85,7 @@ void TestNorm1::testCallProx() {
     const double gamma = 0.5;
     Matrix prox(n, 1);
     double value_at_prox;
+    _ASSERT(norm1_fun->category().defines_prox());
     int status = norm1_fun->callProx(x, gamma, prox, value_at_prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
@@ -129,6 +131,7 @@ void TestNorm1::testCallProx2() {
 
     const double gamma = 0.5;
     Matrix prox(n, 1);
+    _ASSERT(norm1_fun->category().defines_prox());
     int status = norm1_fun->callProx(x, gamma, prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 

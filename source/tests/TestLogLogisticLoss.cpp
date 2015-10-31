@@ -74,6 +74,7 @@ void TestLogLogisticLoss::testCall() {
 
     Matrix grad_expected(n, 1, grad_expected_data);
 
+    _ASSERT(logLogisticLoss->category().defines_f());
     int status = logLogisticLoss->call(x, f, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_expected, f, tol);

@@ -22,7 +22,7 @@
 
 void checkBounds(const Matrix* lb, const Matrix* ub) {
     //LCOV_EXCL_START
-    if (lb == NULL || ub == NULL){
+    if (lb == NULL || ub == NULL) {
         throw std::invalid_argument("LB and UB cannot be NULL");
     }
     if (lb->isEmpty()) {
@@ -49,26 +49,26 @@ void checkBounds(const Matrix* lb, const Matrix* ub) {
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, Matrix* weights) :
 Function(), m_lb(lb), m_ub(ub), m_weights(weights) {
-    checkBounds(lb, ub);
-    m_is_weights_equal  = false;
-    m_is_bounds_uniform = false;
     //LCOV_EXCL_START
     if (!weights->isColumnVector() || weights->isEmpty() || weights->getNrows() != lb->getNrows()) {
         throw std::invalid_argument("Invalid size of weights");
     }
     //LCOV_EXCL_STOP
+    checkBounds(lb, ub);
+    m_is_weights_equal = false;
+    m_is_bounds_uniform = false;
 }
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, double weight) :
 Function(), m_lb(lb), m_ub(ub), m_weight(weight) {
     checkBounds(lb, ub);
-    m_is_weights_equal  = true;
+    m_is_weights_equal = true;
     m_is_bounds_uniform = false;
 }
 
 DistanceToBox::DistanceToBox(double uniform_lb, double uniform_ub, double weight) :
 Function(), m_uniform_lb(uniform_lb), m_uniform_ub(uniform_ub), m_weight(weight) {
-    m_is_weights_equal  = true;
+    m_is_weights_equal = true;
     m_is_bounds_uniform = true;
 }
 
@@ -78,12 +78,10 @@ DistanceToBox::~DistanceToBox() {
 
 int DistanceToBox::compute_dx(const Matrix& x, const size_t n, Matrix& dx) const {
     for (size_t i = 0; i < n; i++) {
-        if (!m_is_bounds_uniform) {
-            if (x.get(i, 0) < m_lb->get(i, 0)) {
-                dx.set(i, 0, x.get(i, 0) - m_lb->get(i, 0));
-            } else if (x.get(i, 0) > m_ub->get(i, 0)) {
-                dx.set(i, 0, x.get(i, 0) - m_ub->get(i, 0));
-            }
+        if (x.get(i, 0) < (m_is_bounds_uniform ? m_uniform_lb : m_lb->get(i, 0))) {
+            dx.set(i, 0, x.get(i, 0) - (m_is_bounds_uniform ? m_uniform_lb : m_lb->get(i, 0)));
+        } else if (x.get(i, 0) > (m_is_bounds_uniform ? m_uniform_ub : m_ub->get(i, 0))) {
+            dx.set(i, 0, x.get(i, 0) - (m_is_bounds_uniform ? m_uniform_ub : m_ub->get(i, 0)));
         }
     }
     return ForBESUtils::STATUS_OK;
@@ -124,5 +122,13 @@ int DistanceToBox::call(Matrix& x, double& f) {
     compute_dx(x, n, dx); // compute d(x)
     compute_fun(dx, n, f); // compute f(x)
     return ForBESUtils::STATUS_OK; // OK
+}
+
+FunctionOntologicalClass DistanceToBox::category() {
+    FunctionOntologicalClass distToBox("DistanceToBox");
+    distToBox.set_defines_f(true);
+    distToBox.set_defines_grad(true);
+    distToBox.getSuperclasses().push_back(FunctionOntologyRegistry::distance());
+    return distToBox;
 }
 

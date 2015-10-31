@@ -47,6 +47,7 @@ void TestElasticNet::testCall() {
     double f;
     const double f_expected = 193.562500;
     const double tol = 1e-7;
+    _ASSERT(elastic->category().defines_f());
     int status = elastic->call(x, f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_expected, f, tol);
@@ -67,6 +68,7 @@ void TestElasticNet::testCallProx() {
     double f_at_prox;
     const double f_at_prox_expected = 5.53058;
     const double tol = 1e-7;
+    _ASSERT(elastic->category().defines_prox());
     int status = elastic->callProx(x, gamma, prox, f_at_prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_at_prox_expected, f_at_prox, tol);
@@ -84,9 +86,11 @@ void TestElasticNet::testOther() {
     Matrix x;
     Matrix grad;
     double f_star;
+    _ASSERT_NOT(elastic->category().defines_conjugate());
     int status = elastic->callConj(x, f_star);
     _ASSERT_EQ(ForBESUtils::STATUS_UNDEFINED_FUNCTION, status);
 
+    _ASSERT_NOT(elastic->category().defines_conjugate_grad());
     status = elastic->callConj(x, f_star, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_UNDEFINED_FUNCTION, status);
     delete elastic;

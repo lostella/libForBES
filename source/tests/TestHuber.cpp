@@ -44,6 +44,7 @@ void TestHuber::testCall() {
     double f;
     Matrix grad(n, 1);
 
+    _ASSERT(huber->category().defines_f());
     int status = huber->call(x, f, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     const double tol = 1e-8;

@@ -34,7 +34,8 @@ int IndSOC::call(Matrix& x, double& f) {
     bool isInside = true;
     size_t i = 0;
     size_t n = x.getNrows();
-    double squaredNorm = 0, xi;
+    double squaredNorm = 0;
+    double xi;
     double t = x.get(n - 1, 0);
 
     while (i < n - 1 && isInside) {
@@ -42,7 +43,6 @@ int IndSOC::call(Matrix& x, double& f) {
         squaredNorm += xi*xi;
         i++;
     }
-
     f = (t >= sqrt(squaredNorm)) ? 0.0 : INFINITY;
     return ForBESUtils::STATUS_OK;
 }
@@ -57,13 +57,12 @@ int IndSOC::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_p
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a vector");
     }
-
     size_t i = 0;
     size_t n = x.getNrows();
     double norm = 0, xi, scal;
     double t = x.get(n - 1, 0);
 
-    while (i < x.getNrows() - 1) {
+    while (i < n - 1) {
         xi = x.get(i, 0);
         norm += xi*xi;
         i++;
@@ -72,9 +71,11 @@ int IndSOC::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_p
     norm = sqrt(norm);
 
     if (t > norm) {
-        prox = Matrix(x);
-    } else if (t < -norm) {
-        prox = Matrix(n, 1, Matrix::MATRIX_DENSE);
+        prox = Matrix(x); // prox = x
+    } else if (t < -norm) { // prox = zero vector
+        for (size_t i = 0; i < n; i++) {
+            prox.set(i, 0, 0.0);
+        }
     } else {
         /* perform actual projection here */
         scal = (1 + t / norm) / 2;
@@ -82,8 +83,11 @@ int IndSOC::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_p
             xi = x.get(i, 0);
             prox.set(i, 0, scal * xi);
         }
-        prox.set(n - 1, 0, (norm + t) / 2);
+        prox.set(n - 1, 0, (norm + t) / 2.0);
     }
-
     return ForBESUtils::STATUS_OK;
+}
+
+FunctionOntologicalClass IndSOC::category() {
+    return FunctionOntologyRegistry::indicator();
 }

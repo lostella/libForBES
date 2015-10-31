@@ -106,6 +106,11 @@ int IndBox::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return callProx(x, gamma, prox, val);
 }
 
+FunctionOntologicalClass IndBox::category() {
+    return FunctionOntologyRegistry::indicator();
+}
+
+
 /* PROTECTED METHODS */
 
 void IndBox::SetLb(Matrix* lb) {

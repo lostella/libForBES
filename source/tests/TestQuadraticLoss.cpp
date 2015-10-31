@@ -71,6 +71,7 @@ void TestQuadraticLoss::testCall() {
     double f;
     const double f_expected = 97.181889336760406;
     const double tol = 1e-8;
+    _ASSERT(quadLoss->category().defines_f());
     int status = quadLoss->call(x, f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_expected, f, tol);
@@ -128,6 +129,8 @@ void TestQuadraticLoss::testCallConj() {
     double f_star;
     double f_star_expected = -53.127646012575340;
     const double tol = 1e-8;
+    _ASSERT(quadLoss->category().defines_conjugate());
+    _ASSERT(quadLoss->category().defines_conjugate_grad());
     int status = quadLoss->callConj(x, f_star, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_star_expected, f_star, tol);

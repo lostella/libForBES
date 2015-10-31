@@ -36,6 +36,7 @@ void TestIndSOC::testCall() {
     x[4] = 5.0;
 
     double fval = -1;
+    _ASSERT(F->category().defines_f());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
     _ASSERT(isinf(fval));
 
@@ -75,6 +76,7 @@ void TestIndSOC::testCallProx() {
     
     Matrix y(5, 1);
     fval = -1;
+    _ASSERT(F->category().defines_prox());
     status = F->callProx(x, 1.0, y, fval);
     eqflag = 1;
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);

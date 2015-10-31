@@ -131,6 +131,9 @@ public:
     virtual int call(Matrix& x, double& f, Matrix& grad);
 
     virtual int call(Matrix& x, double& f);
+    
+    virtual FunctionOntologicalClass category();
+
 
 
 

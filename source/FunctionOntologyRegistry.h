@@ -49,42 +49,87 @@ public:
     }
 
     static FunctionOntologicalClass quadratic() {
-        static FunctionOntologicalClass quad("Quadratic");
-        quad.m_defines_f = true;
-        quad.m_defines_conjugate = true;
-        quad.m_defines_grad = true;
-        quad.superClasses.push_back(function());
+        static bool defines_conjugate = true;
+        static bool defines_conjugate_grad = true;
+        static bool defines_f = true;
+        static bool defines_grad = true;
+        static bool defines_prox = false;
+        static FunctionOntologicalClass quad(
+                defines_conjugate,
+                defines_conjugate_grad,
+                defines_f,
+                defines_grad,
+                defines_prox,
+                "Quadratic",
+                function());
         return quad;
     }
 
     static FunctionOntologicalClass distance() {
-        static FunctionOntologicalClass dist("Distance");
-        dist.superClasses.push_back(function());
+        static bool defines_conjugate = false;
+        static bool defines_conjugate_grad = false;
+        static bool defines_f = true;
+        static bool defines_grad = false;
+        static bool defines_prox = false;
+        static FunctionOntologicalClass dist(
+                defines_conjugate,
+                defines_conjugate_grad,
+                defines_f,
+                defines_grad,
+                defines_prox,
+                "Distance",
+                function());
         return dist;
     }
 
     static FunctionOntologicalClass indicator() {
-        static FunctionOntologicalClass ind("Indicator");
-        ind.superClasses.push_back(function());
-        return ind;
+        static bool defines_conjugate = false;
+        static bool defines_conjugate_grad = false;
+        static bool defines_f = true;
+        static bool defines_grad = false;
+        static bool defines_prox = true;
+        static FunctionOntologicalClass dist(
+                defines_conjugate,
+                defines_conjugate_grad,
+                defines_f,
+                defines_grad,
+                defines_prox,
+                "Indicator",
+                function());
+        return dist;
     }
 
     static FunctionOntologicalClass loss() {
-        static FunctionOntologicalClass loss("LossFunction");
-        loss.superClasses.push_back(function());
-        loss.m_defines_f = true;
-        loss.m_defines_grad = true;
+        static bool defines_conjugate = false;
+        static bool defines_conjugate_grad = false;
+        static bool defines_f = true;
+        static bool defines_grad = true;
+        static bool defines_prox = false;
+        static FunctionOntologicalClass loss(
+                defines_conjugate,
+                defines_conjugate_grad,
+                defines_f,
+                defines_grad,
+                defines_prox,
+                "LossFunction",
+                function());
         return loss;
     }
 
     static FunctionOntologicalClass norm() {
-        static FunctionOntologicalClass norm("Norm");
-        norm.superClasses.push_back(function());
-        norm.m_defines_conjugate = true;
-        norm.m_defines_conjugate_grad = false;
-        norm.m_defines_f = true;
-        norm.m_defines_grad = false;
-        norm.m_defines_prox = true;
+        static bool defines_conjugate = true;
+        static bool defines_conjugate_grad = false;
+        static bool defines_f = true;
+        static bool defines_grad = false;
+        static bool defines_prox = true;
+        static FunctionOntologicalClass norm(
+                defines_conjugate,
+                defines_conjugate_grad,
+                defines_f,
+                defines_grad,
+                defines_prox,
+                "Norm",
+                function());
         return norm;
     }
 
@@ -92,6 +137,7 @@ public:
 private:
     FunctionOntologyRegistry();
     virtual ~FunctionOntologyRegistry();
+
 
 
 

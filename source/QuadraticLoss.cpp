@@ -95,5 +95,16 @@ int QuadraticLoss::callConj(const Matrix& x, double& f_star, Matrix& grad) {
     return ForBESUtils::STATUS_OK;
 }
 
+FunctionOntologicalClass QuadraticLoss::category() {
+    FunctionOntologicalClass quadLoss("QuadraticLoss");
+    quadLoss.set_defines_f(true);
+    quadLoss.set_defines_conjugate(true);
+    quadLoss.set_defines_conjugate_grad(true);
+    quadLoss.set_defines_grad(false);
+    quadLoss.getSuperclasses().push_back(FunctionOntologyRegistry::loss());
+    return quadLoss;
+}
+
+
 
 

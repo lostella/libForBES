@@ -33,6 +33,7 @@ void TestIndBox::testCall() {
     x[1] = 4.0;
 
     double fval = -1;
+    _ASSERT(F->category().defines_f());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval));
     _ASSERT_EQ(0.0, fval);
 
@@ -143,6 +144,7 @@ void TestIndBox::testCallProx() {
     Matrix prox(2, 1);
     double fprox;
 
+    _ASSERT(F->category().defines_prox());
     int status = F->callProx(x, gamma, prox, fprox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(0.0, fprox, tol);

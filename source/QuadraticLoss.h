@@ -95,6 +95,8 @@ public:
 
     virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
 
+    virtual FunctionOntologicalClass category();
+
 
 
 

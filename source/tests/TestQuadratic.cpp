@@ -49,6 +49,7 @@ void TestQuadratic::testQuadratic() {
     
     double f;
     int info;
+    _ASSERT(quad->category().defines_f());
     _ASSERT_OK(info = quad -> call(x, f));
     _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
 
@@ -68,6 +69,8 @@ void TestQuadratic::testQuadratic2() {
     Matrix grad;
 
     double fval = 0.0;
+    _ASSERT(F->category().defines_f());
+    _ASSERT(F->category().defines_grad());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, fval, grad));
 
     const double fval_expected = (x * x).get(0, 0) / 2;
@@ -95,6 +98,7 @@ void TestQuadratic::testQuadratic3() {
     Quadratic *F = new Quadratic(Q);
     Matrix x(n, 1);
     double fval;
+    _ASSERT(F->category().defines_conjugate());
     int status = F->callConj(x, fval);
     _ASSERT_EQ(ForBESUtils::STATUS_NUMERICAL_PROBLEMS, status);
 
@@ -135,6 +139,7 @@ void TestQuadratic::testCallProx() {
     Function *F = new Quadratic();
     Matrix x;
     Matrix prox;
+    _ASSERT_NOT(F->category().defines_prox());
     _ASSERT_EQ(ForBESUtils::STATUS_UNDEFINED_FUNCTION, F->callProx(x, 0.5, prox));
     _ASSERT_OK(delete F);
 }
@@ -176,6 +181,8 @@ void TestQuadratic::testCallWithGradient() {
     Function * quad = new Quadratic(Q);
     double f = -999.0f;
     Matrix grad;
+    _ASSERT(quad->category().defines_f());
+    _ASSERT(quad->category().defines_grad());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, quad -> call(x, f, grad));
 
     for (size_t i = 0; i < n; i++) {
@@ -216,6 +223,7 @@ void TestQuadratic::testCallConj() {
     _ASSERT(std::fabs(expected - fstar) / expected < rel_tol);
 
     Matrix grad;
+    
     _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar, grad));
 
     Matrix grad_expected(n, 1);

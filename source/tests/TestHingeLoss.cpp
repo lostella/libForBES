@@ -45,6 +45,7 @@ void TestHingeLoss::testCall() {
     const double mu = 1.5;
     Function * hinge = new HingeLoss(&b, mu);
     double f;
+    _ASSERT(hinge->category().defines_f());
     int status = hinge->call(x, f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     delete hinge;
@@ -74,6 +75,7 @@ void TestHingeLoss::testCall2() {
     Function * hinge = new HingeLoss(&b, mu);
 
     double f;
+    _ASSERT(hinge->category().defines_f());
     int status = hinge->call(x, f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(6.641866860160479, f, 1e-11);
@@ -104,6 +106,7 @@ void TestHingeLoss::testCallProx() {
 
     Function * hinge = new HingeLoss(&b, mu);
     Matrix prox(n, 1);
+    _ASSERT(hinge->category().defines_prox());
     int status = hinge->callProx(x, gamma, prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
@@ -125,7 +128,5 @@ void TestHingeLoss::testCallProx() {
     _ASSERT_NUM_EQ(5.73070476830318, f_at_prox, 1e-8);
 
     delete hinge;
-
-
 }
 

@@ -41,6 +41,23 @@ public:
      */
     FunctionOntologicalClass(string name);
 
+    FunctionOntologicalClass(
+            bool m_defines_conjugate,
+            bool m_defines_conjugate_grad,
+            bool m_defines_f,
+            bool m_defines_grad,
+            bool m_defines_prox,
+            string m_name,
+            const FunctionOntologicalClass& super) :
+    m_defines_conjugate(m_defines_conjugate),
+    m_defines_conjugate_grad(m_defines_conjugate_grad),
+    m_defines_f(m_defines_f),
+    m_defines_grad(m_defines_grad),
+    m_defines_prox(m_defines_prox),
+    m_name(m_name) {
+        superClasses.push_back(super);
+    }
+
     /**
      * Default destructor.
      */
@@ -135,6 +152,8 @@ private:
     bool m_defines_prox; /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
 
     list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
+
+
 
 };
 

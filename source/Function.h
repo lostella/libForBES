@@ -35,12 +35,24 @@
  * \date Created on July 9, 2015, 3:35 AM
  * \author Pantelis Sopasakis
  * 
- * \todo Implement indBox, indPos, indNeg and indBall.
- * 
  * \todo Return, when possible, the Hessian as a linear operator.
  * 
  * This is a generic API for ForBES functions. Constructors for this class are
- * protected. Instances of this class can be created using any of its subclasses.
+ * protected. Instances of this class can be created using any of its subclasses
+ * a list of which can be found \ref Functions "here".
+ * 
+ * In general, a %Function in libforbes is a tuple
+ * \f$(f(\cdot),\nabla f, f^*(\cdot), \nabla f^*(\cdot), \mathrm{prox}_{\gamma f}(\cdot), f(\mathrm{prox}_{\gamma f}(\cdot)))\f$
+ * where some of these components are available and implemented.
+ * 
+ * For example, in Quadratic, which is a subclass of Function, the first four of these
+ * components are available, namely \f$(f(\cdot),\nabla f, f^*(\cdot), \nabla f^*(\cdot))\f$.
+ * 
+ * In ElasticNet, only the triplet \f$(f(\cdot),\mathrm{prox}_{\gamma f}(\cdot), f(\mathrm{prox}_{\gamma f}(\cdot)))\f$
+ * is available.
+ * 
+ * \sa \ref doc-functs "Introduction to the Function API"
+ * \sa \ref Functions "List of functions"
  */
 class Function {
 public:
