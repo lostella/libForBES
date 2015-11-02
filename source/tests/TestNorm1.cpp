@@ -1,8 +1,21 @@
 /*
  * File:   TestNorm1.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Oct 30, 2015, 6:15:56 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "TestNorm1.h"
@@ -90,7 +103,7 @@ void TestNorm1::testCallProx() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     _ASSERT_EQ(prox_expected, prox);
-    _ASSERT_NUM_EQ(1.199606590517850, value_at_prox, 1e-10);
+    _ASSERT_NUM_EQ(1.199606590517850, value_at_prox, 1e-12);
 
     delete norm1_fun;
 }
@@ -150,7 +163,7 @@ void TestNorm1::testDualNorm() {
 
     double norm;
     double normDual;
-    const double tol = 1e-10;
+    const double tol = 1e-12;
 
     int status = normFun.call(x, norm);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);

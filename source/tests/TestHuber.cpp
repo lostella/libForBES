@@ -1,8 +1,21 @@
 /*
  * File:   TestHuber.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Oct 30, 2015, 2:19:35 AM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "TestHuber.h"
@@ -47,7 +60,11 @@ void TestHuber::testCall() {
     _ASSERT(huber->category().defines_f());
     int status = huber->call(x, f, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    const double tol = 1e-8;
+    const double tol = 1e-12;
+    _ASSERT_NUM_EQ(3.513800016594281, f, tol);
+    
+    status = huber->call(x, f);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(3.513800016594281, f, tol);
 
     const double grad_expected_data[n] = {

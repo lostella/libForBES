@@ -125,7 +125,7 @@ void TestHingeLoss::testCallProx() {
     status = hinge->callProx(x, gamma, prox, f_at_prox);
     _ASSERT_EQ(prox_expected, prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    _ASSERT_NUM_EQ(5.73070476830318, f_at_prox, 1e-8);
+    _ASSERT_NUM_EQ(5.73070476830318, f_at_prox, 1e-12);
 
     delete hinge;
 }

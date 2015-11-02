@@ -67,7 +67,7 @@ void TestDistanceToBox::testCall() {
     status = d2b->call(x, f2);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
-    const double tol = 1e-8;
+    const double tol = 1e-12;
     _ASSERT_NUM_EQ(f, f2, tol);
     _ASSERT_NUM_EQ(1.06250, f, tol);
     _ASSERT_NUM_EQ(-0.25, grad[0], tol);
@@ -97,7 +97,7 @@ void TestDistanceToBox::testCall2() {
     x[1] = 6;
 
     double f, f2;
-    const double tol = 1e-8;
+    const double tol = 1e-12;
 
     Matrix grad(2, 1);
     Matrix grad2(2, 1);

@@ -126,7 +126,7 @@ void TestNorm2::testDualNorm() {
     double fd;
     norm.call(x,f);
     norm.dualNorm(x,fd);
-    _ASSERT_NUM_EQ(3.162277660168380, f, 1e-10);
+    _ASSERT_NUM_EQ(3.162277660168380, f, 1e-12);
     _ASSERT_NUM_EQ(f, fd, 1e-10);
     
 }

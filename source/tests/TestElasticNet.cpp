@@ -1,6 +1,6 @@
 /*
  * File:   TestElasticNet.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Oct 29, 2015, 6:51:55 PM
  * 
@@ -46,7 +46,7 @@ void TestElasticNet::testCall() {
 
     double f;
     const double f_expected = 193.562500;
-    const double tol = 1e-7;
+    const double tol = 1e-12;
     _ASSERT(elastic->category().defines_f());
     int status = elastic->call(x, f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
@@ -66,8 +66,8 @@ void TestElasticNet::testCallProx() {
     Matrix prox(n, 1);
 
     double f_at_prox;
-    const double f_at_prox_expected = 5.53058;
-    const double tol = 1e-7;
+    const double f_at_prox_expected = 5.5305800;
+    const double tol = 1e-12;
     _ASSERT(elastic->category().defines_prox());
     int status = elastic->callProx(x, gamma, prox, f_at_prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);

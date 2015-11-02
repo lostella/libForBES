@@ -1,6 +1,6 @@
 /*
  * File:   TestLogLogisticLoss.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Oct 29, 2015, 7:38:05 PM
  * 
@@ -56,7 +56,7 @@ void TestLogLogisticLoss::testCall() {
     double f;
     Matrix grad(n, 1);
 
-    const double tol = 1e-10;
+    const double tol = 1e-12;
     const double f_expected = 10.455339600285200;
 
     const double grad_expected_data[n] = {

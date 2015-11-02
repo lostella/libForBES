@@ -19,6 +19,7 @@ class TestOpReverseVector : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestOpReverseVector);
 
     CPPUNIT_TEST(testCall);
+    CPPUNIT_TEST(testCallNotFixedSize);
     CPPUNIT_TEST(testCallAdjoint);
 
     CPPUNIT_TEST_SUITE_END();
@@ -31,6 +32,7 @@ public:
 
 private:
     void testCall();
+    void testCallNotFixedSize();
     void testCallAdjoint();
 
 };

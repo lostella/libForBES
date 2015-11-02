@@ -1,6 +1,6 @@
 /*
  * File:   TestHingeLoss.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Oct 29, 2015, 11:36:49 PM
  * 
