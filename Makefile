@@ -1,15 +1,34 @@
 # LIBFORBES MAKEFILE
-
-#
-# Configurable properties
-#
+	
+	
+# Enable parallel make on N-1 processors	
+NPROCS := 1
+OS:=$(shell uname -s)
+ifeq ($(OS),Linux)
+  NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+endif
+ifeq ($(OS),Darwin) # Assume Mac OS X
+  NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
+endif
+NPROCS:=$$(($(NPROCS)-1))
+MAKEFLAGS += -j $(NPROCS)
+MAKEFLAGS += --no-print-directory
 
 # C++ compiler
 CXX = g++
 
+# Enable CCACHE
+CCACHE_EXISTS := $(shell ccache -V)
+ifdef CCACHE_EXISTS
+    CXX := ccache $(CXX)
+endif
+
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
-CFLAGS_ADDITIONAL = -O3 -fprofile-arcs -ftest-coverage
+CFLAGS_ADDITIONAL = -O0
+#CFLAGS_ADDITIONAL += -fprofile-arcs
+#CFLAGS_ADDITIONAL += -ftest-coverage
+
 
 # Additional link flags
 # To create a test coverage report add: -fprofile-arcs
@@ -41,8 +60,7 @@ IFLAGS = \
 	 -I$(IEXTRA)
 
 
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
+ifeq ($(OS),Linux)
  # Use the real time POSIX library on Linux
  LFLAGS_ADDITIONAL += -lrt
 endif
@@ -137,7 +155,9 @@ TESTS = \
 	TestHingeLoss.test \
 	TestHuber.test \
 	TestNorm1.test \
-	TestNorm2.test
+	TestNorm2.test \
+	TestFunctionOntologicalClass.test \
+	TestFunctionOntologyRegistry.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -175,6 +195,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestHuber
 	${BIN_TEST_DIR}/TestNorm1
 	${BIN_TEST_DIR}/TestNorm2
+	${BIN_TEST_DIR}/TestFunctionOntologicalClass
+	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
 
 
 
@@ -207,10 +229,12 @@ $(BIN_TEST_DIR):
 	mkdir -p $(BIN_TEST_DIR)
 
 clean:
+	@echo $(NPROCS)
+	@echo $(MAKEFLAGS)
 	@echo Cleaning...
 	rm -rf $(OBJ_DIR)/*.o ;
 	rm -rf $(OBJ_TEST_DIR)/*.o;
-	rm -rf $(BIN_DIR)/*;
+	rm -rf $(BIN_DIR)/*;	
 
 help:
 	@echo "Makefile targets for libforbes:\n"
@@ -223,3 +247,5 @@ help:
 
 
 .SECONDARY:
+
+.PHONY: clean
