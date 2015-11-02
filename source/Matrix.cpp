@@ -117,7 +117,7 @@ Matrix::~Matrix() {
     this -> m_ncols = 0;
     this -> m_nrows = 0;
     if (m_data != NULL) {
-       delete[] m_data;
+        delete[] m_data;
     }
     m_data = NULL;
     if (m_triplet != NULL) {
@@ -811,10 +811,10 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
 #endif
         return result;
     } else if (MATRIX_DIAGONAL == right.m_type) { // {DENSE} * {DIAGONAL} = {DENSE} - RHS is diagonal
-        Matrix result(*this);
-        for (size_t j = 0; j < m_ncols; j++) {
-            for (size_t i = 0; i < m_nrows; i++) {
-                result.set(i, j, result.get(i, j) * right.get(j, j));
+        Matrix result(getNrows(), getNcols());
+        for (size_t j = 0; j < getNcols(); j++) {
+            for (size_t i = 0; i < getNrows(); i++) {
+                result.set(i, j, get(i, j) * right.get(j, j));
             }
         }
         return result;
@@ -822,9 +822,18 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
         Matrix result(m_nrows, right.m_ncols, Matrix::MATRIX_DENSE);
         domm(right, result);
         return result;
-    } else {
-
-        throw std::logic_error("We apologize for not having implemented this functionality yet (Dense * Sparse)!");
+    } else { /* {DENSE} * {SPARSE} =  */
+        /*
+         * Trick: For D: dense, S: sparse it is
+         * D * S = (S' * D')'
+         */
+        Matrix tempSparse(right);
+        (const_cast<Matrix&> (*this)).transpose(); /*  D'  */
+        tempSparse.transpose();   /*  S'  */
+        Matrix r = tempSparse * (const_cast<Matrix&> (*this)); /*  r = S' * D'   */
+        r.transpose(); /*  r'  */
+        (const_cast<Matrix&> (*this)).transpose(); /*  D  */
+        return r;
     }
 }
 
@@ -895,9 +904,9 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
         result.m_sparse = r;
         result._createTriplet();
         return result;
-    } else {
+    } else if (right.m_type == MATRIX_DENSE) { /* SPRASE * DENSE */
         // RHS is dense
-        Matrix result(m_nrows, right.m_ncols);
+        Matrix result(getNrows(), right.getNcols());
 
         if (m_triplet != NULL && m_sparse == NULL)
             _createSparse();
@@ -905,19 +914,37 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
         double alpha[2] = {1.0, 0.0};
         double beta[2] = {0.0, 0.0};
 
-        if (right.m_dense == NULL) {
-            right.m_dense = cholmod_allocate_dense(right.m_nrows, right.m_ncols, right.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
-            for (size_t k = 0; k < right.length(); k++) {
-                ((double*) right.m_dense->x)[k] = right.m_data[k];
+        if (right.m_dense == NULL) { /* Prepare right.m_dense */
+            right.m_dense = cholmod_allocate_dense(
+                    right.getNrows(),
+                    right.getNcols(),
+                    right.getNrows(),
+                    CHOLMOD_REAL,
+                    Matrix::cholmod_handle());
+            
+            if (!right.m_transpose) {
+                for (size_t k = 0; k < right.length(); k++) {
+                    ((double*) right.m_dense->x)[k] = right.m_data[k];
+                }
+            } else {
+                /* Store RHS as transpose into right.m_dense */
+                for (size_t i = 0; i < right.getNrows(); i++) { /* SPARSE x DENSE' */
+                    for (size_t j = 0; j < right.getNcols(); j++) {
+                        ((double*) right.m_dense->x)[i + j * right.getNrows()] =
+                                right.get(i, j);
+                    }
+                }
             }
         }
+        
         bool dotProd = isColumnVector() && right.isColumnVector();
         result.m_dense = cholmod_allocate_dense(
-                dotProd ? 1 : result.m_nrows,
-                dotProd ? 1 : result.m_ncols,
-                dotProd ? 1 : result.m_nrows,
+                dotProd ? 1 : result.getNrows(),
+                dotProd ? 1 : result.getNcols(),
+                dotProd ? 1 : result.getNrows(),
                 CHOLMOD_REAL,
                 Matrix::cholmod_handle());
+        if (m_transpose) { this->transpose(); }
         cholmod_sdmult(
                 m_sparse,
                 dotProd ? true : m_transpose,
@@ -927,10 +954,21 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 result.m_dense,
                 Matrix::cholmod_handle()
                 );
+        if (m_transpose) { this->transpose(); }
         for (size_t k = 0; k < result.length(); k++) {
             result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         }
         return result;
+    } else if (right.m_type == MATRIX_DIAGONAL) { // SPARSE * DIAGONAL = SPARSE
+        Matrix result(*this); // COPY [result := right]
+        int j_;
+        for (size_t k = 0; k < result.m_triplet->nnz; k++) {
+            j_ = ((int*) result.m_triplet->j)[k];
+            ((double*) result.m_triplet->x)[k] *= right.get(j_, j_);
+        }
+        return result;
+    } else {
+        throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
     }
 }
 
@@ -1151,7 +1189,3 @@ Matrix Matrix::multiplySubmatrix(
         throw std::logic_error("Matrix::multiplySubmatrix is implemented only for dense matrix multiplication.");
     }
 }
-
-
-
-

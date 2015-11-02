@@ -67,8 +67,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testRightTransposeMultiply);
     CPPUNIT_TEST(testLowerTriangularTraspose_getSet);
     CPPUNIT_TEST(testLeftSymmetricMultiply);
-    CPPUNIT_TEST(testSparseGetSet);
-    CPPUNIT_TEST(testSparseDenseMultiply);
+    CPPUNIT_TEST(testSparseGetSet);    
     CPPUNIT_TEST(testSparseAddDense);
     CPPUNIT_TEST(testSparseAddSparse);
     CPPUNIT_TEST(testSparseAddSparse2);
@@ -132,11 +131,19 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_CS);
 
     CPPUNIT_TEST(test_MDD1);
+    CPPUNIT_TEST(test_MDL);
+    CPPUNIT_TEST(test_MDH);
+    CPPUNIT_TEST(test_MDS);
+    
     CPPUNIT_TEST(test_MSS);
+    CPPUNIT_TEST(test_MSX);
+    CPPUNIT_TEST(test_MSD);
+    CPPUNIT_TEST(test_MSDT);
+    CPPUNIT_TEST(test_MSTDT);
+    
     CPPUNIT_TEST(test_MXH);
     CPPUNIT_TEST(test_MXL);
-    CPPUNIT_TEST(test_MDH);
-    CPPUNIT_TEST(test_MDL);
+    CPPUNIT_TEST(test_MDX);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -183,8 +190,7 @@ private:
     void testLeftTransposeMultiply();
     void testRightTransposeMultiply();
     void testLeftSymmetricMultiply();
-    void testSparseGetSet();
-    void testSparseDenseMultiply();
+    void testSparseGetSet();    
     void test_MSS();
     void testSparseAddDense();
     void testSparseAddSparse();
@@ -310,6 +316,12 @@ private:
     void test_MXL();
     void test_MDH();
     void test_MDL();
+    void test_MDX();
+    void test_MSX();
+    void test_MSD();
+    void test_MDS();
+    void test_MSDT();
+    void test_MSTDT();
 };
 
 #endif	/* TESTMATRIX_H */
