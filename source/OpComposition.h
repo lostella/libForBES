@@ -36,12 +36,7 @@
 class OpComposition : public LinearOperator {
 public:        
 
-    OpComposition(LinearOperator& A, LinearOperator& B) : LinearOperator(), A(A), B(B) {
-        // check dimensions
-        if (A.dimensionIn() != B.dimensionOut()) {
-            throw std::invalid_argument("A and B have incompatible dimensions; AoB is not well defined.");
-        }
-    }
+    OpComposition(LinearOperator& A, LinearOperator& B);
 
     virtual ~OpComposition();
 

@@ -23,27 +23,27 @@
 using namespace std;
 
 Quadratic::Quadratic() {
-    is_Q_eye = true;
-    is_q_zero = true;
+    m_is_Q_eye = true;
+    m_is_q_zero = true;
     m_solver = NULL;
-    Q = NULL;
-    q = NULL;
+    m_Q = NULL;
+    m_q = NULL;
 }
 
 Quadratic::Quadratic(Matrix& QQ) {
-    Q = &QQ;
-    is_Q_eye = false;
-    is_q_zero = true;
+    m_Q = &QQ;
+    m_is_Q_eye = false;
+    m_is_q_zero = true;
     m_solver = NULL;
-    q = NULL;
+    m_q = NULL;
 }
 
 Quadratic::Quadratic(Matrix& QQ, Matrix& qq) {
-    q = &qq;
-    Q = &QQ;
+    m_q = &qq;
+    m_Q = &QQ;
     m_solver = NULL;
-    is_Q_eye = false;
-    is_q_zero = false;
+    m_is_Q_eye = false;
+    m_is_q_zero = false;
 }
 
 Quadratic::~Quadratic() {
@@ -53,14 +53,14 @@ Quadratic::~Quadratic() {
 }
 
 void Quadratic::setQ(Matrix& Q) {
-    is_Q_eye = false;
-    this->Q = &Q;
+    m_is_Q_eye = false;
+    this->m_Q = &Q;
     this->m_solver = NULL;
 }
 
 void Quadratic::setq(Matrix& q) {
-    is_q_zero = false;
-    this->q = &q;
+    m_is_q_zero = false;
+    this->m_q = &q;
 }
 
 int Quadratic::call(Matrix& x, double& f, Matrix& grad) {
@@ -69,21 +69,21 @@ int Quadratic::call(Matrix& x, double& f, Matrix& grad) {
         return statusComputeGrad;
     }
     // f = (1/2)*(grad+q)'*x
-    f = ((is_q_zero ? grad : grad + (*q)) * x).get(0, 0) / 2;
+    f = ((m_is_q_zero ? grad : grad + (*m_q)) * x).get(0, 0) / 2;
     return ForBESUtils::STATUS_OK;
 }
 
 int Quadratic::call(Matrix& x, double& f) {
-    if (!is_Q_eye) {
-        if (is_q_zero) {
-            f = Q->quad(x);
+    if (!m_is_Q_eye) {
+        if (m_is_q_zero) {
+            f = m_Q->quad(x);
         } else {
-            f = Q->quad(x, *q);
+            f = m_Q->quad(x, *m_q);
         }
     } else {
         f = (x * x).get(0, 0);
-        if (!is_q_zero) {
-            f += ((*q) * x).get(0, 0);
+        if (!m_is_q_zero) {
+            f += ((*m_q) * x).get(0, 0);
         }
     }
     return ForBESUtils::STATUS_OK;
@@ -96,25 +96,25 @@ int Quadratic::callConj(const Matrix& y, double& f_star) {
 }
 
 int Quadratic::callConj(const Matrix& y, double& f_star, Matrix& g) {
-    Matrix z = (is_q_zero || q == NULL) ? y : y - *q; // z = y    
-    if (is_Q_eye || Q == NULL) {
+    Matrix z = (m_is_q_zero || m_q == NULL) ? y : y - *m_q; // z = y    
+    if (m_is_Q_eye || m_Q == NULL) {
         g = z;
         f_star = (z * z).get(0, 0);
         return ForBESUtils::STATUS_OK;
     }
-    if (Q != NULL && Matrix::MATRIX_DIAGONAL == Q->getType()) {
+    if (m_Q != NULL && Matrix::MATRIX_DIAGONAL == m_Q->getType()) {
         /* Q is diagonal */
         g = z;
         f_star = 0.0;
         for (size_t i = 0; i < z.getNrows(); i++) {
-            g.set(i, 0, g.get(i, 0) / Q->get(i, i));
+            g.set(i, 0, g.get(i, 0) / m_Q->get(i, i));
             f_star += z.get(i, 0) * g.get(i, 0);
         }
         return ForBESUtils::STATUS_OK;
     }
 
     if (m_solver == NULL) {
-        m_solver = new CholeskyFactorization(*Q);
+        m_solver = new CholeskyFactorization(*m_Q);
         int status = m_solver->factorize();
         if (0 != status) {
             return ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
@@ -127,13 +127,13 @@ int Quadratic::callConj(const Matrix& y, double& f_star, Matrix& g) {
 }
 
 int Quadratic::computeGradient(Matrix& x, Matrix& grad) {
-    if (is_Q_eye) {
+    if (m_is_Q_eye) {
         grad = x;
     } else {
-        grad = (*Q) * x;
+        grad = (*m_Q) * x;
     }
-    if (!is_q_zero) {
-        grad += *q;
+    if (!m_is_q_zero) {
+        grad += *m_q;
     }
     return ForBESUtils::STATUS_OK;
 }

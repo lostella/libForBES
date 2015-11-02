@@ -1,6 +1,6 @@
 /* 
  * File:   FunctionOntologicalClass.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on October 28, 2015, 8:07 PM
  * 
@@ -48,15 +48,7 @@ public:
             bool m_defines_grad,
             bool m_defines_prox,
             string m_name,
-            const FunctionOntologicalClass& super) :
-    m_defines_conjugate(m_defines_conjugate),
-    m_defines_conjugate_grad(m_defines_conjugate_grad),
-    m_defines_f(m_defines_f),
-    m_defines_grad(m_defines_grad),
-    m_defines_prox(m_defines_prox),
-    m_name(m_name) {
-        superClasses.push_back(super);
-    }
+            const FunctionOntologicalClass& super);
 
     /**
      * Default destructor.
@@ -74,82 +66,58 @@ public:
      * Whether this function type defines f(x).
      * @return <code>true</code> if f(x) is defined
      */
-    bool defines_f() const {
-        return m_defines_f;
-    }
+    bool defines_f() const;
 
     /** 
      * Whether this function type defines the gradient of 
      * f at x, \f$\nabla f(x)\f$.
      * @return <code>true</code> if grad[f](x) is defined
      */
-    bool defines_grad() const {
-        return m_defines_grad;
-    }
+    bool defines_grad() const;
 
     /**
      * Whether this function type defines a conjugate \f$f^*(y)\f$
      * @return <code>true</code> if f*(y) is defined
      */
-    bool defines_conjugate() const {
-        return m_defines_conjugate;
-    }
+    bool defines_conjugate() const;
 
     /**
      * Whether this function type defines the gradient of its conjugate \f$\nabla f^*(y)\f$
      * @return <code>true</code> if grad[f*](y) is defined
      */
-    bool defines_conjugate_grad() const {
-        return m_defines_conjugate_grad;
-    }
+    bool defines_conjugate_grad() const;
 
     /**
      * Whether this function defines a proximal \f$\mathrm{prox}_{\gamma f}(v)\f$
      * @return <code>true</code> if f*(x) is defined
      */
-    bool defines_prox() const {
-        return m_defines_prox;
-    }
+    bool defines_prox() const;
 
-    list<FunctionOntologicalClass> getSuperclasses() const {
-        return superClasses;
-    }
+    list<FunctionOntologicalClass> getSuperclasses() const;
 
     friend std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj);
 
-    void set_defines_conjugate(bool defines_conjugate) {
-        m_defines_conjugate = defines_conjugate;
-    }
+    void set_defines_conjugate(bool defines_conjugate);
 
-    void set_defines_conjugate_grad(bool defines_conjugate_grad) {
-        m_defines_conjugate_grad = defines_conjugate_grad;
-    }
+    void set_defines_conjugate_grad(bool defines_conjugate_grad);
 
-    void set_defines_f(bool defines_f) {
-        m_defines_f = defines_f;
-    }
+    void set_defines_f(bool defines_f);
 
-    void set_defines_grad(bool defines_grad) {
-        m_defines_grad = defines_grad;
-    }
+    void set_defines_grad(bool defines_grad);
 
-    void set_defines_prox(bool defines_prox) {
-        m_defines_prox = defines_prox;
-    }
+    void set_defines_prox(bool defines_prox);
 
 
 private:
 
-    FunctionOntologicalClass();
-
     friend class FunctionOntologyRegistry;
 
     string m_name;
-    bool m_defines_f; /**< Whether this function type defines f(x).                                       */
-    bool m_defines_grad; /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
-    bool m_defines_conjugate; /**< Whether this function type defines a conjugate f*(x)                           */
-    bool m_defines_conjugate_grad; /**< Whether this function type defines the gradient of its conjugate grad[f*](x)   */
-    bool m_defines_prox; /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
+    bool m_defines_f;               /**< Whether this function type defines f(x).                                       */
+    bool m_defines_grad;            /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
+    bool m_defines_conjugate;       /**< Whether this function type defines a conjugate f*(x)                           */
+    bool m_defines_conjugate_grad;  /**< Whether this function type defines the gradient of its conjugate grad[f*](x)   */
+    bool m_defines_prox;            /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
 
     list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
 

@@ -1,6 +1,6 @@
 /* 
  * File:   FunctionOntologyRegistry.h
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on October 28, 2015, 8:16 PM
  * 
@@ -32,113 +32,22 @@
 class FunctionOntologyRegistry {
 public:
 
-    static string nameSpace() {
-        static string ns("fb");
-        return ns;
-    }
+    static string nameSpace();
 
-    static FunctionOntologicalClass function() {
-        /*
-         * NOTE:
-         * The lifetime of function static variables begins the first time 
-         * the program flow encounters the declaration and it ends at program 
-         * termination.
-         */
-        static FunctionOntologicalClass generic_function("Function");
-        return generic_function;
-    }
+    static FunctionOntologicalClass function();
 
-    static FunctionOntologicalClass quadratic() {
-        static bool defines_conjugate = true;
-        static bool defines_conjugate_grad = true;
-        static bool defines_f = true;
-        static bool defines_grad = true;
-        static bool defines_prox = false;
-        static FunctionOntologicalClass quad(
-                defines_conjugate,
-                defines_conjugate_grad,
-                defines_f,
-                defines_grad,
-                defines_prox,
-                "Quadratic",
-                function());
-        return quad;
-    }
+    static FunctionOntologicalClass quadratic();
 
-    static FunctionOntologicalClass distance() {
-        static bool defines_conjugate = false;
-        static bool defines_conjugate_grad = false;
-        static bool defines_f = true;
-        static bool defines_grad = false;
-        static bool defines_prox = false;
-        static FunctionOntologicalClass dist(
-                defines_conjugate,
-                defines_conjugate_grad,
-                defines_f,
-                defines_grad,
-                defines_prox,
-                "Distance",
-                function());
-        return dist;
-    }
+    static FunctionOntologicalClass distance();
 
-    static FunctionOntologicalClass indicator() {
-        static bool defines_conjugate = false;
-        static bool defines_conjugate_grad = false;
-        static bool defines_f = true;
-        static bool defines_grad = false;
-        static bool defines_prox = true;
-        static FunctionOntologicalClass dist(
-                defines_conjugate,
-                defines_conjugate_grad,
-                defines_f,
-                defines_grad,
-                defines_prox,
-                "Indicator",
-                function());
-        return dist;
-    }
+    static FunctionOntologicalClass indicator();
 
-    static FunctionOntologicalClass loss() {
-        static bool defines_conjugate = false;
-        static bool defines_conjugate_grad = false;
-        static bool defines_f = true;
-        static bool defines_grad = true;
-        static bool defines_prox = false;
-        static FunctionOntologicalClass loss(
-                defines_conjugate,
-                defines_conjugate_grad,
-                defines_f,
-                defines_grad,
-                defines_prox,
-                "LossFunction",
-                function());
-        return loss;
-    }
+    static FunctionOntologicalClass loss();
 
-    static FunctionOntologicalClass norm() {
-        static bool defines_conjugate = true;
-        static bool defines_conjugate_grad = false;
-        static bool defines_f = true;
-        static bool defines_grad = false;
-        static bool defines_prox = true;
-        static FunctionOntologicalClass norm(
-                defines_conjugate,
-                defines_conjugate_grad,
-                defines_f,
-                defines_grad,
-                defines_prox,
-                "Norm",
-                function());
-        return norm;
-    }
+    static FunctionOntologicalClass norm();
 
 
 private:
-    FunctionOntologyRegistry();
-    virtual ~FunctionOntologyRegistry();
-
-
 
 
 };

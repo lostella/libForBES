@@ -1,6 +1,6 @@
 /* 
  * File:   OpGradient.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on September 16, 2015, 1:35 AM
  * 

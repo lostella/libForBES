@@ -21,6 +21,13 @@
 #include "QuadraticOperator.h"
 #include "ForBESUtils.h"
 
+QuadraticOperator::QuadraticOperator(LinearOperator& T) :
+Function(), T(T) {
+    if (T.dimensionIn() != T.dimensionOut()) {
+        throw std::invalid_argument("T has incompatible dimensions");
+    }
+}
+
 QuadraticOperator::~QuadraticOperator() {
 }
 

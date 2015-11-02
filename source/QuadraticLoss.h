@@ -105,8 +105,8 @@ private:
     bool m_is_uniform_weights;
     bool m_is_zero_p;
 
-    Matrix * m_w = NULL;
-    Matrix * m_p = NULL;
+    Matrix * m_w;
+    Matrix * m_p;
 
     double m_uniform_w;
 

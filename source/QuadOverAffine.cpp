@@ -22,6 +22,13 @@
 #include "LDLFactorization.h"
 
 QuadOverAffine::QuadOverAffine() : Function() {
+    A = NULL;
+    F = NULL;
+    Fsolver = NULL;
+    Q = NULL;
+    q = NULL;
+    b = NULL;
+    sigma = NULL;
 }
 
 QuadOverAffine::~QuadOverAffine() {
@@ -31,7 +38,7 @@ QuadOverAffine::~QuadOverAffine() {
     if (F != NULL) {
         delete F;
     }
-    if (sigma != NULL){
+    if (sigma != NULL) {
         delete sigma;
     }
 }
@@ -59,10 +66,15 @@ void checkConstructorArguments(const Matrix& Q, const Matrix& q, const Matrix& A
 
 QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
     checkConstructorArguments(Q, q, A, b);
+        
+    F = NULL;
+    Fsolver = NULL;
+    sigma = NULL;
+    
     this->Q = &Q;
     this->q = &q;
     this->A = &A;
-    this->b = &b;
+    this->b = &b;    
     size_t n = Q.getNrows();
     size_t s = A.getNrows();
     size_t nF = n + s;
@@ -109,7 +121,7 @@ int QuadOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
     /* Take the first n elements of grad */
     grad.reshape(Q->getNrows(), 1);
     /* f_star = grad' * Q * grad / 2.0 */
-    f_star = Q->quad(grad);    
+    f_star = Q->quad(grad);
     for (size_t i = 0; i < grad.getNrows(); i++) { /* Dot product */
         f_star += grad.get(i, 0) * (q->get(i, 0) - y.get(i, 0));
     }

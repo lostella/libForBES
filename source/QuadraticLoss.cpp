@@ -24,12 +24,16 @@ QuadraticLoss::QuadraticLoss() {
     m_is_uniform_weights = true;
     m_is_zero_p = true;
     m_uniform_w = 1.0;
+    m_w = NULL;
+    m_p = NULL;
 }
 
 QuadraticLoss::QuadraticLoss(double w) :
 Function(), m_uniform_w(w) {
     m_is_uniform_weights = true;
     m_is_zero_p = true;
+    m_w = NULL;
+    m_p = NULL;
 }
 
 QuadraticLoss::QuadraticLoss(Matrix* w, Matrix* p) :

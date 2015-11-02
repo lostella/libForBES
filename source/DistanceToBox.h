@@ -151,9 +151,9 @@ private:
     double m_weight; /**< The single scalar weight if <code>m_is_weights_equal</code> is true. */
     double m_uniform_lb; /**< A uniform lower bound (with <code>m_is_bounds_uniform</code> set to true). */
     double m_uniform_ub; /**< A uniform upper bound (with <code>m_is_bounds_uniform</code> set to true). */
-    Matrix* m_weights = NULL; /**< A vector of weights (if <code>m_is_weights_equal == false</code>). */
-    Matrix* m_lb = NULL; /**< The box lower bound. */
-    Matrix* m_ub = NULL; /**< The box upper bound. */
+    Matrix* m_weights; /**< A vector of weights (if <code>m_is_weights_equal == false</code>). */
+    Matrix* m_lb; /**< The box lower bound. */
+    Matrix* m_ub; /**< The box upper bound. */
 
 
 };

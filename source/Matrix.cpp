@@ -52,6 +52,9 @@ Matrix::Matrix() {
     m_type = MATRIX_DENSE;
     m_dataLength = 0;
     m_transpose = false;
+    m_triplet = NULL;
+    m_sparse = NULL;
+    m_dense = NULL;
 }
 
 Matrix::Matrix(size_t nr, size_t nc) {
@@ -80,6 +83,10 @@ Matrix::Matrix(const Matrix& orig) {
     m_ncols = orig.m_ncols;
     m_nrows = orig.m_nrows;
     m_transpose = orig.m_transpose;
+    m_data = NULL;
+    m_triplet = NULL;
+    m_sparse = NULL;
+    m_dense = NULL;
     if (orig.m_type != MATRIX_SPARSE) {
         size_t n = orig.m_dataLength;
         if (n <= 0) {
@@ -110,7 +117,7 @@ Matrix::~Matrix() {
     this -> m_ncols = 0;
     this -> m_nrows = 0;
     if (m_data != NULL) {
-        delete[] m_data;
+       delete[] m_data;
     }
     m_data = NULL;
     if (m_triplet != NULL) {
@@ -942,6 +949,10 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
     this -> m_ncols = nc;
     this -> m_nrows = nr;
     this -> m_type = mType;
+    this -> m_data = NULL;
+    this -> m_triplet = NULL;
+    this -> m_sparse = NULL;
+    this -> m_dense = NULL;
     switch (m_type) {
         case MATRIX_DENSE:
             m_dataLength = nc * nr;
@@ -961,9 +972,9 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
             }
             m_dataLength = nc * (nc + 1) / 2;
             m_data = new double[m_dataLength]();
-
             break;
         case MATRIX_SPARSE:
+            m_data = NULL;
             break;
     }
 

@@ -21,6 +21,14 @@
 #include "CholeskyFactorization.h"
 #include "ForBESUtils.h"
 
+CholeskyFactorization::CholeskyFactorization(Matrix& m_matrix) :
+FactoredSolver(m_matrix) {
+    m_L = NULL;
+    if (m_matrix.getType() != Matrix::MATRIX_SPARSE) {
+        this->m_L = new double[m_matrix.length()]();
+    }
+}
+
 CholeskyFactorization::~CholeskyFactorization() {
     if (m_L != NULL) {
         delete[] m_L;

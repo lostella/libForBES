@@ -469,20 +469,20 @@ private:
     friend class LDLFactorization;
     friend class MatrixWriter;
 
-    size_t m_nrows; /*< Number of rows */
-    size_t m_ncols; /*< Number of columns */
-    bool m_transpose; /*< Whether this matrix is transposed */
-    MatrixType m_type; /*< Matrix type */
+    size_t m_nrows;     /**< Number of rows */
+    size_t m_ncols;     /**< Number of columns */
+    bool m_transpose;   /**< Whether this matrix is transposed */
+    MatrixType m_type;  /**< Matrix type */
 
     /* For dense matrices: */
 
-    size_t m_dataLength; /*< Length of data */
-    double *m_data = NULL; /*< Data */
+    size_t m_dataLength;    /**< Length of data */
+    double *m_data;         /**< Data */
 
     /* CSparse members */
-    cholmod_triplet *m_triplet = NULL; /*< Sparse triplets */
-    cholmod_sparse *m_sparse = NULL; /*< A sparse matrix */
-    cholmod_dense *m_dense = NULL; /*< A dense CHOLMOD matrix */
+    cholmod_triplet *m_triplet; /**< Sparse triplets */
+    cholmod_sparse *m_sparse;   /**< A sparse matrix */
+    cholmod_dense *m_dense;     /**< A dense CHOLMOD matrix */
 
 
     /* SINGLETON CHOLMOD HANDLE */

@@ -57,12 +57,7 @@ public:
      * Construct a new instance of QuadraticOperator given a linear operator 
      * @param T linear operator
      */
-    QuadraticOperator(LinearOperator& T) :
-    Function(), T(T) {
-        if (T.dimensionIn() != T.dimensionOut()) {
-            throw std::invalid_argument("T has incompatible dimensions");
-        }
-    }
+    QuadraticOperator(LinearOperator& T);
 
     /**
      * Destructor
@@ -70,6 +65,7 @@ public:
     virtual ~QuadraticOperator();
 
     virtual int call(Matrix& x, double& f);
+    
     virtual int call(Matrix& x, double& f, Matrix& grad);
 
 

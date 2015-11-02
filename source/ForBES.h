@@ -29,6 +29,8 @@
  */
 #include "ForBESUtils.h"            /* ForBES utilities */
 
+#include "FunctionOntologicalClass.h"
+
 /*
  * MATRICES and FACTORIZATIONS
  */
@@ -71,6 +73,10 @@
 #include "LogLogisticLoss.h"        /* Log-logistic function */
 #include "HingeLoss.h"              /* Hinge loss function */
 #include "HuberLoss.h"              /* Huber loss function */
+#include "Norm.h"                   /* Generic vector norm */
+#include "Norm1.h"                  /* Norm-1 */
+#include "Norm2.h"                  /* Norm-2 */
+#include "SeparableSum.h"           /* Separable sum of proximable functions */
 
 
 

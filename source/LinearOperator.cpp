@@ -23,9 +23,6 @@
 LinearOperator::LinearOperator() {
 }
 
-LinearOperator::LinearOperator(const LinearOperator& orig) {
-}
-
 LinearOperator::~LinearOperator() {
 }
 

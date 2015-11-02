@@ -61,6 +61,7 @@ Function(), m_lb(lb), m_ub(ub), m_weights(weights) {
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, double weight) :
 Function(), m_lb(lb), m_ub(ub), m_weight(weight) {
+    m_weights = NULL;
     checkBounds(lb, ub);
     m_is_weights_equal = true;
     m_is_bounds_uniform = false;
@@ -70,6 +71,9 @@ DistanceToBox::DistanceToBox(double uniform_lb, double uniform_ub, double weight
 Function(), m_uniform_lb(uniform_lb), m_uniform_ub(uniform_ub), m_weight(weight) {
     m_is_weights_equal = true;
     m_is_bounds_uniform = true;
+    m_lb = NULL;
+    m_ub = NULL;
+    m_weights = NULL;
 }
 
 DistanceToBox::~DistanceToBox() {

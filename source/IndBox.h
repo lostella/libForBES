@@ -90,10 +90,10 @@ protected:
 
 private:
 
-    Matrix* m_lb = NULL;
-    Matrix* m_ub = NULL;
-    double* m_uniform_lb = NULL;
-    double* m_uniform_ub = NULL;
+    Matrix* m_lb;
+    Matrix* m_ub;
+    double* m_uniform_lb;
+    double* m_uniform_ub;
 
 
 };

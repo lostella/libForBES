@@ -31,12 +31,7 @@
 class CholeskyFactorization : public FactoredSolver {
 public:
 
-    CholeskyFactorization(Matrix& m_matrix) :
-    FactoredSolver(m_matrix) {
-        if (m_matrix.getType() != Matrix::MATRIX_SPARSE) {
-            this->m_L = new double[m_matrix.length()]();
-        }
-    }
+    CholeskyFactorization(Matrix& m_matrix);
 
     virtual ~CholeskyFactorization();
 
@@ -73,8 +68,8 @@ public:
 
 
 private:
-    double * m_L = NULL;
-    cholmod_factor * m_factor = NULL;
+    double * m_L;
+    cholmod_factor * m_factor;
 
 };
 

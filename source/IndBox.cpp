@@ -3,6 +3,19 @@
  * Author: Pantelis Sopasakis
  * 
  * Created on July 26, 2015, 5:22 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <algorithm>
@@ -10,8 +23,10 @@
 #include "IndBox.h"
 
 IndBox::IndBox(double& uniform_lb, double& uniform_ub) : Function() {
-    this->m_uniform_lb = &uniform_lb;
-    this->m_uniform_ub = &uniform_ub;
+    m_uniform_lb = &uniform_lb;
+    m_uniform_ub = &uniform_ub;
+    m_lb = NULL;
+    m_ub = NULL;
 }
 
 IndBox::IndBox(Matrix& lb, Matrix& ub) : Function() {
@@ -24,6 +39,8 @@ IndBox::IndBox(Matrix& lb, Matrix& ub) : Function() {
     }
     m_lb = &lb;
     m_ub = &ub;
+    m_uniform_lb = NULL;
+    m_uniform_ub = NULL;
 }
 
 IndBox::~IndBox() {
@@ -112,7 +129,7 @@ FunctionOntologicalClass IndBox::category() {
 
 
 /* PROTECTED METHODS */
-
+//LCOV_EXCL_START
 void IndBox::SetLb(Matrix* lb) {
     m_lb = lb;
 }
@@ -144,3 +161,4 @@ double* IndBox::GetUniform_lb() const {
 double* IndBox::GetUniform_ub() const {
     return m_uniform_ub;
 }
+//LCOV_EXCL_STOP

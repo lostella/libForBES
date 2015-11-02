@@ -144,11 +144,11 @@ public:
 
 
 private:
-    Matrix *Q;                  /**< Matrix Q */
-    Matrix *q;                  /**< Vector q*/
-    FactoredSolver *m_solver;   /**< Cholesky factor L */
-    bool is_Q_eye;              /**< TRUE if Q is the identity matrix */
-    bool is_q_zero;             /**< TRUE is q is the zero vector */
+    Matrix *m_Q;                  /**< Matrix Q */
+    Matrix *m_q;                  /**< Vector q*/
+    FactoredSolver *m_solver;     /**< Cholesky factor L */
+    bool m_is_Q_eye;              /**< TRUE if Q is the identity matrix */
+    bool m_is_q_zero;             /**< TRUE is q is the zero vector */
 
     virtual int computeGradient(Matrix& x, Matrix& grad);
 

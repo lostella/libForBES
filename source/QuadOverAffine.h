@@ -115,14 +115,14 @@ private:
 
     QuadOverAffine();
 
-    Matrix *Q = NULL; /**< Matrix Q (Hessian) */
-    Matrix *q = NULL; /**< Vector q (Linear term) */
-    Matrix *A = NULL; /**< Matrix A */
-    Matrix *b = NULL; /**< Matrix b */
+    Matrix *Q; /**< Matrix Q (Hessian) */
+    Matrix *q; /**< Vector q (Linear term) */
+    Matrix *A; /**< Matrix A */
+    Matrix *b; /**< Matrix b */
 
-    Matrix *F = NULL; /**< Matrix <code>F = [Q A'; A 0]</code> */
-    Matrix *sigma = NULL;
-    FactoredSolver * Fsolver = NULL; /**< Factorizer for matrix F */
+    Matrix *F; /**< Matrix <code>F = [Q A'; A 0]</code> */
+    Matrix *sigma;
+    FactoredSolver * Fsolver; /**< Factorizer for matrix F */
 };
 
 #endif	/* QUADOVERAFFINE_H */
