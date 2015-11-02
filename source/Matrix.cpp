@@ -195,12 +195,14 @@ int Matrix::reshape(size_t nrows, size_t ncols) {
 }
 
 double Matrix::get(const size_t i, const size_t j) const {
+    //LCOV_EXCL_START
     if (isEmpty()) {
         throw std::out_of_range("Method get(size_t, size_t) applied to an empty matrix");
     }
     if (i < 0 || i >= getNrows() || j < 0 || j >= getNcols()) {
         throw std::out_of_range("Index out of range!");
     }
+    //LCOV_EXCL_STOP
     if (m_type == MATRIX_DENSE) {
         return !m_transpose ? m_data[i + j * m_nrows] : m_data[j + i * m_ncols];
     } else if (m_type == MATRIX_DIAGONAL) {
@@ -219,9 +221,11 @@ double Matrix::get(const size_t i, const size_t j) const {
                 : (i >= j) ? m_data[i + m_nrows * j - j * (j + 1) / 2] : 0.0f;
     } else {
         /* if (m_type == MATRIX_SPARSE) */
+        //LCOV_EXCL_START
         if (m_triplet == NULL) {
             throw std::logic_error("not supported yet");
         }
+        //LCOV_EXCL_STOP
         double val = 0.0f;
         int i_ = m_transpose ? j : i;
         int j_ = m_transpose ? i : j;
@@ -239,9 +243,11 @@ double Matrix::get(const size_t i, const size_t j) const {
 } /* END GET */
 
 void Matrix::set(size_t i, size_t j, double v) {
+    //LCOV_EXCL_START
     if (!indexWithinBounds(i, j)) {
         throw std::out_of_range("Index out of range!");
     }
+    //LCOV_EXCL_STOP
     if (m_type == MATRIX_DENSE) {
         m_data[i + j * m_nrows] = v;
     } else if (m_type == MATRIX_DIAGONAL && i == j) {
@@ -288,8 +294,9 @@ void Matrix::set(size_t i, size_t j, double v) {
         m_sparse = NULL;
         m_dense = NULL;
     } else {
-
+        //LCOV_EXCL_START
         throw std::invalid_argument("Illegal operation");
+        //LCOV_EXCL_STOP
     }
 
 }
@@ -305,6 +312,7 @@ double Matrix::quadFromTriplet(const Matrix& x) const {
 }
 
 double Matrix::quad(Matrix & x) {
+    //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -314,6 +322,7 @@ double Matrix::quad(Matrix & x) {
     if (x.getNrows() != m_ncols) {
         throw std::invalid_argument("The argument of quad(Matrix&) is not of appropriate dimension.");
     }
+    //LCOV_EXCL_STOP
     double result = 0.0;
 
     if (MATRIX_DENSE == m_type || MATRIX_LOWERTR == m_type) { /* DENSE or LOWER TRIANGULAR */
@@ -338,7 +347,9 @@ double Matrix::quad(Matrix & x) {
             result = quadFromTriplet(x);
         } else {
             /* \todo Implement quadFromSparse */
+            //LCOV_EXCL_START
             throw std::logic_error("Quad on sparse matrix - no triplets found (not implemented yet)");
+            //LCOV_EXCL_STOP
         }
     }
     result /= 2;
@@ -347,6 +358,7 @@ double Matrix::quad(Matrix & x) {
 }
 
 double Matrix::quad(Matrix& x, Matrix & q) {
+    //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
     }
@@ -359,6 +371,7 @@ double Matrix::quad(Matrix& x, Matrix & q) {
     if (x.getNrows() != m_ncols) {
         throw std::invalid_argument("The argument of quad(Matrix&) is not of appropriate dimension.");
     }
+    //LCOV_EXCL_STOP
     double t = 0.0f;
     Matrix r;
     r = q*x;
@@ -420,9 +433,11 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
 //LCOV_EXCL_STOP
 
 double &Matrix::operator[](size_t sub) const {
+    //LCOV_EXCL_START
     if (sub < 0 || sub >= length()) {
         throw std::out_of_range("Exception: Index out of range for Matrix");
     }
+    //LCOV_EXCL_STOP
     return m_data[sub];
 }
 
@@ -634,9 +649,11 @@ void Matrix::_addX(Matrix& rhs) {
 }
 
 Matrix& Matrix::operator+=(Matrix & right) {
+    //LCOV_EXCL_START
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
+    //LCOV_EXCL_STOP
 
     if (&right == this) {
         *this *= 2.0;
@@ -968,7 +985,9 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
         }
         return result;
     } else {
+        //LCOV_EXCL_START
         throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
+        //LCOV_EXCL_STOP
     }
 }
 
@@ -998,7 +1017,9 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
             break;
         case MATRIX_DIAGONAL:
             if (nc != nr) {
+                //LCOV_EXCL_START
                 throw std::invalid_argument("Diagonal matrices must be square!!!");
+                //LCOV_EXCL_STOP
             }
             m_dataLength = nc;
             m_data = new double[m_dataLength]();
@@ -1006,7 +1027,9 @@ void Matrix::init(size_t nr, size_t nc, MatrixType mType) {
         case MATRIX_LOWERTR:
         case MATRIX_SYMMETRIC:
             if (nc != nr) {
+                //LCOV_EXCL_START
                 throw std::invalid_argument("Lower triangular and symmetric matrices must be square!!!");
+                //LCOV_EXCL_STOP
             }
             m_dataLength = nc * (nc + 1) / 2;
             m_data = new double[m_dataLength]();
@@ -1064,6 +1087,7 @@ Matrix operator*(double alpha, Matrix& obj) {
 }
 
 std::string Matrix::getTypeString() const {
+    //LCOV_EXCL_START
     const char names[5][10] = {
         "dense",
         "sparse",
@@ -1075,11 +1099,12 @@ std::string Matrix::getTypeString() const {
     int i = static_cast<int> (getType());
     std::string s = std::string(names[i]);
     return s;
-
+    //LCOV_EXCL_STOP
 }
 
 Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end) {
     /* DONE: Fully tested */
+    //LCOV_EXCL_START
     if (row_end < row_start || col_end < col_start) {
         throw std::invalid_argument("Matrix::submatrixCopy:: start > end is not allowed");
     }
@@ -1089,7 +1114,7 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
     if (col_end > m_ncols) {
         throw std::invalid_argument("Matrix::submatrixCopy:: col_end > total number of columns");
     }
-
+    //LCOV_EXCL_STOP
     size_t rows = row_end - row_start + 1;
     size_t cols = col_end - col_start + 1;
 
@@ -1130,7 +1155,9 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
         M.m_sparse = sp;
         M._createTriplet();
     } else {
+        //LCOV_EXCL_START
         throw std::logic_error("Matrix::submatrixCopy is available only for MATRIX_DENSE and MATRIX_SPARSE type matrices.");
+        //LCOV_EXCL_STOP
     }
     return M;
 }
@@ -1154,7 +1181,9 @@ Matrix Matrix::multiplySubmatrix(
         size_t right_rows = right_row_end - right_row_start + 1;
 
         if (left_cols != right_rows) {
+            //LCOV_EXCL_START
             throw std::invalid_argument("Dimension of sub-matrix mismatch (left_cols!=right_rows)");
+            //LCOV_EXCL_STOP
         }
 
         size_t left_start_idx =
@@ -1186,6 +1215,8 @@ Matrix Matrix::multiplySubmatrix(
         return result;
 
     } else {
+        //LCOV_EXCL_START
         throw std::logic_error("Matrix::multiplySubmatrix is implemented only for dense matrix multiplication.");
+        //LCOV_EXCL_STOP
     }
 }
