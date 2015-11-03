@@ -1868,7 +1868,7 @@ void TestMatrix::test_ALX() {
     size_t n = 120;
     const double tol = 1e-10;
     Matrix L = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
-    Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_LOWERTR);
+    Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 2.0, 10.0, Matrix::MATRIX_DIAGONAL);
     Matrix R;
     R = L + X;
     for (size_t i = 0; i < n; i++) {
@@ -2196,8 +2196,6 @@ void TestMatrix::test_ASTDT() {
             _ASSERT_NUM_EQ(D1.get(i, j) + D2.get(i, j), F.get(i, j), tol);
         }
     }
-
-
 }
 
 
