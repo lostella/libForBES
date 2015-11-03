@@ -1,16 +1,17 @@
-/* FUNCTIONS*/
+/* FUNCTIONS */
 
-/*! \page doc-functs Functions
+/*! \page doc-functs Functions API
  *
- * \brief The functions API
+ * \brief The Functions API
  * 
- * 
+ * \section functions-api Function API 
+ *
  * The ForBES function API allows end-users to define their own functions and at 
  * the same time provides a collection of functions that are frequently used and 
  * have applications in machine learning, control and other applications of 
  * optimization. A complete list of these functions can be found \ref Functions "here".
  *
- * Class Function has not public constructors, therefore, one cannot directly
+ * Class Function has no public constructors, therefore, one cannot directly
  * create function objects. Instances of this class are created using its subclasses,
  * for example:
  *
@@ -73,9 +74,88 @@
  * \endcode
  *
  *
+ * \section custom-function Building custom functions
+ * Following the %Function API explained above, one can easily implement their own
+ * functions by extending the abstract base class Function.
  *
+ * A custom function needs to extend the base class Function and implement one or more
+ * of its virtual methods <code>call</code>, <code>callConj</code> and <code>callProx</code>.
  *
+ * Additionally, the custom implementation should provide meta-information about the
+ * function such as its name and which components are actually implemented. 
  *
+ * Implemented methods return either a \link ForBESUtils::STATUS_OK success status code\endlink 
+ * or an \link ForBESUtils::STATUS_NUMERICAL_PROBLEMS error code\endlink, whereas 
+ * methods which are not implemented will return a 
+ * \link ForBESUtils::STATUS_UNDEFINED_FUNCTION undefined function\endlink status. 
+ *
+ * We shall give here an example of how to implement \f$f(x)=\sum_{i=1}^{n}x_i^4\f$
+ * as a %Function. 
+ *
+ * We first create a class called <code>Foo</code> in this example which extends
+ * Function:
+ *
+ * \code{.cpp}
+ * /* File: Foo.h */
+ * class Foo : public Function { 
+ * public:  
+ *     virtual int call(Matrix& x, double& f);
+ *     virtual int call(Matrix& x, double& f, Matrix& grad);
+ *     virtual FunctionOntologicalClass category();
+ * }
+ * \endcode
+ *
+ * We first implement the method \link Function::call(Matrix &, double &) call\endlink
+ * which computes the value of \f$f(x)\f$ at a given point.
+ *
+ * \code{.cpp}
+ * /* File: Foo.cpp */
+ * int Foo::call(Matrix& x, double& f) {
+ *     if (!x.isColumnVector()) {
+ *         throw std::invalid_argument("x must be a column-vector");
+ *     }
+ *     f = 0.0;
+ *     for (size_t i = 0; i < x.getNrows(); i++){
+ *         f += std::pow(x.get(i,0),4);
+ *     }
+ *     return ForBESUtils::STATUS_OK;
+ * }
+ * \endcode
+ *
+ * In a similar manner, we can now implement a method which returns the value of 
+ * \f$f(x)\f$ and the gradient \f$\nabla f(x)\f$ as follows
+ *
+ * \code{.cpp}
+ * /* File: Foo.cpp */
+ * int Foo::call(Matrix& x, double& f, Matrix& grad) {
+ *     if (!x.isColumnVector()) {
+ *         throw std::invalid_argument("x must be a column-vector");
+ *     }
+ *     if (x.getNrows() != grad.getNrows()) {
+ *         throw std::invalid_argument("x and grad must have the same number of rows");
+ *     }
+ *     f = 0.0;
+ *     for (size_t i = 0; i < x.getNrows(); i++){
+ *         f += std::pow(x.get(i,0),4);
+ *         grad(i,0) = 4.0 * std::pow(x.get(i,0),3);
+ *     }
+ *     return ForBESUtils::STATUS_OK;
+ * }
+ * \endcode
+ *
+ * Finally, we need to implement method \link Function::category category \endlink
+ * which provides meta-data for our implementation:
+ *
+ * \code{.cpp}
+ * /* File: Foo.cpp */
+ * FunctionOntologicalClass Foo::category() {
+ *     FunctionOntologicalClass meta("Foo");
+ *     meta.set_defines_f(true);
+ *     meta.set_defines_grad(true);
+ *     meta.getSuperclasses().push_back(FunctionOntologyRegistry::function());
+ *     return meta;
+ * }
+ * \endcode
  *
  *
  *

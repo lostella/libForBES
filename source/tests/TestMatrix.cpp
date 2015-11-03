@@ -2143,5 +2143,62 @@ void TestMatrix::testSubmatrixSparse() {
     }
 }
 
+void TestMatrix::test_ADTDT() {
+    size_t n = 15;
+    size_t m = 25;
+
+    Matrix D1 = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix D2 = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix C1(D1);
+    Matrix C2(D2);
+    D1.transpose();
+    D2.transpose();
+
+    Matrix R = D1 + D2;
+    Matrix C = C1 + C2;
+    C.transpose();
+    _ASSERT_EQ(R, C);
+
+}
+
+void TestMatrix::testGetSetTranspose() {
+    size_t n = 5;
+    size_t m = 6;
+    Matrix A(n, m);
+    A.set(1, 3, 10.4);
+
+    A.transpose();
+    _ASSERT_EQ(10.4, A.get(3, 1));
+
+    A.set(4, 3, 0.5);
+    _ASSERT_EQ(0.5, A.get(4, 3));
+    _ASSERT_EQ(0.0, A.get(3, 4));
+}
+
+void TestMatrix::test_ASTDT() {
+    size_t n = 5;
+    size_t m = 6;
+
+    Matrix D1 = MatrixFactory::MakeRandomSparse(n, m, 30, 0.0, 1.0);
+    Matrix D2 = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0, Matrix::MATRIX_DENSE);
+
+    D1.transpose();
+    D2.transpose();
+
+    Matrix F = D1 + D2;
+
+    _ASSERT_EQ(m, F.getNrows());
+    _ASSERT_EQ(n, F.getNcols());
+
+    const double tol = 1e-8;
+    for (size_t i = 0; i < m; i++) {
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT_NUM_EQ(D1.get(i, j) + D2.get(i, j), F.get(i, j), tol);
+        }
+    }
+
+
+}
+
 
 

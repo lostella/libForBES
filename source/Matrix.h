@@ -201,7 +201,12 @@ public:
 
 
     /**
-     * Updates a value of the matrix at position <code>(i,j)</code>
+     * Updates a value of the matrix at position <code>(i,j)</code>.
+     * 
+     * Note that when setting the value <code>A(i,j)</code> of a symmetric matrix,
+     * then both <code>A(i,j)</code> and <code>A(j,i)</code> will be set to the 
+     * same value.
+     * 
      * @param i row index (<code>0,...,nrows-1</code>)
      * @param j column index (<code>0,...,ncols-1</code>)
      * @param val value to be set at <code>(i,j)</code>

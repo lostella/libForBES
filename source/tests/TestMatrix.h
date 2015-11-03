@@ -37,6 +37,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     
     
     CPPUNIT_TEST(testGetSet);
+    CPPUNIT_TEST(testGetSetTranspose);
     CPPUNIT_TEST(testQuadratic);
     CPPUNIT_TEST(testQuadratic2);
     CPPUNIT_TEST(testAssignment);
@@ -88,7 +89,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ADH);
     CPPUNIT_TEST(test_ADX);
     CPPUNIT_TEST(test_ADL);
-    CPPUNIT_TEST(test_ADW);
+    CPPUNIT_TEST(test_ADW);    
 
     CPPUNIT_TEST(test_ADDT);
     CPPUNIT_TEST(test_ADST);
@@ -108,6 +109,9 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_ASX);
     CPPUNIT_TEST(test_ASL);
     CPPUNIT_TEST(test_ASS);   
+    
+    CPPUNIT_TEST(test_ADTDT);
+    CPPUNIT_TEST(test_ASTDT);
     
     CPPUNIT_TEST(test_ALL);
     CPPUNIT_TEST(test_ALX);
@@ -163,6 +167,7 @@ private:
     void testQuadratic3();
     void testQuadraticDot();
     void testGetSet();
+    void testGetSetTranspose();
     void testAssignment();
     void test_ADD1();
     void testAdditionBad();
@@ -256,6 +261,12 @@ private:
     void test_ADXT();
     void test_ADLT();
     void test_ADWT();
+    
+    /*
+     * (?)' + DENSE'
+     */
+    void test_ADTDT();
+    void test_ASTDT();
 
     /*
      * SYMMETRIC + (?) 

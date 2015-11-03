@@ -249,7 +249,11 @@ void Matrix::set(size_t i, size_t j, double v) {
     }
     //LCOV_EXCL_STOP
     if (m_type == MATRIX_DENSE) {
-        m_data[i + j * m_nrows] = v;
+        if (m_transpose) {
+            m_data[j + i * m_ncols] = v;
+        } else {
+            m_data[i + j * m_nrows] = v;
+        }
     } else if (m_type == MATRIX_DIAGONAL && i == j) {
         m_data[i] = v;
     } else if (m_type == MATRIX_LOWERTR) {
@@ -599,26 +603,29 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
                 }
             }
         }
-    } else if (rhs.m_type == MATRIX_DENSE) { /* For any type of non-sparse right-summands */
-        /* Sparse + Dense = Dense */
-        m_type = MATRIX_DENSE;
-        m_dataLength = m_ncols * m_nrows;
-        m_data = new double[m_ncols * m_nrows];
-        for (size_t i = 0; i < m_nrows; i++) {
-            for (size_t j = 0; j < m_ncols; j++) {
-                set(i, j, rhs.get(i, j));
+    } else if (rhs.m_type == MATRIX_DENSE) { /* SPARSE + DENSE */
+        m_type = MATRIX_DENSE; /* Sparse + Dense = Dense */
+        m_dataLength = rhs.getNcols() * rhs.getNrows(); /* Space to be allocated for the dense result */
+        m_data = new double[m_dataLength]; /* allocate space */
+        for (size_t i = 0; i < getNrows(); i++) {
+            for (size_t j = 0; j < getNcols(); j++) {
+                set(i, j, rhs.get(i, j)); /* store the rhs on m_data (accounting for transpose) */
             }
         }
-        _createTriplet();
+        //_createTriplet();
         if (m_triplet != NULL) {
             /* Add triplets */
-            int i = -1, j = -1;
+            int i = -1;
+            int j = -1;
             double v = 0.0;
             for (size_t k = 0; k < m_triplet->nnz; k++) {
                 i = ((int*) m_triplet->i)[k];
                 j = ((int*) m_triplet->j)[k];
+                if (m_transpose) {
+                    std::swap(i, j);
+                }
                 v = ((double*) m_triplet->x)[k];
-                m_data[i + j * m_nrows] += v;
+                _addIJ(i, j, v);
             }
         }
     } else if (rhs.m_type == MATRIX_SYMMETRIC) { /* SPARSE + SYMMETRIC (result is dense) */
@@ -846,7 +853,7 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
          */
         Matrix tempSparse(right);
         (const_cast<Matrix&> (*this)).transpose(); /*  D'  */
-        tempSparse.transpose();   /*  S'  */
+        tempSparse.transpose(); /*  S'  */
         Matrix r = tempSparse * (const_cast<Matrix&> (*this)); /*  r = S' * D'   */
         r.transpose(); /*  r'  */
         (const_cast<Matrix&> (*this)).transpose(); /*  D  */
@@ -938,7 +945,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                     right.getNrows(),
                     CHOLMOD_REAL,
                     Matrix::cholmod_handle());
-            
+
             if (!right.m_transpose) {
                 for (size_t k = 0; k < right.length(); k++) {
                     ((double*) right.m_dense->x)[k] = right.m_data[k];
@@ -953,7 +960,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 }
             }
         }
-        
+
         bool dotProd = isColumnVector() && right.isColumnVector();
         result.m_dense = cholmod_allocate_dense(
                 dotProd ? 1 : result.getNrows(),
@@ -961,7 +968,9 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 dotProd ? 1 : result.getNrows(),
                 CHOLMOD_REAL,
                 Matrix::cholmod_handle());
-        if (m_transpose) { this->transpose(); }
+        if (m_transpose) {
+            this->transpose();
+        }
         cholmod_sdmult(
                 m_sparse,
                 dotProd ? true : m_transpose,
@@ -971,7 +980,9 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 result.m_dense,
                 Matrix::cholmod_handle()
                 );
-        if (m_transpose) { this->transpose(); }
+        if (m_transpose) {
+            this->transpose();
+        }
         for (size_t k = 0; k < result.length(); k++) {
             result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         }

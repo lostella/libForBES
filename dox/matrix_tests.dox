@@ -1,0 +1,440 @@
+/*! \page doc-matrix-functionaliy Matrix functionality and unit testing
+ * \brief Unit testing of class %Matrix
+ * 
+ * \section tested-fun Tested functionality
+ * 
+ * \subsection addition-test Matrix-matrix addition
+ * 
+ * \f$F = A + B\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>
+ * <td>OK</td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>
+ * <td>OK</td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td>OK</td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>
+ * <td>OK</td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td>OK</td>    
+ * <td></td>
+ * <td>OK</td>
+ * </tr>
+ * </table> 
+ *
+ * 
+ * \f$F = A + B'\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>
+ * <td>OK</td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td></td>    
+ * <td>OK</td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ *
+ * \f$F = A' + B\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ *
+ *
+ * \f$F = A' + B'\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td>OK</td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ * 
+ *
+ *
+ *
+ *
+ * \subsection  multiplication-test Matrix-matrix multiplication
+ * \f$F = AB\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td>OK</td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td>OK</td>    
+ * <td></td>    
+ * <td>OK</td>   
+ * <td>OK</td>
+ * <td>OK</td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td>OK</td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ *
+ * 
+ * \f$F = AB'\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td>OK</td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ *
+ * \f$F = A'B\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ *
+ *
+ * \f$F = A'B'\f$
+ *
+ * <table>
+ * <tr>
+ * <td></td>
+ * <td>Dense</td>
+ * <td>Sparse</td>
+ * <td>Diagonal</td>
+ * <td>Symmetric</td>
+ * <td>Lower tri</td>
+ * </tr>
+ * <tr>
+ * <td>Dense</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Sparse</td>
+ * <td>OK</td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Diagonal</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>   
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Symmetric</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * <tr>
+ * <td>Lower tri</td>
+ * <td></td>    
+ * <td></td>    
+ * <td></td>    
+ * <td></td>
+ * <td></td>
+ * </tr>
+ * </table> 
+ */
