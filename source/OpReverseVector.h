@@ -39,7 +39,7 @@ class OpReverseVector : public LinearOperator {
 public:
     OpReverseVector();
 
-    OpReverseVector(size_t n);
+    explicit OpReverseVector(size_t n);
 
     virtual ~OpReverseVector();
 

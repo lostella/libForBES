@@ -55,7 +55,7 @@ std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) 
     os << "Super-classes... \n";
     list<FunctionOntologicalClass> li = obj.superClasses;
     size_t i = 1;
-    for (list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); it++) {
+    for (list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); ++it) {
         FunctionOntologicalClass entry = *it;
         cout << " " << i << ". " << FunctionOntologyRegistry::nameSpace() << ":" << entry.getName() << "\n";
         i++;

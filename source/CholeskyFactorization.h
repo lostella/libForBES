@@ -31,7 +31,7 @@
 class CholeskyFactorization : public FactoredSolver {
 public:
 
-    CholeskyFactorization(Matrix& m_matrix);
+    explicit CholeskyFactorization(Matrix& m_matrix);
 
     virtual ~CholeskyFactorization();
 

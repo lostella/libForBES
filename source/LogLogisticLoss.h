@@ -70,7 +70,7 @@ public:
      * Create an instance of LogLogisticLoss using a given value for \f$\mu\f$
      * @param mu Parameter \f$\mu\f$ (positive)
      */
-    LogLogisticLoss(double mu);
+    explicit LogLogisticLoss(double mu);
 
     virtual ~LogLogisticLoss();
     

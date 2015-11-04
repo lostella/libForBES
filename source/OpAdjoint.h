@@ -35,7 +35,7 @@
 class OpAdjoint : public LinearOperator {
 public:
 
-    OpAdjoint(LinearOperator& op);
+    explicit OpAdjoint(LinearOperator& op);
 
     virtual ~OpAdjoint();
 

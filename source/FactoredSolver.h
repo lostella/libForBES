@@ -43,7 +43,7 @@ public:
      * to be factorized.
      * @param m_matrix new instance of FactoredSolver.
      */
-    FactoredSolver(Matrix& m_matrix);
+    explicit FactoredSolver(Matrix& m_matrix);
 
     virtual ~FactoredSolver();
 

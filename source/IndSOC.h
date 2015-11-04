@@ -48,7 +48,7 @@
 class IndSOC : public Function {
 public:
 
-    IndSOC(int n);
+    explicit IndSOC(int n);
 
     virtual ~IndSOC();
 

@@ -69,7 +69,7 @@ public:
      * Construct a new instance of Norm1 with a given parameter \f$\mu>0\f$.
      * @param mu Parameter \f$\mu\f$
      */
-    Norm1(double mu);
+    explicit Norm1(double mu);
     
     /**
      * Destructor for Norm1.

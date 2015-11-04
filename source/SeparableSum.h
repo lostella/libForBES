@@ -70,7 +70,7 @@ public:
      * 
      * @param fun_idx_map map of Functions to sets of indices.
      */
-    SeparableSum(std::map<Function*, std::vector<size_t>*> fun_idx_map);
+    explicit SeparableSum(std::map<Function*, std::vector<size_t>*> fun_idx_map);
 
     virtual int call(Matrix& x, double& f);
 
@@ -81,7 +81,6 @@ public:
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
    
     virtual FunctionOntologicalClass category();
-
 
 
 private:

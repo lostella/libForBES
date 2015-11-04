@@ -57,7 +57,7 @@ public:
      * Construct a new instance of QuadraticOperator given a linear operator 
      * @param T linear operator
      */
-    QuadraticOperator(LinearOperator& T);
+    explicit QuadraticOperator(LinearOperator& T);
 
     /**
      * Destructor

@@ -25,6 +25,7 @@ Function::Function() { }
 Function::~Function() {
 }
 
+//LCOV_EXCL_START
 int Function::call(Matrix& x, double& f, Matrix& grad)  {
     int status;
     status = computeGradient(x, grad);
@@ -38,9 +39,10 @@ int Function::call(Matrix& x, double& f, Matrix& grad)  {
     return ForBESUtils::STATUS_OK;
 }
 
-int Function::call(Matrix& x, double& f) {
+int Function::call(Matrix& x, double& f) {    
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
+//LCOV_EXCL_STOP
 
 int Function::callConj(const Matrix& x, double& f_star) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
@@ -54,6 +56,7 @@ int Function::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
+//LCOV_EXCL_START
 int Function::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
@@ -65,4 +68,4 @@ FunctionOntologicalClass Function::category() {
 int Function::computeGradient(Matrix& x, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
-
+//LCOV_EXCL_STOP

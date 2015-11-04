@@ -62,7 +62,7 @@ class OpGradient : public LinearOperator {
 public:
     OpGradient();
 
-    OpGradient(size_t n);
+    explicit OpGradient(size_t n);
 
     virtual ~OpGradient();
 

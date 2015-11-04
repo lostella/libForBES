@@ -72,7 +72,7 @@ public:
      * radius
      * @param rho the radius of the ball
      */
-    IndBall2(double rho);
+    explicit IndBall2(double rho);
     
     /**
      * Create an instance of IndBall2 for a Euclidean ball centered at a given

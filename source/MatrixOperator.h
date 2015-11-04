@@ -35,7 +35,7 @@
 class MatrixOperator : public LinearOperator {
 public:
 
-    MatrixOperator(Matrix& A);
+    explicit MatrixOperator(Matrix& A);
     
     Matrix& GetMatrix() const;
 

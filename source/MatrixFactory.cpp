@@ -34,7 +34,7 @@ Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
 }
 
 Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale) {
-    std::srand((unsigned int)std::time(0)); 
+    std::srand((unsigned int) std::time(0));
     Matrix R = MakeSparse(nrows, ncols, nnz, Matrix::SPARSE_UNSYMMETRIC);
     std::set<nice_pair> s;
     nice_pair p;
@@ -46,8 +46,8 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
             break;
         }
     }
-    float rand;
-    for (std::set<nice_pair>::iterator it = s.begin(); it != s.end(); it++) {
+    for (std::set<nice_pair>::iterator it = s.begin(); it != s.end(); ++it) {
+        float rand;
         rand = offset + scale * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
         R.set(it->first, it->second, rand);
     }
@@ -55,7 +55,7 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
 }
 
 Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type) {
-    std::srand((unsigned int)std::time(0)); 
+    std::srand((unsigned int) std::time(0));
     size_t len = 0;
     switch (type) {
         case Matrix::MATRIX_DENSE:
@@ -69,7 +69,7 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
             len = nrows;
             break;
         case Matrix::MATRIX_SPARSE:
-            return MakeRandomSparse(nrows, ncols, std::ceil((nrows*ncols)/3), offset, scale);
+            return MakeRandomSparse(nrows, ncols, std::ceil((nrows * ncols) / 3), offset, scale);
             break;
     }
     Matrix mat(nrows, ncols, type);

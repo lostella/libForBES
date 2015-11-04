@@ -55,6 +55,7 @@ Matrix::Matrix() {
     m_triplet = NULL;
     m_sparse = NULL;
     m_dense = NULL;
+    m_sparseStorageType = CHOLMOD_TYPE_TRIPLET;
 }
 
 Matrix::Matrix(size_t nr, size_t nc) {
@@ -89,7 +90,7 @@ Matrix::Matrix(const Matrix& orig) {
     m_dense = NULL;
     if (orig.m_type != MATRIX_SPARSE) {
         size_t n = orig.m_dataLength;
-        if (n <= 0) {
+        if (n == 0) {
             n = 1;
         }
         m_data = new double[n];
@@ -182,8 +183,8 @@ void Matrix::transpose() {
 }
 
 int Matrix::reshape(size_t nrows, size_t ncols) {
-    size_t new_size = nrows*ncols;
-    if (new_size <= 0) {
+    size_t new_size = nrows * ncols;
+    if (new_size == 0) {
         return -1;
     }
     if (new_size > length()) {
@@ -199,7 +200,7 @@ double Matrix::get(const size_t i, const size_t j) const {
     if (isEmpty()) {
         throw std::out_of_range("Method get(size_t, size_t) applied to an empty matrix");
     }
-    if (i < 0 || i >= getNrows() || j < 0 || j >= getNcols()) {
+    if (i >= getNrows() || j >= getNcols()) {
         throw std::out_of_range("Index out of range!");
     }
     //LCOV_EXCL_STOP
@@ -375,7 +376,7 @@ double Matrix::quad(Matrix& x, Matrix & q) {
         throw std::invalid_argument("The argument of quad(Matrix&) is not of appropriate dimension.");
     }
     //LCOV_EXCL_STOP
-    double t = 0.0f;
+    double t;
     Matrix r;
     r = q*x;
     assert(!r.isEmpty());
@@ -437,7 +438,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
 
 double &Matrix::operator[](size_t sub) const {
     //LCOV_EXCL_START
-    if (sub < 0 || sub >= length()) {
+    if (sub >= length()) {
         throw std::out_of_range("Exception: Index out of range for Matrix");
     }
     //LCOV_EXCL_STOP
@@ -507,9 +508,9 @@ inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
                 }
             }
         }
-        m_data = (double*) realloc(m_data, m_dataLength * sizeof (double)); // reallocate memory
+        m_data = (double*) realloc(m_data, m_dataLength * sizeof (double)); // reallocate memory        
         m_data = (double*) memcpy(m_data, newData, m_dataLength * sizeof (double)); // copy newData to m_data
-        delete newData;
+        delete[] newData;
         m_type = MATRIX_DENSE;
     } else if (rhs.m_type == MATRIX_SPARSE) { /* SYMMETRIC + SPARSE */
         m_dataLength = m_ncols * m_nrows;
@@ -614,16 +615,13 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
         //_createTriplet();
         if (m_triplet != NULL) {
             /* Add triplets */
-            int i = -1;
-            int j = -1;
-            double v = 0.0;
             for (size_t k = 0; k < m_triplet->nnz; k++) {
-                i = ((int*) m_triplet->i)[k];
-                j = ((int*) m_triplet->j)[k];
+                int i = ((int*) m_triplet->i)[k];
+                int j = ((int*) m_triplet->j)[k];
                 if (m_transpose) {
                     std::swap(i, j);
                 }
-                v = ((double*) m_triplet->x)[k];
+                double v = ((double*) m_triplet->x)[k];
                 _addIJ(i, j, v);
             }
         }
@@ -722,9 +720,9 @@ Matrix Matrix::operator-(const Matrix & right) const {
 }
 
 Matrix Matrix::operator*(Matrix & right) {
-    double t = 0.0f;
     if (!(getType() == Matrix::MATRIX_SPARSE && right.getType() == Matrix::MATRIX_SPARSE) &&
             isColumnVector() && right.isColumnVector() && length() == right.length()) {
+        double t = 0.0f;
         // multiplication of two column vectors = dot product
         Matrix r(1, 1);
         for (size_t i = 0; i < m_nrows * m_ncols; i++) {
@@ -988,9 +986,8 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
         return result;
     } else if (right.m_type == MATRIX_DIAGONAL) { // SPARSE * DIAGONAL = SPARSE
         Matrix result(*this); // COPY [result := right]
-        int j_;
         for (size_t k = 0; k < result.m_triplet->nnz; k++) {
-            j_ = ((int*) result.m_triplet->j)[k];
+            int j_ = ((int*) result.m_triplet->j)[k];
             ((double*) result.m_triplet->x)[k] *= right.get(j_, j_);
         }
         return result;
@@ -1003,7 +1000,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
 
 bool Matrix::indexWithinBounds(size_t i, size_t j) {
 
-    return (i >= 0 && j >= 0 && i < m_nrows && j < m_ncols) && !(m_type == MATRIX_LOWERTR && i < j);
+    return (i < m_nrows && j < m_ncols) && !(m_type == MATRIX_LOWERTR && i < j);
 }
 
 Matrix::MatrixType Matrix::getType() const {
@@ -1159,8 +1156,8 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
             cs[j] = col_start + j;
         }
         this->_createSparse();
-        int nnz = std::max(1, (int) (rows * cols / 20));
-        cholmod_sparse *sp = cholmod_allocate_sparse(rows, cols, nnz, 1, 1, m_sparse->stype, m_sparse->xtype, cholmod_handle());
+        // int nnz = std::max(1, (int) (rows * cols / 20));
+        cholmod_sparse * sp; // = cholmod_allocate_sparse(rows, cols, nnz, 1, 1, m_sparse->stype, m_sparse->xtype, cholmod_handle());
         sp = cholmod_submatrix(m_sparse, rs, rows, cs, cols, 1, 1, Matrix::cholmod_handle());
         M.m_sparse = sp;
         M._createTriplet();

@@ -34,8 +34,8 @@ int HuberLoss::call(Matrix& x, double& f) {
     }
     //LCOV_EXCL_STOP
     f = 0.0;
-    double xi;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double xi;
         xi = x.get(i, 0);
         if (std::abs(xi) <= m_delta) {
             f += std::pow(xi, 2) / (2.0 * m_delta);
@@ -53,8 +53,8 @@ int HuberLoss::call(Matrix& x, double& f, Matrix& grad) {
     }
     //LCOV_EXCL_STOP
     f = 0.0;
-    double xi;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double xi;
         xi = x.get(i, 0);
         if (std::abs(xi) <= m_delta) {
             f += std::pow(xi, 2) / (2.0 * m_delta);

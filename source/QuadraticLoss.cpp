@@ -37,7 +37,7 @@ Function(), m_uniform_w(w) {
 }
 
 QuadraticLoss::QuadraticLoss(Matrix& w, Matrix& p) :
-Function() {    
+Function() {
     if (!w.isColumnVector() || !p.isColumnVector()) {
         throw std::invalid_argument("Arguments w and p must be column-vectors");
     }
@@ -48,6 +48,7 @@ Function() {
     m_is_zero_p = false;
     m_w = &w;
     m_p = &p;
+    m_uniform_w = 0.0;
 }
 
 QuadraticLoss::~QuadraticLoss() {
@@ -55,8 +56,8 @@ QuadraticLoss::~QuadraticLoss() {
 
 int QuadraticLoss::call(Matrix& x, double& f) {
     f = 0.0;
-    double fi = 0.0;
     for (size_t j = 0; j < x.getNrows(); j++) {
+        double fi;
         fi = x.get(j, 0);
         if (!m_is_zero_p) {
             fi -= m_p->get(j, 0);
@@ -85,10 +86,10 @@ int QuadraticLoss::callConj(const Matrix& x, double& f_star) {
 }
 
 int QuadraticLoss::callConj(const Matrix& x, double& f_star, Matrix& grad) {
-    double gradi = 0.0;
-    double pi = 0.0;
     f_star = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double gradi;
+        double pi;
         pi = m_is_zero_p ? 0.0 : m_p->get(i, 0);
         gradi = pi + x.get(i, 0) / (m_is_uniform_weights ? m_uniform_w : m_w->get(i, 0));
         grad.set(i, 0, gradi);

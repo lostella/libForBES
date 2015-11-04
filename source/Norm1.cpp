@@ -54,8 +54,8 @@ int Norm1::callProx(const Matrix& x, double gamma, Matrix& prox) {
     }
     //LCOV_EXCL_STOP
     double gm = gamma * m_mu;
-    double xi;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double xi;
         xi = x.get(i, 0);
         if (xi >= gm) {
             prox.set(i, 0, xi - gm);
@@ -73,11 +73,10 @@ int Norm1::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_pr
     }
     //LCOV_EXCL_STOP
     double gm = gamma * m_mu;
-    double xi;
-    double pi;
     f_at_prox = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        xi = x.get(i, 0);
+        double pi;
+        double xi = x.get(i, 0);
         if (xi >= gm) {
             pi = xi - gm;
         } else if (xi <= -gm) {
@@ -99,9 +98,8 @@ int Norm1::dualNorm(const Matrix& x, double& norm) {
     }
     //LCOV_EXCL_STOP
     norm = std::abs(x.get(0, 0));
-    double absi;
     for (size_t i = 1; i < x.getNrows(); i++) {
-        absi = std::abs(x.get(i, 0));
+        double absi = std::abs(x.get(i, 0));
         if (absi > norm) {
             norm = absi;
         }

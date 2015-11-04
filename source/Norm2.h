@@ -37,7 +37,7 @@ public:
 
     Norm2();
     
-    Norm2(double mu);;
+    explicit Norm2(double mu);
     
     virtual ~Norm2();
 

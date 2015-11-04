@@ -39,7 +39,7 @@ public:
      * Creates a new ontological class given its name/unique identifier.
      * @param name Name of the ontological class.
      */
-    FunctionOntologicalClass(string name);
+    explicit FunctionOntologicalClass(string name);
 
     FunctionOntologicalClass(
             bool m_defines_conjugate,

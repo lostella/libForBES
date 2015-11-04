@@ -35,10 +35,10 @@ int IndSOC::call(Matrix& x, double& f) {
     size_t i = 0;
     size_t n = x.getNrows();
     double squaredNorm = 0;
-    double xi;
     double t = x.get(n - 1, 0);
 
     while (i < n - 1 && isInside) {
+        double xi;
         xi = x.get(i, 0);
         squaredNorm += xi*xi;
         i++;

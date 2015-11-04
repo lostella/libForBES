@@ -66,7 +66,7 @@ public:
      * Create a new instance of the Huber loss function with given parameter delta
      * @param delta parameter delta
      */
-    HuberLoss(double delta);
+    explicit HuberLoss(double delta);
     
     /**
      * Destructor

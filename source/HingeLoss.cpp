@@ -40,9 +40,8 @@ int HingeLoss::call(Matrix& x, double& f) {
         throw std::invalid_argument("x must be a column-vector");
     }
     f = 0.0;
-    double si = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        si = 1 - m_b->get(i, 0) * x.get(i, 0);
+        double si = 1 - m_b->get(i, 0) * x.get(i, 0);
         if (si > 0) {
             f += si;
         }
@@ -55,10 +54,10 @@ int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
     }
-    double bxi = 0.0;
-    double bi;
     double gm = gamma*m_mu;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double bi;
+        double bxi;
         bi = m_b->get(i, 0);
         bxi = bi * x.get(i, 0);
         if (bxi < 1) {
@@ -66,7 +65,6 @@ int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox) {
         } else {
             prox.set(i, 0, x.get(i, 0));
         }
-
     }
     return ForBESUtils::STATUS_OK;
 }
@@ -75,13 +73,13 @@ int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_a
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
     }
-    double bxi = 0.0;
-    double bi;
     double gm = gamma*m_mu;
-    double pi;
-    double si = 0.0;
     f_at_prox = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double si;
+        double pi;
+        double bi;
+        double bxi;
         bi = m_b->get(i, 0);
         bxi = bi * x.get(i, 0);
         if (bxi < 1) {

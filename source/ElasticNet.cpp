@@ -33,8 +33,8 @@ int ElasticNet::call(Matrix& x, double& f) {
     }
     //LCOV_EXCL_STOP
     f = 0.0;
-    double xi = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double xi;
         xi = x.get(i, 0);
         f += mu * std::abs(xi) + (lambda / 2.0) * std::pow(xi, 2);
     }
@@ -47,12 +47,12 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox, double& g_
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    double xi = 0.0;
     double gm = gamma * mu;
     double alpha = 1 + lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
-    double yi = 0.0;
     g_at_prox = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double xi;
+        double yi;
         xi = x.get(i, 0);
         yi = max(0.0, abs(xi) - gm) / alpha;
         prox.set(i, 0, (xi < 0 ? -1 : 1) * yi);
@@ -67,10 +67,10 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox) {
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    double xi = 0.0;
     double gm = gamma * mu;
     double alpha = 1 + lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
     for (size_t i = 0; i < x.getNrows(); i++) {
+        double xi;
         xi = x.get(i, 0);
         prox.set(i, 0, (xi < 0 ? -1 : 1) * max(0.0, abs(xi) - gm) / alpha);
     }

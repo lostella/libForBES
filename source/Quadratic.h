@@ -93,7 +93,7 @@ public:
      * 
      * @param Q Matrix Q.
      */
-    Quadratic(Matrix&Q);
+    explicit Quadratic(Matrix&Q);
 
     /**
      * Create a quadratic-plus-linear function of the form <code>f(x) = 0.5*x'*Q*x + q'*x</code>,

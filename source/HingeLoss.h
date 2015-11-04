@@ -71,7 +71,7 @@ public:
      * assumed that mu is equal to 1.
      * @param b Vector b
      */
-    HingeLoss(Matrix& b);
+    explicit HingeLoss(Matrix& b);
 
     /**
      * Destructor

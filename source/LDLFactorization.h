@@ -35,7 +35,7 @@
 class LDLFactorization : public FactoredSolver {
 public:
 
-    LDLFactorization(Matrix& m_matrix);
+    explicit LDLFactorization(Matrix& m_matrix);
 
     virtual ~LDLFactorization();
 

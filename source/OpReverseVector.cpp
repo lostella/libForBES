@@ -33,8 +33,8 @@ OpReverseVector::OpReverseVector(size_t n) {
 
 Matrix OpReverseVector::call(Matrix& x) {
     Matrix y(x);
-    double temp;
     for (size_t i = 0; i < y.length() / 2; ++i) {
+        double temp;
         temp = y.get(y.length() - i - 1, 0);
         y.set(y.length() - i - 1, 0, y.get(i, 0));
         y.set(i, 0, temp);

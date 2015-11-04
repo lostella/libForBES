@@ -1,8 +1,21 @@
 /* 
  * File:   SeparableSum.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on October 30, 2015, 7:22 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "SeparableSum.h"
@@ -40,11 +53,11 @@ int SeparableSum::call(Matrix& x, double& f) {
     /* temporary value of sub-invocations */
     double f_temp;
 
-    /* status of sub-invocations */
-    int status;
-
     /* Invoke all functions */
-    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); map_iterator++) {
+    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); ++map_iterator) {
+        /* status of sub-invocations */
+        int status;
+
         /* Pointer to function      */
         c_fun = map_iterator->first;
 
@@ -59,7 +72,7 @@ int SeparableSum::call(Matrix& x, double& f) {
         size_t k = 0;
 
         /* construct the sub-matrix  */
-        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); idx_iterator++) {
+        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
             c_x -> set(k, 0, x.get(*idx_iterator, 0));
             k++;
         }
@@ -96,20 +109,19 @@ int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox) {
     std::vector<size_t> * c_idx = NULL;
     Matrix *c_x = NULL;
     Matrix *c_prox = NULL;
-    int status;
 
-    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); map_iterator++) {
+    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); ++map_iterator) {
         c_fun = map_iterator->first;
         c_idx = map_iterator->second;
         c_x = new Matrix(c_idx->size(), 1);
         c_prox = new Matrix(c_idx->size(), 1);
         std::vector<size_t>::iterator idx_iterator;
         size_t k = 0;
-        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); idx_iterator++) {
+        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
             c_x -> set(k, 0, x.get(*idx_iterator, 0));
             k++;
         }
-        status = c_fun -> callProx(*c_x, gamma, *c_prox);
+        int status = c_fun -> callProx(*c_x, gamma, *c_prox);
         //LCOV_EXCL_START
         if (ForBESUtils::STATUS_OK != status) {
             delete c_x;
@@ -118,7 +130,7 @@ int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox) {
         }
         //LCOV_EXCL_STOP
         k = 0;
-        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); idx_iterator++) {
+        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
             prox.set(*idx_iterator, 0, c_prox->get(k, 0));
             k++;
         }
@@ -138,6 +150,7 @@ FunctionOntologicalClass SeparableSum::category() {
     meta.set_defines_f(true);
     meta.set_defines_grad(true);
     meta.set_defines_prox(true);
+    meta.getSuperclasses().push_back(FunctionOntologyRegistry::function());
     return meta;
 }
 
