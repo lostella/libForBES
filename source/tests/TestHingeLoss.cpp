@@ -43,7 +43,7 @@ void TestHingeLoss::testCall() {
     Matrix b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0, Matrix::MATRIX_DENSE);
     const double mu = 1.5;
-    Function * hinge = new HingeLoss(&b, mu);
+    Function * hinge = new HingeLoss(b, mu);
     double f;
     _ASSERT(hinge->category().defines_f());
     int status = hinge->call(x, f);
@@ -72,7 +72,7 @@ void TestHingeLoss::testCall2() {
 
     const double mu = 0.7;
 
-    Function * hinge = new HingeLoss(&b, mu);
+    Function * hinge = new HingeLoss(b, mu);
 
     double f;
     _ASSERT(hinge->category().defines_f());
@@ -104,7 +104,7 @@ void TestHingeLoss::testCallProx() {
     const double mu = 0.7;
     const double gamma = 1.5;
 
-    Function * hinge = new HingeLoss(&b, mu);
+    Function * hinge = new HingeLoss(b, mu);
     Matrix prox(n, 1);
     _ASSERT(hinge->category().defines_prox());
     int status = hinge->callProx(x, gamma, prox);

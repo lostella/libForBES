@@ -92,29 +92,31 @@ void TestOpComposition::testCall() {
 void TestOpComposition::testCallAdjoint() {
     const size_t p = 8;
     const size_t n = 15;
+    const size_t m = 6;
     const double tol = 1e-8;
 
     Matrix A = MatrixFactory::MakeRandomMatrix(p, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
-    LinearOperator * op = new MatrixOperator(A);
-    
-    _ASSERT_EQ(op->dimensionIn(), n);
-    _ASSERT_EQ(op->dimensionOut(), p);
-
-    Matrix y = MatrixFactory::MakeRandomMatrix(p, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix B = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0, Matrix::MATRIX_DENSE);
 
 
-    A.transpose();         // A becomes A'
-    Matrix expected = A*y; // compute A'*y
-    A.transpose();         // A' becomes A
+    LinearOperator * A_op = new MatrixOperator(A);
+    LinearOperator * B_op = new MatrixOperator(B);
 
-    Matrix op_star_x = op->callAdjoint(y);    
+    LinearOperator * AB_op = new OpComposition(*A_op, *B_op);
 
-    for (size_t i = 0; i < p; i++) {
-        _ASSERT_NUM_EQ(expected.get(i, 0), op_star_x.get(i, 0), tol);
-    }
+    Matrix x = MatrixFactory::MakeRandomMatrix(p, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 
-    delete op;
+    Matrix AB_op_adj_x = AB_op->callAdjoint(x);
 
+    Matrix AB_op_adj_x_correct;
+    B.transpose();
+    A.transpose();
+    AB_op_adj_x_correct = B * A * x;
+    _ASSERT_EQ(AB_op_adj_x_correct, AB_op_adj_x);
+    _ASSERT_NOT(AB_op->isSelfAdjoint());
+    delete A_op;
+    delete B_op;
+    delete AB_op;
 
 }
 

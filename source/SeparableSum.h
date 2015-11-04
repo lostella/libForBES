@@ -21,6 +21,9 @@
 #ifndef SEPARABLESUM_H
 #define	SEPARABLESUM_H
 
+#include <vector>
+#include <map>
+
 #include "Function.h"
 
 /**
@@ -55,12 +58,36 @@
  * to compute the proximal of a separable sum.
  */
 class SeparableSum : public Function {
-public:
-    SeparableSum();
+public:    
+
     virtual ~SeparableSum();
 
+    /**
+     * Constructor for an instance of a separable sum function given its characteristic
+     * map which maps Function pointers to sets of indices. In particular, to each 
+     * function \f$f_{i}\f$ there is an associated set of indices \f$\mathcal{I}_i\f$
+     * so that \f$f_{i}\f$ is a function of \f$x_{\mathcal{I}_i}\f$.
+     * 
+     * @param fun_idx_map map of Functions to sets of indices.
+     */
+    SeparableSum(std::map<Function*, std::vector<size_t>*> fun_idx_map);
+
+    virtual int call(Matrix& x, double& f);
+
+    virtual int call(Matrix& x, double& f, Matrix& grad);
+
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
+
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
+   
+    virtual FunctionOntologicalClass category();
+
+
+
 private:
-    
+
+    std::map<Function*, std::vector<size_t> * > m_fun_idx_map;
+
 };
 
 #endif	/* SEPARABLESUM_H */

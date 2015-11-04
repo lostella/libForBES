@@ -68,6 +68,7 @@
 #include "IndBox.h"                 /* Indicator of a box */ 
 #include "IndPos.h"                 /* Indicator of a halfspace */
 #include "IndSOC.h"                 /* Indicator of a second-order cone */
+#include "IndBall2.h"               /* Indicator of a Euclidean ball */
 #include "ElasticNet.h"             /* Elastic net regularization function */
 #include "QuadraticLoss.h"          /* Quadratic loss function */
 #include "LogLogisticLoss.h"        /* Log-logistic function */

@@ -20,7 +20,7 @@
 
 #include "OpComposition.h"
 
-OpComposition::OpComposition(LinearOperator& A, LinearOperator& B) : LinearOperator(), A(A), B(B) {
+OpComposition::OpComposition(LinearOperator& A, LinearOperator& B) : LinearOperator(), m_A(A), m_B(B) {
     // check dimensions
     if (A.dimensionIn() != B.dimensionOut()) {
         throw std::invalid_argument("A and B have incompatible dimensions; AoB is not well defined.");
@@ -31,23 +31,28 @@ OpComposition::~OpComposition() {
 }
 
 Matrix OpComposition::call(Matrix& x) {
-    Matrix y = B.call(x);   // y = B(x)
-    return A.call(y);       // z = A(y)
+    Matrix y = m_B.call(x);   // y = B(x)
+    return m_A.call(y);       // z = A(y)
 }
 
 size_t OpComposition::dimensionIn() {
-    return B.dimensionIn();
+    return m_B.dimensionIn();
 }
 
 size_t OpComposition::dimensionOut() {
-    return A.dimensionOut();
+    return m_A.dimensionOut();
 }
 
 bool OpComposition::isSelfAdjoint() {
-    return A.isSelfAdjoint() && B.isSelfAdjoint();
+    return m_A.isSelfAdjoint() && m_B.isSelfAdjoint();
 }
 
 Matrix OpComposition::callAdjoint(Matrix& x) {
-    Matrix y = A.callAdjoint(x); // y = B(x)
-    return B.callAdjoint(y); // z = A(y)
+    /*
+     * T(x) = A(B(x))
+     * so
+     * T*(x) = B*(A*(x)) = B*(y), where y = A*(x)
+     */
+    Matrix y = m_A.callAdjoint(x); // y = A*(x)
+    return m_B.callAdjoint(y);     // z = B*(y)
 }

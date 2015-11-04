@@ -258,7 +258,7 @@ void Matrix::set(size_t i, size_t j, double v) {
         m_data[i] = v;
     } else if (m_type == MATRIX_LOWERTR) {
         m_data[i + m_nrows * j - j * (j + 1) / 2] = v;
-    } else if (m_type == MATRIX_SYMMETRIC) {
+    } else if (m_type == MATRIX_SYMMETRIC) { /* sets A(i,j) = A(j,i) = v */
         int i_ = std::max(i, j);
         int j_ = std::min(i, j);
         m_data[i_ + m_nrows * j_ - j_ * (j_ + 1) / 2] = v;
@@ -356,8 +356,7 @@ double Matrix::quad(Matrix & x) {
             //LCOV_EXCL_STOP
         }
     }
-    result /= 2;
-
+    result /= 2.0;
     return result;
 }
 
@@ -1230,4 +1229,11 @@ Matrix Matrix::multiplySubmatrix(
         throw std::logic_error("Matrix::multiplySubmatrix is implemented only for dense matrix multiplication.");
         //LCOV_EXCL_STOP
     }
+}
+
+void Matrix::diag() {
+    if (!isColumnVector()) {
+        throw std::invalid_argument("__diag_applied_to_nonvector");
+    }
+    m_type = MATRIX_DIAGONAL;
 }

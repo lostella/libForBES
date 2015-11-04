@@ -325,6 +325,13 @@ public:
      */
     double quad(Matrix& x, Matrix& q);
 
+    
+    /**
+     * Converts a vector into a diagonal matrix. This method only applies to 
+     * vectors and will throw a <code>std::invalid_argument</code> exception 
+     * otherwise.
+     */
+    void diag();
 
 
     /* Operators */

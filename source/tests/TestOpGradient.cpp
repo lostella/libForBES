@@ -56,8 +56,8 @@ void TestOpGradient::testCall() {
 }
 
 void testOperatorLinearity(LinearOperator* op) {
-    const size_t repeat = 300;
-    const double tol = 1e-12;
+    const size_t repeat = 1000;
+    const double tol = 1e-8;
 
     Matrix *x = new Matrix();
     Matrix *y = new Matrix();

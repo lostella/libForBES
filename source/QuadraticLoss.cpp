@@ -36,19 +36,18 @@ Function(), m_uniform_w(w) {
     m_p = NULL;
 }
 
-QuadraticLoss::QuadraticLoss(Matrix* w, Matrix* p) :
-Function(), m_p(p), m_w(w) {
-    if (w == NULL || p == NULL) {
-        throw std::invalid_argument("Arguments cannot be NULL in this constructor");
-    }
-    if (!w->isColumnVector() || !p->isColumnVector()) {
+QuadraticLoss::QuadraticLoss(Matrix& w, Matrix& p) :
+Function() {    
+    if (!w.isColumnVector() || !p.isColumnVector()) {
         throw std::invalid_argument("Arguments w and p must be column-vectors");
     }
-    if (w->getNrows() != p->getNrows()) {
+    if (w.getNrows() != p.getNrows()) {
         throw std::invalid_argument("w and p must be of equal size");
     }
     m_is_uniform_weights = false;
     m_is_zero_p = false;
+    m_w = &w;
+    m_p = &p;
 }
 
 QuadraticLoss::~QuadraticLoss() {

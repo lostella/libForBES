@@ -1,0 +1,99 @@
+/* FUNCTIONS */
+
+/*! \page doc-separable-sum Separable sum
+ *
+ * \brief Separable sum documentation
+ * 
+ * \section separable-sum Separable sum of functions
+ *
+ * \subsection separable-sum-about The separable sum property
+ *
+ * We often encounter functions which are written as a separable sum of other 
+ * functions whose proximal operators is known. In such cases, one can invoke the
+ * separable sum property to compute the proximal operator of the composite function.
+ * 
+ * For \f$x\in\mathbb{R}^n\f$ 
+ * and \f$\mathcal{I}\f$ be a set of unique indices in \f$\mathbb{N}_{[1,n]}\f$ given by
+ * \f$\mathcal{I}=\{i^1, i^2, \ldots, i^r\}\f$, define \f$x_{\mathcal{I}} = (x_{i^1},\ldots, x_{i^r})\f$.
+ * 
+ * Take a function \f$f:\mathbb{R}^n\to\mathbb{R}\f$ and sets of indices 
+ * \f$\mathcal{I}_1, \ldots, \mathcal{I}_2\f$ so that \f$\mathcal{I}_i \cap \mathcal{I}_j = \emptyset\f$
+ * whenever \f$i \neq j\f$ so that
+ * 
+ * \f[
+ *  f(x) = \sum_{i=1}^{s} f_i(x_{\mathcal{I}_j}).
+ * \f]
+ * 
+ * Such a function is called a separable sum.
+ * 
+ * The proximal operator of a separable sum can be computed as follows:
+ * 
+ * \f[
+ * (\mathrm{prox}_{\gamma f}(v))_{\mathcal{I}_j} = \mathrm{prox}_{\gamma f_j}(v_{\mathcal{I}_j}).
+ * \f]
+ * 
+ * As a result, it suffices to be able to compute \f$ \mathrm{prox}_{\gamma f_j}(\cdot)\f$
+ * to compute the proximal of a separable sum.
+ *
+ * \subsection separable-sum-code Code snippet
+ * Let us now give a code snippet to demonstrate how this is implemented in 
+ * libforbes. Assume first our function is written as follows:
+ * 
+ * \f[
+ *  f(x) = f_1(x_0, x_3, x_4) + f_2(x_1, x_2),
+ * \f]
+ * 
+ * for \f$x=(x_0, x_1, x_2, x_3, x_4)\in\mathbb{R}^5\f$. Here, we have
+ * \f$\mathcal{I}_1=\{0,3,4\}\f$ and \f$\mathcal{I}_2=\{1,2\}\f$.
+ *
+ * Let us define these two sets of indices: 
+ *
+ * \code{.cpp}
+ * size_t num_functs = 2;  /* 2 functions */
+ * size_t num_idx_1 = 3;   /* set I_1 contains 3 indices */
+ * size_t num_idx_2 = 2;   /* set I_2 contains 2 indices */
+ *
+ * std::vector<size_t> idx1(num_idx_1);
+ * std::vector<size_t> idx2(num_idx_2);
+ *
+ * idx1[0] = 0;
+ * idx1[1] = 3;
+ * idx1[2] = 4; /* f1(x_0, x_3, x_4) */
+ *
+ * idx2[0] = 1;
+ * idx2[1] = 2; /* f2(x_1, x_2)      */
+ * \endcode
+ *
+ * Say, \f$f_1\f$ is an ElasticNet function with parameters \f$\lambda=2.5\f$ and
+ * \f$\mu=1.3\f$ and \f$f_2\f$ is a HingeLoss function with parameters \f$b=(0.8, 1.5)\f$
+ * and \f$\mu=1.4\f$.
+ * 
+ * \code{.cpp}
+ * Function * f1 = new ElasticNet(2.5, 1.3);
+ *
+ * Matrix b(2, 1);
+ * b[0] = 0.8;
+ * b[1] = 1.5;
+ * Function * f2 = new HingeLoss(b, 1.5);
+ * \endcode
+ *
+ * We can now map the above functions to their corresponding set of indices 
+ * using a <code>std::map&lt;Function*, std::vector&lt;size_t&gt;* ></code> object
+ * using which we can create a SeperableSum function:
+ *
+ * \code{.cpp}
+ * std::map<Function*, std::vector<size_t>* > fun_idx_map;
+ * fun_idx_map[f1] = &idx1;
+ * fun_idx_map[f2] = &idx2;
+ * 
+ * Function * sep_sum = new SeparableSum(fun_idx_map);
+ * \endcode
+ * 
+ *
+ *
+ *
+ * 
+ *
+ *
+ *
+ */

@@ -17,6 +17,7 @@ class TestOpAdjoint : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testCallAdjoint);
+    CPPUNIT_TEST(testSelfAdjoint);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -29,6 +30,7 @@ public:
 private:
     void testCall();
     void testCallAdjoint();
+    void testSelfAdjoint();
 
 };
 

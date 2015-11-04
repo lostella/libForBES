@@ -71,6 +71,7 @@
  *      // something went wrong!
  *   }
  * }
+ * delete elastic;
  * \endcode
  *
  *

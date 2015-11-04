@@ -21,12 +21,14 @@
 #include "HingeLoss.h"
 #include <iostream>
 
-HingeLoss::HingeLoss(Matrix* b, double mu) :
-Function(), m_b(b), m_mu(mu) {
+HingeLoss::HingeLoss(Matrix& b, double mu) :
+Function(), m_mu(mu) {
+    m_b = &b;
 }
 
-HingeLoss::HingeLoss(Matrix* b) :
-Function(), m_b(b) {
+HingeLoss::HingeLoss(Matrix& b) :
+Function() {
+    m_b = &b;
     m_mu = 1.0;
 }
 

@@ -81,7 +81,7 @@ public:
      * @param w vector of weights
      * @param p vector p
      */
-    QuadraticLoss(Matrix* w, Matrix* p);
+    QuadraticLoss(Matrix& w, Matrix& p);
 
     /**
      * Destructor.

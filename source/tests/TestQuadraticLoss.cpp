@@ -52,7 +52,7 @@ void TestQuadraticLoss::testCall() {
     Matrix w(n, 1, weights_data);
     Matrix p(n, 1, p_data);
 
-    Function *quadLoss = new QuadraticLoss(&w, &p);
+    Function *quadLoss = new QuadraticLoss(w, p);
 
     const double xdata[n] = {
         -0.511212230427454,
@@ -109,7 +109,7 @@ void TestQuadraticLoss::testCallConj() {
     Matrix w(n, 1, weights_data);
     Matrix p(n, 1, p_data);
 
-    Function *quadLoss = new QuadraticLoss(&w, &p);
+    Function *quadLoss = new QuadraticLoss(w, p);
 
     const double xdata[n] = {
         -3.589357682910247,

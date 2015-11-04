@@ -52,8 +52,8 @@ public:
 
 private:
 
-    LinearOperator& A;
-    LinearOperator& B;
+    LinearOperator& m_A;
+    LinearOperator& m_B;
 };
 
 #endif	/* OPCOMPOSITION_H */

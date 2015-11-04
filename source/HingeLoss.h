@@ -64,14 +64,14 @@ public:
      * @param b Vector b
      * @param mu Parameter \f$ \mu\f$
      */
-    HingeLoss(Matrix* b, double mu);
+    HingeLoss(Matrix& b, double mu);
 
     /**
      * Create a new instance of HingleLoss providing the parameter b while it is
      * assumed that mu is equal to 1.
      * @param b Vector b
      */
-    HingeLoss(Matrix* b);
+    HingeLoss(Matrix& b);
 
     /**
      * Destructor
