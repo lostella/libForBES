@@ -20,6 +20,9 @@
 
 #include "OpGradient.h"
 
+void call_1d(Matrix & Tx, Matrix& x, const size_t n);
+void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n);
+
 OpGradient::OpGradient() {
     m_dimension = 0;
 }

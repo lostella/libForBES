@@ -62,6 +62,9 @@
  */
 class QuadraticLoss : public Function {
 public:
+    
+    using Function::call;
+    
     /**
      * Create a new instance of QuadraticLoss assuming a uniform weight \f$w=1\f$
      * and \f$p=0\f$.
@@ -73,7 +76,7 @@ public:
      * and setting \f$p=0\f$.
      * @param w uniform weight
      */
-    QuadraticLoss(double w); // p = 0
+    explicit QuadraticLoss(double w); // p = 0
 
     /**
      * Create a new instance of QuadraticLoss with given parameters \f$w\f$ and \f$p\f$.

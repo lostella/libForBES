@@ -139,7 +139,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);; // prox_{gamma f} and value-at-prox
+    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox); // prox_{gamma f} and value-at-prox
 
     /**
      * Computes the conjugate of this function at a point <code>x</code>.
@@ -154,7 +154,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callConj(const Matrix& x, double& f_star);; // conjugate of f at x: f*(x)
+    virtual int callConj(const Matrix& x, double& f_star); // conjugate of f at x: f*(x)
 
     /**
      * Computes the conjugate of this function at a point <code>x</code> as well 
@@ -171,7 +171,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);; // Nabla f*(x)
+    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad); // Nabla f*(x)
 
 
 
@@ -200,7 +200,7 @@ protected:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int computeGradient(Matrix& x, Matrix& grad);;
+    virtual int computeGradient(Matrix& x, Matrix& grad);
 
 };
 

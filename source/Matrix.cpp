@@ -143,7 +143,7 @@ size_t Matrix::getNrows() const {
     return m_nrows;
 }
 
-double * const Matrix::getData() const {
+double * Matrix::getData() {
     return m_data;
 }
 
@@ -412,11 +412,13 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
     if (obj.m_type == Matrix::MATRIX_SPARSE && obj.m_triplet == NULL && obj.m_sparse != NULL) {
         os << "Storage type: Packed Sparse" << std::endl;
         for (size_t j = 0; j < obj.m_ncols; j++) {
-            int p = ((int*) obj.m_sparse->p)[j];
-            int pend = (obj.m_sparse->packed == 1) ? (((int*) obj.m_sparse->p)[j + 1]) : p + ((int*) obj.m_sparse->nz)[j];
+            int p = (static_cast<int*>( obj.m_sparse->p) )[j];
+            int pend = (obj.m_sparse->packed == 1) 
+                ? (( static_cast<int*>( obj.m_sparse->p ))[j + 1]) 
+                : p + (static_cast<int*>( obj.m_sparse->nz ))[j];
             for (; p < pend; p++) {
-                os << "(" << ((int*) obj.m_sparse->i)[p] << "," << j << ")  : "
-                        << std::setw(8) << std::setprecision(4) << ((double*) obj.m_sparse->x)[p] << std::endl;
+                os << "(" << (static_cast<int*>( obj.m_sparse->i ))[p] << "," << j << ")  : "
+                        << std::setw(8) << std::setprecision(4) << (static_cast<double*>( obj.m_sparse->x ))[p] << std::endl;
             }
         }
         return os;
@@ -476,9 +478,9 @@ inline void Matrix::_addD(Matrix& rhs) { /* DENSE += (?) */
         rhs._createTriplet();
         assert(rhs.m_triplet != NULL);
         for (size_t k = 0; k < rhs.m_triplet->nnz; k++) {
-            int i_ = ((int*) rhs.m_triplet->i)[k];
-            int j_ = ((int*) rhs.m_triplet->j)[k];
-            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, ((double*) rhs.m_triplet->x)[k]);
+            int i_ = (static_cast<int *>( rhs.m_triplet->i))[k];
+            int j_ = (static_cast<int *>( rhs.m_triplet->j))[k];
+            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, (static_cast<double *>( rhs.m_triplet->x) )[k]);
         }
     } else { /* Symmetric and Dense+Dense' or Dense'+Dense (not of same transpose type) */
         for (size_t i = 0; i < m_nrows; i++) {
@@ -508,14 +510,27 @@ inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
                 }
             }
         }
-        m_data = (double*) realloc(m_data, m_dataLength * sizeof (double)); // reallocate memory        
-        m_data = (double*) memcpy(m_data, newData, m_dataLength * sizeof (double)); // copy newData to m_data
+        double * temp_data;
+        temp_data = static_cast<double *>( realloc(m_data, m_dataLength * sizeof (double))  ); // reallocate memory
+        if (temp_data == NULL) { /* could not allocate using realloc */
+            delete[] m_data;
+            if (newData != NULL){
+                delete[] newData;
+            }
+            throw std::bad_alloc();
+        } else if (temp_data == m_data ){ /* nothing happened */
+            temp_data = NULL;
+        } else { /* realloc succeeded */
+            m_data = temp_data; /* have m_data point to temp_data */
+            temp_data = NULL;   /* nullify temp_data */
+        }
+        m_data = static_cast<double *>(  memcpy(m_data, newData, m_dataLength * sizeof (double))  ); // copy newData to m_data
         delete[] newData;
         m_type = MATRIX_DENSE;
     } else if (rhs.m_type == MATRIX_SPARSE) { /* SYMMETRIC + SPARSE */
         m_dataLength = m_ncols * m_nrows;
         double * newData = new double[m_dataLength];
-        m_data = (double *) realloc(m_data, m_dataLength * sizeof (double)); // reallocate memory
+        m_data = static_cast<double *>( realloc(m_data, m_dataLength * sizeof (double))  ); // reallocate memory
 
         for (size_t i = 0; i < m_nrows; i++) {
             for (size_t j = 0; j < m_ncols; j++) {
@@ -523,7 +538,7 @@ inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
             }
         }
 
-        m_data = (double *) memcpy(m_data, newData, m_dataLength * sizeof (double)); // copy newData to m_data
+        m_data = static_cast<double *>( memcpy(m_data, newData, m_dataLength * sizeof (double))  ); // copy newData to m_data
 
         rhs._createTriplet();
         assert(rhs.m_triplet != NULL);
@@ -531,12 +546,12 @@ inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
         m_type = MATRIX_DENSE;
 
         for (size_t k = 0; k < rhs.m_triplet->nnz; k++) {
-            int i_ = ((int*) rhs.m_triplet->i)[k];
-            int j_ = ((int*) rhs.m_triplet->j)[k];
-            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, ((double*) rhs.m_triplet->x)[k]);
+            int i_ = (static_cast<int*>( rhs.m_triplet->i))[k];
+            int j_ = (static_cast<int*>( rhs.m_triplet->j))[k];
+            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, (static_cast<double*>( rhs.m_triplet->x ))[k]);
         }
 
-        delete newData;
+        delete[] newData;
     }
 }
 
@@ -616,12 +631,12 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
         if (m_triplet != NULL) {
             /* Add triplets */
             for (size_t k = 0; k < m_triplet->nnz; k++) {
-                int i = ((int*) m_triplet->i)[k];
-                int j = ((int*) m_triplet->j)[k];
+                int i = (static_cast<int*>( m_triplet->i ))[k];
+                int j = (static_cast<int*>( m_triplet->j ))[k];
                 if (m_transpose) {
                     std::swap(i, j);
                 }
-                double v = ((double*) m_triplet->x)[k];
+                double v = ( static_cast<double*>( m_triplet->x) )[k];
                 _addIJ(i, j, v);
             }
         }
@@ -636,7 +651,9 @@ inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
         }
         _createTriplet();
         for (size_t k = 0; k < m_triplet->nnz; k++) {
-            _addIJ(((int*) m_triplet->i)[k], ((int*) m_triplet->j)[k], ((double*) m_triplet->x)[k]);
+            _addIJ( (static_cast<int*>( m_triplet->i ))[k], 
+                    (static_cast<int*>( m_triplet->j))[k], 
+                    (static_cast<double*> (m_triplet->x))[k]);
         }
 
     }
@@ -945,13 +962,13 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
 
             if (!right.m_transpose) {
                 for (size_t k = 0; k < right.length(); k++) {
-                    ((double*) right.m_dense->x)[k] = right.m_data[k];
+                    (static_cast<double*>( right.m_dense->x ))[k] = right.m_data[k];
                 }
             } else {
                 /* Store RHS as transpose into right.m_dense */
                 for (size_t i = 0; i < right.getNrows(); i++) { /* SPARSE x DENSE' */
                     for (size_t j = 0; j < right.getNcols(); j++) {
-                        ((double*) right.m_dense->x)[i + j * right.getNrows()] =
+                        (static_cast<double*>( right.m_dense->x ))[i + j * right.getNrows()] =
                                 right.get(i, j);
                     }
                 }
@@ -987,8 +1004,8 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
     } else if (right.m_type == MATRIX_DIAGONAL) { // SPARSE * DIAGONAL = SPARSE
         Matrix result(*this); // COPY [result := right]
         for (size_t k = 0; k < result.m_triplet->nnz; k++) {
-            int j_ = ((int*) result.m_triplet->j)[k];
-            ((double*) result.m_triplet->x)[k] *= right.get(j_, j_);
+            int j_ = (static_cast<int*>( result.m_triplet->j))[k];
+            (static_cast<double*>(result.m_triplet->x))[k] *= right.get(j_, j_);
         }
         return result;
     } else {
@@ -1081,7 +1098,7 @@ Matrix& operator*=(Matrix& obj, double alpha) {
         obj.m_sparse = NULL;
         obj.m_dense = NULL;
         for (size_t k = 0; k < obj.m_triplet->nnz; k++) {
-            ((double*) obj.m_triplet->x)[k] *= alpha;
+            (static_cast<double*>( obj.m_triplet->x ))[k] *= alpha;
         }
     }
     return obj;
@@ -1149,10 +1166,10 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
     } else if (m_type == Matrix::MATRIX_SPARSE) {
         int * rs = new int[rows];
         int * cs = new int[cols];
-        for (int i = 0; i <= rows; i++) {
+        for (size_t i = 0; i <= rows; i++) {
             rs[i] = row_start + i;
         }
-        for (int j = 0; j <= cols; j++) {
+        for (size_t j = 0; j <= cols; j++) {
             cs[j] = col_start + j;
         }
         this->_createSparse();

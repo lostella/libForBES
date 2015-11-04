@@ -20,8 +20,8 @@
 
 #include "OpDCT3.h"
 
-OpDCT3::OpDCT3(size_t m_dimension) :
-LinearOperator(), m_dimension(m_dimension) {
+OpDCT3::OpDCT3(size_t dimension) :
+LinearOperator(), m_dimension(dimension) {
 }
 
 OpDCT3::OpDCT3() {
@@ -37,10 +37,9 @@ Matrix OpDCT3::call(Matrix& x) {
         throw std::invalid_argument("x-dimension is invalid");
     }
     Matrix Tx(n, 1);
-    double yk;
     double x0_2 = x.get(0, 0) / 2.0;
     for (size_t k = 0; k < n; k++) {
-        yk = x0_2;
+        double yk = x0_2;
         for (size_t i = 1; i < n; i++) {
             yk += (x.get(i, 0) * std::cos(i * M_PI * (k + 0.5) / n));
         }

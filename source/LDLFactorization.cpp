@@ -89,7 +89,7 @@ int* LDLFactorization::getIpiv() const {
 }
 
 int LDLFactorization::factorize() {
-    size_t n = m_matrix.getNrows();
+    const size_t n = m_matrix.getNrows();
     int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     if (m_matrix.getType() == Matrix::MATRIX_DENSE) {
         status = LAPACKE_dsytrf(LAPACK_COL_MAJOR, 'L', n, LDL, n, ipiv);
@@ -98,10 +98,9 @@ int LDLFactorization::factorize() {
     } else if (m_matrix.getType() == Matrix::MATRIX_SPARSE) {
         // Factorize sparse matrix
         m_matrix._createSparse();
-        int n = m_matrix.getNrows();
-        int Parent[n];
-        int Lnz[n];
-        int Flag[n];
+        int * Parent = new int[n];
+        int * Lnz = new int[n];
+        int * Flag = new int[n];
         m_sparse_ldl_factor->Lp = new int[n + 1];
         ldl_symbolic(n,
                 static_cast<int*>(m_matrix.m_sparse->p),
@@ -109,15 +108,16 @@ int LDLFactorization::factorize() {
                 m_sparse_ldl_factor->Lp,
                 Parent,
                 Lnz,
-                Flag, NULL, NULL);
+                Flag, 
+                NULL, NULL);
         int lnz = m_sparse_ldl_factor->Lp[n];
         int d;
         m_sparse_ldl_factor->Li = new int[lnz];
         m_sparse_ldl_factor->Lx = new double[lnz];
         m_sparse_ldl_factor->D = new double[n];
 
-        double Y[n];
-        int Pattern[n];
+        double *Y = new double[n];
+        int *Pattern = new int[n];
 
         d = ldl_numeric(n,
                 static_cast<int*>(m_matrix.m_sparse->p),
@@ -129,7 +129,17 @@ int LDLFactorization::factorize() {
                 m_sparse_ldl_factor->Li,
                 m_sparse_ldl_factor->Lx,
                 m_sparse_ldl_factor->D,
-                Y, Pattern, Flag, NULL, NULL);
+                Y, 
+                Pattern, 
+                Flag, 
+                NULL, NULL);
+        
+        delete[] Parent;
+        delete[] Pattern;
+        delete[] Y;
+        delete[] Flag;
+        delete[] Lnz;
+        
         return d == n ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
 
     }    

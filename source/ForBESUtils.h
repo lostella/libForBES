@@ -46,7 +46,7 @@ private:
     
     ForBESUtils();
     virtual ~ForBESUtils();
-
+    
 };
 
 #endif	/* FORBESUTILS_H */

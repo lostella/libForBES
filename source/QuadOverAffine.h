@@ -93,6 +93,8 @@
  */
 class QuadOverAffine : public Function {
 public:
+    
+    using Function::callConj;
 
     /**
      * Define a new quadratic-over-affine function.
@@ -115,14 +117,14 @@ private:
 
     QuadOverAffine();
 
-    Matrix *Q; /**< Matrix Q (Hessian) */
-    Matrix *q; /**< Vector q (Linear term) */
-    Matrix *A; /**< Matrix A */
-    Matrix *b; /**< Matrix b */
+    Matrix *m_Q; /**< Matrix Q (Hessian) */
+    Matrix *m_q; /**< Vector q (Linear term) */
+    Matrix *m_A; /**< Matrix A */
+    Matrix *m_b; /**< Matrix b */
 
-    Matrix *F; /**< Matrix <code>F = [Q A'; A 0]</code> */
-    Matrix *sigma;
-    FactoredSolver * Fsolver; /**< Factorizer for matrix F */
+    Matrix *m_F; /**< Matrix <code>F = [Q A'; A 0]</code> */
+    Matrix *m_sigma;
+    FactoredSolver * m_Fsolver; /**< Factorizer for matrix F */
 };
 
 #endif	/* QUADOVERAFFINE_H */

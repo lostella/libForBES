@@ -35,6 +35,9 @@
 class Norm2 : public Norm {
 public:
 
+    using Function::call;
+    using Norm::callConj;
+    
     Norm2();
     
     explicit Norm2(double mu);

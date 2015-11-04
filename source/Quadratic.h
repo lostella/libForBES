@@ -140,7 +140,7 @@ public:
 
     virtual int callConj(const Matrix& x, double& f_star);
 
-    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
+    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);    
 
 
 private:

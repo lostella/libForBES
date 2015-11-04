@@ -23,7 +23,7 @@
 #include "MatrixFactory.h"
 #include "Matrix.h"
 
-typedef std::pair<int, int> nice_pair;
+typedef std::pair<size_t, size_t> nice_pair;
 
 Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
     Matrix mat(n, n, Matrix::MATRIX_DIAGONAL);
@@ -39,8 +39,8 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
     std::set<nice_pair> s;
     nice_pair p;
     while (true) { // construct pairs
-        p.first = (std::rand() % (int) (nrows));
-        p.second = (std::rand() % (int) (ncols));
+        p.first = (std::rand() %  nrows);
+        p.second = (std::rand() %  ncols);
         s.insert(p);
         if (s.size() == nnz) {
             break;

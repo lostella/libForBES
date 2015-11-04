@@ -21,14 +21,14 @@
 #include "LogLogisticLoss.h"
 
 LogLogisticLoss::LogLogisticLoss() {
-    mu = 1.0;
+    m_mu = 1.0;
 }
 
 LogLogisticLoss::~LogLogisticLoss() {
 }
 
 LogLogisticLoss::LogLogisticLoss(double mu) :
-Function(), mu(mu) {
+Function(), m_mu(mu) {
 }
 
 int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
@@ -38,22 +38,20 @@ int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
     }
     //LCOV_EXCL_STOP
     f = 0.0;
-    double si = 0.0;
-    double xi;
     int status = ForBESUtils::STATUS_OK;
-    for (size_t i = 0; i < x.getNrows(); i++) {
-        xi = x.get(i,0);
+    for (size_t i = 0; i < x.getNrows(); i++) {        
+        double xi = x.get(i,0);
         if (xi < 33) {                      /* because for values higher than 33, 
                                              * s1 is practically equal to 1. 
                                              * This saves the computational burden for
                                              * high values of x_i */
-            si = std::exp(xi);              /* si = e^xi              */
+            double si = std::exp(xi);       /* si = e^xi              */
             si = si / (1 + si);             /* si = e^xi / (1+e^xi)   */
             f -= std::log(si);              /* f -= ln(si)            */
-            grad.set(i, 0, mu * (si - 1));  /* prox_i = mu*(si-1)     */
+            grad.set(i, 0, m_mu * (si - 1));  /* prox_i = mu*(si-1)     */
         }
     }
-    f *= mu;
+    f *= m_mu;
     return status;
 }
 
@@ -64,13 +62,12 @@ int LogLogisticLoss::call(Matrix& x, double& f) {
     }
     //LCOV_EXCL_STOP
     f = 0.0;
-    double si = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        si = std::exp(x.get(i, 0));
-        si = si / (1 + si);
+        double si = std::exp(x.get(i, 0));
+        si /= (1.0 + si);
         f -= std::log(si);
     }
-    f *= mu;
+    f *= m_mu;
     return ForBESUtils::STATUS_OK;
 }
 

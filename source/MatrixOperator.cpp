@@ -21,7 +21,7 @@
 #include "MatrixOperator.h"
 
 Matrix& MatrixOperator::GetMatrix() const {
-    return A;
+    return m_A;
 }
 
 bool MatrixOperator::isSelfAdjoint() {
@@ -29,12 +29,12 @@ bool MatrixOperator::isSelfAdjoint() {
 }
 
 void MatrixOperator::SetMatrix(Matrix& A) {
-    this->A = A;
+    this->m_A = A;
     m_isSelfAdjoint = A.isSymmetric();
 }
 
 MatrixOperator::MatrixOperator(Matrix& A) :
-A(A) {
+m_A(A) {
     if (A.isSymmetric()) {
         this->m_isSelfAdjoint = true;
     }
@@ -45,7 +45,7 @@ MatrixOperator::~MatrixOperator() {
 
 Matrix MatrixOperator::call(Matrix& x) {
     Matrix y;
-    y = A*x;
+    y = m_A*x;
     return y;
 }
 
@@ -54,18 +54,18 @@ Matrix MatrixOperator::callAdjoint(Matrix& x) {
         return call(x);
     }
     Matrix y;
-    A.transpose();
-    y = A*x;
-    A.transpose();
+    m_A.transpose();
+    y = m_A*x;
+    m_A.transpose();
     return y;
 }
 
 size_t MatrixOperator::dimensionIn() {
-    return A.getNcols();
+    return m_A.getNcols();
 }
 
 size_t MatrixOperator::dimensionOut() {
-    return A.getNrows();
+    return m_A.getNrows();
 }
 
 

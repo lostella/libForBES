@@ -42,10 +42,10 @@ public:
 
     virtual ~OpLinearCombination();
 private:
-    LinearOperator& A;
-    LinearOperator& B;
-    double a;
-    double b;
+    LinearOperator& m_A;
+    LinearOperator& m_B;
+    double m_a;
+    double m_b;
 };
 
 #endif	/* OPLINEARCOMBINATION_H */

@@ -54,7 +54,7 @@ public:
     virtual ~MatrixOperator();
 
 private:
-    Matrix &A;
+    Matrix & m_A;
     bool m_isSelfAdjoint;
 };
 

@@ -83,7 +83,7 @@ public:
 
 
 private:
-    double mu;
+    double m_mu;
 
 };
 

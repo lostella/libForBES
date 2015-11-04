@@ -60,6 +60,9 @@ class Norm1 : public Norm {
     
 public:
     
+    using Function::call;
+    using Norm::callConj;
+    
     /**
      * Construct a new instance of Norm1 with \f$\mu=1\f$.
      */

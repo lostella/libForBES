@@ -68,7 +68,10 @@ void MatrixWriter::printJSON(FILE* fp) {
         }
     } else if (m_matrix.getType() == Matrix::MATRIX_SPARSE) {
         for (size_t i = 0; i < m_matrix.m_triplet->nnz; i++) {
-            fprintf(fp, "[%d, %d, %g]", ((int*) m_matrix.m_triplet->i)[i], ((int*) m_matrix.m_triplet->j)[i], ((double*) m_matrix.m_triplet->x)[i]);
+            fprintf(fp, "[%d, %d, %g]",
+                    (static_cast<int*> (m_matrix.m_triplet->i))[i],
+                    (static_cast<int*> (m_matrix.m_triplet->j))[i],
+                    (static_cast<double*> (m_matrix.m_triplet->x))[i]);
             if (i != m_matrix.m_triplet->nnz - 1) {
                 fprintf(fp, ", ");
             }
@@ -78,7 +81,7 @@ void MatrixWriter::printJSON(FILE* fp) {
 }
 
 void MatrixWriter::printTXT(FILE* fp) {
-    fprintf(fp, "%d ", (int) (m_matrix.getType()));
+    fprintf(fp, "%d ", static_cast<int> (m_matrix.getType()));
     fprintf(fp, "%zu ", m_matrix.getNrows());
     fprintf(fp, "%zu\n", m_matrix.getNcols());
 
@@ -98,7 +101,7 @@ void MatrixWriter::write(FILE* fp) {
 
     if (m_format == JSON) {
         printJSON(fp);
-    } else if (m_format = PLAIN_TXT) {
+    } else if (m_format == PLAIN_TXT) {
         printTXT(fp);
     }
 

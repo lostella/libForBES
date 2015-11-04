@@ -20,6 +20,8 @@
 
 #include "Norm2.h"
 
+double vecNorm2(const Matrix& x);
+
 Norm2::Norm2() : Norm() {
     m_mu = 1.0;
 }

@@ -21,13 +21,21 @@
 #include "FunctionOntologicalClass.h"
 #include "FunctionOntologyRegistry.h"
 
-FunctionOntologicalClass::FunctionOntologicalClass(bool m_defines_conjugate, bool m_defines_conjugate_grad, bool m_defines_f, bool m_defines_grad, bool m_defines_prox, string m_name, const FunctionOntologicalClass& super) :
-m_defines_conjugate(m_defines_conjugate),
-m_defines_conjugate_grad(m_defines_conjugate_grad),
-m_defines_f(m_defines_f),
-m_defines_grad(m_defines_grad),
-m_defines_prox(m_defines_prox),
-m_name(m_name) {
+FunctionOntologicalClass::FunctionOntologicalClass(
+        bool defines_conjugate, 
+        bool defines_conjugate_grad, 
+        bool defines_f, 
+        bool defines_grad, 
+        bool defines_prox, 
+        string name, 
+        const FunctionOntologicalClass& super) :
+m_name(name),
+m_defines_conjugate(defines_conjugate),
+m_defines_conjugate_grad(defines_conjugate_grad),
+m_defines_f(defines_f),
+m_defines_grad(defines_grad),
+m_defines_prox(defines_prox)
+ {
     superClasses.push_back(super);
 }
 
@@ -65,50 +73,50 @@ std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) 
 //LCOV_EXCL_STOP
 
 bool FunctionOntologicalClass::defines_conjugate() const {
-    return m_defines_conjugate;
+    return this -> m_defines_conjugate;
 }
 
 bool FunctionOntologicalClass::defines_conjugate_grad() const {
-    return m_defines_conjugate_grad;
+    return this -> m_defines_conjugate_grad;
 }
 
 bool FunctionOntologicalClass::defines_f() const {
-    return m_defines_f;
+    return this -> m_defines_f;
 }
 
 bool FunctionOntologicalClass::defines_grad() const {
-    return m_defines_grad;
+    return this -> m_defines_grad;
 }
 
 bool FunctionOntologicalClass::defines_prox() const {
-    return m_defines_prox;
+    return this -> m_defines_prox;
 }
 
 list<FunctionOntologicalClass> FunctionOntologicalClass::getSuperclasses() const {
-    return superClasses;
+    return this -> superClasses;
 }
 
 void FunctionOntologicalClass::set_defines_conjugate(bool defines_conjugate) {
-    m_defines_conjugate = defines_conjugate;
+    this -> m_defines_conjugate = defines_conjugate;
 }
 
 void FunctionOntologicalClass::set_defines_f(bool defines_f) {
-    m_defines_f = defines_f;
+    this -> m_defines_f = defines_f;
 }
 
 void FunctionOntologicalClass::set_defines_conjugate_grad(bool defines_conjugate_grad) {
-    m_defines_conjugate_grad = defines_conjugate_grad;
+    this -> m_defines_conjugate_grad = defines_conjugate_grad;
 }
 
 void FunctionOntologicalClass::set_defines_prox(bool defines_prox) {
-    m_defines_prox = defines_prox;
+    this -> m_defines_prox = defines_prox;
 }
 
 void FunctionOntologicalClass::set_defines_grad(bool defines_grad) {
-    m_defines_grad = defines_grad;
+    this -> m_defines_grad = defines_grad;
 }
 
 string FunctionOntologicalClass::getName() const {
-    return m_name;
+    return this -> m_name;
 }
 

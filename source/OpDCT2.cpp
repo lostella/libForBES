@@ -34,9 +34,8 @@ OpDCT2::~OpDCT2() {
 Matrix OpDCT2::call(Matrix& x) {
     size_t n = x.length();
     Matrix Y(n, 1);
-    double yk;
     for (size_t k = 0; k < n; k++) {
-        yk = 0.0;
+        double yk = 0.0;
         for (size_t i = 0; i < n; i++) {
             yk += (x.get(i, 0) * std::cos(k * M_PI * (i + 0.5) / n));
         }
@@ -48,9 +47,8 @@ Matrix OpDCT2::call(Matrix& x) {
 Matrix OpDCT2::callAdjoint(Matrix& x) {
     size_t n = x.length();
     Matrix Yadj(n, 1);
-    double yk;
     for (size_t k = 0; k < n; k++) {
-        yk = 0.0;
+        double yk = 0.0;
         for (size_t i = 0; i < n; i++) {
             yk += (x.get(i, 0) * std::cos(i * M_PI * (k + 0.5) / n));
         }

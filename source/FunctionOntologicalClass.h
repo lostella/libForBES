@@ -112,7 +112,7 @@ private:
 
     friend class FunctionOntologyRegistry;
 
-    string m_name;
+    string m_name;                  /**< Identifier of the ontological class (as string)                                */
     bool m_defines_f;               /**< Whether this function type defines f(x).                                       */
     bool m_defines_grad;            /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
     bool m_defines_conjugate;       /**< Whether this function type defines a conjugate f*(x)                           */

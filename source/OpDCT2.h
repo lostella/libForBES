@@ -51,7 +51,7 @@ class OpDCT2 : public LinearOperator {
 public:
     OpDCT2();
 
-    OpDCT2(size_t n);
+    explicit OpDCT2(size_t n);
 
     virtual ~OpDCT2();
 

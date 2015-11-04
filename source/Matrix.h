@@ -234,7 +234,7 @@ public:
      *
      * @return Pointer to the matrix data
      */
-    double * const getData() const;
+    double * getData();
 
     /**
      * Returns the type of this matrix as <code>MatrixType</code>

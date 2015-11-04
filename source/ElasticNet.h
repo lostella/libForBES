@@ -91,6 +91,8 @@
 class ElasticNet : public Function{
 public:
     
+    using Function::call;
+    
     /**
      * Create a new instance of ElasticNet with given parameters lambda and mu.
      * 
@@ -114,8 +116,8 @@ public:
 
 
 private:
-    double mu;
-    double lambda;
+    double m_mu;
+    double m_lambda;
 
 };
 

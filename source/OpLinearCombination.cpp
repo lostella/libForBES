@@ -21,7 +21,7 @@
 #include "OpLinearCombination.h"
 
 OpLinearCombination::OpLinearCombination(LinearOperator& A, LinearOperator& B, double a, double b) :
-LinearOperator(), A(A), B(B), a(a), b(b) {
+LinearOperator(), m_A(A), m_B(B), m_a(a), m_b(b) {
     if (A.dimensionIn() != B.dimensionIn()) {
         throw std::invalid_argument("A and B have incompatible input dimensions");
     }

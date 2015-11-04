@@ -52,7 +52,7 @@ class OpDCT3 : public LinearOperator {
 public:
     OpDCT3();
     
-    OpDCT3(size_t m_dimension);
+    explicit OpDCT3(size_t m_dimension);
     
     virtual ~OpDCT3();
 

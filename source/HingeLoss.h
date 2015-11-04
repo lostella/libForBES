@@ -59,6 +59,8 @@ class HingeLoss : public Function {
     
 public:
 
+    using Function::call;
+    
     /**
      * Create a new instance of HingleLoss providing the parameters b and mu.
      * @param b Vector b

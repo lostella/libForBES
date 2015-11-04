@@ -20,6 +20,8 @@
 
 #include "IndBall2.h"
 
+void check_rho(double rho);
+
 void check_rho(double rho) {
     if (rho < 0) {
         throw std::invalid_argument("rho must be positive");

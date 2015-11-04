@@ -20,7 +20,7 @@
 
 #include "ElasticNet.h"
 
-ElasticNet::ElasticNet(double lambda, double mu) : Function(), lambda(lambda), mu(mu) {
+ElasticNet::ElasticNet(double lambda, double mu) : Function(), m_lambda(lambda), m_mu(mu) {
 }
 
 ElasticNet::~ElasticNet() {
@@ -36,7 +36,7 @@ int ElasticNet::call(Matrix& x, double& f) {
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
         xi = x.get(i, 0);
-        f += mu * std::abs(xi) + (lambda / 2.0) * std::pow(xi, 2);
+        f += m_mu * std::abs(xi) + (m_lambda / 2.0) * std::pow(xi, 2);
     }
     return ForBESUtils::STATUS_OK;
 }
@@ -47,8 +47,8 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox, double& g_
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    double gm = gamma * mu;
-    double alpha = 1 + lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
+    double gm = gamma * m_mu;
+    double alpha = 1 + m_lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
     g_at_prox = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
@@ -56,7 +56,7 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox, double& g_
         xi = x.get(i, 0);
         yi = max(0.0, abs(xi) - gm) / alpha;
         prox.set(i, 0, (xi < 0 ? -1 : 1) * yi);
-        g_at_prox += mu * yi + (lambda / 2.0) * std::pow(yi, 2);
+        g_at_prox += m_mu * yi + (m_lambda / 2.0) * std::pow(yi, 2);
     }
     return ForBESUtils::STATUS_OK;
 }
@@ -67,8 +67,8 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox) {
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    double gm = gamma * mu;
-    double alpha = 1 + lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
+    double gm = gamma * m_mu;
+    double alpha = 1 + m_lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
         xi = x.get(i, 0);

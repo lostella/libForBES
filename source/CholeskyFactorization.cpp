@@ -21,12 +21,12 @@
 #include "CholeskyFactorization.h"
 #include "ForBESUtils.h"
 
-CholeskyFactorization::CholeskyFactorization(Matrix& m_matrix) :
-FactoredSolver(m_matrix) {
+CholeskyFactorization::CholeskyFactorization(Matrix& matrix) :
+FactoredSolver(matrix) {
     m_L = NULL;
     m_factor = NULL;   
-    if (m_matrix.getType() != Matrix::MATRIX_SPARSE) {
-        this->m_L = new double[m_matrix.length()]();
+    if (matrix.getType() != Matrix::MATRIX_SPARSE) {
+        this->m_L = new double[matrix.length()]();
     }
 }
 
@@ -76,12 +76,12 @@ int CholeskyFactorization::solve(const Matrix& rhs, Matrix& solution) const {
         cholmod_dense *b;
         b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
         for (size_t k = 0; k < rhs.getNrows(); k++) {
-            ((double*) b->x)[k] = rhs.get(k, 0);
+            (static_cast<double*> (b->x))[k] = rhs.get(k, 0);
         }
         x = cholmod_solve(CHOLMOD_A, m_factor, b, Matrix::cholmod_handle());
         solution = Matrix(rhs.m_nrows, rhs.m_ncols);
         for (size_t k = 0; k < x->nzmax; k++) {
-            solution.m_data[k] = ((double*) x->x)[k];
+            solution.m_data[k] = (static_cast<double*>( x->x ))[k];
         }
         cholmod_free_dense(&x, Matrix::cholmod_handle());
         return 0;

@@ -34,6 +34,8 @@
  */
 class Norm : public Function {
 public:
+    
+    using Function::callConj;
 
     /**
      * Define the dual norm which is defined as
