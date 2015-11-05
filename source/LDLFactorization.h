@@ -50,17 +50,17 @@ public:
 private:
 
 
-    double* LDL; /* LDL factorization computed by lapack */
-    int* ipiv; /* Pivots for the LDL factorization computed by lapack */
+    double* LDL; /**< LDL factorization computed by lapack */
+    int* ipiv;   /**< Pivots for the LDL factorization computed by lapack */
 
     /**
      * A sparse LDL factorization
      */
     typedef struct sparse_ldl_factor_struct {
-        double * Lx; /**< Values of L */
-        int * Li; /**< i-pointers of L */
-        int * Lp;/**< p-pointers of L */
-        double * D; /**< Diagonal part of the LDL factorization*/
+        double * Lx;    /**< Values of L */
+        int * Li;       /**< i-pointers of L */
+        int * Lp;       /**< p-pointers of L */
+        double * D;     /**< Diagonal part of the LDL factorization*/
     } sparse_ldl_factor;
 
     /**

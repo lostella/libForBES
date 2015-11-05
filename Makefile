@@ -1,5 +1,28 @@
 # LIBFORBES MAKEFILE
 	
+# Licence note:
+#
+# ForBES is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#   
+# ForBES is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+
+
+#                         #
+# Do not modify this file #
+#                         #
+
+
+include Configuration
+
 	
 # Enable parallel make on N-1 processors	
 NPROCS := 1
@@ -11,8 +34,8 @@ ifeq ($(OS),Darwin) # Assume Mac OS X
   NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
 endif
 NPROCS:=$$(($(NPROCS)-1))
-MAKEFLAGS += -j $(NPROCS)
-MAKEFLAGS += --no-print-directory
+#MAKEFLAGS += -j $(NPROCS)
+#MAKEFLAGS += --no-print-directory
 
 # C++ compiler
 CXX = g++
@@ -29,16 +52,36 @@ CFLAGS_ADDITIONAL = -O0
 #CFLAGS_ADDITIONAL += -fprofile-arcs
 #CFLAGS_ADDITIONAL += -ftest-coverage
 
+CFLAGS_WARNINGS = -pedantic \
+		-Wall \
+		-Wextra \
+		-Wcast-align \
+		-Wcast-qual \
+		-Wdisabled-optimization \
+		-Wformat=2 \
+		-Winit-self \
+		-Wlogical-op \
+		-Wmissing-declarations \
+		-Wmissing-include-dirs \
+		-Wnoexcept \
+		-Wold-style-cast \
+		-Woverloaded-virtual \
+		-Wredundant-decls \
+		-Wshadow \
+		-Wsign-promo \
+		-Wstrict-null-sentinel \
+		-Wstrict-overflow=5 \
+		-Wswitch-default \
+		-Wundef \
+		-Wno-unused \
+		-Wno-sign-compare
+	
+CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 
 # Additional link flags
 # To create a test coverage report add: -fprofile-arcs
 LFLAGS_ADDITIONAL = -fprofile-arcs
 
-include Configuration
-
-#                         #
-# Do not modify this file #
-#                         #
 OBJ_DIR = build/Debug
 BIN_DIR = dist/Debug
 
@@ -89,6 +132,7 @@ LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
 	 -L$(LEXTRA)
 
 SOURCES = \
+        S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
         FactoredSolver.cpp \
 	ForBESUtils.cpp \
@@ -125,7 +169,9 @@ SOURCES = \
 	Norm.cpp \
 	Norm1.cpp \
 	Norm2.cpp \
-	SeparableSum.cpp 
+	SeparableSum.cpp \
+	IndBall2.cpp \
+	QuadraticLossOverAffine.cpp
  
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
@@ -157,7 +203,9 @@ TESTS = \
 	TestNorm1.test \
 	TestNorm2.test \
 	TestFunctionOntologicalClass.test \
-	TestFunctionOntologyRegistry.test
+	TestFunctionOntologyRegistry.test \
+	TestIndBall2.test \
+	TestSeparableSum.test	
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -195,6 +243,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestHuber
 	${BIN_TEST_DIR}/TestNorm1
 	${BIN_TEST_DIR}/TestNorm2
+	${BIN_TEST_DIR}/TestIndBall2
+	${BIN_TEST_DIR}/TestSeparableSum
 	${BIN_TEST_DIR}/TestFunctionOntologicalClass
 	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
 
@@ -213,6 +263,10 @@ $(OBJ_DIR)/%.o: source/%.cpp
 	@echo
 	@echo Compiling $*
 	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
+	@echo
+	@echo
+	@echo
+
 
 dirs: $(OBJ_DIR) $(OBJ_TEST_DIR) $(BIN_DIR) $(BIN_TEST_DIR)
 

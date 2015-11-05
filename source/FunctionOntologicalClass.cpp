@@ -22,19 +22,19 @@
 #include "FunctionOntologyRegistry.h"
 
 FunctionOntologicalClass::FunctionOntologicalClass(
-        bool defines_conjugate, 
-        bool defines_conjugate_grad, 
-        bool defines_f, 
-        bool defines_grad, 
-        bool defines_prox, 
+        bool does_define_conjugate, 
+        bool does_define_conjugate_grad, 
+        bool does_define_f, 
+        bool does_define_grad, 
+        bool does_define_prox, 
         string name, 
         const FunctionOntologicalClass& super) :
 m_name(name),
-m_defines_conjugate(defines_conjugate),
-m_defines_conjugate_grad(defines_conjugate_grad),
-m_defines_f(defines_f),
-m_defines_grad(defines_grad),
-m_defines_prox(defines_prox)
+m_defines_f(does_define_f),
+m_defines_grad(does_define_grad),
+m_defines_conjugate(does_define_conjugate),
+m_defines_conjugate_grad(does_define_conjugate_grad),
+m_defines_prox(does_define_prox)
  {
     superClasses.push_back(super);
 }
@@ -96,24 +96,24 @@ list<FunctionOntologicalClass> FunctionOntologicalClass::getSuperclasses() const
     return this -> superClasses;
 }
 
-void FunctionOntologicalClass::set_defines_conjugate(bool defines_conjugate) {
-    this -> m_defines_conjugate = defines_conjugate;
+void FunctionOntologicalClass::set_defines_conjugate(bool define_conjugate) {
+    this -> m_defines_conjugate = define_conjugate;
 }
 
-void FunctionOntologicalClass::set_defines_f(bool defines_f) {
-    this -> m_defines_f = defines_f;
+void FunctionOntologicalClass::set_defines_f(bool define_f) {
+    this -> m_defines_f = define_f;
 }
 
-void FunctionOntologicalClass::set_defines_conjugate_grad(bool defines_conjugate_grad) {
-    this -> m_defines_conjugate_grad = defines_conjugate_grad;
+void FunctionOntologicalClass::set_defines_conjugate_grad(bool define_conjugate_grad) {
+    this -> m_defines_conjugate_grad = define_conjugate_grad;
 }
 
-void FunctionOntologicalClass::set_defines_prox(bool defines_prox) {
-    this -> m_defines_prox = defines_prox;
+void FunctionOntologicalClass::set_defines_prox(bool define_prox) {
+    this -> m_defines_prox = define_prox;
 }
 
-void FunctionOntologicalClass::set_defines_grad(bool defines_grad) {
-    this -> m_defines_grad = defines_grad;
+void FunctionOntologicalClass::set_defines_grad(bool define_grad) {
+    this -> m_defines_grad = define_grad;
 }
 
 string FunctionOntologicalClass::getName() const {

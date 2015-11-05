@@ -53,6 +53,8 @@
  */
 class IndBox : public Function {
 public:
+    
+    using Function::call;
 
     IndBox(double& uniform_lb, double& uniform_ub);
 

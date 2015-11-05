@@ -73,7 +73,7 @@ protected:
     virtual int computeGradient(Matrix& x, Matrix& grad);
 
 private:
-    LinearOperator& T;
+    LinearOperator& m_T;
 
 };
 

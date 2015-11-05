@@ -21,7 +21,7 @@
 #include "IndSOC.h"
 
 IndSOC::IndSOC(int n) : Function() {
-    this->n = n;
+    this->m_n = n;
 }
 
 IndSOC::~IndSOC() {
@@ -73,15 +73,15 @@ int IndSOC::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_p
     if (t > norm) {
         prox = Matrix(x); // prox = x
     } else if (t < -norm) { // prox = zero vector
-        for (size_t i = 0; i < n; i++) {
-            prox.set(i, 0, 0.0);
+        for (size_t j = 0; j < n; j++) {
+            prox.set(j, 0, 0.0);
         }
     } else {
         /* perform actual projection here */
         scal = (1 + t / norm) / 2;
-        for (i = 0; i < n - 1; i++) {
-            xi = x.get(i, 0);
-            prox.set(i, 0, scal * xi);
+        for (size_t j = 0; j < n - 1; j++) {
+            xi = x.get(j, 0);
+            prox.set(j, 0, scal * xi);
         }
         prox.set(n - 1, 0, (norm + t) / 2.0);
     }

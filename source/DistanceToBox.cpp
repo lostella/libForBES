@@ -20,6 +20,8 @@
 
 #include "DistanceToBox.h"
 
+void checkBounds(const Matrix* lb, const Matrix* ub);
+
 void checkBounds(const Matrix* lb, const Matrix* ub) {
     //LCOV_EXCL_START
     if (lb == NULL || ub == NULL) {
@@ -48,7 +50,7 @@ void checkBounds(const Matrix* lb, const Matrix* ub) {
  */
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, Matrix* weights) :
-Function(), m_lb(lb), m_ub(ub), m_weights(weights) {
+Function(), m_weights(weights), m_lb(lb), m_ub(ub) {
     //LCOV_EXCL_START
     if (!weights->isColumnVector() || weights->isEmpty() || weights->getNrows() != lb->getNrows()) {
         throw std::invalid_argument("Invalid size of weights");
@@ -63,7 +65,7 @@ Function(), m_lb(lb), m_ub(ub), m_weights(weights) {
 }
 
 DistanceToBox::DistanceToBox(Matrix* lb, Matrix* ub, double weight) :
-Function(), m_lb(lb), m_ub(ub), m_weight(weight) {
+Function(), m_weight(weight), m_lb(lb), m_ub(ub) {
     m_weights = NULL;
     checkBounds(lb, ub);
     m_is_weights_equal = true;
@@ -73,7 +75,7 @@ Function(), m_lb(lb), m_ub(ub), m_weight(weight) {
 }
 
 DistanceToBox::DistanceToBox(double uniform_lb, double uniform_ub, double weight) :
-Function(), m_uniform_lb(uniform_lb), m_uniform_ub(uniform_ub), m_weight(weight) {
+Function(), m_weight(weight), m_uniform_lb(uniform_lb), m_uniform_ub(uniform_ub) {
     m_is_weights_equal = true;
     m_is_bounds_uniform = true;
     m_lb = NULL;

@@ -22,7 +22,7 @@
 #include "ForBESUtils.h"
 
 QuadraticOperator::QuadraticOperator(LinearOperator& T) :
-Function(), T(T) {
+Function(), m_T(T) {
     if (T.dimensionIn() != T.dimensionOut()) {
         throw std::invalid_argument("T has incompatible dimensions");
     }
@@ -44,7 +44,7 @@ int QuadraticOperator::call(Matrix& x, double& f) {
 }
 
 int QuadraticOperator::computeGradient(Matrix& x, Matrix& grad) {
-    grad = T.call(x); /* Tx = T[x]; assertion: Tx is a vector of the same length as x */
+    grad = m_T.call(x); /* Tx = T[x]; assertion: Tx is a vector of the same length as x */
     
     if (grad.isEmpty()) {
         throw std::logic_error("Linear operator returned an empty vector");

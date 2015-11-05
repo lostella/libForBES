@@ -47,6 +47,8 @@
  */
 class IndSOC : public Function {
 public:
+    
+    using Function::call;
 
     explicit IndSOC(int n);
 
@@ -65,7 +67,7 @@ protected:
 
 private:
 
-    int n;
+    int m_n;
 
 };
 

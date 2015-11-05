@@ -42,12 +42,12 @@ public:
     explicit FunctionOntologicalClass(string name);
 
     FunctionOntologicalClass(
-            bool m_defines_conjugate,
-            bool m_defines_conjugate_grad,
-            bool m_defines_f,
-            bool m_defines_grad,
-            bool m_defines_prox,
-            string m_name,
+            bool does_define_conjugate,
+            bool does_define_conjugate_grad,
+            bool does_define_f,
+            bool does_define_grad,
+            bool does_define_prox,
+            string name,
             const FunctionOntologicalClass& super);
 
     /**

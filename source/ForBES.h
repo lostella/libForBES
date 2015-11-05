@@ -39,6 +39,7 @@
 #include "FactoredSolver.h"         /* Generic factored solver (API) */
 #include "LDLFactorization.h"       /* LDL factorization */
 #include "CholeskyFactorization.h"  /* Cholesky factorization */
+#include "S_LDLFactorization.h"     /* LDL' factorization of AA'+bI */
 
 /* 
  * LINEAR OPERATORS
@@ -60,24 +61,25 @@
 /*
  * FUNCTIONS
  */
-#include "Function.h"               /* The Function API */
-#include "Quadratic.h"              /* Quadratic functions */
-#include "QuadOverAffine.h"         /* Quadratic over affine */
-#include "QuadraticOperator.h"      /* Quadratic induced by a linear operator */
-#include "DistanceToBox.h"          /* Distance-to-box */
-#include "IndBox.h"                 /* Indicator of a box */ 
-#include "IndPos.h"                 /* Indicator of a halfspace */
-#include "IndSOC.h"                 /* Indicator of a second-order cone */
-#include "IndBall2.h"               /* Indicator of a Euclidean ball */
-#include "ElasticNet.h"             /* Elastic net regularization function */
-#include "QuadraticLoss.h"          /* Quadratic loss function */
-#include "LogLogisticLoss.h"        /* Log-logistic function */
-#include "HingeLoss.h"              /* Hinge loss function */
-#include "HuberLoss.h"              /* Huber loss function */
-#include "Norm.h"                   /* Generic vector norm */
-#include "Norm1.h"                  /* Norm-1 */
-#include "Norm2.h"                  /* Norm-2 */
-#include "SeparableSum.h"           /* Separable sum of proximable functions */
+#include "Function.h"                /* The Function API */
+#include "Quadratic.h"               /* Quadratic functions */
+#include "QuadOverAffine.h"          /* Quadratic over affine */
+#include "QuadraticOperator.h"       /* Quadratic induced by a linear operator */
+#include "DistanceToBox.h"           /* Distance-to-box */
+#include "IndBox.h"                  /* Indicator of a box */ 
+#include "IndPos.h"                  /* Indicator of a halfspace */
+#include "IndSOC.h"                  /* Indicator of a second-order cone */
+#include "IndBall2.h"                /* Indicator of a Euclidean ball */
+#include "ElasticNet.h"              /* Elastic net regularization function */
+#include "QuadraticLoss.h"           /* Quadratic loss function */
+#include "QuadraticLossOverAffine.h" /* Quadratic loss over an affine subspace */
+#include "LogLogisticLoss.h"         /* Log-logistic function */
+#include "HingeLoss.h"               /* Hinge loss function */
+#include "HuberLoss.h"               /* Huber loss function */
+#include "Norm.h"                    /* Generic vector norm */
+#include "Norm1.h"                   /* Norm-1 */
+#include "Norm2.h"                   /* Norm-2 */
+#include "SeparableSum.h"            /* Separable sum of proximable functions */
 
 
 
