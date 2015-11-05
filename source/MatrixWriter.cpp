@@ -20,7 +20,7 @@
 
 #include "MatrixWriter.h"
 
-MatrixWriter::MatrixWriter(Matrix& m_matrix) : m_matrix(m_matrix) {
+MatrixWriter::MatrixWriter(Matrix& matrix) : m_matrix(matrix) {
     m_enforceDenseMode = false;
     m_format = PLAIN_TXT;
 }
@@ -39,12 +39,12 @@ void MatrixWriter::setWriteFormat(WriteFormat format) {
 void MatrixWriter::printJSON(FILE* fp) {
     fprintf(fp, "{\n");
     fprintf(fp, "  \"%s\":\"%s\",\n", MATRIX_TYPE, m_matrix.getTypeString().c_str());
-    fprintf(fp, "  \"%s\":%zu,\n", MATRIX_NROWS, m_matrix.getNrows());
-    fprintf(fp, "  \"%s\":%zu,\n", MATRIX_NCOLS, m_matrix.getNcols());
+    fprintf(fp, "  \"%s\":"FMT_SIZE_T",\n", MATRIX_NROWS, m_matrix.getNrows());
+    fprintf(fp, "  \"%s\":"FMT_SIZE_T",\n", MATRIX_NCOLS, m_matrix.getNcols());
     if (m_matrix.getType() != Matrix::MATRIX_SPARSE) {
-        fprintf(fp, "  \"%s\":%zu,\n", MATRIX_DATALENGTH, m_matrix.length());
+        fprintf(fp, "  \"%s\":"FMT_SIZE_T",\n", MATRIX_DATALENGTH, m_matrix.length());
     } else {
-        fprintf(fp, "  \"%s\":%zu,\n", MATRIX_NZ, m_matrix.m_triplet->nnz);
+        fprintf(fp, "  \"%s\":"FMT_SIZE_T",\n", MATRIX_NZ, m_matrix.m_triplet->nnz);
     }
 
     fprintf(fp, "  \"%s\":%d,\n", MATRIX_ENFORCE_DENSE_MODE, m_enforceDenseMode);
@@ -82,8 +82,8 @@ void MatrixWriter::printJSON(FILE* fp) {
 
 void MatrixWriter::printTXT(FILE* fp) {
     fprintf(fp, "%d ", static_cast<int> (m_matrix.getType()));
-    fprintf(fp, "%zu ", m_matrix.getNrows());
-    fprintf(fp, "%zu\n", m_matrix.getNcols());
+    fprintf(fp, FMT_SIZE_T" ", m_matrix.getNrows());
+    fprintf(fp, FMT_SIZE_T"\n", m_matrix.getNcols());
 
     if (m_matrix.getType() == Matrix::MATRIX_DENSE || m_enforceDenseMode) {
         for (size_t j = 0; j < m_matrix.getNcols(); j++) {

@@ -20,7 +20,7 @@
 
 #include "FactoredSolver.h"
 
-FactoredSolver::FactoredSolver(Matrix& m_matrix) : m_matrix(m_matrix) {
+FactoredSolver::FactoredSolver(Matrix& matrix) : m_matrix(matrix) {
 }
 
 FactoredSolver::~FactoredSolver() {

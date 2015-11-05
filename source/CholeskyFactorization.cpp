@@ -24,7 +24,7 @@
 CholeskyFactorization::CholeskyFactorization(Matrix& matrix) :
 FactoredSolver(matrix) {
     m_L = NULL;
-    m_factor = NULL;   
+    m_factor = NULL;
     if (matrix.getType() != Matrix::MATRIX_SPARSE) {
         this->m_L = new double[matrix.length()]();
     }
@@ -48,9 +48,12 @@ int CholeskyFactorization::factorize() {
         if (m_matrix.m_sparse == NULL) {
             m_matrix._createSparse();
         }
-        m_factor = cholmod_analyze(m_matrix.m_sparse, Matrix::cholmod_handle()); // analyze
-        cholmod_factorize(m_matrix.m_sparse, m_factor, Matrix::cholmod_handle()); // factorize       
-        return (m_factor->minor == m_matrix.m_nrows) ? 0 : 1; /* Success: status = 0, else 1*/
+        /* analyze */
+        m_factor = cholmod_analyze(m_matrix.m_sparse, Matrix::cholmod_handle());
+        /* factorize */
+        cholmod_factorize(m_matrix.m_sparse, m_factor, Matrix::cholmod_handle());
+        /* Success: status = 0, else 1*/
+        return (m_factor->minor == m_matrix.m_nrows) ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
     } else { /* If this is any non-sparse matrix: */
         memcpy(m_L, m_matrix.getData(), m_matrix.length() * sizeof (double)); /* m_L := m_matrix.m_data */
         int info = ForBESUtils::STATUS_OK;
@@ -73,18 +76,36 @@ int CholeskyFactorization::factorize() {
 int CholeskyFactorization::solve(const Matrix& rhs, Matrix& solution) const {
     if (m_matrix.getType() == Matrix::MATRIX_SPARSE) {
         cholmod_dense *x;
-        cholmod_dense *b;
-        b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
-        for (size_t k = 0; k < rhs.getNrows(); k++) {
-            (static_cast<double*> (b->x))[k] = rhs.get(k, 0);
+
+        /* cast the RHS as a cholmod_dense b = rhs */
+        if (rhs.m_type == Matrix::MATRIX_DENSE) {
+            
+            cholmod_dense *b;
+            b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
+            b->x = rhs.m_data;
+
+            /* Solve - rhs is dense*/
+            x = cholmod_solve(CHOLMOD_A, m_factor, b, Matrix::cholmod_handle());
+            solution = Matrix(rhs.m_nrows, rhs.m_ncols);
+            solution.m_delete_data = false;
+            memcpy(solution.m_data, static_cast<double*> (x->x), rhs.m_nrows * rhs.m_ncols * sizeof (double));
+            cholmod_free_dense(&x, Matrix::cholmod_handle());
+            
+        } else if (rhs.m_type == Matrix::MATRIX_SPARSE) {
+            // still untested!
+            cholmod_sparse * rhs_sparse;
+            if (rhs.m_sparse == NULL) {
+                const_cast<Matrix&> (rhs)._createSparse();
+            }
+            rhs_sparse = rhs.m_sparse;
+            cholmod_sparse * result = cholmod_spsolve(CHOLMOD_LDLt, m_factor, rhs_sparse, Matrix::cholmod_handle());
+            solution = Matrix(rhs.m_nrows, rhs.m_ncols, Matrix::MATRIX_SPARSE);
+            solution.m_sparse = result;
+            solution._createTriplet();
+        } else {
+            throw std::logic_error("Not supported");
         }
-        x = cholmod_solve(CHOLMOD_A, m_factor, b, Matrix::cholmod_handle());
-        solution = Matrix(rhs.m_nrows, rhs.m_ncols);
-        for (size_t k = 0; k < x->nzmax; k++) {
-            solution.m_data[k] = (static_cast<double*>( x->x ))[k];
-        }
-        cholmod_free_dense(&x, Matrix::cholmod_handle());
-        return 0;
+        return ForBESUtils::STATUS_OK;
     } else {
         int info = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
         solution = Matrix(rhs);

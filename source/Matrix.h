@@ -327,11 +327,12 @@ public:
 
     
     /**
-     * Converts a vector into a diagonal matrix. This method only applies to 
-     * vectors and will throw a <code>std::invalid_argument</code> exception 
-     * otherwise.
+     * Converts a vector into a diagonal matrix and vice verse. 
+     * This method only applies to vectors and diagonal matrices and will 
+     * throw a <code>std::invalid_argument</code> exception otherwise.
      */
-    void diag();
+    void toggle_diagonal();
+    
 
 
     /* Operators */
@@ -479,6 +480,7 @@ private:
     friend class MatrixFactory;
     friend class CholeskyFactorization;
     friend class LDLFactorization;
+    friend class S_LDLFactorization;
     friend class MatrixWriter;
 
     size_t m_nrows;     /**< Number of rows */
@@ -489,7 +491,8 @@ private:
     /* For dense matrices: */
 
     size_t m_dataLength;    /**< Length of data */
-    double *m_data;         /**< Data */
+    double *m_data;         /**< Data (for non-sparse matrices) */
+    bool m_delete_data;     /**< Whether it is allowed to delete[] m_data */
 
     /* CSparse members */
     cholmod_triplet *m_triplet; /**< Sparse triplets */
@@ -511,7 +514,7 @@ private:
     /**
      * Creates m_triplet from other existing sparse matrix representations.
      */
-    inline void _createTriplet();
+    void _createTriplet();
 
     /**
      * Initialize the current matrix (allocate memory etc) for a given number of

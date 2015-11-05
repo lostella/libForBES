@@ -36,6 +36,8 @@
  * 
  * \brief Use this class to create instances of %Matrix
  * 
+ * \todo Create matrix constructor from double* using a pointer so as not to allocate
+ * any memory inside the Matrix object.
  */
 class MatrixFactory {
 public:    

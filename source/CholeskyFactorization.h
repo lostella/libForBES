@@ -62,6 +62,8 @@ public:
      * @param rhs The right-hand side vector or matrix
      * 
      * @return Returns <code>0</code> if the solution of the system has succeeded.
+     * 
+     * \todo Test solve() when rhs is sparse
      */
     virtual int solve(const Matrix& rhs, Matrix& solution) const;
 

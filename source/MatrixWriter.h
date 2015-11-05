@@ -24,6 +24,9 @@
 #include "Matrix.h"
 #include "string.h"
 
+#define FMT_SIZE_T "%lu"
+
+
 #undef MATRIX_NROWS 
 #undef MATRIX_NCOLS
 #undef MATRIX_TYPE
@@ -39,7 +42,8 @@
 
 class MatrixWriter {
 public:
-    MatrixWriter(Matrix& m_matrix);
+    MatrixWriter(Matrix& matrix);
+    
     virtual ~MatrixWriter();
 
     enum WriteFormat {
