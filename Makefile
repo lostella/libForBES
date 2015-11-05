@@ -76,6 +76,8 @@ CFLAGS_WARNINGS = -pedantic \
 		-Wno-unused \
 		-Wno-sign-compare
 	
+CFLAGS_WARNINGS += -Werror
+	
 CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 
 # Additional link flags
@@ -177,6 +179,7 @@ SOURCES = \
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
 TESTS = \
+	TestSLDL.test \
 	TestCholesky.test \
 	TestIndBox.test \
 	TestIndSOC.test \
@@ -218,12 +221,33 @@ all: $(ARCHIVE)
 build-tests: $(ARCHIVE) $(TEST_BINS)
 
 test: build-tests
+	@echo "\n*** FACTORIZERS ***"
 	${BIN_TEST_DIR}/TestCholesky
+	${BIN_TEST_DIR}/TestLDL
+	${BIN_TEST_DIR}/TestSLDL
+	@echo "\n*** FUNCTIONS ***"
+	${BIN_TEST_DIR}/TestQuadOverAffine
+	${BIN_TEST_DIR}/TestQuadratic
+	${BIN_TEST_DIR}/TestQuadraticOperator
 	${BIN_TEST_DIR}/TestIndBox
 	${BIN_TEST_DIR}/TestIndSOC
-	${BIN_TEST_DIR}/TestLDL
+	${BIN_TEST_DIR}/TestNorm1
+	${BIN_TEST_DIR}/TestNorm2
+	${BIN_TEST_DIR}/TestIndBall2
+	${BIN_TEST_DIR}/TestDistanceToBox
+	${BIN_TEST_DIR}/TestElasticNet
+	${BIN_TEST_DIR}/TestQuadraticLoss
+	${BIN_TEST_DIR}/TestLogLogisticLoss
+	${BIN_TEST_DIR}/TestHingeLoss
+	${BIN_TEST_DIR}/TestHuber
+	${BIN_TEST_DIR}/TestSeparableSum
+	@echo "\n*** UTILITIES ***"
 	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestMatrixFactory
+	${BIN_TEST_DIR}/TestOntRegistry
+	${BIN_TEST_DIR}/TestFunctionOntologicalClass
+	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
+	@echo "\n*** LINEAR OPERATORS ***"
 	${BIN_TEST_DIR}/TestMatrixOperator
 	${BIN_TEST_DIR}/TestOpAdjoint
 	${BIN_TEST_DIR}/TestOpComposition
@@ -231,22 +255,6 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOpDCT3
 	${BIN_TEST_DIR}/TestOpGradient
 	${BIN_TEST_DIR}/TestOpReverseVector
-	${BIN_TEST_DIR}/TestQuadOverAffine
-	${BIN_TEST_DIR}/TestQuadratic
-	${BIN_TEST_DIR}/TestQuadraticOperator
-	${BIN_TEST_DIR}/TestDistanceToBox
-	${BIN_TEST_DIR}/TestOntRegistry
-	${BIN_TEST_DIR}/TestElasticNet
-	${BIN_TEST_DIR}/TestQuadraticLoss
-	${BIN_TEST_DIR}/TestLogLogisticLoss
-	${BIN_TEST_DIR}/TestHingeLoss
-	${BIN_TEST_DIR}/TestHuber
-	${BIN_TEST_DIR}/TestNorm1
-	${BIN_TEST_DIR}/TestNorm2
-	${BIN_TEST_DIR}/TestIndBall2
-	${BIN_TEST_DIR}/TestSeparableSum
-	${BIN_TEST_DIR}/TestFunctionOntologicalClass
-	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
 
 
 
@@ -258,14 +266,13 @@ $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_D
 	@echo
 	@echo Linking $*
 	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
+	@echo "\n\n\n"
 
 $(OBJ_DIR)/%.o: source/%.cpp
-	@echo
+	@echo 
 	@echo Compiling $*
 	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
-	@echo
-	@echo
-	@echo
+	@echo "\n\n\n"
 
 
 dirs: $(OBJ_DIR) $(OBJ_TEST_DIR) $(BIN_DIR) $(BIN_TEST_DIR)
@@ -297,8 +304,11 @@ help:
 	@echo "make all                 - Same as make (tests are not built)"
 	@echo "make build-tests         - Compiles and links the tests"
 	@echo "make test                - Compiles [if necessary] and runs all tests"
+	@echo "make docs                - Used doxygen to build documentation"
 	@echo "make help                - This help message\n"
 
+docs:
+	doxygen forbes.doxygen
 
 .SECONDARY:
 

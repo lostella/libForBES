@@ -8,6 +8,8 @@
 #include "TestOpDCT3.h"
 #include "OpAdjoint.h"
 
+void testOperatorLinearity(LinearOperator*);
+
 CPPUNIT_TEST_SUITE_REGISTRATION(TestOpDCT3);
 
 TestOpDCT3::TestOpDCT3() {
@@ -50,8 +52,8 @@ void TestOpDCT3::testCall() {
 }
 
 void testOperatorLinearity(LinearOperator* op) {
-    const size_t repeat = 300;
-    const double tol = 1e-12;
+    const size_t repeat = 500;
+    const double tol = 1e-10;
 
     Matrix *x = new Matrix();
     Matrix *y = new Matrix();

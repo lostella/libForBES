@@ -63,6 +63,9 @@ public:
      * 
      * @return Returns <code>0</code> if the solution of the system has succeeded.
      * 
+     * \note Method #solve does not make use of the reference to the original matrix,
+     * so it is not a problem if that matrix goes out of scope, is altered or deleted.
+     * 
      * \todo Test solve() when rhs is sparse
      */
     virtual int solve(const Matrix& rhs, Matrix& solution) const;

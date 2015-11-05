@@ -23,6 +23,8 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestMatrix);
 
+void _testSubmatrixMultiply(Matrix& A, Matrix& B);
+
 TestMatrix::TestMatrix() {
 }
 
@@ -218,8 +220,8 @@ void TestMatrix::test_ADD1() {
 void TestMatrix::testFBMatrix() {
     /* Test FBMatrix() - empty constructor */
     Matrix *fBMatrix = new Matrix();
-    _ASSERT_EQ((size_t) 0, fBMatrix->getNcols());
-    _ASSERT_EQ((size_t) 0, fBMatrix->getNrows());
+    _ASSERT_EQ(static_cast<size_t> (0), fBMatrix->getNcols());
+    _ASSERT_EQ(static_cast<size_t> (0), fBMatrix->getNrows());
     delete fBMatrix;
 
     /* Test FBMatrix(size_t, size_t, double*) - Provide data */
@@ -280,30 +282,31 @@ void TestMatrix::testGetData() {
     retrievedData = mat->getData();
 
     for (size_t j = 0; j < n; j++) {
-        _ASSERT_EQ(j, (size_t) retrievedData[j]);
+        _ASSERT_EQ(j, static_cast<size_t> (retrievedData[j]));
     }
 
     retrievedData[0] = 666;
-    _ASSERT_EQ(666, (int) (*mat)[0]);
+    _ASSERT_EQ(666, static_cast<int> ((*mat)[0]));
 
     delete(mat);
 }
 
 void TestMatrix::testGetNcols() {
-    size_t y = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+    size_t y = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
     Matrix mat(10, y);
     _ASSERT_EQ(y, mat.getNcols());
 }
 
 void TestMatrix::testGetNrows() {
-    size_t x = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
-    Matrix mat(x, 10);
-    _ASSERT_EQ(x, mat.getNrows());
+    size_t r = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+    Matrix mat(r, 10);
+    _ASSERT_EQ(r, mat.getNrows());
 
-    Matrix *gm = new Matrix(5, 5);
+    const size_t n = 5;
+    Matrix *gm = new Matrix(n, n);
     _ASSERT_NOT(gm->isEmpty());
-    _ASSERT_EQ((size_t) 5, gm->getNrows());
-    _ASSERT_EQ((size_t) 5, gm->getNcols());
+    _ASSERT_EQ(n, gm->getNrows());
+    _ASSERT_EQ(n, gm->getNcols());
     delete gm;
 }
 
@@ -323,8 +326,8 @@ void TestMatrix::testLength() {
     Matrix *f;
     f = new Matrix(3, 4);
     for (size_t i = 0; i < nRep; i++) {
-        x = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
-        y = (size_t) (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        x = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        y = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
         f = new Matrix(x, y);
         _ASSERT_EQ(x*y, f->length());
     }
@@ -335,9 +338,10 @@ void TestMatrix::testReshape() {
     size_t n = 45;
     size_t m = 56;
     Matrix f(n, m);
-    int status = f.reshape(5, 5);
+    size_t k = 5;
+    int status = f.reshape(k, k);
     _ASSERT_EQ(0, status);
-    _ASSERT_EQ((size_t) 5, f.getNcols());
+    _ASSERT_EQ(k, f.getNcols());
 }
 
 void TestMatrix::testReshapeBad() {
@@ -714,7 +718,7 @@ void TestMatrix::test_MSX() { /* Sparse * Diagonal */
     for (size_t i = 0; i < n; i++) {
         X.set(i, i, i + 1.0);
     }
-    Matrix S = MatrixFactory::MakeRandomSparse(n, n, (size_t) (2.5 * n), 0.0, 1.0);
+    Matrix S = MatrixFactory::MakeRandomSparse(n, n, static_cast<size_t> (2.5 * n), 0.0, 1.0);
     Matrix R = S*X;
     _ASSERT_EQ(Matrix::MATRIX_SPARSE, R.getType());
     for (size_t j = 0; j < n; j++) {
@@ -1076,7 +1080,7 @@ void TestMatrix::test_MDS() {
     const size_t m = 7;
 
     Matrix D = MatrixFactory::MakeRandomMatrix(n, m, 0.5, 3.0, Matrix::MATRIX_DENSE);
-    Matrix S = MatrixFactory::MakeRandomSparse(m, m, (size_t) (2.5 * (n + m)), 0.2, 2.0);
+    Matrix S = MatrixFactory::MakeRandomSparse(m, m, static_cast<size_t> (2.5 * (n + m)), 0.2, 2.0);
 
     Matrix R = D*S;
 
@@ -1263,8 +1267,8 @@ void TestMatrix::testSparseQuadSparseX() {
     const size_t runs = 20;
     for (size_t p = 0; p < runs; p++) {
         for (size_t n = 2; n < 70; n += 3) {
-            size_t nnz_A = (size_t) std::ceil(1.2 * n);
-            size_t nnz_x = std::max((size_t) 1, (size_t) std::ceil(0.75 * n));
+            size_t nnz_A = static_cast<size_t>(std::ceil(1.2 * n));
+            size_t nnz_x = std::max(static_cast<size_t> (1), static_cast<size_t> (std::ceil(0.75 * n)));
             Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz_A, 0.0, 10.0);
             Matrix x = MatrixFactory::MakeRandomSparse(n, 1, nnz_x, 0.0, 10.0);
             double r, r_exp = 0.0;
@@ -1317,8 +1321,8 @@ void TestMatrix::testSparseDotProd() {
     Matrix result;
     _ASSERT_OK(result = x * x);
     _ASSERT_NOT(result.isEmpty());
-    _ASSERT_EQ((size_t) 1, result.getNcols());
-    _ASSERT_EQ((size_t) 1, result.getNrows());
+    _ASSERT_EQ(static_cast<size_t> (1), result.getNcols());
+    _ASSERT_EQ(static_cast<size_t> (1), result.getNrows());
     _ASSERT_EQ(0.0, result.get(0, 0));
 
     x = MatrixFactory::MakeSparse(n, 1, 1, Matrix::SPARSE_UNSYMMETRIC);

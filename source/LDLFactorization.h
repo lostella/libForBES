@@ -41,6 +41,19 @@ public:
 
     virtual int factorize(void);
 
+    /**
+     * Solves a linear system using this instance of LDLFactorization.
+     * 
+     * \note Method #solve does not make use of the reference to the original matrix,
+     * so it is not a problem if that matrix goes out of scope, is altered or deleted.
+     * 
+     * @param solution the solution of the linear system as an instance of <code>Matrix</code>
+     * @param rhs The right-hand side vector or matrix
+     * 
+     * @return Returns <code>0</code> if the solution of the system has succeeded.
+     * 
+     * \sa FactoredSolver::solve
+     */
     virtual int solve(const Matrix& rhs, Matrix& solution) const;
 
     double* getLDL() const;
@@ -66,8 +79,7 @@ private:
     /**
      * Pointer to a sparse LDL factorization.
      */
-    sparse_ldl_factor * m_sparse_ldl_factor;
-
+    sparse_ldl_factor * m_sparse_ldl_factor;    
     
 
 };

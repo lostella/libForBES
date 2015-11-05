@@ -17,7 +17,7 @@ TestMatrixOperator::~TestMatrixOperator() {
 }
 
 void TestMatrixOperator::setUp() {
-    srand((unsigned) time(NULL));
+    srand(time(NULL));
 }
 
 void TestMatrixOperator::tearDown() {

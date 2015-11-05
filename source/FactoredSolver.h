@@ -53,11 +53,17 @@ public:
      * if the invocation has succeeded or 
      * \link ForBESUtils::STATUS_NUMERICAL_PROBLEMS STATUS_NUMERICAL_PROBLEMS\endlink
      * if numerical problems have hindered the factorization of the matrix.
+     * 
+     * \sa #solve
      */
     virtual int factorize(void) = 0;
 
     /**
      * Solves the linear system and returns its solution and a status code.
+     * 
+     * \pre Always call #factorize before you call solve.
+     * 
+     * 
      * @param rhs the right-hand side of the linear equation
      * @param solution the solution of the linear system which is computed using the 
      * matrix factorization.
@@ -65,6 +71,8 @@ public:
      * if the invocation has succeeded or 
      * \link ForBESUtils::STATUS_NUMERICAL_PROBLEMS STATUS_NUMERICAL_PROBLEMS\endlink
      * if numerical problems have hindered the computation of a solution.
+     * 
+     * \sa #factorize
      */
     virtual int solve(const Matrix& rhs, Matrix& solution) const = 0;
 
@@ -73,6 +81,9 @@ private:
 protected:
 
     Matrix& m_matrix;
+    Matrix::MatrixType m_matrix_type;
+    size_t m_matrix_nrows;
+    size_t m_matrix_ncols;
 
 };
 

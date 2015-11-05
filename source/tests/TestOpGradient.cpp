@@ -9,6 +9,7 @@
 #include "OpAdjoint.h"
 
 
+void testOperatorLinearity(LinearOperator* op);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestOpGradient);
 

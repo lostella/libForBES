@@ -16,6 +16,7 @@ class TestSLDL : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestSLDL);
 
     CPPUNIT_TEST(testFactorizeAndSolve);
+    CPPUNIT_TEST(testDenseShort);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -27,6 +28,7 @@ public:
 
 private:
     void testFactorizeAndSolve();
+    void testDenseShort();
 };
 
 #endif	/* TESTSLDL_H */

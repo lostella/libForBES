@@ -25,6 +25,9 @@ CholeskyFactorization::CholeskyFactorization(Matrix& matrix) :
 FactoredSolver(matrix) {
     m_L = NULL;
     m_factor = NULL;
+    if (matrix.getNrows() != matrix.getNcols()){
+        throw std::invalid_argument("CholeskyFactorization factorization can only be applied to square matrices");
+    }
     if (matrix.getType() != Matrix::MATRIX_SPARSE) {
         this->m_L = new double[matrix.length()]();
     }
@@ -42,8 +45,7 @@ CholeskyFactorization::~CholeskyFactorization() {
 }
 
 int CholeskyFactorization::factorize() {
-    size_t n = m_matrix.getNrows();
-    if (m_matrix.getType() == Matrix::MATRIX_SPARSE) {
+    if (m_matrix_type == Matrix::MATRIX_SPARSE) {
         /* Cholesky decomposition of a SPARSE matrix: */
         if (m_matrix.m_sparse == NULL) {
             m_matrix._createSparse();
@@ -57,29 +59,29 @@ int CholeskyFactorization::factorize() {
     } else { /* If this is any non-sparse matrix: */
         memcpy(m_L, m_matrix.getData(), m_matrix.length() * sizeof (double)); /* m_L := m_matrix.m_data */
         int info = ForBESUtils::STATUS_OK;
-        if (m_matrix.getType() == Matrix::MATRIX_DENSE) { /* This is a dense matrix */
-            info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', n, m_L, n);
+        if (m_matrix_type == Matrix::MATRIX_DENSE) { /* This is a dense matrix */
+            info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', m_matrix_nrows, m_L, m_matrix_nrows);
 #ifdef SET_L_OFFDIAG_TO_ZERO
-            for (size_t i = 0; i < n; i++) {
-                for (size_t j = i + 1; j < n; j++) {
+            for (size_t i = 0; i < m_matrix_nrows; i++) {
+                for (size_t j = i + 1; j < m_matrix_nrows; j++) {
                     L.set(i, j, 0.0);
                 }
             }
 #endif
-        } else if (m_matrix.getType() == Matrix::MATRIX_SYMMETRIC) { /* This is a symmetric matrix */
-            info = LAPACKE_dpptrf(LAPACK_COL_MAJOR, 'L', n, m_L);
+        } else if (m_matrix_type == Matrix::MATRIX_SYMMETRIC) { /* This is a symmetric matrix */
+            info = LAPACKE_dpptrf(LAPACK_COL_MAJOR, 'L', m_matrix_nrows, m_L);
         }
         return info;
     }
 }
 
 int CholeskyFactorization::solve(const Matrix& rhs, Matrix& solution) const {
-    if (m_matrix.getType() == Matrix::MATRIX_SPARSE) {
+    if (m_matrix_type == Matrix::MATRIX_SPARSE) {
         cholmod_dense *x;
 
         /* cast the RHS as a cholmod_dense b = rhs */
         if (rhs.m_type == Matrix::MATRIX_DENSE) {
-            
+
             cholmod_dense *b;
             b = cholmod_allocate_dense(rhs.m_nrows, rhs.m_ncols, rhs.m_nrows, CHOLMOD_REAL, Matrix::cholmod_handle());
             b->x = rhs.m_data;
@@ -90,7 +92,7 @@ int CholeskyFactorization::solve(const Matrix& rhs, Matrix& solution) const {
             solution.m_delete_data = false;
             memcpy(solution.m_data, static_cast<double*> (x->x), rhs.m_nrows * rhs.m_ncols * sizeof (double));
             cholmod_free_dense(&x, Matrix::cholmod_handle());
-            
+
         } else if (rhs.m_type == Matrix::MATRIX_SPARSE) {
             // still untested!
             cholmod_sparse * rhs_sparse;
@@ -106,14 +108,15 @@ int CholeskyFactorization::solve(const Matrix& rhs, Matrix& solution) const {
             throw std::logic_error("Not supported");
         }
         return ForBESUtils::STATUS_OK;
-    } else {
+    } else { /* the matrix to be factorized is not sparse */
         int info = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
         solution = Matrix(rhs);
-        size_t n = m_matrix.getNrows();
-        if (m_matrix.getType() == Matrix::MATRIX_DENSE) {
-            info = LAPACKE_dpotrs(LAPACK_COL_MAJOR, 'L', n, rhs.m_ncols, m_L, n, solution.m_data, n);
-        } else if (m_matrix.getType() == Matrix::MATRIX_SYMMETRIC) {
-            info = LAPACKE_dpptrs(LAPACK_COL_MAJOR, 'L', n, rhs.m_ncols, m_L, solution.m_data, n);
+        if (m_matrix_type == Matrix::MATRIX_DENSE) {
+            info = LAPACKE_dpotrs(LAPACK_COL_MAJOR, 'L', m_matrix_nrows, rhs.m_ncols, m_L, m_matrix_nrows, solution.m_data, m_matrix_nrows);
+        } else if (m_matrix_type == Matrix::MATRIX_SYMMETRIC) {
+            info = LAPACKE_dpptrs(LAPACK_COL_MAJOR, 'L', m_matrix_nrows, rhs.m_ncols, m_L, solution.m_data, m_matrix_nrows);
+        } else {
+            throw std::invalid_argument("This matrix type is not supported - only DENSE, SPARSE and SYMMETRIC are supported");
         }
         return info;
     }

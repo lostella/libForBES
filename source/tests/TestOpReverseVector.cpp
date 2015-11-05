@@ -57,8 +57,9 @@ void TestOpReverseVector::testCallNotFixedSize() {
     Matrix y1(x1);
     Matrix y2(x2);
     LinearOperator *op = new OpReverseVector();
-    _ASSERT_EQ((size_t)0, op->dimensionIn());
-    _ASSERT_EQ((size_t)0, op->dimensionOut());
+    size_t zero = 0;
+    _ASSERT_EQ(zero, op->dimensionIn());
+    _ASSERT_EQ(zero, op->dimensionOut());
     Matrix xrev1 = op -> call(x1);
     Matrix xrev2 = op -> call(x2);
     for (size_t i = 0; i < n1; i++) {

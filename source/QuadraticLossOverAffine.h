@@ -78,7 +78,7 @@
  * 
  * with \f$\bar{g} = \nabla f^*(y) - p\f$.
  * 
- * \sa LDLFactorization_AAt
+ * \sa S_LDLFactorization
  * \sa FactoredSolver
  * \sa QuadraticLoss
  * 

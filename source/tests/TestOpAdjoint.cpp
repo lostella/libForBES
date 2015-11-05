@@ -25,7 +25,7 @@ void TestOpAdjoint::tearDown() {
 
 void TestOpAdjoint::testCall() {
     const size_t n = 16;
-    const double tol = 1e-8;
+    const double tol = 1e-7;
     Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 

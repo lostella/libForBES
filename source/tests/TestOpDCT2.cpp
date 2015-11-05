@@ -23,6 +23,8 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestOpDCT2);
 
+void testOperatorLinearity(LinearOperator* op);
+
 TestOpDCT2::TestOpDCT2() {
 }
 

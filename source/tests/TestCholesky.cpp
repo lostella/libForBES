@@ -48,18 +48,21 @@ void TestCholesky::testCholeskyDense() {
     for (size_t i = 0; i < n; i++) {
         A.set(i, i, A.get(i, i) + 1.2 * n);
     }
+    Matrix A_copy(A);
     Matrix b;
 
     CholeskyFactorization * cholFactorization = new CholeskyFactorization(A);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, cholFactorization ->factorize());
 
+    // Goodbye A...
+    A = Matrix();
 
     Matrix x;
     Matrix err;
     for (size_t k = 0; k < repetitions; k++) {
         b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
         cholFactorization -> solve(b, x);
-        err = A * x - b;
+        err = A_copy * x - b;
         for (size_t i = 0; i < n; i++) {
             _ASSERT(std::abs(err.get(i, 0)) < tol);
         }
@@ -84,12 +87,14 @@ void TestCholesky::testCholeskySparse() {
     }
 
 
+    Matrix A_copy(A);
     Matrix x;
     FactoredSolver * solver = new CholeskyFactorization(A);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, solver -> factorize());
+    A = Matrix(); // Goodbye A...
     _ASSERT_EQ(ForBESUtils::STATUS_OK, solver -> solve(b, x));
 
-    Matrix ax = A * x;
+    Matrix ax = A_copy * x;
     for (size_t i = 0; i < n; i++) {
         _ASSERT(std::abs(ax.get(i, 0) - i - 1.0) < tol);
     }
@@ -97,7 +102,7 @@ void TestCholesky::testCholeskySparse() {
 }
 
 void TestCholesky::testCholeskySymmetric2() {
-    const int n = 4;
+    const size_t n = 4;
     Matrix *A = new Matrix(n, n, Matrix::MATRIX_SYMMETRIC);
     _ASSERT(A->isSymmetric());
     _ASSERT_EQ(Matrix::MATRIX_SYMMETRIC, A -> getType());
@@ -109,16 +114,29 @@ void TestCholesky::testCholeskySymmetric2() {
     }
 
     Matrix L;
-    Matrix x(n, 1);
+    Matrix b(n, 1);
     for (size_t i = 0; i < n; i++) {
-        x.set(i, 0, i + 1.0);
+        b.set(i, 0, i + 1.0);
     }
 
     FactoredSolver * solver = new CholeskyFactorization(*A);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, solver -> factorize());
-
-
+    
+    // Bye bye Matrix A
     delete A;
+
+    double sol_expected_data[4] = {-0.032619563872026,
+        0.020584586456240,
+        0.070701048816070,
+        0.110212353853490};
+    Matrix sol_expected(4, 1, sol_expected_data);
+
+    Matrix sol;
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, solver -> solve(b, sol));
+    
+    _ASSERT_EQ(sol_expected, sol);
+
+    delete solver;
 }
 
 void TestCholesky::testCholeskySymmetric() {
@@ -129,6 +147,7 @@ void TestCholesky::testCholeskySymmetric() {
     for (size_t i = 0; i < n; i++) {
         A.set(i, i, A.get(i, i) + 1.2 * n);
     }
+    Matrix A_copy(A);
     Matrix b;
     Matrix x;
     Matrix err;
@@ -136,10 +155,11 @@ void TestCholesky::testCholeskySymmetric() {
     cholFactorization = new CholeskyFactorization(A);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, cholFactorization ->factorize());
 
+    A = Matrix();
     for (size_t k = 0; k < repetitions; k++) {
         b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
         cholFactorization -> solve(b, x);
-        err = A * x - b;
+        err = A_copy * x - b;
         for (size_t i = 0; i < n; i++) {
             _ASSERT(std::abs(err.get(i, 0)) < tol);
         }

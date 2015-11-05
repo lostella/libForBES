@@ -91,7 +91,7 @@
 #define _ASSERT_OK                          CPPUNIT_ASSERT_NO_THROW
 #define _ASSERT                             CPPUNIT_ASSERT
 #define _ASSERT_NOT(P)                      CPPUNIT_ASSERT(!(P))
-#define _ASSERT_NUM_EQ(A,B,TOL)             CPPUNIT_ASSERT_DOUBLES_EQUAL((double)(A), (double)(B), (double)(TOL))
+#define _ASSERT_NUM_EQ(A,B,TOL)             CPPUNIT_ASSERT_DOUBLES_EQUAL(static_cast<double>(A), static_cast<double>(B), static_cast<double>(TOL))
 #define _ASSERT_EQ                          CPPUNIT_ASSERT_EQUAL
 #define _ASSERT_NEQ(X,Y)                    CPPUNIT_ASSERT((X)!=(Y))
 #define _ASSERT_EXCEPTION(P, EXCEPTION)     CPPUNIT_ASSERT_THROW(P, EXCEPTION)

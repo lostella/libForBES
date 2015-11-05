@@ -39,8 +39,8 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
     std::set<nice_pair> s;
     nice_pair p;
     while (true) { // construct pairs
-        p.first = (std::rand() %  nrows);
-        p.second = (std::rand() %  ncols);
+        p.first = (std::rand() % nrows);
+        p.second = (std::rand() % ncols);
         s.insert(p);
         if (s.size() == nnz) {
             break;
@@ -79,6 +79,10 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
         mat[j] = offset + scale * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
     }
     return mat;
+}
+
+Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale) {
+    return MatrixFactory::MakeRandomMatrix(nrows, ncols, offset, scale, Matrix::MATRIX_DENSE);
 }
 
 Matrix MatrixFactory::MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Matrix::SparseMatrixType stype) {

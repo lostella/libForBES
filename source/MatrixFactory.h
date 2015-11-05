@@ -58,6 +58,20 @@ public:
     
     
     /**
+     * Returns a random matrix as an instance of <code>Matrix</code> with type
+     * \link Matrix::MATRIX_DENSE MATRIX_DENSE\endlink..
+     * @param nrows Number of rows
+     * @param ncols Number of columns
+     * @param offset Random data follow a statistical distribution of the form 
+     * <code>offset + scaling_factor * r</code>, where <code>r</code> is a random
+     * variable in [0,1].     
+     * @param scale The aforementioned scaling factor.
+     * @return A random dense matrix object.
+     */
+    static Matrix MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale);
+    
+    
+    /**
      * Constructs an identity matrix of type <code>Matrix::MATRIX_DIAGONAL</code>.
      * 
      * @param n number of diagonal elements
