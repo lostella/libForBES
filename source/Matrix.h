@@ -280,7 +280,7 @@ public:
     int reshape(size_t nrows, size_t ncols);
 
 
-    bool isSymmetric();
+    bool isSymmetric() const;
 
     /**
      * Checks whether this is a column vector.
@@ -333,7 +333,7 @@ public:
      * a column-vector, or the current matrix object does not correspond to a square
      * matrix, or <code>x</code> is of incompatible dimensions.
      */
-    double quad(Matrix& x);
+    double quad(Matrix& x) const;
 
     /**
      * Computes the quadratic form <code>0.5*x'*Q*x + q'*x</code>.
@@ -352,7 +352,7 @@ public:
      * a column-vector, or the current matrix object does not correspond to a square
      * matrix, or either <code>x</code> or <code>q</code> are of incompatible dimensions.
      */
-    double quad(Matrix& x, Matrix& q);
+    double quad(Matrix& x, Matrix& q) const;
 
 
     /**
@@ -590,7 +590,7 @@ private:
      * @param j column
      * @return <code>true</code> if (i,j) is within the bounds
      */
-    inline bool indexWithinBounds(size_t i, size_t j);
+    inline bool indexWithinBounds(size_t i, size_t j) const;
 
     /**
      * Multiply with a matrix when the left-hand side matrix is dense

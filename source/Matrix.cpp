@@ -319,7 +319,7 @@ double Matrix::quadFromTriplet(const Matrix& x) const {
     return r;
 }
 
-double Matrix::quad(Matrix & x) {
+double Matrix::quad(Matrix & x) const {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
@@ -364,7 +364,7 @@ double Matrix::quad(Matrix & x) {
     return result;
 }
 
-double Matrix::quad(Matrix& x, Matrix & q) {
+double Matrix::quad(Matrix& x, Matrix & q) const {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("Method `quadratic` can only be applied to vectors!");
@@ -1033,7 +1033,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
     }
 }
 
-bool Matrix::indexWithinBounds(size_t i, size_t j) {
+bool Matrix::indexWithinBounds(size_t i, size_t j) const {
 
     return (i < m_nrows && j < m_ncols) && !(m_type == MATRIX_LOWERTR && i < j);
 }
@@ -1104,7 +1104,7 @@ void Matrix::_createTriplet() {
     }
 }
 
-bool Matrix::isSymmetric() {
+bool Matrix::isSymmetric() const {
     return (Matrix::MATRIX_SYMMETRIC == m_type)
             || (m_triplet != NULL && m_triplet->stype != 0)
             || (Matrix::MATRIX_DIAGONAL == m_type);

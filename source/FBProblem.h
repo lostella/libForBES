@@ -40,52 +40,29 @@ public:
             Matrix * lin,
             Function * g);
 
-    Function * getf1() {
-        return m_f1;
-    }
+    Function * getf1();
 
-    LinearOperator * getL1() {
-        return m_L1;
-    }
+    LinearOperator * getL1();
 
-    Matrix * getd1() {
-        return m_d1;
-    }
+    Matrix * getd1();
 
-    Function * getf2() {
-        return m_f2;
-    }
+    Function * getf2();
 
-    LinearOperator * getL2() {
-        return m_L2;
-    }
+    LinearOperator * getL2();
 
-    Matrix * getd2() {
-        return m_d2;
-    }
+    Matrix * getd2();
 
-    Matrix * getlin() {
-        return m_lin;
-    }
+    Matrix * getlin();
 
-    Function * getg() {
-        return m_g;
-    }
+    Function * getg();
 
-    int getn() {
-        return m_n;
-    }
+    int getn();
 
-    int getm1() {
-        return m_m1;
-    }
+    int getm1();
 
-    int getm2() {
-        return m_m2;
-    }
+    int getm2();
 
-    virtual ~FBProblem() {
-    }
+    virtual ~FBProblem();
 
 };
 

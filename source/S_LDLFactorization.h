@@ -202,7 +202,7 @@ private:
      * @param beta scalar beta
      * @return matrix AA'
      */
-    Matrix multiply_AAtr_betaI(Matrix& A, double beta);
+    static Matrix multiply_AAtr_betaI(Matrix& A, double beta);
 
 };
 

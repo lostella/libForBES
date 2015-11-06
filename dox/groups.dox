@@ -6,6 +6,10 @@
  * 
  */
 
+/** \defgroup LinOp Linear Operators
+ *
+ * \brief Linear operators
+ */
 
 /** \defgroup Matrix-group Matrix
  *
@@ -13,13 +17,9 @@
  * 
  */
 
-/** \defgroup FBSolver-group
+/** \defgroup FBSolver-group Solver
  *
  * \brief Forward-backward solver classes
  * 
  */
 
-/** \defgroup LinOp Linear Operators
- *
- * \brief Linear operators
- */

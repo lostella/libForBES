@@ -22,7 +22,7 @@
 #include <iostream>
 
 
-void prepare(std::vector<size_t> * c_idx, const Matrix& x, Matrix * c_x);
+void prepare_cx(std::vector<size_t> * c_idx, const Matrix& x, Matrix * c_x);
 
 SeparableSum::~SeparableSum() {
 }
@@ -31,12 +31,11 @@ SeparableSum::SeparableSum(std::map<Function*, std::vector<size_t>*> fun_idx_map
 Function(), m_fun_idx_map(fun_idx_map) {
 }
 
-void prepare(std::vector<size_t> * c_idx, const Matrix& x, Matrix * c_x) {
-    std::vector<size_t>::iterator idx_iterator;
+void prepare_cx(std::vector<size_t> * c_idx, const Matrix& x, Matrix * c_x) {
     size_t k = 0;
 
     /* construct the sub-matrix  */
-    for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
+    for (std::vector<size_t>::iterator idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
         c_x -> set(k, 0, x.get(*idx_iterator, 0));
         k++;
     }
@@ -49,15 +48,6 @@ int SeparableSum::call(Matrix& x, double& f) {
     }
     //LCOV_EXCL_STOP
 
-    /* iterator for the map of functions and indices */
-    std::map<Function*, std::vector<size_t> * >::iterator map_iterator;
-
-    /* current function */
-    Function * c_fun = NULL;
-
-    /* current vector of indices*/
-    std::vector<size_t> * c_idx = NULL;
-
     /* sub-matrix */
     Matrix *c_x = NULL;
 
@@ -66,14 +56,20 @@ int SeparableSum::call(Matrix& x, double& f) {
 
 
     /* Invoke all functions */
-    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); ++map_iterator) {
+    for (std::map<Function*, std::vector<size_t> * >::iterator map_iterator = m_fun_idx_map.begin()
+            ; map_iterator != m_fun_idx_map.end()
+            ; ++map_iterator) {
+        /* current vector of indices*/
+        std::vector<size_t> * c_idx = NULL;
+
         /* temporary value of sub-invocations */
         double f_temp;
 
-        /* status of sub-invocations */
+        /* status of sub-invocations   */
         int status;
 
-        /* Pointer to function      */
+        /* Pointer to current function */
+        Function * c_fun = NULL;
         c_fun = map_iterator->first;
 
         /* Function indices         */
@@ -83,16 +79,14 @@ int SeparableSum::call(Matrix& x, double& f) {
         c_x = new Matrix(c_idx->size(), 1);
 
         /* iterator for the indices of c_fun */
-        prepare(c_idx, x, c_x);
+        prepare_cx(c_idx, x, c_x);
 
         /* invoke sub-function on c_x, return f_temp */
         status = c_fun -> call(*c_x, f_temp);
         //LCOV_EXCL_START
         if (ForBESUtils::STATUS_OK != status) {
-            if (c_x != NULL) {
-                delete c_x;
-                c_x = NULL;
-            }
+            delete c_x;
+            c_x = NULL;
             return status;
         }
         //LCOV_EXCL_STOP
@@ -117,29 +111,23 @@ int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox) {
     }
     //LCOV_EXCL_STOP
 
-    std::map<Function*, std::vector<size_t> * >::iterator map_iterator;
-    Function * c_fun = NULL;
-    std::vector<size_t> * c_idx = NULL;
     Matrix *c_x = NULL;
     Matrix *c_prox = NULL;
 
-    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); ++map_iterator) {
-        c_fun = map_iterator->first;
-        c_idx = map_iterator->second;
+    for (std::map<Function*, std::vector<size_t> * >::iterator map_iterator = m_fun_idx_map.begin()
+            ; map_iterator != m_fun_idx_map.end()
+            ; ++map_iterator) {
+        Function * c_fun = map_iterator->first;
+        std::vector<size_t> * c_idx = map_iterator->second;
         c_x = new Matrix(c_idx->size(), 1);
+        prepare_cx(c_idx, x, c_x);
+
         c_prox = new Matrix(c_idx->size(), 1);
-        prepare(c_idx, x, c_x);
         int status = c_fun -> callProx(*c_x, gamma, *c_prox);
         //LCOV_EXCL_START
         if (ForBESUtils::STATUS_OK != status) {
-            if (c_x != NULL) {
-                delete c_x;
-                c_x = NULL;
-            }
-            if (c_prox != NULL) {
-                delete c_prox;
-                c_prox = NULL;
-            }
+            delete c_x;
+            delete c_prox;
             return status;
         }
         //LCOV_EXCL_STOP
@@ -150,14 +138,8 @@ int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox) {
             k++;
         }
     }
-    if (c_x != NULL) {
-        delete c_x;
-        c_x = NULL;
-    }
-    if (c_prox != NULL) {
-        delete c_prox;
-        c_prox = NULL;
-    }
+    delete c_x;
+    delete c_prox;
     return ForBESUtils::STATUS_OK;
 }
 
@@ -171,51 +153,32 @@ int SeparableSum::callConj(const Matrix& x, double& f_star) {
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    //    f_star = 0.0;
-    //    std::map<Function*, std::vector<size_t> * >::iterator map_iterator;
-    //    Function * c_fun = NULL;
-    //    std::vector<size_t> * c_idx = NULL;
-    //    Matrix *c_x = NULL;
-    //    Matrix *c_prox = NULL;
-    //
-    //    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); ++map_iterator) {
-    //        c_fun = map_iterator->first;                // current function
-    //        c_idx = map_iterator->second;               // current index set I
-    //        c_x = new Matrix(c_idx->size(), 1);         // prepare current vector
-    //        std::vector<size_t>::iterator idx_iterator;
-    //        size_t k = 0;
-    //        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
-    //            c_x -> set(k, 0, x.get(*idx_iterator, 0));
-    //            k++;
-    //        }
-    //        int status = c_fun -> callProx(*c_x, gamma, *c_prox);
-    //        //LCOV_EXCL_START
-    //        if (ForBESUtils::STATUS_OK != status) {
-    //            if (c_x != NULL) {
-    //                delete c_x;
-    //                c_x = NULL;
-    //            }
-    //            if (c_prox != NULL) {
-    //                delete c_prox;
-    //                c_prox = NULL;
-    //            }
-    //            return status;
-    //        }
-    //        //LCOV_EXCL_STOP
-    //        k = 0;
-    //        for (idx_iterator = c_idx->begin(); idx_iterator != c_idx->end(); ++idx_iterator) {
-    //            prox.set(*idx_iterator, 0, c_prox->get(k, 0));
-    //            k++;
-    //        }
-    //    }
-    //    if (c_x != NULL) {
-    //        delete c_x;
-    //        c_x = NULL;
-    //    }
-    //    if (c_prox != NULL) {
-    //        delete c_prox;
-    //        c_prox = NULL;
-    //    }
+    f_star = 0.0;
+
+    std::map<Function*, std::vector<size_t> * >::iterator map_iterator;
+    Function * c_fun = NULL;
+    Matrix *c_x = NULL;
+
+    for (map_iterator = m_fun_idx_map.begin(); map_iterator != m_fun_idx_map.end(); ++map_iterator) {
+        std::vector<size_t> * c_idx = NULL;
+        c_fun = map_iterator->first; // current function
+        c_idx = map_iterator->second; // current index set I
+        c_x = new Matrix(c_idx->size(), 1); // prepare current vector
+        prepare_cx(c_idx, x, c_x);
+
+        double f_star_temp;
+        int status = c_fun -> callConj(*c_x, f_star_temp);
+        //LCOV_EXCL_START
+        if (ForBESUtils::STATUS_OK != status) {
+            delete c_x;
+            return status;
+        }
+        f_star += f_star_temp;
+    }
+    if (c_x != NULL) {
+        delete c_x;
+        c_x = NULL;
+    }
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 

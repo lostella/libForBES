@@ -25,8 +25,8 @@
 #include "FBProblem.h"
 
 /**
- * \class FBProblem
- * \brief Low level FB problem description
+ * \class FBCache
+ * \brief Low-level cache management system
  * \version version 0.0
  * \ingroup FBSolver-group
  * 

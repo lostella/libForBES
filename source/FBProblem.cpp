@@ -44,3 +44,51 @@ FBProblem::FBProblem(
     if (L2) m_m2 = L2->dimensionOut();
     else m_m2 = n;
 }
+
+LinearOperator* FBProblem::getL1() {
+    return m_L1;
+}
+
+LinearOperator* FBProblem::getL2() {
+    return m_L2;
+}
+
+Matrix* FBProblem::getd1() {
+    return m_d1;
+}
+
+Matrix* FBProblem::getd2() {
+    return m_d2;
+}
+
+Function* FBProblem::getf1() {
+    return m_f1;
+}
+
+Function* FBProblem::getf2() {
+    return m_f2;
+}
+
+Function* FBProblem::getg() {
+    return m_g;
+}
+
+Matrix* FBProblem::getlin() {
+    return m_lin;
+}
+
+int FBProblem::getm1() {
+    return m_m1;
+}
+
+int FBProblem::getm2() {
+    return m_m2;
+}
+
+int FBProblem::getn() {
+    return m_n;
+}
+
+FBProblem::~FBProblem() {
+    // nothing to delete    
+}
