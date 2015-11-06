@@ -38,7 +38,7 @@ class SumOfNorm2 : public Function {
 public:
     using Function::call;
     
-    SumOfNorm2(size_t k);
+    explicit SumOfNorm2(size_t k);
     
     SumOfNorm2(double mu, size_t k);
 
@@ -49,7 +49,16 @@ public:
 
 private:
     double m_mu;
-    size_t m_partition_index;
+    
+    /**
+     * The size of each chung of <code>x</code>.
+     */
+    size_t m_partition_length;
+    
+    /**
+     * Pointer to a Norm2 function.
+     */
+    Function * m_norm2;
 
 };
 

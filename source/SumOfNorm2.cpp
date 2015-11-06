@@ -20,20 +20,38 @@
 
 #include "SumOfNorm2.h"
 #include "MatrixFactory.h"
+#include "Norm2.h"
 
-SumOfNorm2::SumOfNorm2(size_t k) : Function(), m_partition_index(k) {
-    m_mu = 1.0;    
+SumOfNorm2::SumOfNorm2(size_t k) : Function(), m_partition_length(k) {
+    m_mu = 1.0;
+    m_norm2 = new Norm2();
 }
 
-SumOfNorm2::SumOfNorm2(double mu, size_t k) : Function(), m_mu(mu), m_partition_index(k) {
+SumOfNorm2::SumOfNorm2(double mu, size_t k) : Function(), m_mu(mu), m_partition_length(k) {
+    m_norm2 = new Norm2(mu);
 }
 
 SumOfNorm2::~SumOfNorm2() {
+    if (m_norm2 != NULL) {
+        delete m_norm2;
+    }
 }
 
 int SumOfNorm2::call(Matrix& x, double& f) {
     f = 0.0;
+    const size_t n = x.getNrows();
+    if (n % m_partition_length != 0) {
+        throw std::invalid_argument("Provided vector cannot be partitioned");
+    }
+    /* number of chunks */
+    const size_t n_chunks = n / m_partition_length;
     Matrix x_part = MatrixFactory::ShallowVector();
+    double f_temp;
+    for (size_t j = 0; j < n_chunks; j++) {
+        x_part = MatrixFactory::ShallowVector(x, m_partition_length, j * m_partition_length);
+        m_norm2->call(x, f_temp);
+        f += f_temp;
+    }
     return 0;
 }
 
