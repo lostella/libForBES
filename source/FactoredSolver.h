@@ -32,8 +32,8 @@
  * 
  * FactoredSolver is a solver for linear systems of the form \f$Ax=b\f$ where a
  * factorization of matrix \f$A\f$ is used. This function exports its functionality
- * using two methods: ::factorize and ::solve. Objects of this class are instantiated
- * provided the matrix \f$A\f$ a reference for which is stored inside the object.
+ * using two methods: #factorize and #solve. Objects of this class are instantiated
+ * provided the matrix \f$A\f$ for which a reference is stored inside the object.
  */
 class FactoredSolver {
 public:

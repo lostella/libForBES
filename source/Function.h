@@ -153,6 +153,10 @@ public:
      * if some numerical problems prevented the computation of a reliable result. 
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
+     * 
+     * \todo Implement a dummy callConj which used its counterpart 
+     * \link Function::callConj(const Matrix&, double&, Matrix&) callConj(3)\endlink
+     * to compute f_star and discard grad.
      */
     virtual int callConj(const Matrix& x, double& f_star); // conjugate of f at x: f*(x)
 

@@ -31,6 +31,10 @@
 class CholeskyFactorization : public FactoredSolver {
 public:
 
+    /**
+     * Creates a new instance of CholeskyFactorization given a %Matrix object.
+     * @param m_matrix matrix to factorize
+     */
     explicit CholeskyFactorization(Matrix& m_matrix);
 
     virtual ~CholeskyFactorization();
