@@ -73,9 +73,9 @@ public:
 
     virtual ~FBCache();
 
-    double update_eval_f();
-    double evalFBE(double gamma);
-    Matrix * gradFBE(double gamma);
+    int update_eval_FBE(double gamma);
+    int update_grad_FBE(double gamma);
+    int update_eval_f();
     int update_forward_backward_step(double gamma);
 
 };

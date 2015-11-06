@@ -32,9 +32,9 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m
     m_y = new Matrix(m_prob.getn(), 1);
 }
 
-double FBCache::update_eval_f() {
+int FBCache::update_eval_f() {
     if (m_flag_evalf == 1) {
-        return 0.0;
+        return ForBESUtils::STATUS_OK;
     }
 
     if (m_f1 != NULL) {
@@ -48,7 +48,7 @@ double FBCache::update_eval_f() {
         }
         int status = m_f1->call(*m_res1x, m_f1x, *m_gradf1x);
         if (ForBESUtils::STATUS_OK != status) {
-            // DO SOMETHING HERE!
+            return status;
         }
     }
 
@@ -58,7 +58,7 @@ double FBCache::update_eval_f() {
         if (m_d2 != NULL) *m_res2x += *m_d2;
         int status = m_f2->call(*m_res2x, m_f2x);
         if (ForBESUtils::STATUS_OK != status) {
-            // DO SOMETHING HERE!
+            return status;
         }
     }
 
@@ -68,7 +68,7 @@ double FBCache::update_eval_f() {
 
     m_fx = m_f1x + m_f2x + m_linx;
     m_flag_evalf = 1;
-    return m_fx;
+    return ForBESUtils::STATUS_OK;
 }
 
 int FBCache::update_forward_step(double gamma) {
@@ -127,12 +127,12 @@ int FBCache::update_forward_backward_step(double gamma) {
     return ForBESUtils::STATUS_OK;
 }
 
-double FBCache::evalFBE(double gamma) {
-    return 0.0;
+int FBCache::update_eval_FBE(double gamma) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-Matrix * FBCache::gradFBE(double gamma) {
-    return NULL;
+int FBCache::update_grad_FBE(double gamma) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
 FBCache::~FBCache() {
