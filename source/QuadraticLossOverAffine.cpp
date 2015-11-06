@@ -55,7 +55,14 @@ QuadraticLossOverAffine::QuadraticLossOverAffine(Matrix& A, Matrix& b, Matrix& w
 }
 
 QuadraticLossOverAffine::~QuadraticLossOverAffine() {
-
+    if (m_F != NULL) {
+        delete m_F;
+        m_F = NULL;
+    }
+    if (m_solver != NULL) {
+        delete m_solver;
+        m_solver = NULL;
+    }
 }
 
 int QuadraticLossOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {

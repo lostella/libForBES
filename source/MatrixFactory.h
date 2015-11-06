@@ -197,6 +197,8 @@ public:
      * @return shallow vector
      */
     static Matrix ShallowVector(double * data, size_t size, size_t offset);
+    
+    static Matrix ShallowVector();
 
 
 private:

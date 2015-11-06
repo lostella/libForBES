@@ -49,8 +49,8 @@ endif
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
 CFLAGS_ADDITIONAL = -O0
-#CFLAGS_ADDITIONAL += -fprofile-arcs
-#CFLAGS_ADDITIONAL += -ftest-coverage
+CFLAGS_ADDITIONAL += -fprofile-arcs
+CFLAGS_ADDITIONAL += -ftest-coverage
 
 CFLAGS_WARNINGS = -pedantic \
 		-Wall \
@@ -173,7 +173,8 @@ SOURCES = \
 	Norm2.cpp \
 	SeparableSum.cpp \
 	IndBall2.cpp \
-	QuadraticLossOverAffine.cpp
+	QuadraticLossOverAffine.cpp \
+	SumOfNorm2.cpp
  
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
@@ -242,8 +243,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestHuber
 	${BIN_TEST_DIR}/TestSeparableSum
 	@echo "\n*** UTILITIES ***"
-	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestMatrixFactory
+	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestOntRegistry
 	${BIN_TEST_DIR}/TestFunctionOntologicalClass
 	${BIN_TEST_DIR}/TestFunctionOntologyRegistry

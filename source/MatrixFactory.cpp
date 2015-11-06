@@ -139,5 +139,11 @@ Matrix MatrixFactory::ShallowVector(double* data, size_t size, size_t offset) {
     return v_shallow;
 }
 
+Matrix MatrixFactory::ShallowVector() {
+    Matrix v_shallow = Matrix(true);
+    return v_shallow;
+}
+
+
 
 
