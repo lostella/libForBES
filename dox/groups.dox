@@ -1,13 +1,13 @@
 /* GROUPS */
 
-/** \defgroup Functions ForBES Functions
+/** \defgroup Functions Functions
  *
  * \brief ForBES functions
  * 
  */
 
 
-/** \defgroup Matrix Matrix
+/** \defgroup Matrix-group Matrix
  *
  * \brief Matrices and utilities
  * 

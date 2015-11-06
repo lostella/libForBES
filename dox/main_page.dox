@@ -13,11 +13,17 @@
  * C++ code.
  * 
  * 5 steps to installation:
- *  1. Download and install openblas and SuiteSparse
+ *  1. Download and install <a href="http://www.openblas.net/">openblas</a> and 
+ *     <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">SuiteSparse</a>
  *  2. Download <a href="https://github.com/lostella/libForBES/archive/master.zip">libforbes</a>
  *  3. Configure
- *  4. Install using make
- *  5. Verify your installation
+ *  4. Install using make (<code>make</code>)
+ *  5. Verify your installation (<code>make test</code>)
+ *
+ * You can then use libforbes in your own C++ project
+ *
+ * 1. Include the header file ForBES.h
+ * 2. Link to the libforbes static library (libforbes.a)
  *
  * \section libforbes-api The libforbes API
  * The two cornerstones of the libforbes API are the \ref doc-functs "Functions API"
