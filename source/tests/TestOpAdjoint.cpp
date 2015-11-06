@@ -32,18 +32,18 @@ void TestOpAdjoint::testCall() {
     LinearOperator *T = new MatrixOperator(A);
     LinearOperator *Tstar = new OpAdjoint(*T);
 
-    Matrix Tx_adj = T->callAdjoint(x);
-    Matrix Tstarx = Tstar -> call(x);
+    Matrix Tx_adj = T->callAdjoint(x);  /*     T*(x)    */
+    Matrix Tstarx = Tstar -> call(x);   /*     T*(x)    */
 
     for (size_t i = 0; i < n; i++) {
         _ASSERT_NUM_EQ(Tx_adj.get(i, 0), Tstarx.get(i, 0), tol);
     }
 
 
-    Matrix T_x = Tstar->call(x);
-    Matrix T_star_adjoint_x = Tstar->callAdjoint(x);
-    _ASSERT_EQ(T_x, T_star_adjoint_x);
-
+    Matrix T_star_star_x = Tstar->callAdjoint(x);                   /*     T**(x)    */
+    Matrix T_x = T->call(x);                                        /*     T(x)      */
+    
+    _ASSERT_EQ(T_x, T_star_star_x);
     _ASSERT_EQ(T->isSelfAdjoint(), Tstar->isSelfAdjoint());
 
     delete T;

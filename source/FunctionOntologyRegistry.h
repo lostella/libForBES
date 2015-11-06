@@ -37,6 +37,8 @@ public:
     static FunctionOntologicalClass function();
 
     static FunctionOntologicalClass quadratic();
+    
+    static FunctionOntologicalClass conj_quadratic();
 
     static FunctionOntologicalClass distance();
 

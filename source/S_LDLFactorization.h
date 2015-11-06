@@ -96,7 +96,7 @@ public:
      * Computes the solution of the linear system
      * 
      * \f[
-     *  (AA'*\beta I) x = b,
+     *  (AA' + \beta I) x = b,
      * \f]
      * 
      * for a given \f$b\f$.
@@ -106,9 +106,9 @@ public:
      * it is neither of \link Matrix::MATRIX_SPARSE sparse\endlink nor
      * \link Matrix::MATRIX_DENSE dense\endlink type.
      * 
-     * @param rhs the right-hand side of the linear equation \f$(AA'*\beta I) x = b\f$
+     * @param rhs the right-hand side of the linear equation \f$(AA'+ \beta I) x = b\f$
      * 
-     * @param solution the solution of the linear system \f$(AA'*\beta I) x = b\f$ 
+     * @param solution the solution of the linear system \f$(AA'+\beta I) x = b\f$ 
      * which is computed using this matrix factorization.
      * 
      * @return status code. The method returns \link ForBESUtils::STATUS_OK STATUS_OK\endlink 
@@ -116,7 +116,7 @@ public:
      * \link ForBESUtils::STATUS_NUMERICAL_PROBLEMS STATUS_NUMERICAL_PROBLEMS\endlink
      * if numerical problems have hindered the computation of a solution.
      * 
-     * \note In case the matrix to be factorized is \link Matrix::MATRIX_DENSE dense\endlink
+     * \attention In case the matrix to be factorized is \link Matrix::MATRIX_DENSE dense\endlink
      * and <em>tall</em> (i.e., it has more rows than columns), it is imperative 
      * that the reference passed in the constructor of 
      * S_LDLFactorization remains available when #solve is called.

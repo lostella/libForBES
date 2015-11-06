@@ -35,8 +35,24 @@
 class LDLFactorization : public FactoredSolver {
 public:
 
+    /**
+     * Creates an LDL factorizer given a %Matrix object.
+     * 
+     * @param m_matrix matrix to be factorized
+     * 
+     * \exception std::invalid_argument if an empty matrix is provided, or the 
+     * matrix is of type <code>MATRIX_LOWERTR</code>, or if the matrix is not
+     * square.
+     * 
+     * \exception std::logic_error the factorization cannot be applied to matrices
+     * of type <code>MATRIX_DIAGONAL</code>. However, solving diagonal systems is
+     * a trivial case.
+     */
     explicit LDLFactorization(Matrix& m_matrix);
 
+    /**
+     * Destructor.
+     */
     virtual ~LDLFactorization();
 
     virtual int factorize(void);

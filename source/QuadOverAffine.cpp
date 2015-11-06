@@ -68,15 +68,15 @@ void checkConstructorArguments(const Matrix& Q, const Matrix& q, const Matrix& A
 
 QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
     checkConstructorArguments(Q, q, A, b);
-        
+
     m_F = NULL;
     m_Fsolver = NULL;
     m_sigma = NULL;
-    
+
     this->m_Q = &Q;
     this->m_q = &q;
     this->m_A = &A;
-    this->m_b = &b;    
+    this->m_b = &b;
     size_t n = Q.getNrows();
     size_t s = A.getNrows();
     size_t nF = n + s;
@@ -129,6 +129,14 @@ int QuadOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
     }
     f_star = -f_star;
     return status;
+}
+
+FunctionOntologicalClass QuadOverAffine::category() {
+    FunctionOntologicalClass meta("QuadraticOverAffine");
+    meta.set_defines_conjugate(true);
+    meta.set_defines_conjugate_grad(true);
+    meta.getSuperclasses().push_back(FunctionOntologyRegistry::conj_quadratic());
+    return meta;
 }
 
 

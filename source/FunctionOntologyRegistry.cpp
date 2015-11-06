@@ -117,6 +117,23 @@ FunctionOntologicalClass FunctionOntologyRegistry::quadratic() {
     return quad;
 }
 
+FunctionOntologicalClass FunctionOntologyRegistry::conj_quadratic() {
+    static bool defines_conjugate = true;
+    static bool defines_conjugate_grad = true;
+    static bool defines_f = false;
+    static bool defines_grad = false;
+    static bool defines_prox = false;
+    static FunctionOntologicalClass quad(
+            defines_conjugate,
+            defines_conjugate_grad,
+            defines_f,
+            defines_grad,
+            defines_prox,
+            "ConjugateQuadratic",
+            function());
+    return quad;
+}
+
 string FunctionOntologyRegistry::nameSpace() {
     static string ns("fb");
     return ns;

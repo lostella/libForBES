@@ -98,10 +98,14 @@ public:
 
     /**
      * Define a new quadratic-over-affine function.
-     * @param Q
-     * @param q
-     * @param A
-     * @param b
+     * 
+     * @param Q %Matrix Q
+     * @param q Vector q
+     * @param A %Matrix A
+     * @param b Vector b
+     * 
+     * \exception std::invalid_argument in case the given parameters have incompatible
+     * dimensions or matrix F = [Q A'; A 0] cannot be LDL-decomposed.
      */
     QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b);
 
@@ -111,6 +115,9 @@ public:
     virtual ~QuadOverAffine();
 
     virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);
+
+    virtual FunctionOntologicalClass category();
+
 
 
 private:

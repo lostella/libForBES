@@ -83,6 +83,9 @@ public:
      * 
      * @param w vector of weights
      * @param p vector p
+     * 
+     * \exception std::invalid_argument if either of <code>w</code> or <code>p</code>
+     * are not column-vectors, or if they are of incompatible sizes.
      */
     QuadraticLoss(Matrix& w, Matrix& p);
 
