@@ -13,6 +13,12 @@
  * 
  */
 
+/** \defgroup FBSolver-group
+ *
+ * \brief Forward-backward solver classes
+ * 
+ */
+
 /** \defgroup LinOp Linear Operators
  *
  * \brief Linear operators

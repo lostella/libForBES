@@ -61,9 +61,6 @@ int Function::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-FunctionOntologicalClass Function::category() {
-    return FunctionOntologyRegistry::function();
-}
 
 int Function::computeGradient(Matrix& x, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;

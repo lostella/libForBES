@@ -148,7 +148,7 @@ void TestMatrixFactory::testSparse2() {
     const size_t nnz = 6;
     Matrix N = MatrixFactory::MakeSparse(n, m, nnz, Matrix::SPARSE_UNSYMMETRIC);
     Matrix *M;
-    CPPUNIT_ASSERT_NO_THROW(M = new Matrix(N));
+    M = new Matrix(N);    
     CPPUNIT_ASSERT_NO_THROW(delete M);
 
     _ASSERT_EQ(n, N.getNrows());

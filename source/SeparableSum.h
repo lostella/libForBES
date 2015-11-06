@@ -59,6 +59,8 @@
  */
 class SeparableSum : public Function {
 public:    
+    
+    using Function::callConj;
 
     virtual ~SeparableSum();
 
@@ -75,9 +77,84 @@ public:
     virtual int call(Matrix& x, double& f);
 
     virtual int call(Matrix& x, double& f, Matrix& grad);
+    
+    /**
+     * Computes the conjugate of a separable sum function using the property that for
+     * a separable sum of the form
+     * 
+     * \f[
+     *  f(x) = \sum_{i=1}^{s} f_i(x_{\mathcal{I}_j}).
+     * \f]
+     * 
+     * the conjugate is given by
+     * 
+     * \f[
+     *  f^*(y) = \sum_{i=1}^{s} f_i^*(y_{\mathcal{I}_j}).
+     * \f]
+     * 
+     * @param x given vector of appropriate dimensions
+     * @param f_star value of the conjugate function to be computed
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     */
+    virtual int callConj(const Matrix& x, double& f_star);
 
+
+    /**
+     * Computes the proximal operator of a separable sum of functions using the
+     * formula
+     * 
+     * \f[
+     * (\mathrm{prox}_{\gamma f}(v))_{\mathcal{I}_j} = \mathrm{prox}_{\gamma f_j}(v_{\mathcal{I}_j}).
+     * \f]
+     * 
+     * @param x given vector of appropriate dimensions
+     * @param gamma gamma parameter of the proximal operator
+     * @param prox the result of the prox operator
+     * @return 
+     * status code which is equal to <code>STATUS_OK</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     * 
+     * \exception std::invalid_argument if <code>x</code> is not a column vector
+     * or if it has incompatible dimensions.
+     * 
+     */
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
 
+    /**
+     * Computes the proximal operator of a separable sum of functions using the
+     * formula
+     * 
+     * \f[
+     * (\mathrm{prox}_{\gamma f}(v))_{\mathcal{I}_j} = \mathrm{prox}_{\gamma f_j}(v_{\mathcal{I}_j}).
+     * \f]
+     * 
+     * This method computes both \f$\mathrm{prox}_{\gamma f}(v)\f$ and \f$f(\mathrm{prox}_{\gamma f}(v))\f$.
+     * 
+     * @param x given vector of appropriate dimensions
+     * @param gamma gamma parameter of the proximal operator
+     * @param prox the result of the prox operator
+     * @return 
+     * status code which is equal to <code>STATUS_OK</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     * 
+     * \exception std::invalid_argument if <code>x</code> is not a column vector
+     * or if it has incompatible dimensions.
+     * 
+     */
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
    
     virtual FunctionOntologicalClass category();

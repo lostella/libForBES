@@ -41,7 +41,7 @@ int SumOfNorm2::call(Matrix& x, double& f) {
     f = 0.0;
     const size_t n = x.getNrows();
     if (n % m_partition_length != 0) {
-        throw std::invalid_argument("Provided vector cannot be partitioned");
+        throw std::invalid_argument("Given vector cannot be partitioned");
     }
     /* number of chunks */
     const size_t n_chunks = n / m_partition_length;
@@ -52,7 +52,20 @@ int SumOfNorm2::call(Matrix& x, double& f) {
         m_norm2->call(x, f_temp);
         f += f_temp;
     }
-    return 0;
+    return ForBESUtils::STATUS_OK;
 }
+
+int SumOfNorm2::callProx(const Matrix& x, double gamma, Matrix& prox) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+int SumOfNorm2::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
+FunctionOntologicalClass SumOfNorm2::category() {
+    return FunctionOntologyRegistry::function();
+}
+
 
 

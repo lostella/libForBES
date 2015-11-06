@@ -6,7 +6,7 @@
  * 
  * \section separable-sum Separable sum of functions
  *
- * \subsection separable-sum-about The separable sum property
+ * \subsection separable-sum-about Separable sum properties
  *
  * We often encounter functions which are written as a separable sum of other 
  * functions whose proximal operators is known. In such cases, one can invoke the
@@ -34,6 +34,14 @@
  * 
  * As a result, it suffices to be able to compute \f$ \mathrm{prox}_{\gamma f_j}(\cdot)\f$
  * to compute the proximal of a separable sum.
+ *
+ * The conjugate of a separable sum function is also easy to compute as
+ * 
+ * \f[
+ *  f^*(y) = \sum_{i=1}^{s} f_i^*(y_{\mathcal{I}_j}).
+ * \f]
+ *
+ *
  *
  * \subsection separable-sum-code Code snippet
  * Let us now give a code snippet to demonstrate how this is implemented in 
@@ -89,7 +97,7 @@
  * Function * sep_sum = new SeparableSum(fun_idx_map);
  * \endcode
  * 
- *
+ * \sa \link doc-functs Functions API\endlink
  *
  *
  * 

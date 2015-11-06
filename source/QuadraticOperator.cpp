@@ -58,3 +58,7 @@ int QuadraticOperator::computeGradient(Matrix& x, Matrix& grad) {
     return ForBESUtils::STATUS_OK;
 }
 
+FunctionOntologicalClass QuadraticOperator::category() {
+    return FunctionOntologyRegistry::quadratic();
+}
+

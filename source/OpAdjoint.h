@@ -26,7 +26,7 @@
 /**
  * \class OpAdjoint
  * \brief Adjoint of a given linear operator
- * \version 0.0-tentative
+ * \version 0.1
  * \author Pantelis Sopasakis
  * \date Created on September 15, 2015, 2:57 PM
  * 

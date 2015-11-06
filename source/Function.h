@@ -67,7 +67,7 @@ public:
      * 
      * @return function ontological class
      */
-    virtual FunctionOntologicalClass category();
+    virtual FunctionOntologicalClass category() =0;
 
     /**
      * Returns the value of function f.
@@ -155,6 +155,7 @@ public:
      * status codes.
      * 
      * \todo Implement a dummy callConj which used its counterpart 
+     * 
      * \link Function::callConj(const Matrix&, double&, Matrix&) callConj(3)\endlink
      * to compute f_star and discard grad.
      */

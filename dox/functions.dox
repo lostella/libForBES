@@ -32,7 +32,17 @@
  * int callProx (const Matrix &x, double gamma, Matrix &prox);
  * int callProx (const Matrix &x, double gamma, Matrix &prox, double &f_at_prox);
  * \endcode
- * 
+ *
+ * \note Recall that the <em>convex conjugate</em> or <em>Fenchel conjugate</em>
+ * of a convex function is defined as
+ * \f[
+ *  f^*(y) = \sup_{z\in\mathbb{R}^n} \langle z, y\rangle - f(z).
+ * \f]
+ * and the proximal operator is defined as
+ * \f[
+ *  \mathrm{prox}_{\gamma f}(v) = \mathrm{argmin}_x f(x) + \frac{1}{2\gamma}\|x-v\|^2
+ * \f]
+ *
  * These methods provide the following functionality:
  * 1. Compute the value of the function \f$f(x)\in\mathbb{R}\f$ for a given 
  * vector \f$x\in\mathbb{R}^n\f$ or matrix \f$x\in\mathbb{R}^{n\times m}\f$

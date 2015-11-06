@@ -42,7 +42,7 @@
 /**
  * \class Matrix
  * \version version 0.3
- * \ingroup Matrix
+ * \ingroup Matrix-group
  * \date Created on July 7, 2015, 8:02 PM
  *
  * \brief A generic matrix API

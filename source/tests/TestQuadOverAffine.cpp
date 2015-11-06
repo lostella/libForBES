@@ -34,7 +34,7 @@ void TestQuadOverAffine::testQuadOverAffine() {
     Matrix b = MatrixFactory::MakeRandomMatrix(s, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 
     QuadOverAffine * qoa;
-    _ASSERT_OK(qoa = new QuadOverAffine(Q, q, A, b));
+    qoa = new QuadOverAffine(Q, q, A, b);
     _ASSERT_NEQ(NULL, qoa);
 
     Matrix y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
