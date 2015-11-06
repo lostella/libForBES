@@ -156,3 +156,51 @@ void TestMatrixFactory::testSparse2() {
     _ASSERT_EQ(0, Matrix::cholmod_handle()->status);
     _ASSERT(Matrix::cholmod_handle()->memory_usage > 0);
 }
+
+void TestMatrixFactory::testShallow1() {
+    const size_t n = 10;
+    Matrix X = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0);
+
+    Matrix X_shallow_copy = MatrixFactory::ShallowVector(X, 1);
+    _ASSERT_EQ(n - 1, X_shallow_copy.getNrows());
+    _ASSERT_EQ(n - 1, X_shallow_copy.length());
+
+
+    X_shallow_copy = MatrixFactory::ShallowVector(X, 2);
+    _ASSERT_EQ(n - 2, X_shallow_copy.getNrows());
+    _ASSERT_EQ(n - 2, X_shallow_copy.length());
+
+    for (size_t i = 0; i < n; i++) {
+        X.set(i, 0, i + 1.0);
+    }
+
+    X_shallow_copy = MatrixFactory::ShallowVector(X, 1);
+    _ASSERT_EQ(n - 1, X_shallow_copy.getNrows());
+    _ASSERT_EQ(n - 1, X_shallow_copy.length());
+    for (size_t i = 0; i < n - 1; i++) {
+        _ASSERT_EQ(i + 2.0, X_shallow_copy.get(i, 0));
+    }
+}
+
+void TestMatrixFactory::testShallow2() {
+    const size_t n = 20;
+    Matrix X_matrix = MatrixFactory::MakeRandomMatrix(n, 2, 0.0, 10.0);
+    Matrix X_sparse = MatrixFactory::MakeRandomSparse(n, 1, static_cast<size_t> (n / 2), 0.0, 10.0);
+    Matrix X_shallow_copy;
+    _ASSERT_EXCEPTION(X_shallow_copy = MatrixFactory::ShallowVector(X_matrix, 0), std::invalid_argument);
+    _ASSERT_EXCEPTION(X_shallow_copy = MatrixFactory::ShallowVector(X_sparse, 0), std::invalid_argument);
+}
+
+void TestMatrixFactory::testShallow3() {
+    const size_t n = 20;
+    double * data = new double[n];
+
+    for (size_t i = 0; i < n; ++i) {
+        data[i] = 1.5 * (i + 2.5);
+    }
+
+    Matrix X_shallow = MatrixFactory::ShallowVector(data, n, 1);
+
+}
+
+

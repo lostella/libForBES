@@ -49,15 +49,22 @@
  *
  * \note Operations with dense matrices are supported by BLAS and LAPACK routines,
  * while sparse matrix operations are delegated to SuiteSparse routines.
+ * 
+ * \note A factor for this class, namely MatrixFactory, facilitates the creation of
+ * matrices.
  *
- * <p>A generic matrix which can be an unstructured dense, a structured dense (e.g.,
+ * \par
+ * A generic matrix which can be an unstructured dense, a structured dense (e.g.,
  * symmetric or lower triangular, stored in packed form) or a dense matrix.
  * This class provides a uniform access framework (an API) to matrix-matrix
  * operations (e.g., addition and multiplication), factorizations and other useful
- * operations.</p>
+ * operations.
  *
- * <p>To construct a Matrix you can use one of this class's constructors. However,
- * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.</p>
+ * \par
+ * To construct a Matrix you can use one of this class's constructors. However,
+ * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.
+ * 
+ * \sa MatrixFactory
  *
  */
 class Matrix {
@@ -122,12 +129,14 @@ public:
     /* Constructors and destructors */
 
     /**
-     * Default constructor for <code>Matrix</code>.
+     * Default constructor for an empty <code>Matrix</code> object.
      */
     Matrix();
 
     /**
-     * Allocates an empty dense matrix of given dimensions
+     * Allocates an empty dense matrix of given dimensions.
+     * 
+     * \remark this constructor will allocate memory of <code>nr*nc*sizeof(double)</code>.
      *
      * @param nr number of rows
      * @param nc number of columns
@@ -136,6 +145,8 @@ public:
 
     /**
      * Allocates a matrix of given dimensions and given type.
+     * 
+     * \remark this constructor will allocate memory of <code>nr*nc*sizeof(double)</code>.
      *
      * @param nr number of rows
      * @param nc number of columns
@@ -145,6 +156,11 @@ public:
 
     /**
      * Allocates a new dense matrix.
+     * 
+     * \remark this constructor will allocate memory of <code>nr*nc*sizeof(double)</code>
+     * and will hard-copy the data provided into its internal state. To create a shallow
+     * copy pointing to <code>data</code> use \link MatrixFactory::ShallowVector(double*, size_t, size_t)
+     * ShallowVector\endlink (only for vectors).
      *
      * @param nr number of rows
      * @param nc number of columns
@@ -166,7 +182,8 @@ public:
     Matrix(size_t nr, size_t nc, const double * data, MatrixType matrixType);
 
     /**
-     * Copy-constructor.
+     * Copy-constructor. This constructor will hard-copy the contents and state of
+     * the given matrix.
      * @param orig
      */
     Matrix(const Matrix& orig);
@@ -193,9 +210,13 @@ public:
 
     /**
      * Returns the value of the current matrix at position <code>(i,j)</code>.
+     * 
      * @param i row index (<code>0,...,nrows-1</code>)
      * @param j column index (<code>0,...,ncols-1</code>)
      * @return value at <code>(i,j)</code>
+     * 
+     * \exception std::out_of_range in case some of the indices exceeds the maximum
+     * row or column dimension of the matrix.
      */
     double get(const size_t i, const size_t j) const;
 
@@ -307,6 +328,10 @@ public:
      *
      * \todo Implement quadFromSparse in case the matrix is sparse, but there
      * are no triplets available.
+     * 
+     * \exception std::invalid_argument if the provided argument <code>x</code> is not
+     * a column-vector, or the current matrix object does not correspond to a square
+     * matrix, or <code>x</code> is of incompatible dimensions.
      */
     double quad(Matrix& x);
 
@@ -322,17 +347,25 @@ public:
      * @param x The vector x.
      * @param q The parameter vector x.
      * @return The result of operation <code>0.5*x'*Q*x + q'*x</code> as a double.
+     * 
+     * \exception std::invalid_argument if the provided argument <code>x</code> is not
+     * a column-vector, or the current matrix object does not correspond to a square
+     * matrix, or either <code>x</code> or <code>q</code> are of incompatible dimensions.
      */
     double quad(Matrix& x, Matrix& q);
 
-    
+
     /**
      * Converts a vector into a diagonal matrix and vice verse. 
      * This method only applies to vectors and diagonal matrices and will 
      * throw a <code>std::invalid_argument</code> exception otherwise.
+     * 
+     * \exception std::invalid_argument if the method is applied to a matrix that is
+     * neither a dense vector (type <code>MATRIX_DENSE</code>) nor a diagonal matrix
+     * (type <code>MATRIX_DIAGONAL</code>).
      */
     void toggle_diagonal();
-    
+
 
 
     /* Operators */
@@ -344,6 +377,8 @@ public:
      *
      * @param sub index
      * @return reference to matrix data
+     * 
+     * \exception std::out_of_range in case the provided index is out of range.
      */
     double &operator[](const size_t sub) const; //overloading []
 
@@ -441,6 +476,13 @@ public:
      * @param col_end column end
      *
      * @return New matrix object with copied data
+     * 
+     * \exception std::out_of_range in case the arguments are out of range or
+     * <code>row_end < row_start</code> or <code>col_end < col_start</code>.
+     * 
+     * \exception std::logic_error if the method is applied to a matrix which is 
+     * neither of type <code>MATRIX_DENSE</code> nor <code>MATRIX_SPARSE</code>.
+     * No other matrix types are supported.
      */
     Matrix submatrixCopy(size_t row_start, size_t row_end, size_t col_start, size_t col_end);
 
@@ -461,6 +503,14 @@ public:
      * @param right_col_start
      * @param right_col_end
      * @return The result as a newly created Matrix object.
+     * 
+     * \exception std::logic_error if the method is applied to a matrix which is not
+     * of type <code>MATRIX_DENSE</code>. No other matrix types are supported.
+     * 
+     * \exception std::invalid_argument in case of incompatible dimensions
+     * 
+     * \exception std::out_of_range in cases indices for either of the matrices
+     * are out of range.
      */
     Matrix multiplySubmatrix(
             Matrix& rhs,
@@ -476,6 +526,15 @@ public:
 
 
 private:
+
+    /**
+     * Creates a shallow matrix. However, this constructor is private. Clients
+     * can create shallow matrices using MatrixFactory only.
+     * 
+     * @param shallow dummy parameter
+     */
+    Matrix(bool shallow);
+
     /* MatrixFactory is allowed to access these private fields! */
     friend class MatrixFactory;
     friend class CholeskyFactorization;
@@ -483,21 +542,21 @@ private:
     friend class S_LDLFactorization;
     friend class MatrixWriter;
 
-    size_t m_nrows;     /**< Number of rows */
-    size_t m_ncols;     /**< Number of columns */
-    bool m_transpose;   /**< Whether this matrix is transposed */
-    MatrixType m_type;  /**< Matrix type */
+    size_t m_nrows; /**< Number of rows */
+    size_t m_ncols; /**< Number of columns */
+    bool m_transpose; /**< Whether this matrix is transposed */
+    MatrixType m_type; /**< Matrix type */
 
     /* For dense matrices: */
 
-    size_t m_dataLength;    /**< Length of data */
-    double *m_data;         /**< Data (for non-sparse matrices) */
-    bool m_delete_data;     /**< Whether it is allowed to delete[] m_data */
+    size_t m_dataLength; /**< Length of data */
+    double *m_data; /**< Data (for non-sparse matrices) */
+    bool m_delete_data; /**< Whether it is allowed to delete[] m_data */
 
     /* CSparse members */
     cholmod_triplet *m_triplet; /**< Sparse triplets */
-    cholmod_sparse *m_sparse;   /**< A sparse matrix */
-    cholmod_dense *m_dense;     /**< A dense CHOLMOD matrix */
+    cholmod_sparse *m_sparse; /**< A sparse matrix */
+    cholmod_dense *m_dense; /**< A dense CHOLMOD matrix */
 
 
     /* SINGLETON CHOLMOD HANDLE */
@@ -637,7 +696,6 @@ private:
      * @param rhs right hand side
      */
     inline void _addS(Matrix& rhs);
-
 
 };
 

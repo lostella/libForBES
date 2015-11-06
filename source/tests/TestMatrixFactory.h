@@ -22,6 +22,9 @@ class TestMatrixFactory : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testReadSparseFromFile);
     CPPUNIT_TEST(testSparse);
     CPPUNIT_TEST(testSparse2);
+    CPPUNIT_TEST(testShallow1);
+    CPPUNIT_TEST(testShallow2);
+    CPPUNIT_TEST(testShallow3);
     
     CPPUNIT_TEST_SUITE_END();
 
@@ -38,6 +41,9 @@ private:
     void testReadSparseFromFile();
     void testSparse();
     void testSparse2();
+    void testShallow1();
+    void testShallow2();
+    void testShallow3();
 
 };
 

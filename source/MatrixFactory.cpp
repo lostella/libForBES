@@ -106,3 +106,30 @@ Matrix MatrixFactory::ReadSparse(FILE* fp) {
     mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());
     return mat;
 }
+
+Matrix MatrixFactory::ShallowVector(const Matrix& orig, size_t offset) {
+    if (orig.getType() != Matrix::MATRIX_DENSE) {
+        throw std::invalid_argument("This method can only be applied to dense vectors");
+    }
+    if (orig.getNcols() != 1 && orig.getNrows() != 1) {
+        throw std::invalid_argument("This method can only be applied to vectors");
+    }
+    Matrix v_shallow = Matrix(true);
+    v_shallow.m_transpose = orig.m_transpose;
+    v_shallow.m_nrows = orig.m_transpose ? orig.m_nrows : orig.m_nrows - offset;
+    v_shallow.m_ncols = orig.m_transpose ? orig.m_ncols - offset : orig.m_ncols;
+    v_shallow.m_dataLength = v_shallow.m_nrows * v_shallow.m_ncols;
+    v_shallow.m_delete_data = false;
+    v_shallow.m_data = orig.m_data + offset;
+    return v_shallow;
+}
+
+Matrix MatrixFactory::ShallowVector(double* data, size_t size, size_t offset) {
+    Matrix v_shallow(size, 1, Matrix::MATRIX_DENSE);
+    v_shallow.m_delete_data = false;
+    v_shallow.m_data = data + offset;
+    return v_shallow;
+}
+
+
+

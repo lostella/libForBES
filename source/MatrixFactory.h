@@ -138,6 +138,31 @@ public:
      * @throw cholmod_error an exception is thrown when the file format is wrong.
      */
     static Matrix ReadSparse(FILE *fp);
+        
+    
+    /**
+     * Creates a <em>shallow vector</em> from a given pointer-to-double.
+     * Shallow vectors do not allocate space for their data, but instead point to 
+     * an allocated space in memory.
+     * 
+     * @param vector any dense vector (either column or row vector)
+     * @param offset offset with respect to the original vector
+     * @return shallow vector
+     */
+    static Matrix ShallowVector(const Matrix& vector, size_t offset);
+    
+    /**
+     * Creates a <em>shallow vector</em> from a given pointer-to-double.
+     * Shallow vectors do not allocate space for their data, but instead point to 
+     * an allocated space in memory.
+     * 
+     * @param data pointer to data
+     * @param size total size of original data
+     * @param offset offset with respect to the original pointer
+     * @return shallow vector
+     */
+    static Matrix ShallowVector(double * data, size_t size, size_t offset);
+    
 
 private:
 

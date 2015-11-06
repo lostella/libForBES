@@ -783,11 +783,19 @@ Matrix & Matrix::operator=(const Matrix & right) {
     if (this == &right) {// Same object?
         return *this; // Yes, so skip assignment, and just return *this.
     }
+    /* make sure shallow copies remain shallow */
+    m_delete_data = right.m_delete_data;
     m_ncols = right.m_ncols;
     m_nrows = right.m_nrows;
     m_type = right.m_type;
-    if (right.m_type != MATRIX_SPARSE) {
-        m_dataLength = right.m_dataLength;
+
+    /* 
+     * copy m_data only if 
+     * (i)  the matrix is not sparse
+     * (ii) the matrix is not shallow
+     */
+    m_dataLength = right.m_dataLength;
+    if (right.m_type != MATRIX_SPARSE && m_delete_data) {
         if (m_data != NULL) {
             delete m_data;
         }
@@ -1140,13 +1148,13 @@ Matrix Matrix::submatrixCopy(size_t row_start, size_t row_end, size_t col_start,
     /* DONE: Fully tested */
     //LCOV_EXCL_START
     if (row_end < row_start || col_end < col_start) {
-        throw std::invalid_argument("Matrix::submatrixCopy:: start > end is not allowed");
+        throw std::out_of_range("Matrix::submatrixCopy:: start > end is not allowed");
     }
     if (row_end > m_nrows) {
-        throw std::invalid_argument("Matrix::submatrixCopy:: row_end > total number of rows");
+        throw std::out_of_range("Matrix::submatrixCopy:: row_end > total number of rows");
     }
     if (col_end > m_ncols) {
-        throw std::invalid_argument("Matrix::submatrixCopy:: col_end > total number of columns");
+        throw std::out_of_range("Matrix::submatrixCopy:: col_end > total number of columns");
     }
     //LCOV_EXCL_STOP
     size_t rows = row_end - row_start + 1;
@@ -1263,9 +1271,23 @@ void Matrix::toggle_diagonal() {
         throw std::invalid_argument("Can only be applied to column vectors and diagonal matrices");
     }
     m_type = isColumnVector() ? MATRIX_DIAGONAL : MATRIX_DENSE;
-    if (isColumnVector()){
+    if (isColumnVector()) {
         m_ncols = m_nrows;
     } else {
         m_ncols = 1;
     }
+}
+
+Matrix::Matrix(bool shallow) {
+    this->m_data = NULL;
+    this->m_delete_data = false;
+    m_nrows = 0;
+    m_ncols = 0;
+    m_dataLength = 0;
+    m_type = MATRIX_DENSE;
+    m_transpose = false;
+    m_triplet = NULL;
+    m_sparse = NULL;
+    m_dense = NULL;
+    m_sparseStorageType = CHOLMOD_TYPE_TRIPLET;
 }
