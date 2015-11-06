@@ -1,7 +1,7 @@
 #include "FBCache.h"
 #include "LinearOperator.h"
 
-FBCache::FBCache(FBProblem & p, Matrix & myx, double mygamma) : m_prob(p), m_x(myx), m_gamma(mygamma) {
+FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m_gamma(gamma) {
     // store pointers to problem and all relevant details
     this->m_f1 = p.getf1();
     this->m_L1 = p.getL1();
@@ -106,7 +106,7 @@ int FBCache::update_forward_step(double gamma) {
     return ForBESUtils::STATUS_OK;
 }
 
-Matrix * FBCache::update_forward_backward_step(double gamma) {
+int FBCache::update_forward_backward_step(double gamma) {
     double gamma0 = this->m_gamma;
 
     if (m_flag_gradstep == 0 || gamma != gamma0) {
