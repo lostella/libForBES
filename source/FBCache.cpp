@@ -30,6 +30,48 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m
     m_gradfx = new Matrix(m_prob.getn(), 1);
     m_z = new Matrix(m_prob.getn(), 1);
     m_y = new Matrix(m_prob.getn(), 1);
+    
+    m_flag_evalf = -1;
+    m_flag_gradstep = -1;
+    m_flag_proxgradstep = -1;
+    
+    m_f1x = 0.0;
+    m_f2x = 0.0;
+    m_linx = 0.0;
+    m_fx = 0.0;
+    m_gz = 0.0;
+}
+
+FBCache::~FBCache() {
+    if (m_z != NULL) {
+        delete m_z;
+        m_z = NULL;
+    }
+    if (m_y != NULL) {
+        delete m_y;
+        m_y = NULL;
+    }
+    if (m_res2x != NULL) {
+        delete m_res2x;
+        m_res2x = NULL;
+    }
+    if (m_gradf2x != NULL) {
+        delete m_gradf2x;
+        m_gradf2x = NULL;
+    }
+    if (m_res1x != NULL) {
+        delete m_res1x;
+        m_res1x = NULL;
+    }
+    if (m_gradf1x != NULL) {
+        delete m_gradf1x;
+        m_gradf1x = NULL;
+    }
+    if (m_gradfx != NULL){
+        delete m_gradfx;
+        m_gradfx = NULL;
+    }
+
 }
 
 int FBCache::update_eval_f() {
@@ -135,5 +177,3 @@ int FBCache::update_grad_FBE(double gamma) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-FBCache::~FBCache() {
-}

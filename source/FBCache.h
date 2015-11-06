@@ -69,7 +69,7 @@ private:
     int update_forward_step(double gamma);
     
 public:
-    FBCache(FBProblem & p, Matrix & myx, double mygamma);
+    FBCache(FBProblem & p, Matrix & x, double gamma);
 
     virtual ~FBCache();
 
