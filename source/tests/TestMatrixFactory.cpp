@@ -161,14 +161,23 @@ void TestMatrixFactory::testShallow1() {
     const size_t n = 10;
     Matrix X = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0);
 
+    /*
+     * shallow copies (with various offsets)...
+     */
     Matrix X_shallow_copy = MatrixFactory::ShallowVector(X, 1);
     _ASSERT_EQ(n - 1, X_shallow_copy.getNrows());
     _ASSERT_EQ(n - 1, X_shallow_copy.length());
-
+    for (size_t i = 0; i < n - 1; i++) {
+        _ASSERT_EQ(X_shallow_copy[i], X[i + 1]);
+    }
 
     X_shallow_copy = MatrixFactory::ShallowVector(X, 2);
     _ASSERT_EQ(n - 2, X_shallow_copy.getNrows());
     _ASSERT_EQ(n - 2, X_shallow_copy.length());
+    for (size_t i = 0; i < n - 2; i++) {
+        _ASSERT_EQ(X_shallow_copy[i], X[i + 2]);
+    }
+
 
     for (size_t i = 0; i < n; i++) {
         X.set(i, 0, i + 1.0);
@@ -180,9 +189,19 @@ void TestMatrixFactory::testShallow1() {
     for (size_t i = 0; i < n - 1; i++) {
         _ASSERT_EQ(i + 2.0, X_shallow_copy.get(i, 0));
     }
+
+    Matrix Y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0);
+    Y.transpose();
+    
+    X_shallow_copy = MatrixFactory::ShallowVector(Y, 1);
+    _ASSERT_EQ(Y.getNcols() - 1, X_shallow_copy.getNcols());
+    _ASSERT_EQ(Y.getNrows(), X_shallow_copy.getNrows());
+
+
 }
 
 void TestMatrixFactory::testShallow2() {
+    /* test exceptions */
     const size_t n = 20;
     Matrix X_matrix = MatrixFactory::MakeRandomMatrix(n, 2, 0.0, 10.0);
     Matrix X_sparse = MatrixFactory::MakeRandomSparse(n, 1, static_cast<size_t> (n / 2), 0.0, 10.0);
@@ -192,15 +211,47 @@ void TestMatrixFactory::testShallow2() {
 }
 
 void TestMatrixFactory::testShallow3() {
+    /* test method ShallowVector(const Matrix& orig, size_t offset); */
     const size_t n = 20;
-    double * data = new double[n];
+    Matrix X = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0);
 
-    for (size_t i = 0; i < n; ++i) {
-        data[i] = 1.5 * (i + 2.5);
+    const size_t n1 = 4;
+    const size_t p = 2;
+    Matrix X_shallow = MatrixFactory::ShallowVector(X, n1, p);
+    _ASSERT_EQ(n1, X_shallow.length());
+
+    for (size_t i = 0; i < n1; i++) {
+        _ASSERT_EQ(X[p + i], X_shallow[i]);
     }
 
-    Matrix X_shallow = MatrixFactory::ShallowVector(data, n, 1);
+    Matrix Xsub = X.submatrixCopy(p, p + n1 - 1, 0, 0);
+    _ASSERT_EQ(Xsub, X_shallow);
+
+    Matrix A = MatrixFactory::MakeRandomMatrix(n1, n1, 10.0, 2.0);
+    Matrix y1 = A*Xsub;
+    Matrix y2 = A*X_shallow;
+
+    _ASSERT_EQ(y1, y2);
 
 }
+
+void TestMatrixFactory::testShallow4() {
+    /* Shallow matrix from pointer-to-double */
+    const size_t n = 20;
+    const size_t m = 10;
+    double * data = new double[n]();
+    for (size_t i = 0; i < n; i++) {
+        data[i] = i + 1.0;
+    }
+
+    Matrix shallow = MatrixFactory::ShallowVector(data, m, 1);
+    _ASSERT_EQ(m, shallow.length());
+    _ASSERT_EQ(m, shallow.getNrows());
+    for (size_t i = 0; i < m; i++) {
+        _ASSERT_EQ(static_cast<double> (i + 2.0), shallow[i]);
+    }
+
+}
+
 
 

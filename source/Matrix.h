@@ -533,7 +533,7 @@ private:
      * 
      * @param shallow dummy parameter
      */
-    Matrix(bool shallow);
+    explicit Matrix(bool shallow);
 
     /* MatrixFactory is allowed to access these private fields! */
     friend class MatrixFactory;

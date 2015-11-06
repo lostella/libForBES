@@ -795,6 +795,9 @@ Matrix & Matrix::operator=(const Matrix & right) {
      * (ii) the matrix is not shallow
      */
     m_dataLength = right.m_dataLength;
+    if (!m_delete_data){
+        m_data = right.m_data;
+    }
     if (right.m_type != MATRIX_SPARSE && m_delete_data) {
         if (m_data != NULL) {
             delete m_data;

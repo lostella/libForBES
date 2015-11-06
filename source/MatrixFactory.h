@@ -40,8 +40,8 @@
  * any memory inside the Matrix object.
  */
 class MatrixFactory {
-public:    
-    
+public:
+
 
     /**
      * Returns a random matrix as an instance of <code>Matrix</code>.
@@ -55,8 +55,8 @@ public:
      * @return A random matrix object.
      */
     static Matrix MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type);
-    
-    
+
+
     /**
      * Returns a random matrix as an instance of <code>Matrix</code> with type
      * \link Matrix::MATRIX_DENSE MATRIX_DENSE\endlink..
@@ -69,8 +69,8 @@ public:
      * @return A random dense matrix object.
      */
     static Matrix MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale);
-    
-    
+
+
     /**
      * Constructs an identity matrix of type <code>Matrix::MATRIX_DIAGONAL</code>.
      * 
@@ -80,8 +80,8 @@ public:
      * is a given scalar.
      */
     static Matrix MakeIdentity(size_t n, float alpha);
-        
-    
+
+
     /**
      * Creates a sparse matrix of given dimensions, maximum number of non-zero 
      * elements and sparsity pattern (symmetric or not).
@@ -92,7 +92,7 @@ public:
      * @return Allocated sparse matrix
      */
     static Matrix MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Matrix::SparseMatrixType stype);
-    
+
     /**
      * Creates a sparse symmetric matrix of given dimensions.
      * @param n matrix size (matrix is square)
@@ -100,7 +100,7 @@ public:
      * @return Allocated sparse matrix
      */
     static Matrix MakeSparseSymmetric(size_t n, size_t max_nnz);
-    
+
     /**
      * Allocates a sparse matrix of given dimensions and instantiates it with
      * random entries at random positions. The client needs to specify the
@@ -122,7 +122,7 @@ public:
      * @return Allocated random sparse matrix
      */
     static Matrix MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale);
-    
+
     /**
      * Reads a sparse matrix from a file and returns a <code>Matrix</code> object.
      * 
@@ -138,31 +138,66 @@ public:
      * @throw cholmod_error an exception is thrown when the file format is wrong.
      */
     static Matrix ReadSparse(FILE *fp);
-        
+
     
     /**
-     * Creates a <em>shallow vector</em> from a given pointer-to-double.
+     * Creates a <em>shallow vector</em> from a given %Matrix object.
      * Shallow vectors do not allocate space for their data, but instead point to 
      * an allocated space in memory.
+     * 
+     * \note Since the internal data of a shallow vector point to another object's
+     * data - here to the data of <code>vector</code>. Any modification in the original
+     * (actual) data will be visible from the shallow copy. However, reshape operations
+     * and transposition of the original matrix will not affect its shallow copy.
+     * 
+     * \exception std::invalid_argument in case the provided %Matrix object <code>vector</code>
+     * is not a dense matrix. Note that it is allowed for the provided %Matrix object to 
+     * be either a column or a row vector.
+     * 
+     * @param vector any dense vector (either column or row vector)
+     * @param size size/length of the shallow vector to be created
+     * @param offset offset with respect to the original vector
+     * @return shallow vector
+     */
+    static Matrix ShallowVector(const Matrix& vector, size_t size, size_t offset);
+
+    /**
+     * Creates a <em>shallow vector</em> from a given %Matrix object.
+     * Shallow vectors do not allocate space for their data, but instead point to 
+     * an allocated space in memory.
+     * 
+     * \note Since the internal data of a shallow vector point to another object's
+     * data - here to the data of <code>vector</code>. Any modification in the original
+     * (actual) data will be visible from the shallow copy. However, reshape operations
+     * and transposition of the original matrix will not affect its shallow copy.
+     * 
+     * \exception std::invalid_argument in case the provided %Matrix object <code>vector</code>
+     * is not a dense matrix. Note that it is allowed for the provided %Matrix object to 
+     * be either a column or a row vector.
      * 
      * @param vector any dense vector (either column or row vector)
      * @param offset offset with respect to the original vector
      * @return shallow vector
      */
     static Matrix ShallowVector(const Matrix& vector, size_t offset);
-    
+
     /**
      * Creates a <em>shallow vector</em> from a given pointer-to-double.
      * Shallow vectors do not allocate space for their data, but instead point to 
      * an allocated space in memory.
      * 
+     * 
      * @param data pointer to data
-     * @param size total size of original data
+     * 
+     * @param size size of the created shallow vector. This should be of course
+     * smaller than or equal to the size of the original data.
+     * 
      * @param offset offset with respect to the original pointer
+     * 
      * @return shallow vector
      */
     static Matrix ShallowVector(double * data, size_t size, size_t offset);
-    
+
 
 private:
 

@@ -107,7 +107,7 @@ Matrix MatrixFactory::ReadSparse(FILE* fp) {
     return mat;
 }
 
-Matrix MatrixFactory::ShallowVector(const Matrix& orig, size_t offset) {
+Matrix MatrixFactory::ShallowVector(const Matrix& orig, size_t size, size_t offset) {
     if (orig.getType() != Matrix::MATRIX_DENSE) {
         throw std::invalid_argument("This method can only be applied to dense vectors");
     }
@@ -116,16 +116,24 @@ Matrix MatrixFactory::ShallowVector(const Matrix& orig, size_t offset) {
     }
     Matrix v_shallow = Matrix(true);
     v_shallow.m_transpose = orig.m_transpose;
-    v_shallow.m_nrows = orig.m_transpose ? orig.m_nrows : orig.m_nrows - offset;
-    v_shallow.m_ncols = orig.m_transpose ? orig.m_ncols - offset : orig.m_ncols;
+    v_shallow.m_nrows = orig.m_transpose ? 1 : size;
+    v_shallow.m_ncols = orig.m_transpose ? size : 1;
     v_shallow.m_dataLength = v_shallow.m_nrows * v_shallow.m_ncols;
     v_shallow.m_delete_data = false;
     v_shallow.m_data = orig.m_data + offset;
     return v_shallow;
 }
 
+Matrix MatrixFactory::ShallowVector(const Matrix& orig, size_t offset) {
+    return MatrixFactory::ShallowVector(orig, orig.length() - offset, offset);
+}
+
 Matrix MatrixFactory::ShallowVector(double* data, size_t size, size_t offset) {
-    Matrix v_shallow(size, 1, Matrix::MATRIX_DENSE);
+    Matrix v_shallow = Matrix(true);
+    v_shallow.m_transpose = false;
+    v_shallow.m_nrows = size;
+    v_shallow.m_ncols = 1;
+    v_shallow.m_dataLength = v_shallow.m_nrows;
     v_shallow.m_delete_data = false;
     v_shallow.m_data = data + offset;
     return v_shallow;
