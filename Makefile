@@ -41,16 +41,15 @@ NPROCS:=$$(($(NPROCS)-1))
 CXX = g++
 
 # Enable CCACHE
-CCACHE_EXISTS := $(shell ccache -V)
-ifdef CCACHE_EXISTS
+ifneq (, $(shell which ccache))
     CXX := ccache $(CXX)
 endif
 
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
 CFLAGS_ADDITIONAL = -O0
-CFLAGS_ADDITIONAL += -fprofile-arcs
-CFLAGS_ADDITIONAL += -ftest-coverage
+#CFLAGS_ADDITIONAL += -fprofile-arcs
+#CFLAGS_ADDITIONAL += -ftest-coverage
 
 CFLAGS_WARNINGS = -pedantic \
 		-Wall \
@@ -174,7 +173,9 @@ SOURCES = \
 	SeparableSum.cpp \
 	IndBall2.cpp \
 	QuadraticLossOverAffine.cpp \
-	SumOfNorm2.cpp
+	SumOfNorm2.cpp \
+	FBProblem.cpp \
+	FBCache.cpp
  
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
@@ -261,11 +262,11 @@ test: build-tests
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo
-	@echo Compiling $*
+	@echo [Compiling $*]
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*.o $(TEST_DIR)/$*.cpp
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*Runner.o $(TEST_DIR)/$*Runner.cpp
 	@echo
-	@echo Linking $*
+	@echo [Linking $*]
 	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
 	@echo "\n\n\n"
 
@@ -291,8 +292,6 @@ $(BIN_TEST_DIR):
 	mkdir -p $(BIN_TEST_DIR)
 
 clean:
-	@echo $(NPROCS)
-	@echo $(MAKEFLAGS)
 	@echo Cleaning...
 	rm -rf $(OBJ_DIR)/*.o ;
 	rm -rf $(OBJ_TEST_DIR)/*.o;

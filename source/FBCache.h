@@ -24,35 +24,59 @@
 #include "Matrix.h"
 #include "FBProblem.h"
 
+/**
+ * \class FBProblem
+ * \brief Low level FB problem description
+ * \version version 0.0
+ * \ingroup FBSolver-group
+ * 
+ * 
+ */
 class FBCache {
-public:
-
-  FBCache(FBProblem &p, Matrix & x, double gamma);
-
-	virtual ~FBCache() {}
-
-	double evalf();
-  double evalFBE(double gamma);
-  Matrix& gradFBE(double gamma);
-  Matrix& forwardBackwardStep(double gamma);
-
 private:
+    int m_flag_evalf;
+    int m_flag_gradstep;
+    int m_flag_proxgradstep;
 
-	int	flag_evalf, flag_gradstep, flag_proxgradstep;
+    FBProblem & m_prob;
+    Matrix & m_x;
 
-	Function * f1, * f2, * g;
-  LinearOperator * L1, * L2;
-  Matrix * d1, * d2, * lin;
+    /* Reference to problem details */
+    Function * m_f1;
+    Function * m_f2;
+    Function * m_g;
+    LinearOperator * m_L1;
+    LinearOperator * m_L2;
+    Matrix * m_d1;
+    Matrix * m_d2;
+    Matrix * m_lin;
 
-	Matrix x, y, z;
-	Matrix res1x, gradf1x;
-	Matrix res2x, gradf2x;
-  Matrix gradfx;
-  double f1x, f2x, linx, fx, gz, gamma;
+    /* Internal storage for computing proximal-gradient steps */
+    Matrix * m_y;
+    Matrix * m_z;
+    Matrix * m_res1x;
+    Matrix * m_gradf1x;
+    Matrix * m_res2x;
+    Matrix * m_gradf2x;
+    Matrix * m_gradfx;
+    double m_f1x;
+    double m_f2x;
+    double m_linx;
+    double m_fx;
+    double m_gz;
+    double m_gamma;
 
-  Matrix& forwardStep(double gamma);
+    int update_forward_step(double gamma);
+    
+public:
+    FBCache(FBProblem & p, Matrix & myx, double mygamma);
 
-protected:
+    virtual ~FBCache();
+
+    double update_eval_f();
+    double evalFBE(double gamma);
+    Matrix * gradFBE(double gamma);
+    int update_forward_backward_step(double gamma);
 
 };
 
