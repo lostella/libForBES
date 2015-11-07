@@ -6,11 +6,15 @@
  * 
  * \tableofcontents 
  * 
- * \section linop-sec Linear Operator
+ * \section linop-sec The Linear Operator API
  * 
  * A linear operator \f$T:\mathbb{R}^n \to \mathbb{R}^m\f$ may not always be 
  * available in the explicit form of a 
  * matrix, but in some implicit form to which we don't have direct access. 
+ *
+ * What is more, one may define linear operators over spaces of matrices, for 
+ * instance \f$T: X\to Y\f$, where either or both of \f$X\f$ and \f$Y\f$ can be
+ * \f$\mathbb{R}^{n\times m}\f$.
  * 
  * Think of a linear operator <code>T</code> as a black box function for which we only
  * know that it is linear and we can evaluate its value \f$T(x)\f$ at a given
@@ -21,10 +25,17 @@
  * You will then need to implement the following methods:
  * 
  * \code{.cpp}
- * virtual Matrix call(Matrix& x) = 0;              // define T(x)
- * virtual Matrix callAdjoint(Matrix& x) = 0;       // define T^*(y)
- * virtual bool isSelfAdjoint() = 0;                // is it a self-adjoint operator?
- * virtual size_t dimensionIn() = 0;                // x - dimension
- * virtual size_t dimensionOut() = 0;               // T(x) - dimension
+ * virtual Matrix call(Matrix& x) = 0;                      // define T(x)
+ * virtual Matrix callAdjoint(Matrix& x) = 0;               // define T^*(y)
+ * virtual bool isSelfAdjoint() = 0;                        // is it a self-adjoint operator?
+ * virtual std::pair< size_t, size_t > dimensionIn() = 0;   // x - dimension
+ * virtual std::pair< size_t, size_t > dimensionOut() = 0;  // T(x) - dimension
  * \endcode
+ *
+ * The input and output spaces' dimensions are defined as a pair of size_t where
+ * the first entry corresponds to the number of rows and the second entry is the
+ * number of columns.
+ *
+ * \sa LinearOperator
+ *
  */

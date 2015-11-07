@@ -21,11 +21,12 @@
 #include "OpDCT3.h"
 
 OpDCT3::OpDCT3(size_t dimension) :
-LinearOperator(), m_dimension(dimension) {
+LinearOperator(),
+m_dimension(std::pair<size_t, size_t>(dimension, static_cast<size_t> (1))) {
 }
 
 OpDCT3::OpDCT3() {
-    m_dimension = 0;
+    m_dimension = std::pair<size_t, size_t>(static_cast<size_t> (0), static_cast<size_t> (1));
 }
 
 OpDCT3::~OpDCT3() {
@@ -33,7 +34,7 @@ OpDCT3::~OpDCT3() {
 
 Matrix OpDCT3::call(Matrix& x) {
     size_t n = x.length();
-    if (m_dimension != 0 && n != m_dimension) {
+    if (m_dimension.first != 0 && n != m_dimension.first) {
         throw std::invalid_argument("x-dimension is invalid");
     }
     Matrix Tx(n, 1);
@@ -50,7 +51,7 @@ Matrix OpDCT3::call(Matrix& x) {
 
 Matrix OpDCT3::callAdjoint(Matrix& y) {
     size_t n = y.length();
-    if (m_dimension != 0 && n != m_dimension) {
+    if (m_dimension.first != 0 && n != m_dimension.first) {
         throw std::invalid_argument("x-dimension is invalid");
     }
     Matrix Tstar_y(n, 1);
@@ -70,11 +71,11 @@ Matrix OpDCT3::callAdjoint(Matrix& y) {
     return Tstar_y;
 }
 
-size_t OpDCT3::dimensionIn() {
+std::pair<size_t, size_t> OpDCT3::dimensionIn() {
     return m_dimension;
 }
 
-size_t OpDCT3::dimensionOut() {
+std::pair<size_t, size_t> OpDCT3::dimensionOut() {
     return m_dimension;
 }
 

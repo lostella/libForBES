@@ -24,10 +24,13 @@ void call_1d(Matrix & Tx, Matrix& x, const size_t n);
 void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n);
 
 OpGradient::OpGradient() {
-    m_dimension = 0;
+    m_dimension.first = static_cast<size_t> (0);
+    m_dimension.second = static_cast<size_t> (1);
 }
 
-OpGradient::OpGradient(size_t n) : LinearOperator(), m_dimension(n) {
+OpGradient::OpGradient(size_t n) : LinearOperator() {
+    m_dimension.first = static_cast<size_t> (n);
+    m_dimension.second = static_cast<size_t> (1);
 }
 
 OpGradient::~OpGradient() {
@@ -55,7 +58,7 @@ void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n) {
 
 Matrix OpGradient::call(Matrix& x) {
     const size_t n = x.length();
-    if (m_dimension != 0 && n != m_dimension) {
+    if (m_dimension.first != 0 && n != m_dimension.first) {
         throw std::invalid_argument("x-dimension is invalid");
     }
     Matrix Tx(n - 1, 1);
@@ -68,7 +71,7 @@ Matrix OpGradient::call(Matrix& x) {
 
 Matrix OpGradient::callAdjoint(Matrix& y) {
     const size_t n = y.length() + 1;
-    if (m_dimension != 0 && n != m_dimension) {
+    if (m_dimension.first != 0 && n != m_dimension.first) {
         throw std::invalid_argument("x-dimension is invalid");
     }
     Matrix Tstar_x(n, 1);
@@ -76,12 +79,19 @@ Matrix OpGradient::callAdjoint(Matrix& y) {
     return Tstar_x;
 }
 
-size_t OpGradient::dimensionIn() {
+std::pair<size_t, size_t> OpGradient::dimensionIn() {
     return m_dimension;
 }
 
-size_t OpGradient::dimensionOut() {
-    return m_dimension == 0 ? 0 : (m_dimension - 1);
+std::pair<size_t, size_t> OpGradient::dimensionOut() {
+    std::pair<size_t, size_t> dims;
+    dims.second = static_cast<size_t> (1);
+    if (m_dimension.first == 0) {
+        dims.first = static_cast<size_t> (0);
+    } else {
+        dims.first = static_cast<size_t> (dimensionIn().first - 1);
+    }
+    return dims;
 }
 
 bool OpGradient::isSelfAdjoint() {

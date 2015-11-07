@@ -20,73 +20,54 @@
 #include "FBProblem.h"
 
 FBProblem::FBProblem(
-        int n,
-        Function * f1,
-        LinearOperator * L1,
-        Matrix * d1,
-        Function * f2,
-        LinearOperator * L2,
-        Matrix * d2,
-        Matrix * lin,
-        Function * g) {
-    this->m_f1 = f1;
-    this->m_L1 = L1;
-    this->m_d1 = d1;
-    this->m_f2 = f2;
-    this->m_L2 = L2;
-    this->m_d2 = d2;
-    this->m_lin = lin;
-    this->m_g = g;
-
-    this->m_n = n;
-    if (L1) m_m1 = L1->dimensionOut();
-    else m_m1 = n;
-    if (L2) m_m2 = L2->dimensionOut();
-    else m_m2 = n;
+        Function& fun_f1,
+        LinearOperator& L_1,
+        Matrix& d_1,
+        Function& fun_f2,
+        LinearOperator& L_2,
+        Matrix& d_2,
+        Matrix& linear,
+        Function& fun_g) {
+    this->m_f1 = &fun_f1;
+    this->m_L1 = &L_1;
+    this->m_d1 = &d_1;
+    this->m_f2 = &fun_f2;
+    this->m_L2 = &L_2;
+    this->m_d2 = &d_2;
+    this->m_lin = &linear;
+    this->m_g = &fun_g;
 }
 
-LinearOperator* FBProblem::getL1() {
+LinearOperator * FBProblem::L1() {
     return m_L1;
 }
 
-LinearOperator* FBProblem::getL2() {
+LinearOperator * FBProblem::L2() {
     return m_L2;
 }
 
-Matrix* FBProblem::getd1() {
+Matrix* FBProblem::d1() {
     return m_d1;
 }
 
-Matrix* FBProblem::getd2() {
+Matrix* FBProblem::d2() {
     return m_d2;
 }
 
-Function* FBProblem::getf1() {
+Function* FBProblem::f1() {
     return m_f1;
 }
 
-Function* FBProblem::getf2() {
+Function* FBProblem::f2() {
     return m_f2;
 }
 
-Function* FBProblem::getg() {
+Function* FBProblem::g() {
     return m_g;
 }
 
-Matrix* FBProblem::getlin() {
+Matrix* FBProblem::lin() {
     return m_lin;
-}
-
-int FBProblem::getm1() {
-    return m_m1;
-}
-
-int FBProblem::getm2() {
-    return m_m2;
-}
-
-int FBProblem::getn() {
-    return m_n;
 }
 
 FBProblem::~FBProblem() {

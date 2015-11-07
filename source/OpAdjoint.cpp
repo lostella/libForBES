@@ -21,7 +21,7 @@
 #include "OpAdjoint.h"
 
 OpAdjoint::OpAdjoint(LinearOperator& op) : LinearOperator(), m_originalOperator(op) {
-    
+
 }
 
 OpAdjoint::~OpAdjoint() {
@@ -35,11 +35,11 @@ Matrix OpAdjoint::callAdjoint(Matrix& x) {
     return m_originalOperator.call(x);
 }
 
-size_t OpAdjoint::dimensionIn() {
+std::pair<size_t, size_t> OpAdjoint::dimensionIn() {
     return m_originalOperator.dimensionOut();
 }
 
-size_t OpAdjoint::dimensionOut() {
+std::pair<size_t, size_t> OpAdjoint::dimensionOut() {    
     return m_originalOperator.dimensionIn();
 }
 

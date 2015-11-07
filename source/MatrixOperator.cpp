@@ -60,12 +60,14 @@ Matrix MatrixOperator::callAdjoint(Matrix& x) {
     return y;
 }
 
-size_t MatrixOperator::dimensionIn() {
-    return m_A.getNcols();
+std::pair<size_t, size_t> MatrixOperator::dimensionIn() {
+    std::pair<size_t, size_t> dims(m_A.getNcols(), static_cast<size_t> (1));
+    return dims;
 }
 
-size_t MatrixOperator::dimensionOut() {
-    return m_A.getNrows();
+std::pair<size_t, size_t> MatrixOperator::dimensionOut() {
+    std::pair<size_t, size_t> dims(m_A.getNrows(), static_cast<size_t> (1));
+    return dims;
 }
 
 

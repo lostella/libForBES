@@ -31,8 +31,8 @@ void TestOpGradient::testCall() {
 
     LinearOperator * op = new OpGradient(n);
 
-    _ASSERT_EQ(n, op->dimensionIn());
-    _ASSERT_EQ(n - 1, op->dimensionOut());
+    _ASSERT_EQ(n, op->dimensionIn().first);
+    _ASSERT_EQ(n - 1, op->dimensionOut().first);
     _ASSERT_NOT(op->isSelfAdjoint());
 
     Matrix x(n, 1);
@@ -74,8 +74,8 @@ void testOperatorLinearity(LinearOperator* op) {
     double a = 0.0;
     double b = 0.0;
     for (size_t r = 0; r < repeat; r++) {
-        *x = MatrixFactory::MakeRandomMatrix(op->dimensionIn(), 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-        *y = MatrixFactory::MakeRandomMatrix(op->dimensionIn(), 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+        *x = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+        *y = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
         a = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
         *ax = a * (*x);
         *by = b * (*y);
@@ -84,7 +84,7 @@ void testOperatorLinearity(LinearOperator* op) {
         *Ty = op->call(*x);
         *Tx = op->call(*y);
         *err = *Taxby - a * (*Tx) - b * (*Ty);
-        for (size_t j = 0; j < op->dimensionOut(); j++) {
+        for (size_t j = 0; j < op->dimensionOut().first; j++) {
             _ASSERT(std::abs(err->get(j, 0)) < tol);
         }
     }

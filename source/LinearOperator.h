@@ -33,32 +33,37 @@
  * An interface for an arbitrary linear operator.
  * This is an abstract class which cannot be instantiated (it involves
  * pure virtual members).
+ * 
+ * Linear operators are assumed to be of the generic form \f$T:X \to Y\f$,
+ * where \f$X\f$ and \f$Y\f$ are vector spaces, either \f$\mathbb{R}^n\f$ or
+ * \f$\mathbb{R}^{n\times m}\f$.
  */
 class LinearOperator {
 public:
 
     /**
-     * Computes the value of the operator at a vector <code>x</code>.
-     * @param x vector where the operator should be calculated
+     * Computes the value of the operator at a vector or matrix <code>x</code>.
+     * @param x vector or matrix where the operator should be calculated
      * @return Value <code>T(x)</code>
+     * 
      */
     virtual Matrix call(Matrix& x) = 0;
     
     /**
      * Calls the adjoint of this operator. 
      * 
-     * For an operator \f$T:\mathbb{R}^n \to \mathbb{R}^m\f$, its adjoint is defined
-     * as an operator \f$T^*:\mathbb{R}^m \to \mathbb{R}^n\f$ so that for all \f$x\in\mathbb{R}^n\f$
-     * and every \f$y\in\mathbb{R}^m\f$ it is
+     * For an operator \f$T:X \to Y\f$, its adjoint is defined
+     * as an operator \f$T^*:Y \to X\f$ so that for all \f$x\in X\f$
+     * and every \f$y Y\f$ it is
      * \f[
-     *  \langle y, T(x) \rangle = \langle T^*(y), x \rangle
+     *  \langle y, T(x) \rangle_{Y} = \langle T^*(y), x \rangle_{X}
      * \f]
      * For a matrix \f$M\in\mathbb{R}^{m\times n}\f$ its adjoint is its transpose,
      * that is \f$M^* = M'\f$ and, indeed, for all \f$x\in\mathbb{R}^n\f$ 
      * and \f$y\in\mathbb{R}^m\f$ it is \f$\langle y, Mx \rangle = y'Mx = (M'y)'x = \langle M'y, x \rangle = 
      * \langle M^*(y), x \rangle\f$.    
      * 
-     * @param x Vector <code>x</code>
+     * @param x Vector or matrix <code>x</code>
      * @return The result \f$T^*(x)\f$
      */
     virtual Matrix callAdjoint(Matrix& x) = 0;
@@ -66,7 +71,7 @@ public:
     /**
      * Whether this operator is self-adjoint.
      * 
-     * An operator is called <em>self-adjoint</em> if it coincides with its
+     * An operator \f$T:X\to X\f$ is called <em>self-adjoint</em> if it coincides with its
      * adjoint.
      * 
      * @return <code>true</code> if and only if the operator is self-adjoint.
@@ -74,32 +79,38 @@ public:
     virtual bool isSelfAdjoint() = 0;
     
     /**
-     * For a linear operator \f$T:\mathbb{R}^n \to \mathbb{R}^p\f$, it returns
-     * the dimension of its domain, i.e., <code>n</code>. 
+     * For a linear operator \f$T:X \to Y\f$, it returns
+     * the dimension of its domain.
      * 
-     * In some cases, this
-     * dimension may be undefined, so then this method returns <code>0</code>; such a 
-     * case may be a linear operator which reverses the order of the entries
-     * of <code>x</code> which may be applied to vectors of any size. It is, however, 
-     * strongly recommended to define the operator's dimensions in all cases.
+     * The in-dimension of an operator \f$f:\mathbb{R}^{n}\to Y\f$ is the pair <code>(n,1)</code>.
      * 
-     * @return Dimension of <code>x</code>
+     * The in-dimension of \f$f:\mathbb{R}^{n\times m}\to Y\f$ is the pair <code>(n,m)</code>.
+     * 
+     * In some cases, this dimension may be undefined, so then this method returns 
+     * <code>(0, ?)</code>; such a case may be a linear operator which reverses the 
+     * order of the entries of <code>x</code> which may be applied to vectors of any 
+     * size. In such a case, the in-dimension will be <code>(0,1)</code>.
+     * It is, however, strongly recommended to define the nonzero operator's dimensions 
+     * in all cases.
+     * 
+     * @return Dimensions of <code>x</code>
      */
-    virtual size_t dimensionIn() = 0;
+    virtual std::pair<size_t, size_t> dimensionIn() = 0;
     
     /**
-     * For a linear operator \f$T:\mathbb{R}^n \to \mathbb{R}^p\f$, it returns
-     * the dimension of its range, i.e., <code>p</code>.
+     * For a linear operator \f$T:X \to Y\f$, it returns
+     * the dimension of its range space \f$Y\f$.
      * 
-     * In some cases, this
-     * dimension may be undefined, so then this method returns <code>0</code>; such a 
-     * case may be a linear operator which reverses the order of the entries
-     * of <code>x</code> which may be applied to vectors of any size. It is, however, 
-     * strongly recommended to define the operator's dimensions in all cases.
+     * In some cases, this dimension may be undefined, so then this method returns 
+     * <code>(0, ?)</code>; such a case may be a linear operator which reverses the 
+     * order of the entries of <code>x</code> which may be applied to vectors of any 
+     * size. In such a case, the in-dimension will be <code>(0,1)</code>.
+     * It is, however, strongly recommended to define the nonzero operator's dimensions 
+     * in all cases.
      * 
-     * @return Dimension of <code>T(x)</code>
+     * @return Dimensions of <code>T(x)</code>
      */
-    virtual size_t dimensionOut() = 0;
+    virtual std::pair<size_t, size_t> dimensionOut() = 0;
 
     /**
      * Destructor for LinearOperator objects.

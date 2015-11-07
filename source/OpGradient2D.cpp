@@ -34,11 +34,11 @@ Matrix OpGradient2D::callAdjoint(Matrix& x) {
     throw std::logic_error("NIY");
 }
 
-size_t OpGradient2D::dimensionIn() {
+std::pair<size_t, size_t> OpGradient2D::dimensionIn() {
     throw std::logic_error("NIY");
 }
 
-size_t OpGradient2D::dimensionOut() {
+std::pair<size_t, size_t> OpGradient2D::dimensionOut() {
     throw std::logic_error("NIY");
 }
 

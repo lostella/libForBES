@@ -10,6 +10,14 @@
  * \version version 0.0
  * \ingroup FBSolver-group
  * 
+ * FBProblem is a low-level call which provides access to the specifications of a 
+ * generic optimization problem in the following form:
+ * 
+ * \f[
+ *  \min_{x\in X} F(x),
+ * \f]
+ * 
+ * where \f$X\f$ is a linear space, either \f$\mathbb{R}^n\f$ or \f$\mathbb{R}^{n\times m}\f$
  * 
  */
 class FBProblem {
@@ -23,44 +31,34 @@ private:
     Matrix * m_d2;
     Matrix * m_lin;
 
-    int m_n;
-    int m_m1;
-    int m_m2;
-
 public:
 
     FBProblem(
-            int n,
-            Function * f1,
-            LinearOperator * L1,
-            Matrix * d1,
-            Function * f2,
-            LinearOperator * L2,
-            Matrix * d2,
-            Matrix * lin,
-            Function * g);
+            Function& fun_f1,
+            LinearOperator& L_1,
+            Matrix& d_1,
+            Function& fun_f2,
+            LinearOperator& L_2,
+            Matrix& d_2,
+            Matrix& linear,
+            Function& fun_g);
 
-    Function * getf1();
+    Function * f1();
 
-    LinearOperator * getL1();
+    LinearOperator * L1();
 
-    Matrix * getd1();
+    Matrix * d1();
 
-    Function * getf2();
+    Function * f2();
 
-    LinearOperator * getL2();
+    LinearOperator * L2();
 
-    Matrix * getd2();
+    Matrix * d2();
 
-    Matrix * getlin();
+    Matrix * lin();
 
-    Function * getg();
+    Function * g();
 
-    int getn();
-
-    int getm1();
-
-    int getm2();
 
     virtual ~FBProblem();
 

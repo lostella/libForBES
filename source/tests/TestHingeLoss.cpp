@@ -105,7 +105,10 @@ void TestHingeLoss::testCallProx() {
     const double gamma = 1.5;
 
     Function * hinge = new HingeLoss(b, mu);
-    Matrix prox(n, 1);
+    /*
+     * pre-load some garbage values into prox to make sure they don't affect the result.
+     */
+    Matrix prox = MatrixFactory::MakeRandomMatrix(n, 1, 10.0, 1.0);
     _ASSERT(hinge->category().defines_prox());
     int status = hinge->callProx(x, gamma, prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);

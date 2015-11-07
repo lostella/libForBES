@@ -8,6 +8,9 @@
 #ifndef TESTQUADRATICLOSSOVERAFFINE_H
 #define	TESTQUADRATICLOSSOVERAFFINE_H
 
+#define FORBES_TEST_UTILS
+#include "ForBES.h"
+
 #include <cppunit/extensions/HelperMacros.h>
 
 class TestQuadraticLossOverAffine : public CPPUNIT_NS::TestFixture {

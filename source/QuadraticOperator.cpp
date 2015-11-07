@@ -31,6 +31,7 @@ Function(), m_T(T) {
 QuadraticOperator::~QuadraticOperator() {
 }
 
+
 int QuadraticOperator::call(Matrix& x, double& f, Matrix& grad) {
     int status = computeGradient(x, grad);
     f = (x * grad).get(0, 0)/2;

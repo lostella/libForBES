@@ -35,11 +35,11 @@ Matrix OpComposition::call(Matrix& x) {
     return m_A.call(y);       // z = A(y)
 }
 
-size_t OpComposition::dimensionIn() {
+std::pair<size_t, size_t> OpComposition::dimensionIn() {
     return m_B.dimensionIn();
 }
 
-size_t OpComposition::dimensionOut() {
+std::pair<size_t, size_t> OpComposition::dimensionOut() {
     return m_A.dimensionOut();
 }
 

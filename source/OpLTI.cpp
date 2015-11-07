@@ -45,12 +45,14 @@ Matrix OpLTI::callAdjoint(Matrix& x) {
     throw std::logic_error("NIY");
 }
 
-size_t OpLTI::dimensionIn() {
-    return 0;
+std::pair<size_t, size_t> OpLTI::dimensionIn() {
+    std::pair<size_t, size_t> dims(static_cast<size_t>(0),static_cast<size_t>(1));
+    return dims;
 }
 
-size_t OpLTI::dimensionOut() {
-    return 0;
+std::pair<size_t, size_t> OpLTI::dimensionOut() {
+    std::pair<size_t, size_t> dims(static_cast<size_t>(0),static_cast<size_t>(1));
+    return dims;
 }
 
 bool OpLTI::isSelfAdjoint() {

@@ -21,11 +21,11 @@
 #include "OpDCT2.h"
 
 OpDCT2::OpDCT2() : LinearOperator() {
-    m_dimension = 0;
+    m_dimension = std::pair<size_t, size_t>(static_cast<size_t> (0), static_cast<size_t> (1));
 }
 
 OpDCT2::OpDCT2(size_t n) {
-    m_dimension = n;
+    m_dimension = std::pair<size_t, size_t>(n, static_cast<size_t> (1));
 }
 
 OpDCT2::~OpDCT2() {
@@ -57,11 +57,11 @@ Matrix OpDCT2::callAdjoint(Matrix& x) {
     return Yadj;
 }
 
-size_t OpDCT2::dimensionIn() {
+std::pair<size_t, size_t> OpDCT2::dimensionIn() {
     return m_dimension;
 }
 
-size_t OpDCT2::dimensionOut() {
+std::pair<size_t, size_t> OpDCT2::dimensionOut() {
     return m_dimension;
 }
 

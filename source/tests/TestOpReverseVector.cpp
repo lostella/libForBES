@@ -40,8 +40,8 @@ void TestOpReverseVector::testCall() {
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix y(x);
     LinearOperator *op = new OpReverseVector(n);
-    _ASSERT_EQ(n, op->dimensionIn());
-    _ASSERT_EQ(n, op->dimensionOut());
+    _ASSERT_EQ(n, op->dimensionIn().first);
+    _ASSERT_EQ(n, op->dimensionOut().first);
     Matrix xrev = op -> call(x);
     for (size_t i = 0; i < n; i++) {
         _ASSERT_EQ(y.get(i, 0), xrev.get(n - i - 1, 0));
@@ -58,8 +58,8 @@ void TestOpReverseVector::testCallNotFixedSize() {
     Matrix y2(x2);
     LinearOperator *op = new OpReverseVector();
     size_t zero = 0;
-    _ASSERT_EQ(zero, op->dimensionIn());
-    _ASSERT_EQ(zero, op->dimensionOut());
+    _ASSERT_EQ(zero, op->dimensionIn().first);
+    _ASSERT_EQ(zero, op->dimensionOut().first);
     Matrix xrev1 = op -> call(x1);
     Matrix xrev2 = op -> call(x2);
     for (size_t i = 0; i < n1; i++) {
@@ -77,8 +77,8 @@ void TestOpReverseVector::testCallAdjoint() {
     Matrix y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     LinearOperator *op = new OpReverseVector(n);
     _ASSERT(op->isSelfAdjoint());
-    _ASSERT_EQ(n, op->dimensionIn());
-    _ASSERT_EQ(n, op->dimensionOut());
+    _ASSERT_EQ(n, op->dimensionIn().first);
+    _ASSERT_EQ(n, op->dimensionOut().first);
     Matrix Tx = op->call(x);
     Matrix Tstar_y = op->callAdjoint(y);
 

@@ -44,8 +44,8 @@ void TestOpDCT2::testCall() {
 
     LinearOperator * op = new OpDCT2(n);
 
-    _ASSERT_EQ(n, op->dimensionIn());
-    _ASSERT_EQ(n, op->dimensionOut());
+    _ASSERT_EQ(n, op->dimensionIn().first);
+    _ASSERT_EQ(n, op->dimensionOut().first);
 
     _ASSERT_NOT(op->isSelfAdjoint());
 
@@ -107,8 +107,8 @@ void testOperatorLinearity(LinearOperator* op) {
     double a = 0.0;
     double b = 0.0;
     for (size_t r = 0; r < repeat; r++) {
-        *x = MatrixFactory::MakeRandomMatrix(op->dimensionIn(), 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-        *y = MatrixFactory::MakeRandomMatrix(op->dimensionIn(), 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+        *x = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+        *y = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
         a = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
         *ax = a * (*x);
         *by = b * (*y);
@@ -117,7 +117,7 @@ void testOperatorLinearity(LinearOperator* op) {
         *Ty = op->call(*x);
         *Tx = op->call(*y);
         *err = *Taxby - a * (*Tx) - b * (*Ty);
-        for (size_t j = 0; j < op->dimensionOut(); j++) {
+        for (size_t j = 0; j < op->dimensionOut().first; j++) {
             _ASSERT(std::abs(err->get(j, 0)) < tol);
         }
     }
@@ -136,8 +136,8 @@ void testOperatorLinearity(LinearOperator* op) {
 void TestOpDCT2::testLinearity() {
     const size_t n = 50;
     LinearOperator * op = new OpDCT2(n);
-    _ASSERT_EQ(n, op->dimensionIn());
-    _ASSERT_EQ(n, op->dimensionOut());
+    _ASSERT_EQ(n, op->dimensionIn().first);
+    _ASSERT_EQ(n, op->dimensionOut().first);
     testOperatorLinearity(op);
     delete op;
 }
@@ -146,8 +146,8 @@ void TestOpDCT2::testAdjointLinearity() {
     const size_t n = 100;
     LinearOperator * op = new OpDCT2(n);
     LinearOperator *adj = new OpAdjoint(*op);
-    _ASSERT_EQ(n, adj->dimensionIn());
-    _ASSERT_EQ(n, adj->dimensionOut());
+    _ASSERT_EQ(n, adj->dimensionIn().first);
+    _ASSERT_EQ(n, adj->dimensionOut().first);
     testOperatorLinearity(adj);
     delete op;
     delete adj;

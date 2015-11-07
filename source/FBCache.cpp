@@ -3,33 +3,33 @@
 
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m_gamma(gamma) {
     // store pointers to problem and all relevant details
-    this->m_f1 = p.getf1();
-    this->m_L1 = p.getL1();
-    this->m_d1 = p.getd1();
-    this->m_f2 = p.getf2();
-    this->m_L2 = p.getL2();
-    this->m_d2 = p.getd2();
-    this->m_lin = p.getlin();
-    this->m_g = p.getg();
+    this->m_f1 = p.f1();
+    this->m_L1 = p.L1();
+    this->m_d1 = p.d1();
+    this->m_f2 = p.f2();
+    this->m_L2 = p.L2();
+    this->m_d2 = p.d2();
+    this->m_lin = p.lin();
+    this->m_g = p.g();
 
     // allocate memory for residuals and gradients (where needed)
     if (m_f1 != NULL) {
-        m_res1x = new Matrix(m_prob.getm1(), 1);
-        m_gradf1x = new Matrix(m_prob.getm1(), 1);
+        m_res1x = new Matrix();
+        m_gradf1x = new Matrix();
     } else {
         m_res1x = NULL;
         m_gradf1x = NULL;
     }
     if (m_f2 != NULL) {
-        m_res2x = new Matrix(m_prob.getm2(), 1);
-        m_gradf2x = new Matrix(m_prob.getm2(), 1);
+        m_res2x = new Matrix();
+        m_gradf2x = new Matrix();
     } else {
         m_res2x = NULL;
         m_gradf2x = NULL;
     }
-    m_gradfx = new Matrix(m_prob.getn(), 1);
-    m_z = new Matrix(m_prob.getn(), 1);
-    m_y = new Matrix(m_prob.getn(), 1);
+    m_gradfx = new Matrix();
+    m_z = new Matrix();
+    m_y = new Matrix();
     
     m_flag_evalf = -1;
     m_flag_gradstep = -1;

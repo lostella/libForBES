@@ -45,6 +45,12 @@
  * \f$(f(\cdot),\nabla f, f^*(\cdot), \nabla f^*(\cdot), \mathrm{prox}_{\gamma f}(\cdot), f(\mathrm{prox}_{\gamma f}(\cdot)))\f$
  * where some of these components are available and implemented.
  * 
+ * ForBES functions are all assumed to follow the template \f$f:X \to \Re\cup \{+\infty\}\f$,
+ * where \f$X\f$ is a vector space, typically either \f$\mathbb{R}^n\f$ or
+ * \f$\mathbb{R}^{n\times m}\f$.
+ * 
+ * Input and output arguments to %Function calls are instances of Matrix.
+ * 
  * For example, in Quadratic, which is a subclass of Function, the first four of these
  * components are available, namely \f$(f(\cdot),\nabla f, f^*(\cdot), \nabla f^*(\cdot))\f$.
  * 
@@ -53,6 +59,8 @@
  * 
  * \sa \ref doc-functs "Introduction to the Function API"
  * \sa \ref Functions "List of functions"
+ * \sa Matrix
+ * \sa LinearOperator
  */
 class Function {
 public:
@@ -72,7 +80,7 @@ public:
     /**
      * Returns the value of function f.
      * 
-     * @param x The vector x where  \f$f(x)\f$ should be computed.
+     * @param x The vector or matrix \f$x\f$ where \f$f(x)\f$ should be computed.
      * 
      * @param f The computed value of  \f$f(x)\f$
      * 
@@ -84,6 +92,9 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the input %Matrix is of incompatible dimensions.
+     * 
      */
     virtual int call(Matrix& x, double& f);
 
@@ -91,7 +102,7 @@ public:
      * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
      * also the gradient \f$\nabla f(x)\f$.
      * 
-     * @param x The vector x where \f$f(x)\f$ should be computed.
+     * @param x The vector or matrix \f$x\f$ where \f$f(x)\f$ should be computed.
      * 
      * @param f The computed value of \f$f(x)\f$
      * 
@@ -104,6 +115,9 @@ public:
      * if some numerical problems prevented the computation of a reliable result. 
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the input %Matrix is of incompatible dimensions.
      */
     virtual int call(Matrix& x, double& f, Matrix& grad); // returns also the gradient
 
@@ -121,6 +135,10 @@ public:
      * if some numerical problems prevented the computation of a reliable result. 
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the function argument <code>x</code> and/or <code>prox</code>
+     * are of incompatible dimensions.
      */
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox); // returns the value of prox_{gamma f}
 
@@ -138,6 +156,10 @@ public:
      * if some numerical problems prevented the computation of a reliable result. 
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the function argument <code>x</code> and/or <code>prox</code>
+     * are of incompatible dimensions.
      */
     virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox); // prox_{gamma f} and value-at-prox
 
@@ -158,6 +180,9 @@ public:
      * 
      * \link Function::callConj(const Matrix&, double&, Matrix&) callConj(3)\endlink
      * to compute f_star and discard grad.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the input %Matrix <code>x</code> is of incompatible dimensions.
      */
     virtual int callConj(const Matrix& x, double& f_star); // conjugate of f at x: f*(x)
 
@@ -175,6 +200,10 @@ public:
      * if some numerical problems prevented the computation of a reliable result. 
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the input %Matrix <code>x</code> or <code>grad</code> 
+     * is of incompatible dimensions.
      */
     virtual int callConj(const Matrix& x, double& f_star, Matrix& grad); // Nabla f*(x)
 
@@ -205,7 +234,7 @@ protected:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int computeGradient(Matrix& x, Matrix& grad);
+    
 
 };
 

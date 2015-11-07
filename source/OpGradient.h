@@ -70,16 +70,16 @@ public:
 
     virtual Matrix callAdjoint(Matrix& x);
 
-    virtual size_t dimensionIn();
+    virtual std::pair<size_t, size_t> dimensionIn();
 
-    virtual size_t dimensionOut();
+    virtual std::pair<size_t, size_t> dimensionOut();
 
     virtual bool isSelfAdjoint();
 
 
 private:
 
-    size_t m_dimension;
+    std::pair<size_t, size_t> m_dimension;
 
 };
 
