@@ -133,6 +133,7 @@ LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
 	 -L$(LEXTRA)
 
 SOURCES = \
+	LinSysSolver.cpp \
         S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
         FactoredSolver.cpp \
@@ -211,7 +212,8 @@ TESTS = \
 	TestFunctionOntologicalClass.test \
 	TestFunctionOntologyRegistry.test \
 	TestIndBall2.test \
-	TestSeparableSum.test	
+	TestSeparableSum.test \
+	TestConjugateFunction.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -229,6 +231,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestLDL
 	${BIN_TEST_DIR}/TestSLDL
 	@echo "\n*** FUNCTIONS ***"
+	${BIN_TEST_DIR}/TestConjugateFunction
 	${BIN_TEST_DIR}/TestQuadOverAffine
 	${BIN_TEST_DIR}/TestQuadratic
 	${BIN_TEST_DIR}/TestQuadraticOperator

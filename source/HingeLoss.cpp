@@ -50,7 +50,7 @@ int HingeLoss::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int HingeLoss::callProx(Matrix& x, double gamma, Matrix& prox) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
     }
@@ -69,7 +69,7 @@ int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_OK;
 }
 
-int HingeLoss::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int HingeLoss::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
     }

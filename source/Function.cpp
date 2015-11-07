@@ -36,20 +36,20 @@ int Function::call(Matrix& x, double& f, Matrix& grad) {
 }
 
 
-int Function::callConj(const Matrix& x, double& f_star) {
+int Function::callConj(Matrix& x, double& f_star) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int Function::callConj(const Matrix& x, double& f_star, Matrix& grad) {
+int Function::callConj(Matrix& x, double& f_star, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int Function::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int Function::callProx(Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
 //LCOV_EXCL_START
-int Function::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int Function::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 //LCOV_EXCL_STOP

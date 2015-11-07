@@ -47,11 +47,11 @@ Matrix OpReverseVector::callAdjoint(Matrix& x) {
 }
 
 std::pair<size_t, size_t> OpReverseVector::dimensionIn() {
-    return std::pair<size_t, size_t>(m_vectorDim, static_cast<size_t> (1));
+    return _VECTOR_OP_DIM(m_vectorDim);
 }
 
 std::pair<size_t, size_t> OpReverseVector::dimensionOut() {
-    return std::pair<size_t, size_t>(m_vectorDim, static_cast<size_t> (1));
+    return _VECTOR_OP_DIM(m_vectorDim);
 }
 
 bool OpReverseVector::isSelfAdjoint() {

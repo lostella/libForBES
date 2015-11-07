@@ -84,9 +84,9 @@ public:
     
     virtual ~IndBall2();    
 
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
 
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 
     virtual FunctionOntologicalClass category();
 

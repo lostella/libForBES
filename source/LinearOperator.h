@@ -21,6 +21,16 @@
 #ifndef LINEAROPERATOR_H
 #define	LINEAROPERATOR_H
 
+/**
+ * Dimension of a vector-valued operator: n x 1.
+ */
+#define _VECTOR_OP_DIM(N) std::pair<size_t, size_t>(static_cast<size_t> (N), static_cast<size_t> (1))
+
+/**
+ * Dimension of an empty operator: 0 x 1.
+ */
+#define _EMPTY_OP_DIM _VECTOR_OP_DIM(0)
+
 #include "Matrix.h"
 
 /**

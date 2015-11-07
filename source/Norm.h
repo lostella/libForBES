@@ -67,9 +67,9 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int dualNorm(const Matrix &x, double &norm);
+    virtual int dualNorm(Matrix &x, double &norm);
 
-    virtual int callConj(const Matrix& x, double& f_star);
+    virtual int callConj(Matrix& x, double& f_star);
 
     virtual FunctionOntologicalClass category();
 

@@ -140,7 +140,7 @@ public:
      * is thrown in case the function argument <code>x</code> and/or <code>prox</code>
      * are of incompatible dimensions.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox); // returns the value of prox_{gamma f}
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox); // returns the value of prox_{gamma f}
 
     /**     
      * 
@@ -161,7 +161,7 @@ public:
      * is thrown in case the function argument <code>x</code> and/or <code>prox</code>
      * are of incompatible dimensions.
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox); // prox_{gamma f} and value-at-prox
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox); // prox_{gamma f} and value-at-prox
 
     /**
      * Computes the conjugate of this function at a point <code>x</code>.
@@ -178,13 +178,13 @@ public:
      * 
      * \todo Implement a dummy callConj which used its counterpart 
      * 
-     * \link Function::callConj(const Matrix&, double&, Matrix&) callConj(3)\endlink
+     * \link Function::callConj(Matrix&, double&, Matrix&) callConj(3)\endlink
      * to compute f_star and discard grad.
      * 
      * \exception std::invalid_argument an <code>invalid_argument</code> exception
      * is thrown in case the input %Matrix <code>x</code> is of incompatible dimensions.
      */
-    virtual int callConj(const Matrix& x, double& f_star); // conjugate of f at x: f*(x)
+    virtual int callConj(Matrix& x, double& f_star); // conjugate of f at x: f*(x)
 
     /**
      * Computes the conjugate of this function at a point <code>x</code> as well 
@@ -205,7 +205,7 @@ public:
      * is thrown in case the input %Matrix <code>x</code> or <code>grad</code> 
      * is of incompatible dimensions.
      */
-    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad); // Nabla f*(x)
+    virtual int callConj(Matrix& x, double& f_star, Matrix& grad); // Nabla f*(x)
 
 
 

@@ -34,7 +34,7 @@
 class ConjugateFunction : public Function {
 public:
 
-    explicit ConjugateFunction(const Function& funct);
+    explicit ConjugateFunction(Function& funct);
 
     virtual ~ConjugateFunction();
 
@@ -64,9 +64,9 @@ public:
      * @param grad
      * @return 
      */
-    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
+    virtual int callConj(Matrix& x, double& f_star, Matrix& grad);
 
-    virtual int callConj(const Matrix& x, double& f_star);
+    virtual int callConj(Matrix& x, double& f_star);
 
     /**
      * For a given function \f$s\f$, provided in the constructor, this method 
@@ -79,7 +79,7 @@ public:
      * @param prox
      * @return 
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
 
     /**
      * For a given function \f$s\f$, provided in the constructor, this method 
@@ -96,7 +96,7 @@ public:
      * @param f_at_prox
      * @return 
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 
     virtual FunctionOntologicalClass category();
 

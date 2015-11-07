@@ -23,14 +23,11 @@
 void call_1d(Matrix & Tx, Matrix& x, const size_t n);
 void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n);
 
-OpGradient::OpGradient() {
-    m_dimension.first = static_cast<size_t> (0);
-    m_dimension.second = static_cast<size_t> (1);
+OpGradient::OpGradient() : m_dimension(_EMPTY_OP_DIM) {
 }
 
-OpGradient::OpGradient(size_t n) : LinearOperator() {
-    m_dimension.first = static_cast<size_t> (n);
-    m_dimension.second = static_cast<size_t> (1);
+OpGradient::OpGradient(size_t n) : LinearOperator(), m_dimension(_VECTOR_OP_DIM(n)) {
+    
 }
 
 OpGradient::~OpGradient() {

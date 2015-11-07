@@ -89,13 +89,13 @@ int Quadratic::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int Quadratic::callConj(const Matrix& y, double& f_star) {
+int Quadratic::callConj(Matrix& y, double& f_star) {
     Matrix g;
     int status = callConj(y, f_star, g);
     return status;
 }
 
-int Quadratic::callConj(const Matrix& y, double& f_star, Matrix& g) {
+int Quadratic::callConj(Matrix& y, double& f_star, Matrix& g) {
     Matrix z = (m_is_q_zero || m_q == NULL) ? y : y - *m_q; // z = y    
     if (m_is_Q_eye || m_Q == NULL) {
         g = z;

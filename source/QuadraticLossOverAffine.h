@@ -126,9 +126,9 @@ public:
     virtual ~QuadraticLossOverAffine();
     
 
-    virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);
+    virtual int callConj(Matrix& y, double& f_star, Matrix& grad);
     
-    virtual int callConj(const Matrix& y, double& f_star);
+    virtual int callConj(Matrix& y, double& f_star);
 
     virtual FunctionOntologicalClass category();
 

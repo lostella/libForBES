@@ -36,7 +36,8 @@
  */
 #include "Matrix.h"                 /* Matrices */
 #include "MatrixFactory.h"          /* Matrix Factory to construct matrices */
-#include "FactoredSolver.h"         /* Generic factored solver (API) */
+#include "LinSysSolver.h"           /* Abstraction tier for linear system solvers */
+#include "FactoredSolver.h"         /* Generic factored solver tier */
 #include "LDLFactorization.h"       /* LDL factorization */
 #include "CholeskyFactorization.h"  /* Cholesky factorization */
 #include "S_LDLFactorization.h"     /* LDL' factorization of AA'+bI */
@@ -80,6 +81,7 @@
 #include "Norm1.h"                   /* Norm-1 */
 #include "Norm2.h"                   /* Norm-2 */
 #include "SeparableSum.h"            /* Separable sum of proximable functions */
+#include "ConjugateFunction.h"       /* Conjugate of a given function */
 
 
 

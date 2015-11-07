@@ -65,7 +65,7 @@ QuadraticLossOverAffine::~QuadraticLossOverAffine() {
     }
 }
 
-int QuadraticLossOverAffine::callConj(const Matrix& y, double& f_star, Matrix& grad) {
+int QuadraticLossOverAffine::callConj(Matrix& y, double& f_star, Matrix& grad) {
     size_t ny = y.getNrows();
     Matrix sigma(ny, 1);
     for (size_t i = 0; i < ny; i++) {
@@ -83,11 +83,11 @@ int QuadraticLossOverAffine::callConj(const Matrix& y, double& f_star, Matrix& g
     for (size_t i = 0; i < ny; i++) {
         grad.set(i, 0, sigma.get(i, 0) - c.get(i, 0) / m_w->get(i, 0));
     }
-    f_star = (grad * const_cast<Matrix&> (y)).get(0, 0);
+    f_star = (grad *  (y)).get(0, 0);
     return ForBESUtils::STATUS_OK;
 }
 
-int QuadraticLossOverAffine::callConj(const Matrix& y, double& f_star) {
+int QuadraticLossOverAffine::callConj(Matrix& y, double& f_star) {
     size_t ny = y.getNrows();
     Matrix grad_temp(ny, 1);
     return callConj(y, f_star, grad_temp);

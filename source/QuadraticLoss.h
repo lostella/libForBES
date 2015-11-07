@@ -64,6 +64,7 @@ class QuadraticLoss : public Function {
 public:
     
     using Function::call;
+    using Function::callConj;
     
     /**
      * Create a new instance of QuadraticLoss assuming a uniform weight \f$w=1\f$
@@ -97,9 +98,9 @@ public:
 
     virtual int call(Matrix& x, double& f);
 
-    virtual int callConj(const Matrix& x, double& f_star);
+    virtual int callConj(Matrix& x, double& f_star);
 
-    virtual int callConj(const Matrix& x, double& f_star, Matrix& grad);
+    virtual int callConj(Matrix& x, double& f_star, Matrix& grad);
 
     virtual FunctionOntologicalClass category();
 
