@@ -26,7 +26,10 @@
 #include "ForBESUtils.h"
 #include "Matrix.h"
 #include "FactoredSolver.h"
+
+extern "C" {
 #include "ldl.h"
+}
 
 /**
  * 
