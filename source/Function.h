@@ -177,7 +177,6 @@ public:
      * status codes.
      * 
      * \todo Implement a dummy callConj which used its counterpart 
-     * 
      * \link Function::callConj(Matrix&, double&, Matrix&) callConj(3)\endlink
      * to compute f_star and discard grad.
      * 

@@ -114,7 +114,26 @@ void TestConjugateFunction::testCallConj() {
 }
 
 void TestConjugateFunction::testCallConj2() {
+    const size_t n = 10;
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.5, 2.0);
+    const double delta = 0.2;
+    Function * huber = new HuberLoss(delta);
 
+    double f;
+    double f2;
+    Matrix grad(n, 1);
+    Matrix grad2(n, 1);
+
+    _ASSERT(huber->category().defines_f());
+    int status = huber->call(x, f, grad);    
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    
+    Function * huber_conj = new ConjugateFunction(*huber);
+    status = huber_conj -> callConj(x, f2, grad2);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    
+    const double tol = 1e-9;
+    _ASSERT_NUM_EQ(f, f2, tol);
 }
 
 void TestConjugateFunction::testCallProx() {
