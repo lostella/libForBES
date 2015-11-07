@@ -21,7 +21,7 @@
 #                         #
 
 
-include Configuration
+include config.mk
 
 	
 # Enable parallel make on N-1 processors	
@@ -31,7 +31,7 @@ ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
 endif
 ifeq ($(OS),Darwin) # Assume Mac OS X
-  NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
+  NPROCS:=$(shell sysctl -n hw.ncpu)
 endif
 NPROCS:=$$(($(NPROCS)-1))
 #MAKEFLAGS += -j $(NPROCS)
@@ -51,31 +51,30 @@ CFLAGS_ADDITIONAL = -O0
 #CFLAGS_ADDITIONAL += -fprofile-arcs
 #CFLAGS_ADDITIONAL += -ftest-coverage
 
-CFLAGS_WARNINGS = -pedantic \
-		-Wall \
-		-Wextra \
-		-Wcast-align \
-		-Wcast-qual \
-		-Wdisabled-optimization \
-		-Wformat=2 \
-		-Winit-self \
-		-Wlogical-op \
-		-Wmissing-declarations \
-		-Wmissing-include-dirs \
-		-Wnoexcept \
-		-Wold-style-cast \
-		-Woverloaded-virtual \
-		-Wredundant-decls \
-		-Wshadow \
-		-Wsign-promo \
-		-Wstrict-null-sentinel \
-		-Wstrict-overflow=5 \
-		-Wswitch-default \
-		-Wundef \
-		-Wno-unused \
-		-Wno-sign-compare
-	
-CFLAGS_WARNINGS += -Werror
+CFLAGS_WARNINGS = \
+	-pedantic \
+	-Wall \
+	-Wextra \
+	-Wcast-align \
+	-Wcast-qual \
+	-Wdisabled-optimization \
+	-Wformat=2 \
+	-Winit-self \
+	-Wlogical-op \
+	-Wmissing-declarations \
+	-Wmissing-include-dirs \
+	-Wnoexcept \
+	-Wold-style-cast \
+	-Woverloaded-virtual \
+	-Wredundant-decls \
+	-Wshadow \
+	-Wsign-promo \
+	-Wstrict-null-sentinel \
+	-Wstrict-overflow=5 \
+	-Wswitch-default \
+	-Wundef \
+	-Wno-unused \
+	-Wno-sign-compare
 	
 CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 
@@ -93,20 +92,20 @@ TEST_DIR = source/tests
 
 ARCHIVE = ${BIN_DIR}/libforbes.a
 
-CFLAGS = -c -DUSE_LIBS $(CFLAGS_ADDITIONAL)
+CFLAGS = -c -DUSE_LIBS $(CFLAGS_ADDITIONAL) $(CEXTRA)
 
 IFLAGS = \
-	 -I. \
-	 -I./source \
-	 -I$(SS_DIR)/CHOLMOD/Include \
-	 -I$(SS_DIR)/LDL/Include \
-	 -I$(SS_DIR)/SuiteSparse_config \
-	 -I$(IEXTRA)
+	-I. \
+	-I./source \
+	-I$(SS_DIR)/CHOLMOD/Include \
+	-I$(SS_DIR)/LDL/Include \
+	-I$(SS_DIR)/SuiteSparse_config \
+	-I$(IEXTRA)
 
 
 ifeq ($(OS),Linux)
  # Use the real time POSIX library on Linux
- LFLAGS_ADDITIONAL += -lrt
+	LFLAGS_ADDITIONAL += -lrt
 endif
 
 lFLAGS = \
@@ -123,19 +122,20 @@ lFLAGS = \
 	-lm \
 	$(LFLAGS_ADDITIONAL)
 
-LFLAGS = -L$(SS_DIR)/CHOLMOD/Lib \
-	 -L$(SS_DIR)/AMD/Lib \
-	 -L$(SS_DIR)/COLAMD/Lib \
-	 -L$(SS_DIR)/SuiteSparse_config \
-	 -L$(SS_DIR)/CCOLAMD/Lib \
-	 -L$(SS_DIR)/CAMD/Lib \
-	 -L$(SS_DIR)/LDL/Lib \
-	 -L$(LEXTRA)
+LFLAGS = \
+	-L$(SS_DIR)/CHOLMOD/Lib \
+	-L$(SS_DIR)/AMD/Lib \
+	-L$(SS_DIR)/COLAMD/Lib \
+	-L$(SS_DIR)/SuiteSparse_config \
+	-L$(SS_DIR)/CCOLAMD/Lib \
+	-L$(SS_DIR)/CAMD/Lib \
+	-L$(SS_DIR)/LDL/Lib \
+	-L$(LEXTRA)
 
 SOURCES = \
-        S_LDLFactorization.cpp \
+	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
-        FactoredSolver.cpp \
+	FactoredSolver.cpp \
 	ForBESUtils.cpp \
 	Function.cpp \
 	IndBox.cpp \
@@ -177,7 +177,6 @@ SOURCES = \
 	FBProblem.cpp \
 	FBCache.cpp \
 	ConjugateFunction.cpp
- 
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
@@ -259,8 +258,6 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOpGradient
 	${BIN_TEST_DIR}/TestOpReverseVector
 
-
-
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo
 	@echo [Compiling $*]
@@ -276,7 +273,6 @@ $(OBJ_DIR)/%.o: source/%.cpp
 	@echo Compiling $*
 	$(CXX) $(CFLAGS) $(IFLAGS) $< -o $@
 	@echo "\n\n\n"
-
 
 dirs: $(OBJ_DIR) $(OBJ_TEST_DIR) $(BIN_DIR) $(BIN_TEST_DIR)
 
