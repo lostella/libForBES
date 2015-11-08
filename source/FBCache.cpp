@@ -13,10 +13,9 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m
     this->m_g = p.g();
     
     // get dimensions of things
-    size_t x_rows = m_x.getNrows();
-    size_t x_cols = m_x.getNcols();
-    size_t res1_rows, res1_cols;
-    size_t res2_rows, res2_cols;
+    x_rows = m_x.getNrows();
+    x_cols = m_x.getNcols();
+    
     if (m_d1) {
     	res1_rows = m_d1->getNrows();
     	res1_cols = m_d1->getNcols();
@@ -55,9 +54,11 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m
         m_res2x = NULL;
         m_gradf2x = NULL;
     }
+    
     m_gradfx = new Matrix(x_rows, x_cols);
     m_z = new Matrix(x_rows, x_cols);
     m_y = new Matrix(x_rows, x_cols);
+    m_FPR = new Matrix(x_rows, x_cols);
     
     m_flag_evalf = 0;
     m_flag_gradstep = 0;
@@ -198,6 +199,13 @@ int FBCache::update_forward_backward_step(double gamma) {
         int status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
     }
     
+    *m_FPR = (m_x - *m_z);
+    
+    m_sqnormFPRx = 0;
+    for (int i = 0; i < m_FPR->length(); i++) {
+		m_sqnormFPRx += (*m_FPR)[i]*(*m_FPR)[i];
+    }
+    
     this->m_gamma = gamma;
     m_flag_proxgradstep = 1;
     
@@ -205,10 +213,44 @@ int FBCache::update_forward_backward_step(double gamma) {
 }
 
 int FBCache::update_eval_FBE(double gamma) {
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+	if (m_flag_evalFBE == 1 && gamma == m_gamma) {
+		return ForBESUtils::STATUS_OK;
+	}
+
+	if (m_flag_proxgradstep == 0 || gamma != m_gamma) {
+        int status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
+    }
+    
+    double innprod = 0;
+    
+    for (int i = 0; i < x_rows; i++) {
+    	for (int j = 0; j < x_cols; j++) {
+			innprod += m_FPR->get(i, j)*m_gradfx->get(i, j);
+		}
+    }
+    
+    m_FBEx = m_fx + m_gz - innprod + 0.5/m_gamma*m_sqnormFPRx;
+    
+    this->m_gamma = gamma;
+    m_flag_evalFBE = 1;
+    
+    return ForBESUtils::STATUS_OK;
 }
 
 int FBCache::update_grad_FBE(double gamma) {
+	if (m_flag_gradFBE == 1 && gamma == m_gamma) {
+		return ForBESUtils::STATUS_OK;
+	}
+
+	if (m_flag_proxgradstep == 0 || gamma != m_gamma) {
+        int status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
+    }
+    
+    /* TODO: fill in here */
+    
+	this->m_gamma = gamma;
+	m_flag_gradFBE = 1;
+	    
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
