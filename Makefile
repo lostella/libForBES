@@ -175,7 +175,9 @@ SOURCES = \
 	IndBall2.cpp \
 	QuadraticLossOverAffine.cpp \
 	SumOfNorm2.cpp \
-	ConjugateFunction.cpp
+	ConjugateFunction.cpp \
+	FBProblem.cpp \
+	FBCache.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
@@ -210,8 +212,9 @@ TESTS = \
 	TestFunctionOntologyRegistry.test \
 	TestIndBall2.test \
 	TestSeparableSum.test \
-	TestFBCache.test \
-	TestConjugateFunction.test
+	TestConjugateFunction.test \
+	TestMatrixExtras.test \
+	TestFBCache.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -248,6 +251,7 @@ test: build-tests
 	@echo "\n*** UTILITIES ***"
 	${BIN_TEST_DIR}/TestMatrixFactory
 	${BIN_TEST_DIR}/TestMatrix
+	${BIN_TEST_DIR}/TestMatrixExtras
 	${BIN_TEST_DIR}/TestOntRegistry
 	${BIN_TEST_DIR}/TestFunctionOntologicalClass
 	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
@@ -304,13 +308,13 @@ clean:
 
 help:
 	@echo "Makefile targets for libforbes:\n"
-	@echo "make					 - Compiles, links and archives [creates libforbes.a]"
-	@echo "make clean			   - Cleans all previously built files"
-	@echo "make all				 - Same as make (tests are not built)"
-	@echo "make build-tests		 - Compiles and links the tests"
-	@echo "make test				- Compiles [if necessary] and runs all tests"
-	@echo "make docs				- Used doxygen to build documentation"
-	@echo "make help				- This help message\n"
+	@echo "make				    - Compiles, links and archives [creates libforbes.a]"
+	@echo "make clean			    - Cleans all previously built files"
+	@echo "make all				    - Same as make (tests are not built)"
+	@echo "make build-tests			    - Compiles and links the tests"
+	@echo "make test			    - Compiles [if necessary] and runs all tests"
+	@echo "make docs			    - Used doxygen to build documentation"
+	@echo "make help			    - This help message\n"
 
 docs:
 	doxygen forbes.doxygen

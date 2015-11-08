@@ -34,11 +34,11 @@
  */
 class FBCache {
 private:
-    int m_flag_evalf = 0;
-    int m_flag_gradstep = 0;
-    int m_flag_proxgradstep = 0;
-    int m_flag_evalFBE = 0;
-    int m_flag_gradFBE = 0;
+    int m_flag_evalf;
+    int m_flag_gradstep;
+    int m_flag_proxgradstep;
+    int m_flag_evalFBE;
+    int m_flag_gradFBE;
 
     FBProblem & m_prob;
     Matrix & m_x;
@@ -52,7 +52,7 @@ private:
     Matrix * m_d1;
     Matrix * m_d2;
     Matrix * m_lin;
-    
+
     /* Vectors dimensions */
     size_t x_rows;
     size_t x_cols;
@@ -76,22 +76,26 @@ private:
     double m_gamma;
     double m_FBEx;
     double m_sqnormFPRx;
-    
+
     int update_eval_f();
     int update_forward_step(double gamma);
     int update_forward_backward_step(double gamma);
-    
+
     int update_eval_FBE(double gamma);
     int update_grad_FBE(double gamma);
-    
+
+    void init();
+
 public:
     FBCache(FBProblem & p, Matrix & x, double gamma);
 
     virtual ~FBCache();
 
-	double get_eval_f() { int status = update_eval_f(); return m_fx; }
-	double get_eval_FBE(double gamma) { int status = update_eval_FBE(gamma); return m_FBEx; }
-	Matrix * get_forward_backward_step(double gamma) { update_forward_backward_step(gamma); return m_z; }
+    double get_eval_f();
+
+    double get_eval_FBE(double gamma);
+
+    Matrix * get_forward_backward_step(double gamma);
 };
 
 #endif /* FBCACHE_H */

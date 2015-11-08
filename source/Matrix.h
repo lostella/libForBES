@@ -64,6 +64,11 @@
  * To construct a Matrix you can use one of this class's constructors. However,
  * for sparse matrices it is advisable to use the factory class <code>MatrixFactory</code>.
  * 
+ * \attention
+ * Do not create methods where arguments of type %Matrix are passed as const. Most
+ * matrix operations modify the object's internal state (especially when working with
+ * sparse matrices).
+ * 
  * \sa MatrixFactory
  *
  */
@@ -398,7 +403,7 @@ public:
      * @param right is the right-hand side matrix
      * @return
      */
-    Matrix operator-(const Matrix& right) const;
+    Matrix operator-(Matrix& right) const;
 
     /**
      *
@@ -412,7 +417,7 @@ public:
      * @param right is the right-hand side matrix
      * @return updated instance of <code>Matrix</code>
      */
-    Matrix& operator-=(const Matrix& right);
+    Matrix& operator-=(Matrix& right);
 
     /**
      * Overloaded multiplication operator for <code>Matrix</code>.
@@ -522,18 +527,26 @@ public:
             const size_t right_row_end,
             const size_t right_col_start,
             const size_t right_col_end);
-    
-    
+
+
     /*
      * New tentative methods
      */
-    
-    
-    static int add(Matrix& result, double alpha, Matrix& L);
-    
-    
-    
-    
+
+
+    /**
+     * C = gamma*C + alpha*A
+     * @param C
+     * @param alpha
+     * @param A
+     * @param gamma
+     * @return 
+     */
+    static int add(Matrix& C, double alpha, Matrix& A, double gamma);
+
+
+
+
 
 
 
@@ -667,7 +680,8 @@ private:
     inline double quadFromTriplet(const Matrix& x) const;
 
 
-    inline void _addIJ(size_t i, size_t j, double a);
+    inline void _addIJ(size_t i, size_t j, double v);
+    inline void _addIJ(size_t i, size_t j, double v, double gamma);
 
     /**
      * Adds two vectors as in <code>v1 += v2</code> where <code>v1</code> is a vector
@@ -676,29 +690,29 @@ private:
      * @param pV1 pointer to <code>v1</code>
      * @param pV2 pointer to <code>v2</code>
      */
-    static inline void vectorAdd(size_t len, double * pV1, const double * pV2);       
+    static inline void vectorAdd(size_t len, double * pV1, const double * pV2);
+
 
     /**
-     * Apply operator += on a diagonal matrix
-     * @param rhs right hand side
+     * C := gamma*C + alpha*A, where C is dense
      */
-    inline void _addX(Matrix& rhs);
-
+    static int generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, double gamma);
     /**
-     * Apply operator += on a lower or upper triangular matrix
-     * @param rhs right hand side
+     * C := gamma*C + alpha*A, where C is symmetric
      */
-    inline void _addL(Matrix& rhs);
-
+    static int generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A, double gamma);
     /**
-     * Apply operator += on a sparse matrix
-     * @param rhs right hand side
+     * C := gamma*C + alpha*A, where C is sparse
      */
-    inline void _addS(Matrix& rhs);
-    
-    static int generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A);
-    static int generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A);
-    static int generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A);
+    static int generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, double gamma);
+    /**
+     * C := gamma*C + alpha*A, where C is diagonal
+     */
+    static int generic_add_helper_left_diagonal(Matrix& C, double alpha, Matrix& A, double gamma);
+    /**
+     * C := gamma*C + alpha*A, where C is lower triangular
+     */
+    static int generic_add_helper_left_lower_tri(Matrix& C, double alpha, Matrix& A, double gamma);
 
 };
 
