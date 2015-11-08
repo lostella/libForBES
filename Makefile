@@ -16,9 +16,9 @@
 # along with ForBES. If not, see <http://www.gnu.org/licenses/>.
 
 
-#                         #
+#						 #
 # Do not modify this file #
-#                         #
+#						 #
 
 
 include config.mk
@@ -42,7 +42,7 @@ CXX = g++
 
 # Enable CCACHE
 ifneq (, $(shell which ccache))
-    CXX := ccache $(CXX)
+	CXX := ccache $(CXX)
 endif
 
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
@@ -104,7 +104,7 @@ IFLAGS = \
 
 
 ifeq ($(OS),Linux)
- # Use the real time POSIX library on Linux
+	# Use the real time POSIX library on Linux
 	LFLAGS_ADDITIONAL += -lrt
 endif
 
@@ -134,7 +134,7 @@ LFLAGS = \
 
 SOURCES = \
 	LinSysSolver.cpp \
-        S_LDLFactorization.cpp \
+	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
 	FactoredSolver.cpp \
 	ForBESUtils.cpp \
@@ -210,6 +210,7 @@ TESTS = \
 	TestFunctionOntologyRegistry.test \
 	TestIndBall2.test \
 	TestSeparableSum.test \
+	TestFBCache.test \
 	TestConjugateFunction.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
@@ -258,6 +259,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOpDCT3
 	${BIN_TEST_DIR}/TestOpGradient
 	${BIN_TEST_DIR}/TestOpReverseVector
+	@echo "\n*** ALGORITHMS ***"
+	${BIN_TEST_DIR}/TestFBCache
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo
@@ -268,6 +271,10 @@ $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_D
 	@echo [Linking $*]
 	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
 	@echo "\n\n\n"
+
+main:
+	$(CXX) $(CFLAGS) $(IFLAGS) source/main.cpp 
+	$(CXX) $(LFLAGS) -L./dist/Debug main.o -lforbes $(lFLAGS)
 
 $(OBJ_DIR)/%.o: source/%.cpp
 	@echo 
@@ -297,13 +304,13 @@ clean:
 
 help:
 	@echo "Makefile targets for libforbes:\n"
-	@echo "make                     - Compiles, links and archives [creates libforbes.a]"
-	@echo "make clean               - Cleans all previously built files"
-	@echo "make all                 - Same as make (tests are not built)"
-	@echo "make build-tests         - Compiles and links the tests"
-	@echo "make test                - Compiles [if necessary] and runs all tests"
-	@echo "make docs                - Used doxygen to build documentation"
-	@echo "make help                - This help message\n"
+	@echo "make					 - Compiles, links and archives [creates libforbes.a]"
+	@echo "make clean			   - Cleans all previously built files"
+	@echo "make all				 - Same as make (tests are not built)"
+	@echo "make build-tests		 - Compiles and links the tests"
+	@echo "make test				- Compiles [if necessary] and runs all tests"
+	@echo "make docs				- Used doxygen to build documentation"
+	@echo "make help				- This help message\n"
 
 docs:
 	doxygen forbes.doxygen
