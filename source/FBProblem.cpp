@@ -38,6 +38,24 @@ FBProblem::FBProblem(
     this->m_g = &fun_g;
 }
 
+FBProblem::FBProblem(
+        Function& fun_f1,
+        LinearOperator& L_1,
+        Matrix& d_1,
+        Function& fun_g) {
+    this->m_f1 = &fun_f1;
+    this->m_L1 = &L_1;
+    this->m_d1 = &d_1;
+    this->m_g = &fun_g;
+}
+
+FBProblem::FBProblem(
+        Function& fun_f1,
+        Function& fun_g) {
+    this->m_f1 = &fun_f1;
+    this->m_g = &fun_g;
+}
+
 LinearOperator * FBProblem::L1() {
     return m_L1;
 }

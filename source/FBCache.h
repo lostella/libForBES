@@ -34,9 +34,9 @@
  */
 class FBCache {
 private:
-    int m_flag_evalf;
-    int m_flag_gradstep;
-    int m_flag_proxgradstep;
+    int m_flag_evalf = 0;
+    int m_flag_gradstep = 0;
+    int m_flag_proxgradstep = 0;
 
     FBProblem & m_prob;
     Matrix & m_x;
@@ -65,19 +65,21 @@ private:
     double m_fx;
     double m_gz;
     double m_gamma;
-
-    int update_forward_step(double gamma);
     
 public:
     FBCache(FBProblem & p, Matrix & x, double gamma);
 
     virtual ~FBCache();
 
+    int update_eval_f();
+    int update_forward_step(double gamma);
+    int update_forward_backward_step(double gamma);
+    
     int update_eval_FBE(double gamma);
     int update_grad_FBE(double gamma);
-    int update_eval_f();
-    int update_forward_backward_step(double gamma);
 
+	double get_eval_f() { int status = this->update_eval_f(); return m_fx; }
+	Matrix * get_forward_backward_step(double gamma) { update_forward_backward_step(gamma); return m_z; }
 };
 
 #endif /* FBCACHE_H */

@@ -175,8 +175,8 @@ SOURCES = \
 	QuadraticLossOverAffine.cpp \
 	SumOfNorm2.cpp \
 	FBProblem.cpp \
-	FBCache.cpp \
-	ConjugateFunction.cpp
+	FBCache.cpp 
+#	ConjugateFunction.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
@@ -210,7 +210,8 @@ TESTS = \
 	TestFunctionOntologicalClass.test \
 	TestFunctionOntologyRegistry.test \
 	TestIndBall2.test \
-	TestSeparableSum.test	
+	TestSeparableSum.test \
+	TestFBCache.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -257,6 +258,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOpDCT3
 	${BIN_TEST_DIR}/TestOpGradient
 	${BIN_TEST_DIR}/TestOpReverseVector
+	@echo "\n*** ALGORITHMS ***"
+	${BIN_TEST_DIR}/TestFBCache
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo
@@ -267,6 +270,10 @@ $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_D
 	@echo [Linking $*]
 	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
 	@echo "\n\n\n"
+
+main:
+	$(CXX) $(CFLAGS) $(IFLAGS) source/main.cpp 
+	$(CXX) $(LFLAGS) -L./dist/Debug main.o -lforbes $(lFLAGS)
 
 $(OBJ_DIR)/%.o: source/%.cpp
 	@echo 
