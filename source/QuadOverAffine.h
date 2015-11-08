@@ -114,7 +114,7 @@ public:
      */
     virtual ~QuadOverAffine();
 
-    virtual int callConj(const Matrix& y, double& f_star, Matrix& grad);
+    virtual int callConj(Matrix& y, double& f_star, Matrix& grad);
 
     virtual FunctionOntologicalClass category();
 

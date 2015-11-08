@@ -61,13 +61,11 @@ Matrix MatrixOperator::callAdjoint(Matrix& x) {
 }
 
 std::pair<size_t, size_t> MatrixOperator::dimensionIn() {
-    std::pair<size_t, size_t> dims(m_A.getNcols(), static_cast<size_t> (1));
-    return dims;
+    return _VECTOR_OP_DIM(m_A.getNcols());
 }
 
 std::pair<size_t, size_t> MatrixOperator::dimensionOut() {
-    std::pair<size_t, size_t> dims(m_A.getNrows(), static_cast<size_t> (1));
-    return dims;
+    return _VECTOR_OP_DIM(m_A.getNrows());
 }
 
 

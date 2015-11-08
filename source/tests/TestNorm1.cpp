@@ -75,7 +75,7 @@ void TestNorm1::testCallProx() {
         0.737858095516997,
         0.269119426398556
     };
-    const Matrix x(n, 1, x_data);
+    Matrix x(n, 1, x_data);
 
     double mu = 0.8;
     Function * norm1_fun = new Norm1(mu);
@@ -93,7 +93,7 @@ void TestNorm1::testCallProx() {
         0
     };
 
-    const Matrix prox_expected(n, 1, prox_expected_data);
+    Matrix prox_expected(n, 1, prox_expected_data);
 
     const double gamma = 0.5;
     Matrix prox(n, 1);
@@ -122,7 +122,7 @@ void TestNorm1::testCallProx2() {
         3.578396939725760,
         2.769437029884877
     };
-    const Matrix x(n, 1, x_data);
+    Matrix x(n, 1, x_data);
 
     double mu = 1.2;
     Function * norm1_fun = new Norm1(mu);
@@ -140,7 +140,7 @@ void TestNorm1::testCallProx2() {
         2.169437029884877
     };
 
-    const Matrix prox_expected(n, 1, prox_expected_data);
+    Matrix prox_expected(n, 1, prox_expected_data);
 
     const double gamma = 0.5;
     Matrix prox(n, 1);

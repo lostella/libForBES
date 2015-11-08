@@ -22,6 +22,7 @@
 #define	FACTOREDSOLVER_H
 
 #include "Matrix.h"
+#include "LinSysSolver.h"
 
 /**
  * \class FactoredSolver
@@ -31,11 +32,13 @@
  * \author Pantelis Sopasakis
  * 
  * FactoredSolver is a solver for linear systems of the form \f$Ax=b\f$ where a
- * factorization of matrix \f$A\f$ is used. This function exports its functionality
+ * factorization of matrix \f$A\f$ is used. This class exports its functionality
  * using two methods: #factorize and #solve. Objects of this class are instantiated
  * provided the matrix \f$A\f$ for which a reference is stored inside the object.
+ * 
+ * \sa LinSysSolver
  */
-class FactoredSolver {
+class FactoredSolver : public LinSysSolver {
 public:
 
     /**
@@ -59,7 +62,8 @@ public:
     virtual int factorize(void) = 0;
 
     /**
-     * Solves the linear system and returns its solution and a status code.
+     * Solves the linear system using the system's matrix factorization 
+     * and returns its solution and a status code.
      * 
      * \pre Always call #factorize before you call solve.
      * 
@@ -78,12 +82,6 @@ public:
 
 private:
 
-protected:
-
-    Matrix& m_matrix;
-    Matrix::MatrixType m_matrix_type;
-    size_t m_matrix_nrows;
-    size_t m_matrix_ncols;
 
 };
 

@@ -7,30 +7,31 @@
 
 #include "ConjugateFunction.h"
 
-ConjugateFunction::ConjugateFunction(const Function& funct) :
+ConjugateFunction::ConjugateFunction(Function& funct) :
 Function(), m_function(funct) {
+    std::cout << "\n conjugate of " << funct.category().getName();
 }
 
 ConjugateFunction::~ConjugateFunction() {
 }
 
 int ConjugateFunction::call(Matrix& x, double& f) {
-    return m_function.callConj(const_cast<Matrix&> (x), f);
+    return m_function.callConj(x, f);
 }
 
 int ConjugateFunction::call(Matrix& x, double& f, Matrix& grad) {
-    return m_function.callConj(const_cast<Matrix&> (x), f, grad);
+    return m_function.callConj(x, f, grad);
 }
 
-int ConjugateFunction::callConj(const Matrix& x, double& f_star, Matrix& grad) {
-    return call(const_cast<Matrix&> (x), f_star, grad);
+int ConjugateFunction::callConj(Matrix& x, double& f_star, Matrix& grad) {
+    return m_function.call(x, f_star, grad);
 }
 
-int ConjugateFunction::callConj(const Matrix& x, double& f_star) {
-    return call(const_cast<Matrix&> (x), f_star);
+int ConjugateFunction::callConj(Matrix& x, double& f_star) {
+    return m_function.call(x, f_star);
 }
 
-int ConjugateFunction::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox) {
     int status = m_function.callProx(x, gamma, prox);
     for (size_t i = 0; i < x.getNrows(); i++) {
         prox.set(i, 0, x.get(i, 0) - prox.get(i, 0));
@@ -38,12 +39,12 @@ int ConjugateFunction::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return status;
 }
 
-int ConjugateFunction::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     int status = callProx(x, gamma, prox);
     if (ForBESUtils::STATUS_OK != status){
         return status;
     }
-    return call(x, prox);
+    return call(prox, f_at_prox);
 }
 
 FunctionOntologicalClass ConjugateFunction::category() {

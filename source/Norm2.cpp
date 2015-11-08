@@ -20,7 +20,7 @@
 
 #include "Norm2.h"
 
-double vecNorm2(const Matrix& x);
+double vecNorm2(Matrix& x);
 
 Norm2::Norm2() : Norm() {
     m_mu = 1.0;
@@ -32,7 +32,7 @@ Norm2::Norm2(double mu) : Norm(), m_mu(mu) {
 Norm2::~Norm2() {
 }
 
-inline double vecNorm2(const Matrix& x) {
+inline double vecNorm2(Matrix& x) {
     double norm_x = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         norm_x += std::pow(x.get(i, 0), 2);
@@ -51,7 +51,7 @@ int Norm2::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int Norm2::dualNorm(const Matrix& x, double& norm) {
+int Norm2::dualNorm(Matrix& x, double& norm) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
@@ -61,7 +61,7 @@ int Norm2::dualNorm(const Matrix& x, double& norm) {
     return ForBESUtils::STATUS_OK;
 }
 
-int Norm2::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int Norm2::callProx(Matrix& x, double gamma, Matrix& prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
@@ -78,7 +78,7 @@ int Norm2::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_OK;
 }
 
-int Norm2::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int Norm2::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");

@@ -84,7 +84,6 @@ void TestHuber::testCall() {
 
     _ASSERT_EQ(grad_expected, grad);
 
-
     delete huber;
 }
 

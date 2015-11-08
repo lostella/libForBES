@@ -47,7 +47,7 @@ int Norm1::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int Norm1::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int Norm1::callProx(Matrix& x, double gamma, Matrix& prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
@@ -66,7 +66,7 @@ int Norm1::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_OK;
 }
 
-int Norm1::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int Norm1::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
@@ -91,7 +91,7 @@ int Norm1::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_pr
     return ForBESUtils::STATUS_OK;
 }
 
-int Norm1::dualNorm(const Matrix& x, double& norm) {
+int Norm1::dualNorm(Matrix& x, double& norm) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");

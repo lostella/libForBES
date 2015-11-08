@@ -67,7 +67,7 @@ double IndBall2::norm_div(const Matrix& x) {
     return ndiv;
 }
 
-int IndBall2::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int IndBall2::callProx(Matrix& x, double gamma, Matrix& prox) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a vector");
     }
@@ -86,7 +86,7 @@ int IndBall2::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_OK;
 }
 
-int IndBall2::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int IndBall2::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     callProx(x, gamma, prox);
     f_at_prox = 0.0;
     return ForBESUtils::STATUS_OK;

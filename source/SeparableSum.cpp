@@ -104,7 +104,7 @@ int SeparableSum::call(Matrix& x, double& f, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int SeparableSum::callProx(Matrix& x, double gamma, Matrix& prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
@@ -143,11 +143,11 @@ int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_OK;
 }
 
-int SeparableSum::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int SeparableSum::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int SeparableSum::callConj(const Matrix& x, double& f_star) {
+int SeparableSum::callConj(Matrix& x, double& f_star) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");

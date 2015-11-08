@@ -102,7 +102,7 @@ public:
      * Custom implementations are allowed to return other non-zero error/warning
      * status codes.
      */
-    virtual int callConj(const Matrix& x, double& f_star);
+    virtual int callConj(Matrix& x, double& f_star);
 
 
     /**
@@ -128,7 +128,7 @@ public:
      * or if it has incompatible dimensions.
      * 
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
 
     /**
      * Computes the proximal operator of a separable sum of functions using the
@@ -155,7 +155,7 @@ public:
      * or if it has incompatible dimensions.
      * 
      */
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
    
     virtual FunctionOntologicalClass category();
 

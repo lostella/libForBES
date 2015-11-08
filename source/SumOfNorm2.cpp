@@ -55,11 +55,11 @@ int SumOfNorm2::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int SumOfNorm2::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int SumOfNorm2::callProx(Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int SumOfNorm2::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int SumOfNorm2::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 

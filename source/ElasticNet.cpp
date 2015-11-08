@@ -41,7 +41,7 @@ int ElasticNet::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox, double& g_at_prox) {
+int ElasticNet::callProx(Matrix& x, double gamma, Matrix& prox, double& g_at_prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
@@ -61,7 +61,7 @@ int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox, double& g_
     return ForBESUtils::STATUS_OK;
 }
 
-int ElasticNet::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int ElasticNet::callProx(Matrix& x, double gamma, Matrix& prox) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");

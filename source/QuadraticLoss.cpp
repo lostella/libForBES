@@ -75,7 +75,7 @@ int QuadraticLoss::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int QuadraticLoss::callConj(const Matrix& x, double& f_star) {
+int QuadraticLoss::callConj(Matrix& x, double& f_star) {
     f_star = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         f_star += x.get(i, 0)*(2.0 * (m_is_zero_p ? 0.0 : m_p->get(i, 0))
@@ -85,7 +85,7 @@ int QuadraticLoss::callConj(const Matrix& x, double& f_star) {
     return ForBESUtils::STATUS_OK;
 }
 
-int QuadraticLoss::callConj(const Matrix& x, double& f_star, Matrix& grad) {
+int QuadraticLoss::callConj(Matrix& x, double& f_star, Matrix& grad) {
     f_star = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double gradi;

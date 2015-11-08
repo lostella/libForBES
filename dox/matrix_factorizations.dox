@@ -24,6 +24,19 @@
  * 
  * \tableofcontents 
  * 
+ * In the following diagram we see the class hierarchy of all factored solvers
+ * available in libforbes:
+ * \htmlonly
+    <div align='center'>
+        <embed src="class_factored_solver__inherit__graph.svg" 
+        width="528pt" height="210pt" 
+        type="image/svg+xml" 
+        pluginspage="http://www.adobe.com/svg/viewer/install/" />
+    </div>
+ * \endhtmlonly 
+ *
+ * 
+ *
  * \section Cholesky
  * The Cholesky factorization can be applied to any symmetric positive definite
  * matrix. 

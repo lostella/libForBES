@@ -44,13 +44,13 @@ public:
     
     virtual ~Norm2();
 
-    virtual int dualNorm(const Matrix& x, double& norm);
+    virtual int dualNorm(Matrix& x, double& norm);
 
     virtual int call(Matrix& x, double& f);
 
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
 
-    virtual int callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 
     virtual FunctionOntologicalClass category();
 

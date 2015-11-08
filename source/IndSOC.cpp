@@ -47,12 +47,12 @@ int IndSOC::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int IndSOC::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int IndSOC::callProx(Matrix& x, double gamma, Matrix& prox) {
     double f_at_prox;
     return callProx(x, gamma, prox, f_at_prox);
 }
 
-int IndSOC::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int IndSOC::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     f_at_prox = 0.0;
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a vector");

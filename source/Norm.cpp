@@ -13,7 +13,7 @@ Norm::Norm() : Function() {
 Norm::~Norm() {
 }
 
-int Norm::callConj(const Matrix& x, double& f_star) {
+int Norm::callConj(Matrix& x, double& f_star) {
     double dNorm;
     int status = dualNorm(x, dNorm);
     if (ForBESUtils::STATUS_OK != status) {
@@ -28,7 +28,7 @@ int Norm::callConj(const Matrix& x, double& f_star) {
 }
 
 //LCOV_EXCL_START
-int Norm::dualNorm(const Matrix& x, double& norm) {
+int Norm::dualNorm(Matrix& x, double& norm) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 

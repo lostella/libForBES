@@ -22,11 +22,11 @@
 
 OpDCT3::OpDCT3(size_t dimension) :
 LinearOperator(),
-m_dimension(std::pair<size_t, size_t>(dimension, static_cast<size_t> (1))) {
+m_dimension(_VECTOR_OP_DIM(dimension)) {
 }
 
-OpDCT3::OpDCT3() {
-    m_dimension = std::pair<size_t, size_t>(static_cast<size_t> (0), static_cast<size_t> (1));
+OpDCT3::OpDCT3() : m_dimension(_EMPTY_OP_DIM) {
+
 }
 
 OpDCT3::~OpDCT3() {

@@ -22,52 +22,53 @@
 #include <math.h>
 #include <stdio.h>
 #include <iostream>
-
-#include "Function.h"
-#include "Quadratic.h"
-
-#include "cholmod.h"
-#include "MatrixFactory.h"
-#include "LDLFactorization.h"
-#include "CholeskyFactorization.h"
-
-#include "ldl.h"
-#include "MatrixWriter.h"
-#include "MatrixOperator.h"
-#include "OpComposition.h"
-#include "OpReverseVector.h"
-#include "OpGradient.h"
-#include "OpDCT3.h"
-#include "OpDCT2.h"
-
 #include <set>
+#include <vector>
+#include <list>
+#include <map>
+
+#include "ForBES.h"
+#include "FunctionOntologyRegistry.h"
+#include "LogLogisticLoss.h"
+#include "Norm1.h"
+#include "S_LDLFactorization.h"
+#include "ConjugateFunction.h"
 
 
 using namespace std;
 
+#define N 3
+
 int main(int argc, char** argv) {
 
-    
+    Matrix b = MatrixFactory::MakeRandomMatrix(5, 1, -1.0, 2.0);
+    for (size_t i = 0; i < 5; i++) {
+        b.set(i, 0, 0.9 * i + 1.0);
+    }
 
-    Matrix A = MatrixFactory::MakeRandomMatrix(20, 30, 0.0, 10.0, Matrix::MATRIX_DENSE);
-    Matrix B = MatrixFactory::MakeRandomMatrix(10, 11, 0.0, 2.0, Matrix::MATRIX_DENSE);
-    B.transpose();
-    A.transpose();
-        
-    Matrix Asub = A.submatrixCopy(1, 3, 2, 5);  // 3 x 4
-    Matrix Bsub = B.submatrixCopy(3, 6, 9, 10);  // 4 x 2
-    Matrix exact = Asub*Bsub;
-    
 
-    std::cout << B;
-    std::cout << Bsub;
-    
-    
-    std::cout << "\n";
-    Matrix result = A.multiplySubmatrix(B, 1,3,2,5, 3,6,9,10);
-    std::cout << result-exact;
+    Function * f = new HingeLoss(b);
+    Function * f_conj = new ConjugateFunction(*f);
+
+    Matrix x = MatrixFactory::MakeRandomMatrix(5, 1, -1.0, 2.0);
+    for (size_t i = 0; i < 5; i++) {
+        x.set(i, 0, 0.1 * i + 0.08);
+    }
+
+    std::cout << x;
+
+    Matrix prox(5, 1);
+    f->callProx(x, 0.5, prox);
+
+    std::cout << prox;
+    prox = Matrix(5, 1);
+
+    f_conj ->callProx(x, 0.5, prox);
+    std::cout << prox;
+
+    delete f;
+    delete f_conj;
 
     return (0);
 }
-
 

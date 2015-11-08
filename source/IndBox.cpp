@@ -92,7 +92,7 @@ int IndBox::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
-int IndBox::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
+int IndBox::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     f_at_prox = 0.0;
     assert(x.isColumnVector());
 
@@ -118,7 +118,7 @@ int IndBox::callProx(const Matrix& x, double gamma, Matrix& prox, double& f_at_p
     return ForBESUtils::STATUS_OK;
 }
 
-int IndBox::callProx(const Matrix& x, double gamma, Matrix& prox) {
+int IndBox::callProx(Matrix& x, double gamma, Matrix& prox) {
     double val;
     return callProx(x, gamma, prox, val);
 }

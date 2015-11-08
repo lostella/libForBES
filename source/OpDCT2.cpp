@@ -20,12 +20,13 @@
 
 #include "OpDCT2.h"
 
-OpDCT2::OpDCT2() : LinearOperator() {
-    m_dimension = std::pair<size_t, size_t>(static_cast<size_t> (0), static_cast<size_t> (1));
+
+
+OpDCT2::OpDCT2() : LinearOperator(), m_dimension(_EMPTY_OP_DIM) {
+
 }
 
-OpDCT2::OpDCT2(size_t n) {
-    m_dimension = std::pair<size_t, size_t>(n, static_cast<size_t> (1));
+OpDCT2::OpDCT2(size_t n) : m_dimension(_VECTOR_OP_DIM(n)) {
 }
 
 OpDCT2::~OpDCT2() {
