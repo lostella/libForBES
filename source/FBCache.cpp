@@ -1,16 +1,28 @@
+/*
+ * File:   FBCache.cpp
+ * Author: Lorenzo Stella, Pantelis Sopasakis
+ *
+ * Created on October 2, 2015
+ *
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "FBCache.h"
 #include "LinearOperator.h"
 
-void FBCache::init() {
-    m_flag_evalFBE = 0;
-    m_flag_evalf = 0;
-    m_flag_gradFBE = 0;
-    m_flag_gradstep = 0;
-    m_flag_proxgradstep = 0;
-}
-
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m_gamma(gamma) {
-    init();
+
     // store pointers to problem and all relevant details
     m_f1 = p.f1();
     m_L1 = p.L1();
@@ -20,58 +32,60 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(x), m
     m_d2 = p.d2();
     m_lin = p.lin();
     m_g = p.g();
-
+    
     // get dimensions of things
-    x_rows = m_x.getNrows();
-    x_cols = m_x.getNcols();
-
+    m_x_rows = m_x.getNrows();
+    m_x_cols = m_x.getNcols();
     if (m_d1 != NULL) {
-        res1_rows = m_d1->getNrows();
-        res1_cols = m_d1->getNcols();
+    	m_res1_rows = m_d1->getNrows();
+    	m_res1_cols = m_d1->getNcols();
     } else if (m_L1 != NULL) {
-        std::pair<size_t, size_t> res1_size = m_L1->dimensionOut();
-        res1_rows = res1_size.first;
-        res1_cols = res1_size.second;
-    } else {
-        res1_rows = x_rows;
-        res1_cols = x_cols;
-    }
+    	std::pair<size_t, size_t> res1_size = m_L1->dimensionOut();
+    	m_res1_rows = res1_size.first;
+    	m_res1_cols = res1_size.second;
+	} else {
+		m_res1_rows = m_x_rows;
+    	m_res1_cols = m_x_cols;
+	}
     if (m_d2 != NULL) {
-        res2_rows = m_d2->getNrows();
-        res2_cols = m_d2->getNcols();
+    	m_res2_rows = m_d2->getNrows();
+    	m_res2_cols = m_d2->getNcols();
     } else if (m_L2 != NULL) {
-        std::pair<size_t, size_t> res2_size = m_L2->dimensionOut();
-        res2_rows = res2_size.first;
-        res2_cols = res2_size.second;
-    } else {
-        res2_rows = x_rows;
-        res2_cols = x_cols;
-    }
+    	std::pair<size_t, size_t> res2_size = m_L2->dimensionOut();
+    	m_res2_rows = res2_size.first;
+    	m_res2_cols = res2_size.second;
+	} else {
+		m_res2_rows = m_x_rows;
+    	m_res2_cols = m_x_cols;
+	}
 
     // allocate memory for residuals and gradients (where needed)
     if (m_f1 != NULL) {
-        m_res1x = new Matrix(res1_rows, res1_cols);
-        m_gradf1x = new Matrix(res1_rows, res1_cols);
+        m_res1x = new Matrix(m_res1_rows, m_res1_cols);
+        m_gradf1x = new Matrix(m_res1_rows, m_res1_cols);
     } else {
         m_res1x = NULL;
         m_gradf1x = NULL;
     }
     if (m_f2 != NULL) {
-        m_res2x = new Matrix(res2_rows, res2_cols);
-        m_gradf2x = new Matrix(res2_rows, res2_cols);
+        m_res2x = new Matrix(m_res2_rows, m_res2_cols);
+        m_gradf2x = new Matrix(m_res2_rows, m_res2_cols);
     } else {
         m_res2x = NULL;
         m_gradf2x = NULL;
     }
-
-    m_gradfx = new Matrix(x_rows, x_cols);
-    m_z = new Matrix(x_rows, x_cols);
-    m_y = new Matrix(x_rows, x_cols);
-    m_FPR = new Matrix(x_rows, x_cols);
-
+    
+    m_gradfx = new Matrix(m_x_rows, m_x_cols);
+    m_z = new Matrix(m_x_rows, m_x_cols);
+    m_y = new Matrix(m_x_rows, m_x_cols);
+    m_FPRx = new Matrix(m_x_rows, m_x_cols);
+    m_gradFBEx = new Matrix(m_x_rows, m_x_cols);
+    
     m_flag_evalf = 0;
     m_flag_gradstep = 0;
     m_flag_proxgradstep = 0;
+    m_flag_evalFBE = 0;
+    m_flag_gradFBE = 0;
 
     m_f1x = 0.0;
     m_f2x = 0.0;
@@ -159,17 +173,16 @@ int FBCache::update_forward_step(double gamma) {
     }
 
     if (m_flag_gradstep == 1) {
-        if (gamma != this->m_gamma) {
-            this->m_gamma = gamma;
-            // *m_y = m_x - gamma * (*m_gradfx);
+        if (gamma != m_gamma) {
+            m_gamma = gamma;
             *m_y = m_x;
             Matrix::add(*m_y, -gamma, *m_gradfx, 1.0);
         }
         return ForBESUtils::STATUS_OK;
     }
-
+    
     m_gamma = gamma;
-
+    
     if (m_f1 != NULL) {
         if (m_L1) {
             Matrix d_gradfx = m_L1->callAdjoint(*m_gradf1x);
@@ -203,7 +216,7 @@ int FBCache::update_forward_step(double gamma) {
 }
 
 int FBCache::update_forward_backward_step(double gamma) {
-    double gamma0 = this->m_gamma;
+    double gamma0 = m_gamma;
 
     if (m_flag_gradstep == 0 || gamma != gamma0) {
         int status = update_forward_step(gamma);
@@ -212,15 +225,15 @@ int FBCache::update_forward_backward_step(double gamma) {
     if (m_flag_proxgradstep == 0 || gamma != gamma0) {
         int status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
     }
-
-    *m_FPR = (m_x - *m_z);
-
+    
+    *m_FPRx = (m_x - *m_z);
+    
     m_sqnormFPRx = 0;
-    for (int i = 0; i < m_FPR->length(); i++) {
-        m_sqnormFPRx += (*m_FPR)[i]*(*m_FPR)[i];
+    for (int i = 0; i < m_FPRx->length(); i++) {
+		m_sqnormFPRx += (*m_FPRx)[i]*(*m_FPRx)[i];
     }
-
-    this->m_gamma = gamma;
+    
+    m_gamma = gamma;
     m_flag_proxgradstep = 1;
 
     return ForBESUtils::STATUS_OK;
@@ -236,16 +249,16 @@ int FBCache::update_eval_FBE(double gamma) {
     }
 
     double innprod = 0;
-
-    for (int i = 0; i < x_rows; i++) {
-        for (int j = 0; j < x_cols; j++) {
-            innprod += m_FPR->get(i, j) * m_gradfx->get(i, j);
-        }
+    
+    for (int i = 0; i < m_x_rows; i++) {
+    	for (int j = 0; j < m_x_cols; j++) {
+			innprod += m_FPRx->get(i, j)*m_gradfx->get(i, j);
+		}
     }
-
-    m_FBEx = m_fx + m_gz - innprod + 0.5 / m_gamma*m_sqnormFPRx;
-
-    this->m_gamma = gamma;
+    
+    m_FBEx = m_fx + m_gz - innprod + 0.5/m_gamma*m_sqnormFPRx;
+    
+    m_gamma = gamma;
     m_flag_evalFBE = 1;
 
     return ForBESUtils::STATUS_OK;
@@ -262,9 +275,9 @@ int FBCache::update_grad_FBE(double gamma) {
 
     /* TODO: fill in here */
 
-    this->m_gamma = gamma;
-    m_flag_gradFBE = 1;
-
+	m_gamma = gamma;
+	m_flag_gradFBE = 1;
+	    
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 

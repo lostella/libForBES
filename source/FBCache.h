@@ -54,20 +54,21 @@ private:
     Matrix * m_lin;
 
     /* Vectors dimensions */
-    size_t x_rows;
-    size_t x_cols;
-    size_t res1_rows, res1_cols;
-    size_t res2_rows, res2_cols;
+    size_t m_x_rows;
+    size_t m_x_cols;
+    size_t m_res1_rows, m_res1_cols;
+    size_t m_res2_rows, m_res2_cols;
 
     /* Internal storage for computing proximal-gradient steps */
     Matrix * m_y;
     Matrix * m_z;
-    Matrix * m_FPR;
+    Matrix * m_FPRx;
     Matrix * m_res1x;
     Matrix * m_gradf1x;
     Matrix * m_res2x;
     Matrix * m_gradf2x;
     Matrix * m_gradfx;
+    Matrix * m_gradFBEx;
     double m_f1x;
     double m_f2x;
     double m_linx;

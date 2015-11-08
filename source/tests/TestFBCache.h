@@ -11,7 +11,7 @@
 class TestFBCache : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestFBCache);
 
-    CPPUNIT_TEST(test_boxqp_fx_z);
+    CPPUNIT_TEST(test_boxqp_small);
     
     CPPUNIT_TEST_SUITE_END();
 
@@ -22,8 +22,8 @@ public:
     void tearDown();
 
 private:
-    void test_boxqp_fx_z();
-    
+    void test_boxqp_small();
+    void test_l1logreg_small();
 };
 
 #endif	/* TESTFBCACHE_H */

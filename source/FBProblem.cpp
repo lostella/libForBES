@@ -1,5 +1,5 @@
 /* 
- * File:   SeparableSum.h
+ * File:   FBProblem.h
  * Author: Lorenzo Stella
  * Author: Pantelis Sopasakis
  *
@@ -38,14 +38,14 @@ FBProblem::FBProblem(
         Matrix& d_2,
         Matrix& linear,
         Function& fun_g) {
-    this->m_f1 = &fun_f1;
-    this->m_L1 = &L_1;
-    this->m_d1 = &d_1;
-    this->m_f2 = &fun_f2;
-    this->m_L2 = &L_2;
-    this->m_d2 = &d_2;
-    this->m_lin = &linear;
-    this->m_g = &fun_g;
+    m_f1 = &fun_f1;
+    m_L1 = &L_1;
+    m_d1 = &d_1;
+    m_f2 = &fun_f2;
+    m_L2 = &L_2;
+    m_d2 = &d_2;
+    m_lin = &linear;
+    m_g = &fun_g;
 }
 
 FBProblem::FBProblem(
@@ -53,19 +53,19 @@ FBProblem::FBProblem(
         LinearOperator& L_1,
         Matrix& d_1,
         Function& fun_g) {
-    init();
-    this->m_f1 = &fun_f1;
-    this->m_L1 = &L_1;
-    this->m_d1 = &d_1;
-    this->m_g = &fun_g;
+	init();
+    m_f1 = &fun_f1;
+    m_L1 = &L_1;
+    m_d1 = &d_1;
+    m_g = &fun_g;
 }
 
 FBProblem::FBProblem(
         Function& fun_f1,
         Function& fun_g) {
-    init();
-    this->m_f1 = &fun_f1;
-    this->m_g = &fun_g;
+	init();
+    m_f1 = &fun_f1;
+    m_g = &fun_g;
 }
 
 LinearOperator * FBProblem::L1() {

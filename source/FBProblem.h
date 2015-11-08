@@ -56,21 +56,16 @@ public:
             Function& fun_g);
 
     Function * f1();
-
-    LinearOperator * L1();
-
-    Matrix * d1();
-
     Function * f2();
-
+    
+    LinearOperator * L1();
     LinearOperator * L2();
-
+    
+    Matrix * d1();
     Matrix * d2();
-
     Matrix * lin();
-
+    
     Function * g();
-
 
     virtual ~FBProblem();
 
