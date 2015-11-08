@@ -118,6 +118,7 @@ private:
     bool m_defines_conjugate;       /**< Whether this function type defines a conjugate f*(x)                           */
     bool m_defines_conjugate_grad;  /**< Whether this function type defines the gradient of its conjugate grad[f*](x)   */
     bool m_defines_prox;            /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
+    bool m_defines_hessian;         /**< Whether this function defines the Hessian of f                                 */
 
     list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
 

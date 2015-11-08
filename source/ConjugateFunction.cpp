@@ -45,7 +45,10 @@ int ConjugateFunction::callConj(Matrix& x, double& f_star) {
 }
 
 int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox) {
-    int status = m_function.callProx(x, gamma, prox);
+    Matrix x_over_gamma = x;
+    x_over_gamma *= (1.0/gamma);
+    int status = m_function.callProx(x_over_gamma, 1.0/gamma, prox);
+    prox *= gamma;
     for (size_t i = 0; i < x.getNrows(); i++) {
         prox.set(i, 0, x.get(i, 0) - prox.get(i, 0));
     }

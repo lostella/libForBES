@@ -116,7 +116,7 @@ public:
      * For a given function \f$s\f$, provided in the constructor, this method 
      * computes the proximal gradient of its conjugate which is given by
      * \f[
-     *  \mathrm{prox}_{\gamma s^*}(v) = v - \mathrm{prox}_{\gamma s}(v).
+     *  \mathrm{prox}_{\gamma s^*}(v) = v - \gamma \mathrm{prox}_{\gamma^{-1} s}(\gamma^{-1}v).
      * \f]
      *
      * @param x The vector x where \f$\mathrm{prox}_{\gamma f}(x)\f$ should be computed.
@@ -140,7 +140,7 @@ public:
      * For a given function \f$s\f$, provided in the constructor, this method 
      * computes the proximal gradient of its conjugate which is given by
      * \f[
-     *  \mathrm{prox}_{\gamma s^*}(v) = v - \mathrm{prox}_{\gamma s}(v).
+     *  \mathrm{prox}_{\gamma s^*}(v) = v - \gamma \mathrm{prox}_{\gamma^{-1} s}(\gamma^{-1}v).
      * \f]
      * and it also computes the value of \f$s^*\f$ at the proximal point, that is
      * \f$s^*(\mathrm{prox}_{\gamma s^*}(v))\f$.

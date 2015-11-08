@@ -553,12 +553,38 @@ public:
      * 
      * @param C reference of matrix to be updated
      * @param alpha scalar
-     * @param A given matrix A
-     * @param gamma scalar
+     * @param A given matrix \f$A\f$
+     * @param gamma scalar \f$\gamma\f$
      * @return 
-     * A status code.
+     * A status code. The method will return a \link ForBESUtils:STATUS_OK success code\endlink
+     * if the operation has succeeded and there was no need to perform any memory allocation 
+     * operations. It may happen that the method succeeds, but it is necessary to allocate memory
+     * to carry out the operation. This may happen if \c C is symmetric and \c A is dense;
+     * then, matrix \c C needs to be cast as a dense matrix. In such a case the success
+     * code \link ForBESUtils:STATUS_HAD_TO_REALLOC STATUS_HAD_TO_REALLOC\endlink is returned.
+     * In an operation is not supported, an \link ForBESUtils:STATUS_UNDEFINED_FUNCTION undefined\endlink
+     * status code will be returned.
+     * 
+     * \exception std::invalid_argument An invalid argument exception is thrown
+     * if the matrices are not conformable.
+     * 
+     * \todo Handle the case where \f$\alpha = \gamma = 0\f$.
      */
     static int add(Matrix& C, double alpha, Matrix& A, double gamma);
+
+    /**
+     * Performs the following operation
+     * \f[
+     * C \leftarrow \gamma C + \alpha A B,
+     * \f]
+     * @param C
+     * @param alpha
+     * @param A
+     * @param B
+     * @param gamma
+     * @return 
+     */
+    static int mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 
 
 

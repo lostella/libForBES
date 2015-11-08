@@ -56,6 +56,7 @@ void TestConjugateFunction::testCall() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     status = f_conj->call(x, f_conj_val);
+    _ASSERT(f_conj->category().defines_f());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     _ASSERT_NUM_EQ(f_star, f_conj_val, 1e-8);
@@ -88,6 +89,7 @@ void TestConjugateFunction::testCall2() {
     Function * f_conjugate = new ConjugateFunction(*qoa);
     double fstar2 = 0.0;
     Matrix grad2;
+    _ASSERT(f_conjugate->category().defines_grad());
     f_conjugate -> call(y, fstar2, grad2);
 
     _ASSERT_NUM_EQ(fstar, fstar2, 1e-8);
@@ -118,6 +120,7 @@ void TestConjugateFunction::testCallConj() {
 
 
     Function * F_conj = new ConjugateFunction(*F);
+    _ASSERT(F_conj->category().defines_conjugate());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F_conj->callConj(x, fval2));
     _ASSERT(fval2 > 0);
     _ASSERT_NUM_EQ(fval, fval2, tol);
@@ -138,19 +141,53 @@ void TestConjugateFunction::testCallConj2() {
     Matrix grad2(n, 1);
 
     _ASSERT(huber->category().defines_f());
-    int status = huber->call(x, f, grad);    
+    int status = huber->call(x, f, grad);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    
+
     Function * huber_conj = new ConjugateFunction(*huber);
+    _ASSERT(huber_conj->category().defines_conjugate());
+    _ASSERT(huber_conj->category().defines_conjugate_grad());
     status = huber_conj -> callConj(x, f2, grad2);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    
+
     const double tol = 1e-9;
     _ASSERT_NUM_EQ(f, f2, tol);
 }
 
 void TestConjugateFunction::testCallProx() {
+    Function * elastic = new ElasticNet(2.5, 1.3);
+    Function * elastic_conj = new ConjugateFunction(*elastic);
 
+    const size_t n = 9;
+    double xdata[n] = {-1.0, -3.0, 7.5, 2.0, -1.0, -1.0, 5.0, 2.0, -5.0};
+    const double gamma = 1.6;
+    const double prox_expected_data[n] = {0.0, -0.1840, 1.0840, 0.0, 0.0, 0.0, 0.5840, 0.0, -0.5840};
+
+    Matrix x(n, 1, xdata);
+    Matrix prox_expected(n, 1, prox_expected_data);
+    Matrix prox(n, 1);
+
+    double f_at_prox;
+    const double f_at_prox_expected = 5.5305800;
+    const double tol = 1e-12;
+    _ASSERT(elastic->category().defines_prox());
+    int status = elastic->callProx(x, gamma, prox, f_at_prox);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_NUM_EQ(f_at_prox_expected, f_at_prox, tol);
+    _ASSERT_EQ(prox_expected, prox);
+
+    status = elastic->callProx(x, gamma, prox);
+    _ASSERT_EQ(prox_expected, prox);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    Matrix prox_conj(n, 1);
+    status = elastic_conj -> callProx(x, gamma, prox_conj);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    
+    
+    
+    delete elastic;
+    delete elastic_conj;
 }
 
 void TestConjugateFunction::testCategory() {

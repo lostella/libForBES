@@ -39,7 +39,7 @@ public:
 
     virtual ~OpLTI();
 
-    virtual Matrix call(Matrix& x);
+    virtual Matrix call(Matrix& u);
 
     virtual Matrix callAdjoint(Matrix& x);
 
