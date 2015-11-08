@@ -512,11 +512,6 @@ Matrix & Matrix::operator-=(Matrix & right) {
     }
     //LCOV_EXCL_STOP
 
-    if (&right == this) {
-        *this *= 2.0;
-        return *this;
-    }
-
     const double alpha = -1.0;
     const double gamma = 1.0;
     switch (m_type) {
