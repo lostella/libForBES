@@ -18,6 +18,8 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include "ForBESUtils.h"
 
 /*
@@ -31,5 +33,29 @@ const int ForBESUtils::STATUS_HAD_TO_REALLOC = 1;
 
 const int ForBESUtils::STATUS_NUMERICAL_PROBLEMS = 500;
 const int ForBESUtils::STATUS_UNDEFINED_FUNCTION = 501;
+
+void ForBESUtils::fail_on_error(int status) {
+    if (is_status_error(status)) {
+        throw std::logic_error("Failed");
+    }
+}
+
+bool ForBESUtils::is_status_error(int status) {
+    return (status > _FORBES_ERROR_MIN && status < _FORBES_ERROR_MAX);
+}
+
+bool ForBESUtils::is_status_ok(int status) {
+    return (status > _FORBES_OK_MIN && status < _FORBES_OK_MAX);
+}
+
+bool ForBESUtils::is_status_warning(int status) {
+    return (status > _FORBES_WARNING_MIN && status < _FORBES_WARNING_MAX);
+}
+
+
+
+
+
+
 
 

@@ -22,6 +22,7 @@
 #include "MatrixFactory.h"
 #include "ForBESUtils.h"
 #include <assert.h>
+#include <limits>
 
 /* STATIC MEMBERS */
 
@@ -505,20 +506,37 @@ Matrix& Matrix::operator+=(Matrix & right) {
 }
 
 Matrix & Matrix::operator-=(Matrix & right) {
+    //LCOV_EXCL_START
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
-    if (this->getType() != MATRIX_SPARSE && right.getType() != MATRIX_SPARSE) {
-#ifdef USE_LIBS
-        cblas_daxpy(length(), -1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
-#else
-        for (int i = 0; i < length(); i++) {
-            m_data[i] -= right[i];
-        }
-#endif
-    } else {
+    //LCOV_EXCL_STOP
 
-        throw std::logic_error("Subtraction involving sparse matrices is not supported yet");
+    if (&right == this) {
+        *this *= 2.0;
+        return *this;
+    }
+
+    const double alpha = -1.0;
+    const double gamma = 1.0;
+    switch (m_type) {
+        case MATRIX_DENSE: /* DENSE += ? */
+            generic_add_helper_left_dense(*this, alpha, right, gamma);
+            break;
+        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
+            generic_add_helper_left_symmetric(*this, alpha, right, gamma);
+            break;
+        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
+            generic_add_helper_left_lower_tri(*this, alpha, right, gamma);
+            break;
+        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
+            generic_add_helper_left_diagonal(*this, alpha, right, gamma);
+            break;
+        case MATRIX_SPARSE: /* SPARSE += ? */
+            generic_add_helper_left_sparse(*this, alpha, right, gamma);
+            break;
+        default:
+            throw std::logic_error("unsupported");
     }
     return *this;
 }
@@ -1132,9 +1150,16 @@ int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, do
 
     Matrix::MatrixType type_of_A = A.getType();
 
+    bool is_gamma_one = (std::abs(gamma - 1.0) < std::numeric_limits<double>::epsilon());
+
     if (type_of_A == MATRIX_DENSE && C.m_transpose == A.m_transpose) {
-        for (size_t i = 0; i < A.length(); i++) {
-            C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);
+        if (is_gamma_one) {
+            cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+            return 0;
+        } else {
+            for (size_t i = 0; i < A.length(); i++) {
+                C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);
+            }
         }
     } else if (type_of_A == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
         for (size_t i = 0; i < A.getNrows(); i++) {
@@ -1176,9 +1201,14 @@ int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A
     Matrix::MatrixType type_of_A = A.getType();
     size_t ncols = A.getNcols();
     size_t nrows = A.getNrows();
+    bool is_gamma_one = (std::abs(gamma - 1.0) < std::numeric_limits<double>::epsilon());
     if (type_of_A == MATRIX_SYMMETRIC) {
-        for (size_t i = 0; i < A.length(); i++) {
-            C.m_data[i] = gamma * C.m_data[i] + alpha * A.m_data[i];
+        if (is_gamma_one) {
+            cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+        } else {
+            for (size_t i = 0; i < A.length(); i++) {
+                C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);
+            }
         }
     } else if (type_of_A == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
         for (size_t i = 0; i < ncols; i++) {
@@ -1335,9 +1365,14 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
 }
 
 int Matrix::generic_add_helper_left_diagonal(Matrix& C, double alpha, Matrix& A, double gamma) {
+    bool is_gamma_one = (std::abs(gamma - 1.0) < std::numeric_limits<double>::epsilon());
     if (MATRIX_DIAGONAL == A.m_type) { /* Diagonal += Diagonal */
-        for (size_t i = 0; i < A.length(); i++) {
-            C.m_data[i] = gamma * C.m_data[i] + alpha * A.m_data[i];
+        if (is_gamma_one) {
+            cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+        } else {
+            for (size_t i = 0; i < A.length(); i++) {
+                C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);
+            }
         }
     } else {
         throw std::logic_error("Diagonal + Non-diagonal: not supported yet!");
@@ -1346,9 +1381,14 @@ int Matrix::generic_add_helper_left_diagonal(Matrix& C, double alpha, Matrix& A,
 }
 
 int Matrix::generic_add_helper_left_lower_tri(Matrix& C, double alpha, Matrix& A, double gamma) {
+    bool is_gamma_one = (std::abs(gamma - 1.0) < std::numeric_limits<double>::epsilon());
     if (A.m_type == Matrix::MATRIX_LOWERTR) { /* LOWER + LOWER = LOWER */
-        for (size_t i = 0; i < A.length(); i++) {
-            C.m_data[i] = gamma * C.m_data[i] + alpha * A.m_data[i];
+        if (is_gamma_one) {
+            cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+        } else {
+            for (size_t i = 0; i < A.length(); i++) {
+                C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);
+            }
         }
     } else if (A.m_type == Matrix::MATRIX_DIAGONAL) {
         for (size_t i = 0; i < A.m_nrows; i++) {

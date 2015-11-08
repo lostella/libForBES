@@ -29,15 +29,17 @@
 
 /**
  * \class MatrixFactory
+ * \brief Use this class to create instances of %Matrix
  * \version version 0.1
  * \ingroup Matrix-group
  * \date Created on July 12, 2015, 7:50 PM
  * \author <a href="http://dysco.imtlucca.it/sopasakis">Pantelis Sopasakis</a>
+ * \example shallow_example.cpp
  * 
- * \brief Use this class to create instances of %Matrix
  * 
  * \todo Create matrix constructor from double* using a pointer so as not to allocate
  * any memory inside the Matrix object.
+ * 
  */
 class MatrixFactory {
 public:

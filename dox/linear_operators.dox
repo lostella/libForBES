@@ -36,6 +36,10 @@
  * the first entry corresponds to the number of rows and the second entry is the
  * number of columns.
  *
+ * This is an example of how a linear operator can be defined and used:
+ *
+ * \include matop_example.cpp
+ *
  * \sa LinearOperator
  *
  */

@@ -70,6 +70,10 @@
  * sparse matrices).
  * 
  * \sa MatrixFactory
+ * 
+ * \example matrix_example.cpp 
+ * 
+ * \example shallow_example.cpp 
  *
  */
 class Matrix {
@@ -535,12 +539,24 @@ public:
 
 
     /**
-     * C = gamma*C + alpha*A
-     * @param C
-     * @param alpha
-     * @param A
-     * @param gamma
+     * Performs the following operation
+     * \f[
+     * C \leftarrow \gamma C + \alpha A,
+     * \f]
+     * where \f$\alpha, \gamma\f$ are scalars, \f$A\f$ is an instance of Matrix
+     * provided by reference and \f$C\f$ is a matrix to be modified.
+     * 
+     * \attention
+     * %Matrix C must have proper dimensions and must have allocated adequare memory,
+     * or point to allocated memory space. Shallow vectors can be used in place of either
+     * matrix \c C or \c A.
+     * 
+     * @param C reference of matrix to be updated
+     * @param alpha scalar
+     * @param A given matrix A
+     * @param gamma scalar
      * @return 
+     * A status code.
      */
     static int add(Matrix& C, double alpha, Matrix& A, double gamma);
 

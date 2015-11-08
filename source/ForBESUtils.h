@@ -21,34 +21,53 @@
 #ifndef FORBESUTILS_H
 #define	FORBESUTILS_H
 
+#define _FORBES_OK_MIN 0
+#define _FORBES_OK_MAX 100
+#define _FORBES_WARNING_MIN 200
+#define _FORBES_WARNING_MAX 400
+#define _FORBES_ERROR_MIN 500
+#define _FORBES_ERROR_MAX 1000
+
 /**
- * \brief ForBES utilities.
+ * \brief ForBES utilities such as status codes.
  */
 class ForBESUtils {
 public:
-    
-     /**
+
+    /**
      * Method has succeeded.
      */
     const static int STATUS_OK;
+
+    /**
+     * The method has succeeded, but there was necessary to allocate some memory
+     * using new[].
+     */
+    const static int STATUS_HAD_TO_REALLOC;
+
     /**
      * Method is undefined.
      */
     const static int STATUS_UNDEFINED_FUNCTION;
+
     /**
      * The result is unreliable, or could not be computed because
      * of numerical errors.
      */
     const static int STATUS_NUMERICAL_PROBLEMS;
-    
-    const static int STATUS_HAD_TO_REALLOC;
-    
-    
+
+    static bool is_status_ok(int status);
+    static bool is_status_warning(int status);
+    static bool is_status_error(int status);
+    static void fail_on_error(int status);
+
+
+
 private:
-    
+
     ForBESUtils();
     virtual ~ForBESUtils();
-    
+
 };
 
 #endif	/* FORBESUTILS_H */
