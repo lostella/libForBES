@@ -522,6 +522,18 @@ public:
             const size_t right_row_end,
             const size_t right_col_start,
             const size_t right_col_end);
+    
+    
+    /*
+     * New tentative methods
+     */
+    
+    
+    static int add(Matrix& result, double alpha, Matrix& L);
+    
+    
+    
+    
 
 
 
@@ -664,20 +676,7 @@ private:
      * @param pV1 pointer to <code>v1</code>
      * @param pV2 pointer to <code>v2</code>
      */
-    static inline void vectorAdd(size_t len, double * pV1, const double * pV2);
-
-
-    /**
-     * Apply operator += on a dense matrix
-     * @param rhs right hand side
-     */
-    inline void _addD(Matrix& rhs); // DENSE + ?
-
-    /**
-     * Apply operator += on a symmetric matrix
-     * @param rhs right hand side
-     */
-    inline void _addH(Matrix& rhs); // SYMMETRIC + ?
+    static inline void vectorAdd(size_t len, double * pV1, const double * pV2);       
 
     /**
      * Apply operator += on a diagonal matrix
@@ -696,6 +695,10 @@ private:
      * @param rhs right hand side
      */
     inline void _addS(Matrix& rhs);
+    
+    static int generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A);
+    static int generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A);
+    static int generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A);
 
 };
 

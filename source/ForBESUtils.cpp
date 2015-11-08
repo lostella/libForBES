@@ -20,8 +20,16 @@
 
 #include "ForBESUtils.h"
 
+/*
+ * Status codes 0~100    are informative
+ *              200~400  are warnings
+ *              500~1000 are errors
+ */
+
 const int ForBESUtils::STATUS_OK = 0;
-const int ForBESUtils::STATUS_NUMERICAL_PROBLEMS = 1;
-const int ForBESUtils::STATUS_UNDEFINED_FUNCTION = 2;
+const int ForBESUtils::STATUS_HAD_TO_REALLOC = 1;
+
+const int ForBESUtils::STATUS_NUMERICAL_PROBLEMS = 500;
+const int ForBESUtils::STATUS_UNDEFINED_FUNCTION = 501;
 
 

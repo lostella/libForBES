@@ -52,7 +52,7 @@ int IndBox::call(Matrix& x, double& f) {
         throw std::invalid_argument("x must be a vector");
     }
     bool isInside = true;
-    size_t i = 0;
+    volatile size_t i = 0;
 
     if (m_uniform_lb != NULL && !isinf(-(*m_uniform_lb))) { /* there's a uniform LB and this is not -inf*/
         while (i < x.getNrows() && isInside) {

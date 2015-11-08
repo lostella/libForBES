@@ -97,7 +97,7 @@ int S_LDLFactorization::factorize() {
     }
 }
 
-int S_LDLFactorization::solve(const Matrix& rhs, Matrix& solution) const {
+int S_LDLFactorization::solve(Matrix& rhs, Matrix& solution) const {
     solution = Matrix(rhs.m_nrows, rhs.m_ncols);
     if (m_matrix_type == Matrix::MATRIX_SPARSE) {
         if (m_factor == NULL) {
@@ -130,8 +130,8 @@ int S_LDLFactorization::solve(const Matrix& rhs, Matrix& solution) const {
             if (status != ForBESUtils::STATUS_OK){
                 return status;
             }
-            solution = const_cast<Matrix&>(rhs) - m_matrix * c;
-            double beta_inv = 1.0/m_beta;
+            solution = m_matrix * c - rhs;
+            double beta_inv = -1.0/m_beta;
             solution *= beta_inv;
             return ForBESUtils::STATUS_OK;
         }

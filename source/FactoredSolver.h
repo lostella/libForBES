@@ -78,7 +78,7 @@ public:
      * 
      * \sa #factorize
      */
-    virtual int solve(const Matrix& rhs, Matrix& solution) const = 0;
+    virtual int solve(Matrix& rhs, Matrix& solution) const = 0;
 
 private:
 

@@ -73,8 +73,8 @@ public:
      * 
      * \sa FactoredSolver::solve
      */
-    virtual int solve(const Matrix& rhs, Matrix& solution) const;
-
+    virtual int solve( Matrix& rhs, Matrix& solution) const;
+    
     double* getLDL() const;
 
     int* getIpiv() const;

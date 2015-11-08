@@ -41,6 +41,8 @@ public:
      */
     const static int STATUS_NUMERICAL_PROBLEMS;
     
+    const static int STATUS_HAD_TO_REALLOC;
+    
     
 private:
     

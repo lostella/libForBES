@@ -31,8 +31,8 @@ int IndSOC::call(Matrix& x, double& f) {
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a vector");
     }
-    bool isInside = true;
-    size_t i = 0;
+    volatile bool isInside = true;
+    volatile size_t i = 0;
     size_t n = x.getNrows();
     double squaredNorm = 0;
     double t = x.get(n - 1, 0);

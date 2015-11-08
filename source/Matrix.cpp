@@ -20,6 +20,7 @@
 
 #include "Matrix.h"
 #include "MatrixFactory.h"
+#include "ForBESUtils.h"
 #include <assert.h>
 
 /* STATIC MEMBERS */
@@ -454,110 +455,6 @@ inline void Matrix::_addIJ(size_t i, size_t j, double a) {
     set(i, j, get(i, j) + a); // A(i,j) += a
 }
 
-inline void Matrix::_addD(Matrix& rhs) { /* DENSE += (?) */
-    /* LHS is DENSE */
-    assert(MATRIX_DENSE == m_type);
-    if (rhs.m_type == MATRIX_DENSE && m_transpose == rhs.m_transpose) {
-        /* RHS is also dense and of same transpose-type (D+D or D'+D') */
-        vectorAdd(length(), m_data, rhs.m_data);
-    } else if (rhs.getType() == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
-        for (size_t i = 0; i < m_nrows; i++) {
-            _addIJ(i, i, rhs.get(i, i));
-        }
-    } else if (rhs.getType() == MATRIX_LOWERTR) { /* DENSE + LOWER */
-        /* TODO This is to be tested!!! */
-        for (size_t i = 0; i < m_nrows; i++) {
-            if (!rhs.m_transpose) {
-                for (size_t j = 0; j <= i; j++) {
-                    _addIJ(i, j, rhs.get(i, j));
-                }
-            } else {
-                for (size_t j = i; j < rhs.m_ncols; j++) {
-                    _addIJ(i, j, rhs.get(i, j));
-                }
-            }
-        }
-    } else if (rhs.getType() == MATRIX_SPARSE) {
-        rhs._createTriplet();
-        assert(rhs.m_triplet != NULL);
-        for (size_t k = 0; k < rhs.m_triplet->nnz; k++) {
-            int i_ = (static_cast<int *> (rhs.m_triplet->i))[k];
-            int j_ = (static_cast<int *> (rhs.m_triplet->j))[k];
-            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, (static_cast<double *> (rhs.m_triplet->x))[k]);
-        }
-    } else { /* Symmetric and Dense+Dense' or Dense'+Dense (not of same transpose type) */
-        for (size_t i = 0; i < m_nrows; i++) {
-            for (size_t j = 0; j < m_ncols; j++) {
-                _addIJ(i, j, rhs.get(i, j));
-            }
-        }
-    }
-}
-
-inline void Matrix::_addH(Matrix& rhs) { /* SYMMETRIC += (?) */
-    assert(MATRIX_SYMMETRIC == m_type);
-    if (rhs.m_type == MATRIX_SYMMETRIC) {
-        vectorAdd(length(), m_data, rhs.m_data);
-    } else if (rhs.m_type == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
-        for (size_t i = 0; i < m_ncols; i++) {
-            _addIJ(i, i, rhs.get(i, i));
-        }
-    } else if (rhs.m_type == MATRIX_LOWERTR || rhs.m_type == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI/DENSE = DENSE */
-        m_dataLength = m_ncols * m_nrows; /* SYMMETRIC + DENSE = DENSE     */
-        double * newData = new double[m_dataLength]; // realloc data
-        for (size_t i = 0; i < m_nrows; i++) {
-            for (size_t j = 0; j < m_ncols; j++) {
-                newData[i + j * m_nrows] = get(i, j); // load data (recast into full storage format)
-                if ((m_type == MATRIX_LOWERTR && rhs.m_type == MATRIX_DENSE) ? i >= j : true) {
-                    newData[i + j * m_nrows] += rhs.get(i, j); // add RHS elements
-                }
-            }
-        }
-        double * temp_data;
-        temp_data = static_cast<double *> (realloc(m_data, m_dataLength * sizeof (double))); // reallocate memory
-        if (temp_data == NULL) { /* could not allocate using realloc */
-            delete[] m_data;
-            if (newData != NULL) {
-                delete[] newData;
-            }
-            throw std::bad_alloc();
-        } else if (temp_data == m_data) { /* nothing happened */
-            temp_data = NULL;
-        } else { /* realloc succeeded */
-            m_data = temp_data; /* have m_data point to temp_data */
-            temp_data = NULL; /* nullify temp_data */
-        }
-        m_data = static_cast<double *> (memcpy(m_data, newData, m_dataLength * sizeof (double))); // copy newData to m_data
-        delete[] newData;
-        m_type = MATRIX_DENSE;
-    } else if (rhs.m_type == MATRIX_SPARSE) { /* SYMMETRIC + SPARSE */
-        m_dataLength = m_ncols * m_nrows;
-        double * newData = new double[m_dataLength];
-        m_data = static_cast<double *> (realloc(m_data, m_dataLength * sizeof (double))); // reallocate memory
-
-        for (size_t i = 0; i < m_nrows; i++) {
-            for (size_t j = 0; j < m_ncols; j++) {
-                newData[i + j * m_nrows] = get(i, j); /* restructure symmetric data into dense */
-            }
-        }
-
-        m_data = static_cast<double *> (memcpy(m_data, newData, m_dataLength * sizeof (double))); // copy newData to m_data
-
-        rhs._createTriplet();
-        assert(rhs.m_triplet != NULL);
-
-        m_type = MATRIX_DENSE;
-
-        for (size_t k = 0; k < rhs.m_triplet->nnz; k++) {
-            int i_ = (static_cast<int*> (rhs.m_triplet->i))[k];
-            int j_ = (static_cast<int*> (rhs.m_triplet->j))[k];
-            _addIJ(rhs.m_transpose ? j_ : i_, rhs.m_transpose ? i_ : j_, (static_cast<double*> (rhs.m_triplet->x))[k]);
-        }
-
-        delete[] newData;
-    }
-}
-
 inline void Matrix::vectorAdd(size_t len, double* pV1, const double* pV2) {
 #ifdef USE_LIBS 
     cblas_daxpy(len, 1.0, pV2, 1, pV1, 1); // data = data + right.data
@@ -578,89 +475,6 @@ inline void Matrix::_addL(Matrix& rhs) { /* LOWER += (?) */
     } else {
         throw std::logic_error("Lower-triangular + Non-lower triangular): not supported yet!");
     }
-}
-
-inline void Matrix::_addS(Matrix& rhs) { /* SPARSE += (?) */
-    assert(m_type == MATRIX_SPARSE);
-    if (rhs.m_type == MATRIX_SPARSE) {
-        double alpha[1] = {1};
-
-        if (m_sparse == NULL)
-            _createSparse(); /* CHOLMOD_SPARSE: create it 
-                                from other representations */
-
-        if (rhs.m_sparse == NULL)
-            rhs._createSparse(); /* Likewise for the RHS */
-
-
-        m_sparse = cholmod_add(m_sparse,
-                rhs.m_sparse,
-                alpha,
-                alpha,
-                true,
-                true,
-                Matrix::cholmod_handle()); /* Use cholmod_add to compute the sum A+=B */
-
-        m_triplet = cholmod_sparse_to_triplet(
-                m_sparse,
-                Matrix::cholmod_handle()); /* Update the triplet of the result (optional) */
-    } else if (rhs.m_type == MATRIX_DIAGONAL) { /* SPARSE + DIAGONAL */
-        _createTriplet();
-        if (m_triplet != NULL) {
-            for (size_t i = 0; i < getNrows(); i++) {
-                _addIJ(i, i, rhs.get(i, i));
-            }
-        }
-    } else if (rhs.m_type == MATRIX_LOWERTR) { /* SPARSE + LOWER TRI = SPARSE */
-        _createTriplet();
-        if (m_triplet != NULL) {
-            for (size_t i = 0; i < m_nrows; i++) {
-                for (size_t j = (rhs.m_transpose ? i : 0);
-                        j <= (rhs.m_transpose ? rhs.m_ncols : i); j++) {
-                    _addIJ(i, j, rhs.get(i, j));
-                }
-            }
-        }
-    } else if (rhs.m_type == MATRIX_DENSE) { /* SPARSE + DENSE */
-        m_type = MATRIX_DENSE; /* Sparse + Dense = Dense */
-        m_dataLength = rhs.getNcols() * rhs.getNrows(); /* Space to be allocated for the dense result */
-        m_data = new double[m_dataLength]; /* allocate space */
-        for (size_t i = 0; i < getNrows(); i++) {
-            for (size_t j = 0; j < getNcols(); j++) {
-                set(i, j, rhs.get(i, j)); /* store the rhs on m_data (accounting for transpose) */
-            }
-        }
-        //_createTriplet();
-        if (m_triplet != NULL) {
-            /* Add triplets */
-            for (size_t k = 0; k < m_triplet->nnz; k++) {
-                int i = (static_cast<int*> (m_triplet->i))[k];
-                int j = (static_cast<int*> (m_triplet->j))[k];
-                if (m_transpose) {
-                    std::swap(i, j);
-                }
-                double v = (static_cast<double*> (m_triplet->x))[k];
-                _addIJ(i, j, v);
-            }
-        }
-    } else if (rhs.m_type == MATRIX_SYMMETRIC) { /* SPARSE + SYMMETRIC (result is dense) */
-        m_dataLength = m_nrows * m_ncols;
-        m_data = new double[m_dataLength](); // reallocate memory
-        m_type = MATRIX_DENSE;
-        for (size_t i = 0; i < m_nrows; i++) {
-            for (size_t j = 0; j < m_ncols; j++) {
-                set(i, j, rhs.get(i, j)); // load symmetric data                
-            }
-        }
-        _createTriplet();
-        for (size_t k = 0; k < m_triplet->nnz; k++) {
-            _addIJ((static_cast<int*> (m_triplet->i))[k],
-                    (static_cast<int*> (m_triplet->j))[k],
-                    (static_cast<double*> (m_triplet->x))[k]);
-        }
-
-    }
-
 }
 
 void Matrix::_addX(Matrix& rhs) {
@@ -686,10 +500,10 @@ Matrix& Matrix::operator+=(Matrix & right) {
 
     switch (m_type) {
         case MATRIX_DENSE: /* DENSE += ? */
-            _addD(right);
+            generic_add_helper_left_dense(*this, 1.0, right);
             break;
         case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-            _addH(right);
+            generic_add_helper_left_symmetric(*this, 1.0, right);
             break;
         case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
             _addL(right);
@@ -698,7 +512,7 @@ Matrix& Matrix::operator+=(Matrix & right) {
             _addX(right);
             break;
         case MATRIX_SPARSE: /* SPARSE += ? */
-            _addS(right);
+            generic_add_helper_left_sparse(*this, 1.0, right);
             break;
         default:
             throw std::logic_error("unsupported");
@@ -710,14 +524,18 @@ Matrix & Matrix::operator-=(const Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
+    if (this->getType() != MATRIX_SPARSE && right.getType() != MATRIX_SPARSE) {
 #ifdef USE_LIBS
-    cblas_daxpy(length(), -1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
+        cblas_daxpy(length(), -1.0f, right.m_data, 1, m_data, 1); // data = data + right.data
 #else
-    for (int i = 0; i < length(); i++) {
-
-        m_data[i] -= right[i];
-    }
+        for (int i = 0; i < length(); i++) {
+            m_data[i] -= right[i];
+        }
 #endif
+    } else {
+
+        throw std::logic_error("Subtraction involving sparse matrices is not supported yet");
+    }
     return *this;
 }
 
@@ -795,7 +613,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
      * (ii) the matrix is not shallow
      */
     m_dataLength = right.m_dataLength;
-    if (!m_delete_data){
+    if (!m_delete_data) {
         m_data = right.m_data;
     }
     if (right.m_type != MATRIX_SPARSE && m_delete_data) {
@@ -1293,4 +1111,235 @@ Matrix::Matrix(bool shallow) {
     m_sparse = NULL;
     m_dense = NULL;
     m_sparseStorageType = CHOLMOD_TYPE_TRIPLET;
+}
+
+int Matrix::add(Matrix& C, double alpha, Matrix& A) {
+    // A and C must have compatible dimensions
+    if (C.getNcols() != A.getNcols() || C.getNrows() != A.getNrows()) {
+        throw std::invalid_argument("A and C do not have compatible dimensions");
+    }
+    // C := C + alpha * A
+    int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    switch (C.getType()) {
+        case MATRIX_DENSE: /* DENSE += ? */
+            status = generic_add_helper_left_dense(C, alpha, A);
+            break;
+        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
+            status = generic_add_helper_left_symmetric(C, alpha, A);
+            break;
+        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
+            //_addL(right);
+            break;
+        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
+            //_addX(right);
+            break;
+        case MATRIX_SPARSE: /* SPARSE += ? */
+            //_addS(right);
+            break;
+        default:
+            throw std::logic_error("unsupported");
+    }
+    return status;
+}
+
+int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A) {
+    /*    HEREAFTER, L is DENSE!     */
+
+    Matrix::MatrixType type_of_A = A.getType();
+
+    if (type_of_A == MATRIX_DENSE && C.m_transpose == A.m_transpose) {
+        cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+    } else if (type_of_A == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
+        for (size_t i = 0; i < A.getNrows(); i++) {
+            C._addIJ(i, i, alpha * A.get(i, i));
+        }
+    } else if (type_of_A == MATRIX_LOWERTR) { /* DENSE + LOWER */
+        /* TODO This is to be tested!!! */
+        for (size_t i = 0; i < A.getNrows(); i++) {
+            if (!A.m_transpose) {
+                for (size_t j = 0; j <= i; j++) {
+                    C._addIJ(i, j, alpha * A.get(i, j));
+                }
+            } else {
+                for (size_t j = i; j < A.m_ncols; j++) {
+                    C._addIJ(i, j, alpha * A.get(i, j));
+                }
+            }
+        }
+    } else if (type_of_A == MATRIX_SPARSE) {
+        A._createTriplet();
+        assert(A.m_triplet != NULL);
+        for (size_t k = 0; k < A.m_triplet->nnz; k++) {
+            int i_ = (static_cast<int *> (A.m_triplet->i))[k];
+            int j_ = (static_cast<int *> (A.m_triplet->j))[k];
+            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double *> (A.m_triplet->x))[k]);
+        }
+    } else { /* Symmetric and Dense+Dense' or Dense'+Dense (not of same transpose type) */
+        for (size_t i = 0; i < A.getNrows(); i++) {
+            for (size_t j = 0; j < A.getNcols(); j++) {
+                C._addIJ(i, j, alpha * A.get(i, j));
+            }
+        }
+    }
+    return ForBESUtils::STATUS_OK;
+}
+
+int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A) {
+    int status = ForBESUtils::STATUS_OK;
+    Matrix::MatrixType type_of_A = A.getType();
+    size_t ncols = A.getNcols();
+    size_t nrows = A.getNrows();
+    if (type_of_A == MATRIX_SYMMETRIC) {
+        cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+    } else if (type_of_A == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
+        for (size_t i = 0; i < ncols; i++) {
+            C._addIJ(i, i, alpha * A.get(i, i));
+        }
+    } else if (type_of_A == MATRIX_LOWERTR || type_of_A == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI/DENSE = DENSE */
+        C.m_dataLength = ncols * nrows; /* SYMMETRIC + DENSE = DENSE     */
+        double * newData = new double[C.m_dataLength]; // realloc data
+        for (size_t i = 0; i < nrows; i++) {
+            for (size_t j = 0; j < ncols; j++) {
+                newData[i + j * nrows] = C.get(i, j); // load data (recast into full storage format)
+                if ((C.m_type == MATRIX_LOWERTR && type_of_A == MATRIX_DENSE) ? i >= j : true) {
+                    newData[i + j * nrows] += alpha * A.get(i, j); // add RHS elements
+                }
+            }
+        }
+        double * temp_data;
+        temp_data = static_cast<double *> (realloc(C.m_data, C.m_dataLength * sizeof (double))); // reallocate memory
+        if (temp_data == NULL) { /* could not allocate using realloc */
+            delete[] C.m_data;
+            if (newData != NULL) {
+                delete[] newData;
+            }
+            throw std::bad_alloc();
+        } else if (temp_data == C.m_data) { /* nothing happened */
+            temp_data = NULL;
+        } else { /* realloc succeeded */
+            C.m_data = temp_data; /* have m_data point to temp_data */
+            temp_data = NULL; /* nullify temp_data */
+        }
+        C.m_data = static_cast<double *> (memcpy(C.m_data, newData, C.m_dataLength * sizeof (double))); // copy newData to m_data
+        delete[] newData;
+        C.m_type = MATRIX_DENSE;
+        status = ForBESUtils::STATUS_HAD_TO_REALLOC;
+    } else if (type_of_A == MATRIX_SPARSE) { /* SYMMETRIC + SPARSE */
+        C.m_dataLength = ncols * nrows;
+        double * newData = new double[C.m_dataLength];
+        C.m_data = static_cast<double *> (realloc(C.m_data, C.m_dataLength * sizeof (double))); // reallocate memory
+
+        for (size_t i = 0; i < nrows; i++) {
+            for (size_t j = 0; j < ncols; j++) {
+                newData[i + j * nrows] = C.get(i, j); /* restructure symmetric C data into dense */
+            }
+        }
+
+        C.m_data = static_cast<double *> (memcpy(C.m_data, newData, C.m_dataLength * sizeof (double))); // copy newData to m_data
+
+        A._createTriplet();
+        assert(A.m_triplet != NULL);
+
+        C.m_type = MATRIX_DENSE;
+
+        for (size_t k = 0; k < A.m_triplet->nnz; k++) {
+            int i_ = (static_cast<int*> (A.m_triplet->i))[k];
+            int j_ = (static_cast<int*> (A.m_triplet->j))[k];
+            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double*> (A.m_triplet->x))[k]);
+        }
+
+        delete[] newData;
+        status = ForBESUtils::STATUS_HAD_TO_REALLOC;
+    }
+    return status;
+}
+
+int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
+    int status = ForBESUtils::STATUS_OK;
+    Matrix::MatrixType type_of_A = A.getType();
+    size_t ncols = A.getNcols();
+    size_t nrows = A.getNrows();
+
+    if (type_of_A == MATRIX_SPARSE) {
+        double __one_t[1] = {1.0};
+        double __alpha_t[1] = {alpha};
+
+        if (C.m_sparse == NULL)
+            C._createSparse(); /* CHOLMOD_SPARSE: create it 
+                                from other representations */
+
+        if (A.m_sparse == NULL)
+            A._createSparse(); /* Likewise for the RHS */
+
+
+        C.m_sparse = cholmod_add(
+                C.m_sparse,
+                A.m_sparse,
+                __one_t,
+                __alpha_t,
+                true,
+                true,
+                Matrix::cholmod_handle()); /* Use cholmod_add to compute the sum A+=B */
+
+        C.m_triplet = cholmod_sparse_to_triplet(
+                C.m_sparse,
+                Matrix::cholmod_handle()); /* Update the triplet of the result (optional) */
+    } else if (type_of_A == MATRIX_DIAGONAL) { /* SPARSE + DIAGONAL */
+        C._createTriplet();
+        if (C.m_triplet != NULL) {
+            for (size_t i = 0; i < nrows; i++) {
+                C._addIJ(i, i, alpha * A.get(i, i));
+            }
+        }
+    } else if (type_of_A == MATRIX_LOWERTR) { /* SPARSE + LOWER TRI = SPARSE */
+        C._createTriplet();
+        if (C.m_triplet != NULL) {
+            for (size_t i = 0; i < nrows; i++) {
+                for (size_t j = (A.m_transpose ? i : 0);
+                        j <= (A.m_transpose ? A.m_ncols : i); j++) {
+                    C._addIJ(i, j, A.get(i, j));
+                }
+            }
+        }
+    } else if (type_of_A == MATRIX_DENSE) { /* SPARSE + DENSE */
+        C.m_type = MATRIX_DENSE; /* Sparse + Dense = Dense */
+        C.m_dataLength = A.getNcols() * A.getNrows(); /* Space to be allocated for the dense result */
+        C.m_data = new double[C.m_dataLength]; /* allocate space */
+        for (size_t i = 0; i < C.getNrows(); i++) {
+            for (size_t j = 0; j < C.getNcols(); j++) {
+                C.set(i, j, alpha * A.get(i, j)); /* store the rhs on m_data (accounting for transpose) */
+            }
+        }
+        //_createTriplet();
+        if (C.m_triplet != NULL) {
+            /* Add triplets */
+            for (size_t k = 0; k < C.m_triplet->nnz; k++) {
+                int i = (static_cast<int*> (C.m_triplet->i))[k];
+                int j = (static_cast<int*> (C.m_triplet->j))[k];
+                if (C.m_transpose) {
+                    std::swap(i, j);
+                }
+                double v = (static_cast<double*> (C.m_triplet->x))[k];
+                C._addIJ(i, j, v);
+            }
+        }
+        status = ForBESUtils::STATUS_HAD_TO_REALLOC;
+    } else if (type_of_A == MATRIX_SYMMETRIC) { /* SPARSE + SYMMETRIC (result is dense) */
+        C.m_dataLength = C.m_nrows * C.m_ncols;
+        C.m_data = new double[C.m_dataLength](); // reallocate memory
+        C.m_type = MATRIX_DENSE;
+        for (size_t i = 0; i < nrows; i++) {
+            for (size_t j = 0; j < ncols; j++) {
+                C.set(i, j, alpha * A.get(i, j)); // load symmetric data                
+            }
+        }
+        C._createTriplet();
+        for (size_t k = 0; k < C.m_triplet->nnz; k++) {
+            C._addIJ((static_cast<int*> (C.m_triplet->i))[k],
+                    (static_cast<int*> (C.m_triplet->j))[k],
+                    (static_cast<double*> (C.m_triplet->x))[k]);
+        }
+        status = ForBESUtils::STATUS_HAD_TO_REALLOC;
+    }
+    return status;
 }
