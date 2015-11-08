@@ -175,6 +175,8 @@ SOURCES = \
 	IndBall2.cpp \
 	QuadraticLossOverAffine.cpp \
 	SumOfNorm2.cpp \
+	FBProblem.cpp \
+	FBCache.cpp \
 	ConjugateFunction.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
