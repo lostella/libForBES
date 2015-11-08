@@ -34,14 +34,17 @@
  */
 class FBCache {
 private:
-    int m_flag_evalf;
-    int m_flag_gradstep;
-    int m_flag_proxgradstep;
+	static const int STATUS_NONE = 0;
+    static const int STATUS_EVALF = 1;
+    static const int STATUS_FORWARD = 2;
+    static const int STATUS_FORWARDBACKWARD = 3;
+    
+    int m_status;
     int m_flag_evalFBE;
     int m_flag_gradFBE;
 
     FBProblem & m_prob;
-    Matrix & m_x;
+    Matrix * m_x;
 
     /* Reference to problem details */
     Function * m_f1;
@@ -85,18 +88,20 @@ private:
     int update_eval_FBE(double gamma);
     int update_grad_FBE(double gamma);
 
-    void init();
+    void reset(int status);
 
 public:
     FBCache(FBProblem & p, Matrix & x, double gamma);
 
     virtual ~FBCache();
+    
+    void set_x(Matrix& x);
+    
+    Matrix * get_forward_step(double gamma);
+    Matrix * get_forward_backward_step(double gamma);
 
     double get_eval_f();
-
     double get_eval_FBE(double gamma);
-
-    Matrix * get_forward_backward_step(double gamma);
 };
 
 #endif /* FBCACHE_H */
