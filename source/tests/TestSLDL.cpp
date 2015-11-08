@@ -54,7 +54,9 @@ void TestSLDL::testFactorizeAndSolve() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     Matrix g1 = X * Xt * sol;
-    Matrix g2 = x - beta*sol;
+    Matrix g2 = x;
+    status = Matrix::add(g2, -beta, sol, 1.0);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     _ASSERT_EQ(g1, g2);
 
@@ -80,7 +82,8 @@ void TestSLDL::testDenseShort() {
 
 
     Matrix g1 = A * At * sol;
-    Matrix g2 = x - beta*sol;
+    Matrix g2 = x;
+    Matrix::add(g2, -beta, sol, 1.0);
 
     delete solver;
 

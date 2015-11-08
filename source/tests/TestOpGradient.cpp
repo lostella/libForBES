@@ -49,7 +49,9 @@ void TestOpGradient::testCall() {
     Matrix Tx = op->call(x);
     Matrix Tstar_y = op->callAdjoint(y);
 
-    Matrix err = y * Tx - x*Tstar_y;
+    Matrix err = y * Tx;
+    Matrix temp = x*Tstar_y;
+    Matrix::add(err, -1.0, temp, 1.0);
 
     _ASSERT(std::abs(err.get(0, 0)) < tol);
 
@@ -57,7 +59,7 @@ void TestOpGradient::testCall() {
 }
 
 void testOperatorLinearity(LinearOperator* op) {
-    const size_t repeat = 50;
+    const size_t repeat = 20;
     const double tol = 1e-7;
 
     Matrix *x = new Matrix();
@@ -83,7 +85,14 @@ void testOperatorLinearity(LinearOperator* op) {
         *Taxby = op->call(*axby);
         *Ty = op->call(*x);
         *Tx = op->call(*y);
-        *err = *Taxby - a * (*Tx) - b * (*Ty);
+        
+        /*
+         * A beautiful use of shallow vectors
+         */
+        *err = MatrixFactory::ShallowVector(*Taxby, 0);
+        Matrix::add(*err, -a, *Tx, 1.0);
+        Matrix::add(*err, -b, *Ty, 1.0);
+        
         for (size_t j = 0; j < op->dimensionOut().first; j++) {
             _ASSERT(std::abs(err->get(j, 0)) < tol);
         }

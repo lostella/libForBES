@@ -455,6 +455,10 @@ inline void Matrix::_addIJ(size_t i, size_t j, double a) {
     set(i, j, get(i, j) + a); // A(i,j) += a
 }
 
+inline void Matrix::_addIJ(size_t i, size_t j, double a, double gamma) {
+    set(i, j, gamma * get(i, j) + a); // A(i,j) += a
+}
+
 inline void Matrix::vectorAdd(size_t len, double* pV1, const double* pV2) {
 #ifdef USE_LIBS 
     cblas_daxpy(len, 1.0, pV2, 1, pV1, 1); // data = data + right.data
@@ -462,28 +466,6 @@ inline void Matrix::vectorAdd(size_t len, double* pV1, const double* pV2) {
     for (int i = 0; i < len; i++)
         pV1[i] += pV2[i];
 #endif
-}
-
-inline void Matrix::_addL(Matrix& rhs) { /* LOWER += (?) */
-    assert(m_type == MATRIX_LOWERTR);
-    if (rhs.m_type == Matrix::MATRIX_LOWERTR) { /* LOWER + LOWER = LOWER */
-        vectorAdd(length(), m_data, rhs.m_data);
-    } else if (rhs.m_type == Matrix::MATRIX_DIAGONAL) {
-        for (size_t i = 0; i < m_nrows; i++) {
-            _addIJ(i, i, rhs.get(i, i));
-        }
-    } else {
-        throw std::logic_error("Lower-triangular + Non-lower triangular): not supported yet!");
-    }
-}
-
-void Matrix::_addX(Matrix& rhs) {
-    assert(m_type == MATRIX_DIAGONAL);
-    if (MATRIX_DIAGONAL == rhs.m_type) { /* Diagonal += Diagonal */
-        vectorAdd(length(), m_data, rhs.m_data);
-    } else {
-        throw std::logic_error("Diagonal + Non-diagonal: not supported yet!");
-    }
 }
 
 Matrix& Matrix::operator+=(Matrix & right) {
@@ -498,21 +480,23 @@ Matrix& Matrix::operator+=(Matrix & right) {
         return *this;
     }
 
+    const double alpha = 1.0;
+    const double gamma = 1.0;
     switch (m_type) {
         case MATRIX_DENSE: /* DENSE += ? */
-            generic_add_helper_left_dense(*this, 1.0, right);
+            generic_add_helper_left_dense(*this, alpha, right, gamma);
             break;
         case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-            generic_add_helper_left_symmetric(*this, 1.0, right);
+            generic_add_helper_left_symmetric(*this, alpha, right, gamma);
             break;
         case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
-            _addL(right);
+            generic_add_helper_left_lower_tri(*this, alpha, right, gamma);
             break;
         case MATRIX_DIAGONAL: /* DIAGONAL += ? */
-            _addX(right);
+            generic_add_helper_left_diagonal(*this, alpha, right, gamma);
             break;
         case MATRIX_SPARSE: /* SPARSE += ? */
-            generic_add_helper_left_sparse(*this, 1.0, right);
+            generic_add_helper_left_sparse(*this, alpha, right, gamma);
             break;
         default:
             throw std::logic_error("unsupported");
@@ -520,7 +504,7 @@ Matrix& Matrix::operator+=(Matrix & right) {
     return *this;
 }
 
-Matrix & Matrix::operator-=(const Matrix & right) {
+Matrix & Matrix::operator-=(Matrix & right) {
     if (m_ncols != right.m_ncols || m_nrows != right.m_nrows) {
         throw std::invalid_argument("Incompatible dimensions while using +=!");
     }
@@ -549,7 +533,7 @@ Matrix Matrix::operator+(Matrix & right) const {
     return result;
 }
 
-Matrix Matrix::operator-(const Matrix & right) const {
+Matrix Matrix::operator-(Matrix & right) const {
     if (this->getNrows() != right.getNrows() || this->getNcols() != right.getNcols()) {
         throw std::invalid_argument("Addition of matrices of incompatible dimensions!");
     }
@@ -1100,8 +1084,8 @@ void Matrix::toggle_diagonal() {
 }
 
 Matrix::Matrix(bool shallow) {
-    this->m_data = NULL;
-    this->m_delete_data = false;
+    m_data = NULL;
+    m_delete_data = false;
     m_nrows = 0;
     m_ncols = 0;
     m_dataLength = 0;
@@ -1113,56 +1097,59 @@ Matrix::Matrix(bool shallow) {
     m_sparseStorageType = CHOLMOD_TYPE_TRIPLET;
 }
 
-int Matrix::add(Matrix& C, double alpha, Matrix& A) {
+int Matrix::add(Matrix& C, double alpha, Matrix& A, double gamma) {
     // A and C must have compatible dimensions
     if (C.getNcols() != A.getNcols() || C.getNrows() != A.getNrows()) {
         throw std::invalid_argument("A and C do not have compatible dimensions");
     }
     // C := C + alpha * A
-    int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    int status;
     switch (C.getType()) {
         case MATRIX_DENSE: /* DENSE += ? */
-            status = generic_add_helper_left_dense(C, alpha, A);
+            status = generic_add_helper_left_dense(C, alpha, A, gamma);
             break;
         case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-            status = generic_add_helper_left_symmetric(C, alpha, A);
+            status = generic_add_helper_left_symmetric(C, alpha, A, gamma);
             break;
         case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
-            //_addL(right);
+            status = generic_add_helper_left_lower_tri(C, alpha, A, gamma);
             break;
         case MATRIX_DIAGONAL: /* DIAGONAL += ? */
-            //_addX(right);
+            status = generic_add_helper_left_diagonal(C, alpha, A, gamma);
             break;
         case MATRIX_SPARSE: /* SPARSE += ? */
-            //_addS(right);
+            status = generic_add_helper_left_sparse(C, alpha, A, gamma);
             break;
         default:
-            throw std::logic_error("unsupported");
+            status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+            break;
     }
     return status;
 }
 
-int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A) {
+int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, double gamma) {
     /*    HEREAFTER, L is DENSE!     */
 
     Matrix::MatrixType type_of_A = A.getType();
 
     if (type_of_A == MATRIX_DENSE && C.m_transpose == A.m_transpose) {
-        cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+        for (size_t i = 0; i < A.length(); i++) {
+            C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);
+        }
     } else if (type_of_A == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
         for (size_t i = 0; i < A.getNrows(); i++) {
-            C._addIJ(i, i, alpha * A.get(i, i));
+            C._addIJ(i, i, alpha * A.get(i, i), gamma);
         }
     } else if (type_of_A == MATRIX_LOWERTR) { /* DENSE + LOWER */
         /* TODO This is to be tested!!! */
         for (size_t i = 0; i < A.getNrows(); i++) {
             if (!A.m_transpose) {
                 for (size_t j = 0; j <= i; j++) {
-                    C._addIJ(i, j, alpha * A.get(i, j));
+                    C._addIJ(i, j, alpha * A.get(i, j), gamma);
                 }
             } else {
                 for (size_t j = i; j < A.m_ncols; j++) {
-                    C._addIJ(i, j, alpha * A.get(i, j));
+                    C._addIJ(i, j, alpha * A.get(i, j), gamma);
                 }
             }
         }
@@ -1172,35 +1159,37 @@ int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A) {
         for (size_t k = 0; k < A.m_triplet->nnz; k++) {
             int i_ = (static_cast<int *> (A.m_triplet->i))[k];
             int j_ = (static_cast<int *> (A.m_triplet->j))[k];
-            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double *> (A.m_triplet->x))[k]);
+            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double *> (A.m_triplet->x))[k], gamma);
         }
     } else { /* Symmetric and Dense+Dense' or Dense'+Dense (not of same transpose type) */
         for (size_t i = 0; i < A.getNrows(); i++) {
             for (size_t j = 0; j < A.getNcols(); j++) {
-                C._addIJ(i, j, alpha * A.get(i, j));
+                C._addIJ(i, j, alpha * A.get(i, j), gamma);
             }
         }
     }
     return ForBESUtils::STATUS_OK;
 }
 
-int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A) {
+int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A, double gamma) {
     int status = ForBESUtils::STATUS_OK;
     Matrix::MatrixType type_of_A = A.getType();
     size_t ncols = A.getNcols();
     size_t nrows = A.getNrows();
     if (type_of_A == MATRIX_SYMMETRIC) {
-        cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
+        for (size_t i = 0; i < A.length(); i++) {
+            C.m_data[i] = gamma * C.m_data[i] + alpha * A.m_data[i];
+        }
     } else if (type_of_A == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
         for (size_t i = 0; i < ncols; i++) {
-            C._addIJ(i, i, alpha * A.get(i, i));
+            C._addIJ(i, i, alpha * A.get(i, i), gamma);
         }
     } else if (type_of_A == MATRIX_LOWERTR || type_of_A == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI/DENSE = DENSE */
         C.m_dataLength = ncols * nrows; /* SYMMETRIC + DENSE = DENSE     */
         double * newData = new double[C.m_dataLength]; // realloc data
         for (size_t i = 0; i < nrows; i++) {
             for (size_t j = 0; j < ncols; j++) {
-                newData[i + j * nrows] = C.get(i, j); // load data (recast into full storage format)
+                newData[i + j * nrows] = gamma * C.get(i, j); // load data (recast into full storage format)
                 if ((C.m_type == MATRIX_LOWERTR && type_of_A == MATRIX_DENSE) ? i >= j : true) {
                     newData[i + j * nrows] += alpha * A.get(i, j); // add RHS elements
                 }
@@ -1245,7 +1234,7 @@ int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A
         for (size_t k = 0; k < A.m_triplet->nnz; k++) {
             int i_ = (static_cast<int*> (A.m_triplet->i))[k];
             int j_ = (static_cast<int*> (A.m_triplet->j))[k];
-            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double*> (A.m_triplet->x))[k]);
+            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double*> (A.m_triplet->x))[k], gamma);
         }
 
         delete[] newData;
@@ -1254,14 +1243,14 @@ int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A
     return status;
 }
 
-int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
+int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, double gamma) {
     int status = ForBESUtils::STATUS_OK;
     Matrix::MatrixType type_of_A = A.getType();
     size_t ncols = A.getNcols();
     size_t nrows = A.getNrows();
 
     if (type_of_A == MATRIX_SPARSE) {
-        double __one_t[1] = {1.0};
+        double __gamma_t[1] = {gamma};
         double __alpha_t[1] = {alpha};
 
         if (C.m_sparse == NULL)
@@ -1275,7 +1264,7 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
         C.m_sparse = cholmod_add(
                 C.m_sparse,
                 A.m_sparse,
-                __one_t,
+                __gamma_t,
                 __alpha_t,
                 true,
                 true,
@@ -1288,7 +1277,7 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
         C._createTriplet();
         if (C.m_triplet != NULL) {
             for (size_t i = 0; i < nrows; i++) {
-                C._addIJ(i, i, alpha * A.get(i, i));
+                C._addIJ(i, i, alpha * A.get(i, i), gamma);
             }
         }
     } else if (type_of_A == MATRIX_LOWERTR) { /* SPARSE + LOWER TRI = SPARSE */
@@ -1297,7 +1286,7 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
             for (size_t i = 0; i < nrows; i++) {
                 for (size_t j = (A.m_transpose ? i : 0);
                         j <= (A.m_transpose ? A.m_ncols : i); j++) {
-                    C._addIJ(i, j, A.get(i, j));
+                    C._addIJ(i, j, A.get(i, j), gamma);
                 }
             }
         }
@@ -1307,7 +1296,7 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
         C.m_data = new double[C.m_dataLength]; /* allocate space */
         for (size_t i = 0; i < C.getNrows(); i++) {
             for (size_t j = 0; j < C.getNcols(); j++) {
-                C.set(i, j, alpha * A.get(i, j)); /* store the rhs on m_data (accounting for transpose) */
+                C.set(i, j, gamma * A.get(i, j)); /* store the rhs on m_data (accounting for transpose) */
             }
         }
         //_createTriplet();
@@ -1320,7 +1309,7 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
                     std::swap(i, j);
                 }
                 double v = (static_cast<double*> (C.m_triplet->x))[k];
-                C._addIJ(i, j, v);
+                C._addIJ(i, j, v, alpha);
             }
         }
         status = ForBESUtils::STATUS_HAD_TO_REALLOC;
@@ -1330,16 +1319,44 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A) {
         C.m_type = MATRIX_DENSE;
         for (size_t i = 0; i < nrows; i++) {
             for (size_t j = 0; j < ncols; j++) {
-                C.set(i, j, alpha * A.get(i, j)); // load symmetric data                
+                C.set(i, j, gamma * A.get(i, j)); // load symmetric data                
             }
         }
         C._createTriplet();
         for (size_t k = 0; k < C.m_triplet->nnz; k++) {
             C._addIJ((static_cast<int*> (C.m_triplet->i))[k],
                     (static_cast<int*> (C.m_triplet->j))[k],
-                    (static_cast<double*> (C.m_triplet->x))[k]);
+                    (static_cast<double*> (C.m_triplet->x))[k],
+                    alpha);
         }
         status = ForBESUtils::STATUS_HAD_TO_REALLOC;
     }
     return status;
 }
+
+int Matrix::generic_add_helper_left_diagonal(Matrix& C, double alpha, Matrix& A, double gamma) {
+    if (MATRIX_DIAGONAL == A.m_type) { /* Diagonal += Diagonal */
+        for (size_t i = 0; i < A.length(); i++) {
+            C.m_data[i] = gamma * C.m_data[i] + alpha * A.m_data[i];
+        }
+    } else {
+        throw std::logic_error("Diagonal + Non-diagonal: not supported yet!");
+    }
+    return ForBESUtils::STATUS_OK;
+}
+
+int Matrix::generic_add_helper_left_lower_tri(Matrix& C, double alpha, Matrix& A, double gamma) {
+    if (A.m_type == Matrix::MATRIX_LOWERTR) { /* LOWER + LOWER = LOWER */
+        for (size_t i = 0; i < A.length(); i++) {
+            C.m_data[i] = gamma * C.m_data[i] + alpha * A.m_data[i];
+        }
+    } else if (A.m_type == Matrix::MATRIX_DIAGONAL) {
+        for (size_t i = 0; i < A.m_nrows; i++) {
+            C._addIJ(i, i, alpha * A.get(i, i), gamma);
+        }
+    } else {
+        throw std::logic_error("Lower-triangular + Non-lower triangular): not supported yet!");
+    }
+    return ForBESUtils::STATUS_OK;
+}
+

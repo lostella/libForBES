@@ -39,7 +39,7 @@ void TestOpDCT2::tearDown() {
 
 void TestOpDCT2::testCall() {
     const size_t n = 10;
-    const size_t repeat = 100;
+    const size_t repeat = 50;
     const double tol = 1e-7;
 
     LinearOperator * op = new OpDCT2(n);
@@ -78,7 +78,9 @@ void TestOpDCT2::testCall() {
         _ASSERT(T_y_OK);
         _ASSERT(Tstar_x_OK);
 
-        Matrix err = (*x) * T_y - (*y) * Tstar_x;
+        Matrix err = (*x) * T_y;        
+        Matrix temp = (*y) * Tstar_x;
+        Matrix::add(err, -1.0, temp, 1.0);
 
         double error = std::abs(err.get(0, 0));
         _ASSERT(error < tol);
@@ -90,7 +92,7 @@ void TestOpDCT2::testCall() {
 }
 
 void testOperatorLinearity(LinearOperator* op) {
-    const size_t repeat = 300;
+    const size_t repeat = 50;
     const double tol = 1e-10;
 
     Matrix *x = new Matrix();
@@ -116,7 +118,9 @@ void testOperatorLinearity(LinearOperator* op) {
         *Taxby = op->call(*axby);
         *Ty = op->call(*x);
         *Tx = op->call(*y);
-        *err = *Taxby - a * (*Tx) - b * (*Ty);
+        *err = *Taxby;
+        Matrix::add(*err, -a, *Tx, 1.0);
+        Matrix::add(*err, -b, *Ty, 1.0);
         for (size_t j = 0; j < op->dimensionOut().first; j++) {
             _ASSERT(std::abs(err->get(j, 0)) < tol);
         }

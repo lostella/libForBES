@@ -82,8 +82,10 @@ void TestOpReverseVector::testCallAdjoint() {
     Matrix Tx = op->call(x);
     Matrix Tstar_y = op->callAdjoint(y);
 
-    Matrix err = y * Tx - x*Tstar_y;
-    _ASSERT(std::abs(err.get(0, 0)) < 1e-10);
+    Matrix err = y * Tx;
+    Matrix temp = x*Tstar_y;
+
+    _ASSERT_EQ(err, temp);
     delete op;
 }
 
