@@ -19,6 +19,7 @@
  */
 
 #include "Quadratic.h"
+#include "MatrixFactory.h"
 
 using namespace std;
 
@@ -61,6 +62,26 @@ void Quadratic::setQ(Matrix& Q) {
 void Quadratic::setq(Matrix& q) {
     m_is_q_zero = false;
     this->m_q = &q;
+}
+
+int Quadratic::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
+    int status = call(x, f, grad);
+    if (m_is_Q_eye) {
+        if (m_Q == NULL) {
+            // update m_Q and store an identity matrix
+            const size_t n = x.getNrows();
+            m_Q = new Matrix(n, n, Matrix::MATRIX_DIAGONAL);
+            for (size_t i = 0; i < n; i++) {
+                m_Q->set(i, i, 1.0);
+            }
+        }
+    }
+    if (m_Q->getType() != Matrix::MATRIX_SPARSE) {
+        hessian = MatrixFactory::ShallowMatrix(*m_Q); // just point to data
+    } else {
+        hessian = *m_Q; // copy
+    }
+    return status;
 }
 
 int Quadratic::call(Matrix& x, double& f, Matrix& grad) {

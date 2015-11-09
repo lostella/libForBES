@@ -81,7 +81,7 @@ public:
      * @return Diagonal matrix of the form <code>alpha*I</code>, where <code>alpha</code>
      * is a given scalar.
      */
-    static Matrix MakeIdentity(size_t n, float alpha);
+    static Matrix MakeIdentity(size_t n, double alpha);
 
 
     /**
@@ -141,6 +141,13 @@ public:
      */
     static Matrix ReadSparse(FILE *fp);
 
+    /**
+     * Creates a shallow matrix given a %Matrix object.
+     * 
+     * @param mat original matrix object
+     * @return  shallow matrix
+     */
+    static Matrix ShallowMatrix(const Matrix& mat);
     
     /**
      * Creates a <em>shallow vector</em> from a given %Matrix object.
@@ -155,6 +162,11 @@ public:
      * \exception std::invalid_argument in case the provided %Matrix object <code>vector</code>
      * is not a dense matrix. Note that it is allowed for the provided %Matrix object to 
      * be either a column or a row vector.
+     * 
+     * \post
+     * The %Matrix object that is returned by this method "points" (internally) to the
+     * original %Matrix object; therefore, any modification of the new object's internal state
+     * affects directly the state of the original object.
      * 
      * @param vector any dense vector (either column or row vector)
      * @param size size/length of the shallow vector to be created
@@ -177,9 +189,16 @@ public:
      * is not a dense matrix. Note that it is allowed for the provided %Matrix object to 
      * be either a column or a row vector.
      * 
+     * \post
+     * The %Matrix object that is returned by this method "points" (internally) to the
+     * original %Matrix object; therefore, any modification of the new object's internal state
+     * affects directly the state of the original object.
+     * 
      * @param vector any dense vector (either column or row vector)
      * @param offset offset with respect to the original vector
      * @return shallow vector
+     * 
+     * \sa \link Matrix::submatrixCopy submatrixCopy\endlink
      */
     static Matrix ShallowVector(const Matrix& vector, size_t offset);
 
@@ -188,6 +207,10 @@ public:
      * Shallow vectors do not allocate space for their data, but instead point to 
      * an allocated space in memory.
      * 
+     * \post
+     * The %Matrix object that is returned by this method "points" (internally) to the
+     * original %Matrix object; therefore, any modification of the new object's internal state
+     * affects directly the state of the original object.
      * 
      * @param data pointer to data
      * 
@@ -197,9 +220,17 @@ public:
      * @param offset offset with respect to the original pointer
      * 
      * @return shallow vector
+     * 
+     * \sa \link Matrix::submatrixCopy submatrixCopy\endlink
      */
     static Matrix ShallowVector(double * data, size_t size, size_t offset);
     
+    /**
+     * Creates an empty shallow vector/matrix which does not point anywhere. 
+     * The size of this %Matrix object will be 0-by-0.
+     * 
+     * @return empty shallow vector
+     */
     static Matrix ShallowVector();
 
 

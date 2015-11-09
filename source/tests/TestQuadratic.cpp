@@ -59,7 +59,7 @@ void TestQuadratic::testQuadratic() {
     Function *quad = NULL;
     _ASSERT_OK(quad = new Quadratic(Q));
     _ASSERT_NEQ(quad, NULL);
-    
+
     double f;
     int info;
     _ASSERT(quad->category().defines_f());
@@ -236,7 +236,7 @@ void TestQuadratic::testCallConj() {
     _ASSERT(std::fabs(expected - fstar) / expected < rel_tol);
 
     Matrix grad;
-    
+
     _ASSERT_EQ(ForBESUtils::STATUS_OK, quadratic.callConj(x, fstar, grad));
 
     Matrix grad_expected(n, 1);
@@ -405,3 +405,63 @@ void TestQuadratic::testCallSparse3() {
     _ASSERT_OK(delete F);
 
 }
+
+void TestQuadratic::testHessian() {
+    const size_t n = 4;
+
+    Matrix Q = MatrixFactory::MakeRandomMatrix(n, n, 5.0, 1.0);
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
+    Matrix grad;
+    Matrix hess;
+
+    Function * quad = new Quadratic(Q);
+    double f;
+    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+
+    _ASSERT_EQ(Q, hess);
+
+    delete quad;
+}
+
+void TestQuadratic::testHessianSparse() {
+    const size_t n = 10;
+    const size_t nnz = 45;
+
+    Matrix Q = MatrixFactory::MakeRandomSparse(n, n, nnz, 5.0, 1.0);
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
+    Matrix grad;
+    Matrix hess;
+
+    Function * quad = new Quadratic(Q);
+    double f;
+    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+
+    _ASSERT_EQ(Q, hess);
+
+    delete quad;
+}
+
+void TestQuadratic::testHessianQisEye() {
+    
+    
+    const size_t n = 10;
+    Matrix Id = MatrixFactory::MakeIdentity(n, 1.0);
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
+    Matrix grad;
+    Matrix hess;
+
+    Function * quad = new Quadratic();
+    double f;
+    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+    
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, hess.getType());
+    _ASSERT_EQ(Id, hess);
+    
+    
+    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, hess.getType());
+    _ASSERT_EQ(Id, hess);
+
+    delete quad;
+}
+

@@ -48,8 +48,8 @@ endif
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
 CFLAGS_ADDITIONAL = -O0
-CFLAGS_ADDITIONAL += -fprofile-arcs
-CFLAGS_ADDITIONAL += -ftest-coverage
+#CFLAGS_ADDITIONAL += -fprofile-arcs
+#CFLAGS_ADDITIONAL += -ftest-coverage
 
 CFLAGS_WARNINGS = \
 	-pedantic \
@@ -75,6 +75,8 @@ CFLAGS_WARNINGS = \
 	-Wundef \
 	-Wno-unused \
 	-Wno-sign-compare
+	
+CFLAGS_WARNINGS += -Werror
 	
 CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 

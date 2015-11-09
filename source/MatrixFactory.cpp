@@ -25,7 +25,7 @@
 
 typedef std::pair<size_t, size_t> nice_pair;
 
-Matrix MatrixFactory::MakeIdentity(size_t n, float alpha) {
+Matrix MatrixFactory::MakeIdentity(size_t n, double alpha) {
     Matrix mat(n, n, Matrix::MATRIX_DIAGONAL);
     for (size_t i = 0; i < n; i++) {
         mat[i] = alpha;
@@ -105,6 +105,23 @@ Matrix MatrixFactory::ReadSparse(FILE* fp) {
     mat.m_sparseStorageType = Matrix::CHOLMOD_TYPE_SPARSE;
     mat.m_triplet = cholmod_sparse_to_triplet(sp, Matrix::cholmod_handle());
     return mat;
+}
+
+
+Matrix MatrixFactory::ShallowMatrix(const Matrix& orig) {   
+    Matrix mat_shallow = Matrix(true);
+    mat_shallow.m_transpose = orig.m_transpose;
+    mat_shallow.m_nrows = orig.m_nrows;
+    mat_shallow.m_ncols = orig.m_ncols;
+    mat_shallow.m_dataLength = mat_shallow.m_dataLength;
+    mat_shallow.m_delete_data = false;
+    mat_shallow.m_data = orig.m_data;
+    mat_shallow.m_type = orig.m_type;
+    mat_shallow.m_sparseStorageType = orig.m_sparseStorageType;
+    mat_shallow.m_dense = orig.m_dense;
+    mat_shallow.m_triplet = orig.m_triplet;
+    mat_shallow.m_sparse = orig.m_sparse;
+    return mat_shallow;
 }
 
 Matrix MatrixFactory::ShallowVector(const Matrix& orig, size_t size, size_t offset) {

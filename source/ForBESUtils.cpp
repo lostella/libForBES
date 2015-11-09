@@ -41,15 +41,15 @@ void ForBESUtils::fail_on_error(int status) {
 }
 
 bool ForBESUtils::is_status_error(int status) {
-    return (status > _FORBES_ERROR_MIN && status < _FORBES_ERROR_MAX);
+    return (status >= _FORBES_ERROR_MIN && status <= _FORBES_ERROR_MAX);
 }
 
 bool ForBESUtils::is_status_ok(int status) {
-    return (status > _FORBES_OK_MIN && status < _FORBES_OK_MAX);
+    return (status >= _FORBES_OK_MIN && status <= _FORBES_OK_MAX);
 }
 
 bool ForBESUtils::is_status_warning(int status) {
-    return (status > _FORBES_WARNING_MIN && status < _FORBES_WARNING_MAX);
+    return (status >= _FORBES_WARNING_MIN && status <= _FORBES_WARNING_MAX);
 }
 
 
