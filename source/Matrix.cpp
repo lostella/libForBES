@@ -215,7 +215,7 @@ double Matrix::get(const size_t i, const size_t j) const {
         if (i == j) {
             return m_data[i];
         } else {
-            return 0.0f;
+            return 0.0;
         }
     } else if (m_type == MATRIX_SYMMETRIC) {
         size_t i_ = std::max(i, j);
@@ -223,8 +223,8 @@ double Matrix::get(const size_t i, const size_t j) const {
         return m_data[i_ + m_nrows * j_ - j_ * (j_ + 1) / 2];
     } else if (m_type == MATRIX_LOWERTR) {
         return m_transpose
-                ? (j >= i) ? m_data[j + m_ncols * i - i * (i + 1) / 2] : 0.0f
-                : (i >= j) ? m_data[i + m_nrows * j - j * (j + 1) / 2] : 0.0f;
+                ? (j >= i) ? m_data[j + m_ncols * i - i * (i + 1) / 2] : 0.0
+                : (i >= j) ? m_data[i + m_nrows * j - j * (j + 1) / 2] : 0.0;
     } else {
         /* if (m_type == MATRIX_SPARSE) */
         //LCOV_EXCL_START
@@ -232,7 +232,7 @@ double Matrix::get(const size_t i, const size_t j) const {
             throw std::logic_error("not supported yet");
         }
         //LCOV_EXCL_STOP
-        double val = 0.0f;
+        double val = 0.0;
         int i_ = m_transpose ? j : i;
         int j_ = m_transpose ? i : j;
         for (size_t k = 0; k < m_triplet->nnz; k++) {
@@ -485,6 +485,7 @@ Matrix& Matrix::operator+=(Matrix & right) {
     const double gamma = 1.0;
     switch (m_type) {
         case MATRIX_DENSE: /* DENSE += ? */
+            /* (*this) = 1.0 * (*this) + 1.0 * (right) */
             generic_add_helper_left_dense(*this, alpha, right, gamma);
             break;
         case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
@@ -559,7 +560,7 @@ Matrix Matrix::operator-(Matrix & right) const {
 Matrix Matrix::operator*(Matrix & right) {
     if (!(getType() == Matrix::MATRIX_SPARSE && right.getType() == Matrix::MATRIX_SPARSE) &&
             isColumnVector() && right.isColumnVector() && length() == right.length()) {
-        double t = 0.0f;
+        double t = 0.0;
         // multiplication of two column vectors = dot product
         Matrix r(1, 1);
         for (size_t i = 0; i < m_nrows * m_ncols; i++) {
@@ -674,8 +675,8 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
         cblas_dgemm(CblasColMajor,
                 m_transpose ? CblasTrans : CblasNoTrans,
                 right.m_transpose ? CblasTrans : CblasNoTrans,
-                m_nrows, right.m_ncols, m_ncols, 1.0f, m_data, m_transpose ? m_ncols : m_nrows,
-                right.m_data, right.m_transpose ? right.m_ncols : right.m_nrows, 0.0f,
+                m_nrows, right.m_ncols, m_ncols, 1.0, m_data, m_transpose ? m_ncols : m_nrows,
+                right.m_data, right.m_transpose ? right.m_ncols : right.m_nrows, 0.0,
                 result.m_data, m_nrows);
 #else
         domm(right, result);
@@ -714,7 +715,7 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix & right) const {
     if (right.isColumnVector()) {
 #ifdef USE_LIBS
         cblas_dspmv(CblasColMajor, CblasLower,
-                m_nrows, 1.0f, m_data,
+                m_nrows, 1.0, m_data,
                 right.m_data, 1,
                 0.0, result.m_data, 1);
         return result;
@@ -1064,12 +1065,12 @@ Matrix Matrix::multiplySubmatrix(
                 left_rows,
                 right_cols,
                 left_cols,
-                1.0f,
+                1.0,
                 m_data + left_start_idx,
                 m_transpose ? m_ncols : m_nrows,
                 right.m_data + right_start_idx,
                 right.m_transpose ? right.m_ncols : right.m_nrows,
-                0.0f,
+                0.0,
                 result.m_data,
                 left_rows);
         return result;
@@ -1395,3 +1396,95 @@ int Matrix::generic_add_helper_left_lower_tri(Matrix& C, double alpha, Matrix& A
     return ForBESUtils::STATUS_OK;
 }
 
+int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
+    // A and C must have compatible dimensions
+    if (A.getNcols() != B.getNrows()) {
+        std::ostringstream oss;
+        oss << "A (" << A.getNrows() << "x" << A.getNrows()
+                << ") and B (" << B.getNrows() << "x" << B.getNrows()
+                << ") do not have compatible dimensions";
+        throw std::invalid_argument(oss.str().c_str());
+    }
+    /* C must have proper dimensions */
+    if (C.getNrows() != A.getNrows() || C.getNcols() != B.getNcols()) {
+        std::ostringstream oss;
+        oss << "C is " << C.getNrows() << "x" << C.getNrows()
+                << ", but it should be " << A.getNrows() << "x"
+                << B.getNcols();
+        throw std::invalid_argument(oss.str().c_str());
+    }
+    // C := gamma * C + alpha * A * B
+    int status;
+    switch (C.getType()) {
+        case MATRIX_DENSE: /* DENSE += ? */
+            status = multiply_helper_left_dense(C, alpha, A, B, gamma);
+            break;
+        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
+            //            status = generic_add_helper_left_symmetric(C, alpha, A, gamma);
+            break;
+        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
+            //            status = generic_add_helper_left_lower_tri(C, alpha, A, gamma);
+            break;
+        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
+            //            status = generic_add_helper_left_diagonal(C, alpha, A, gamma);
+            break;
+        case MATRIX_SPARSE: /* SPARSE += ? */
+            //            status = generic_add_helper_left_sparse(C, alpha, A, gamma);
+            break;
+        default:
+            status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+            break;
+    }
+    return status;
+}
+
+int Matrix::multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
+    /* A is dense */
+    int status = ForBESUtils::STATUS_OK;
+    if (C.m_dataLength < C.getNrows() * C.getNcols()){
+        C = Matrix(C.getNrows(), C.getNcols(), Matrix::MATRIX_DENSE);
+        status = ForBESUtils::STATUS_HAD_TO_REALLOC;
+    }
+    C.m_type = Matrix::MATRIX_DENSE;
+    if (MATRIX_DENSE == B.m_type) { // B is also dense    
+        cblas_dgemm(CblasColMajor,
+                A.m_transpose ? CblasTrans : CblasNoTrans,
+                B.m_transpose ? CblasTrans : CblasNoTrans,
+                A.m_nrows,
+                B.m_ncols,
+                A.m_ncols,
+                alpha,
+                A.m_data,
+                A.m_transpose ? A.m_ncols : A.m_nrows,
+                B.m_data,
+                B.m_transpose ? B.m_ncols : B.m_nrows,
+                gamma,
+                C.m_data,
+                C.m_nrows);
+        status = std::max(status, ForBESUtils::STATUS_OK);
+    } else if (MATRIX_DIAGONAL == B.m_type) { // {DENSE} * {DIAGONAL} = {DENSE} - B is diagonal
+        for (size_t j = 0; j < C.getNcols(); j++) {
+            for (size_t i = 0; i < C.getNrows(); i++) {
+                C._addIJ(i, j, alpha * A.get(i, j) * B.get(j, j), gamma);
+            }
+        }
+        status = ForBESUtils::STATUS_OK;
+    } else if (MATRIX_SYMMETRIC == B.m_type || MATRIX_LOWERTR == B.m_type) {
+        //        Matrix result(m_nrows, right.m_ncols, Matrix::MATRIX_DENSE);
+        //        domm(right, result);
+        //        return result;
+    } else { /* {DENSE} * {SPARSE} =  */
+        /*
+         * Trick: For D: dense, S: sparse it is
+         * D * S = (S' * D')'
+         */
+        //        Matrix tempSparse(right);
+        //        (const_cast<Matrix&> (*this)).transpose(); /*  D'  */
+        //        tempSparse.transpose(); /*  S'  */
+        //        Matrix r = tempSparse * (const_cast<Matrix&> (*this)); /*  r = S' * D'   */
+        //        r.transpose(); /*  r'  */
+        //        (const_cast<Matrix&> (*this)).transpose(); /*  D  */
+        //        return r;
+    }
+    return status;
+}

@@ -577,12 +577,15 @@ public:
      * \f[
      * C \leftarrow \gamma C + \alpha A B,
      * \f]
-     * @param C
-     * @param alpha
-     * @param A
-     * @param B
-     * @param gamma
+     * @param C reference of matrix to be updated
+     * @param alpha scalar which multiplies the product <code>AB</code>
+     * @param A matrix A
+     * @param B matrix B
+     * @param gamma scalar which multiplies C
      * @return 
+     * A status code. The method will return a \link ForBESUtils:STATUS_OK success code\endlink
+     * if the operation has succeeded and there was no need to perform any memory allocation 
+     * operations.
      */
     static int mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 
@@ -755,6 +758,12 @@ private:
      * C := gamma*C + alpha*A, where C is lower triangular
      */
     static int generic_add_helper_left_lower_tri(Matrix& C, double alpha, Matrix& A, double gamma);
+    
+    /**
+     * 
+     * C := gamma * C + alpha*A*B, where A is dense
+     */
+    static int multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 
 };
 

@@ -82,4 +82,32 @@ void TestMatrixExtras::test_add_SS() {
     }
 }
 
+void TestMatrixExtras::test_mult_DD() {
+    size_t n = 8;
+    size_t k = 6;
+    size_t m = 5;
+    size_t repetitions = 300;
+
+    for (size_t r = 0; r < repetitions; r++) {
+        Matrix A = MatrixFactory::MakeRandomMatrix(n, k, 0.0, 1.0);
+        Matrix B = MatrixFactory::MakeRandomMatrix(k, m, 0.0, 1.0);
+        Matrix C = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0);
+        Matrix C_copy(C);
+
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+
+        int status = Matrix::mult(C, alpha, A, B, gamma);
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+        Matrix AB = A*B;
+        AB *= alpha;
+        C_copy *= gamma;
+        C_copy += AB;
+
+        _ASSERT_EQ(C_copy, C);
+    }
+}
+
+
 
