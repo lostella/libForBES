@@ -82,7 +82,6 @@
 class Quadratic : public Function {
 public:
     
-    using Function::call;
     using Function::callConj;
     
     /**
