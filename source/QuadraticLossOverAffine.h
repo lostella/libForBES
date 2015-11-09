@@ -101,6 +101,8 @@
 class QuadraticLossOverAffine : public Function {
 public:
     
+    using Function::callConj;
+    
     /**
      * Creates a new instance of QuadraticLossOverAffine providing the pair
      * \f$(A,b)\f$ which defines the affine space \f$\mathcal{Z} = 

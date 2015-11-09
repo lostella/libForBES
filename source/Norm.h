@@ -40,7 +40,7 @@ public:
     /**
      * Define the dual norm which is defined as
      * \f[
-     *  \|x\|_* = \sup_{\|z\|\leq 1} \langle z, x\rangle.
+     *  \|x\|_\star = \sup_{\|z\|\leq 1} \langle z, x\rangle.
      * \f]
      * 
      * Knowing the dual norm allows us to define the conjugate function of a norm, that is
@@ -49,16 +49,16 @@ public:
      * \f[
      *  f^*(y) = 
      *  \begin{cases}
-     *      0,&\text{if } \|y\|_* \leq 1,\\
+     *      0,&\text{if } \|y\|_\star \leq 1,\\
      *      \infty,&\text{otherwise}
      *  \end{cases}
      * \f]
      * 
      * The conjugate function of \f$f(x)=\|x\|\f$ is the indicator function of the
-     * dual ball \f$\mathcal{B}_* = \{y\mid \|y\|_* \leq 1 \}\f$.
+     * dual ball \f$\mathcal{B}_\star = \{y\mid \|y\|_\star \leq 1 \}\f$.
      * 
      * @param x point in \f$\mathbb{R}^n\f$ where the dual norm should be computed
-     * @param norm the value of the dual norm at x, that is \f$\|x\|_*\f$
+     * @param norm the value of the dual norm at x, that is \f$\|x\|_\star\f$
      * @return 
      * status code which is equal to <code>STATUS_OK</code> if the computation
      * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if

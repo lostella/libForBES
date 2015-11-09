@@ -59,7 +59,7 @@
  */
 class SeparableSum : public Function {
 public:    
-    
+    using Function::call;
     using Function::callConj;
 
     virtual ~SeparableSum();

@@ -74,6 +74,8 @@
  */
 class DistanceToBox : public Function {
 public:
+    
+    using Function::call;
 
 
     virtual ~DistanceToBox();

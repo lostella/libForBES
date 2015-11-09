@@ -48,6 +48,9 @@
  */
 class ConjugateFunction : public Function {
 public:
+    
+    using Function::call;
+    using Function::callConj;
 
     explicit ConjugateFunction(Function& funct);
 

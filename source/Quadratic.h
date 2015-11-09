@@ -81,6 +81,10 @@
  */
 class Quadratic : public Function {
 public:
+    
+    using Function::call;
+    using Function::callConj;
+    
     /**
      * Create a trivial quadratic function with zero Hessian and
      * zero linear term.
@@ -150,6 +154,18 @@ private:
     bool m_is_Q_eye;              /**< TRUE if Q is the identity matrix */
     bool m_is_q_zero;             /**< TRUE is q is the zero vector */
 
+    /**
+     * Computes the gradient of this function at a given vector x. 
+     * @param x The vector x where the gradient of f should be computed.
+     * @param grad the computed gradient at x
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     */
     virtual int computeGradient(Matrix& x, Matrix& grad);
 
 

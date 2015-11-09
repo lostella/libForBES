@@ -43,7 +43,7 @@
  *  \mathrm{prox}_{\gamma f}(v) = \mathrm{argmin}_x f(x) + \frac{1}{2\gamma}\|x-v\|^2
  * \f]
  *
- * These methods provide the following functionality:
+ * The methods of class %Function may provide the following functionality:
  * 1. Compute the value of the function \f$f(x)\in\mathbb{R}\f$ for a given 
  * vector \f$x\in\mathbb{R}^n\f$ or matrix \f$x\in\mathbb{R}^{n\times m}\f$
  * 2. Compute the \f$f(x)\f$ as well as its gradient \f$\nabla f(x)\f$
@@ -52,6 +52,8 @@
  * 5. Compute the value of the proximal operator \f$\mathrm{prox}_{\gamma f}(v)\f$ 
  * 6. Compute the proximal operator and the value of the function at
  * the proximal point, that is \f$f(\mathrm{prox}_{\gamma f}(v))\f$.
+ * 7. Compute the Hessian \f$\nabla^2 f(x)\f$,
+ * 8. Compute the Hessian of the conjugate function \f$\nabla^2 f^*(x)\f$
  * 
  * Not all of the above methods are always implemented. If a method is implemented
  * and the computation succeeds it returns the status code \link ForBESUtils::STATUS_OK STATUS_OK\endlink.

@@ -62,6 +62,8 @@
 class HuberLoss : public Function {
 public:
     
+    using Function::call;
+    
     /**
      * Create a new instance of the Huber loss function with given parameter delta
      * @param delta parameter delta

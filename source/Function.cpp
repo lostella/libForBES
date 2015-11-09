@@ -20,13 +20,15 @@
 
 #include "Function.h"
 
-Function::Function() { }
+Function::Function() {
+}
 
 Function::~Function() {
 }
 
 //LCOV_EXCL_START
-int Function::call(Matrix& x, double& f) {    
+
+int Function::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 //LCOV_EXCL_STOP
@@ -35,6 +37,9 @@ int Function::call(Matrix& x, double& f, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
+int Function::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
 
 int Function::callConj(Matrix& x, double& f_star) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
@@ -44,11 +49,16 @@ int Function::callConj(Matrix& x, double& f_star, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
+int Function::callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+}
+
 int Function::callProx(Matrix& x, double gamma, Matrix& prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
 //LCOV_EXCL_START
+
 int Function::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }

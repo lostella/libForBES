@@ -52,6 +52,8 @@
  */
 class QuadraticOperator : public Function {
 public:
+    
+    using Function::call;
 
     /**
      * Construct a new instance of QuadraticOperator given a linear operator 

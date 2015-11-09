@@ -47,6 +47,8 @@ public:
             bool does_define_f,
             bool does_define_grad,
             bool does_define_prox,
+            bool does_define_hessian,
+            bool does_define_hessian_conj,
             string name,
             const FunctionOntologicalClass& super);
 
@@ -92,6 +94,17 @@ public:
      * @return <code>true</code> if f*(x) is defined
      */
     bool defines_prox() const;
+    
+    /**
+     * Whether this function defines the Hessian of f, \f$\nabla^2 f(x)\f$
+     */
+    bool defines_hessian() const;
+    
+    /**
+     * Whether this function defines the Hessian of the conjugate of f, 
+     * \f$\nabla^2 f^*(x)\f$
+     */
+    bool defines_hessian_conj() const;
 
     list<FunctionOntologicalClass> getSuperclasses() const;
 
@@ -106,6 +119,10 @@ public:
     void set_defines_grad(bool defines_grad);
 
     void set_defines_prox(bool defines_prox);
+    
+    void set_defines_hessian(bool defines_hessian);
+    
+    void set_defines_hessian_conj(bool defines_hessian_conj);
 
 
 private:
@@ -119,6 +136,7 @@ private:
     bool m_defines_conjugate_grad;  /**< Whether this function type defines the gradient of its conjugate grad[f*](x)   */
     bool m_defines_prox;            /**< Whether this function defines a proximal prox_{gamma f}(v)                     */
     bool m_defines_hessian;         /**< Whether this function defines the Hessian of f                                 */
+    bool m_defines_hessian_conj;    /**< Whether this function defines the Hessian of f^*                               */
 
     list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
 

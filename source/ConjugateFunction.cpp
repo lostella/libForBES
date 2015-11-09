@@ -22,7 +22,6 @@
 
 ConjugateFunction::ConjugateFunction(Function& funct) :
 Function(), m_function(funct) {
-    std::cout << "\n conjugate of " << funct.category().getName();
 }
 
 ConjugateFunction::~ConjugateFunction() {
@@ -45,9 +44,10 @@ int ConjugateFunction::callConj(Matrix& x, double& f_star) {
 }
 
 int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox) {
+    double one_over_gamma = 1.0 / gamma;
     Matrix x_over_gamma = x;
-    x_over_gamma *= (1.0/gamma);
-    int status = m_function.callProx(x_over_gamma, 1.0/gamma, prox);
+    x_over_gamma *= one_over_gamma;
+    int status = m_function.callProx(x_over_gamma, one_over_gamma, prox);
     prox *= gamma;
     for (size_t i = 0; i < x.getNrows(); i++) {
         prox.set(i, 0, x.get(i, 0) - prox.get(i, 0));
@@ -57,7 +57,7 @@ int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox) {
 
 int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     int status = callProx(x, gamma, prox);
-    if (ForBESUtils::STATUS_OK != status){
+    if (ForBESUtils::STATUS_OK != status) {
         return status;
     }
     return call(prox, f_at_prox);
@@ -70,7 +70,7 @@ FunctionOntologicalClass ConjugateFunction::category() {
     meta.set_defines_grad(orig_meta.defines_conjugate_grad());
     meta.set_defines_conjugate(orig_meta.defines_f());
     meta.set_defines_conjugate_grad(orig_meta.defines_grad());
-    
+
     return meta;
 }
 

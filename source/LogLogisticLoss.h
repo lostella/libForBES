@@ -61,6 +61,8 @@
 class LogLogisticLoss : public Function {
 public:
     
+    using Function::call;
+    
     /**
      * Create an instance of LogLogisticLoss assuming \f$\mu=1\f$
      */

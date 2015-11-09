@@ -26,16 +26,16 @@
 #include "ForBESUtils.h"
 #include "FunctionOntologicalClass.h"
 #include "FunctionOntologyRegistry.h"
+#include "LinearOperator.h"
 
 /**
  * \class Function
  * \brief A ForBES function.
- * \version version 0.1
+ * \version version 0.2
  * \ingroup Functions
  * \date Created on July 9, 2015, 3:35 AM
  * \author Pantelis Sopasakis
  * 
- * \todo Return, when possible, the Hessian as a linear operator.
  * 
  * This is a generic API for ForBES functions. Constructors for this class are
  * protected. Instances of this class can be created using any of its subclasses
@@ -45,7 +45,10 @@
  * \f$(f(\cdot),\nabla f, f^*(\cdot), \nabla f^*(\cdot), \mathrm{prox}_{\gamma f}(\cdot), f(\mathrm{prox}_{\gamma f}(\cdot)))\f$
  * where some of these components are available and implemented.
  * 
- * ForBES functions are all assumed to follow the template \f$f:X \to \Re\cup \{+\infty\}\f$,
+ * Certain functions also define their gradient \f$\nabla^2 f(x)\f$ and/or the gradient
+ * of their conjugate \f$\nabla f^*(x)\f$.
+ * 
+ * ForBES functions are all assumed to follow the template \f$f:X \to \mathbb{R}\cup \{+\infty\}\f$,
  * where \f$X\f$ is a vector space, typically either \f$\mathbb{R}^n\f$ or
  * \f$\mathbb{R}^{n\times m}\f$.
  * 
@@ -121,6 +124,32 @@ public:
      */
     virtual int call(Matrix& x, double& f, Matrix& grad); // returns also the gradient
 
+    /**
+     * Same as <code>call(const Matrix& x, double& f)</code>, but this function returns
+     * also the gradient \f$\nabla f(x)\f$.
+     * 
+     * @param x The vector or matrix \f$x\f$ where \f$f(x)\f$ should be computed.
+     * 
+     * @param f The computed value of \f$f(x)\f$
+     * 
+     * @param grad The gradient of f at x, \f$\nabla f(x)\f$
+     * 
+     * @param hessian The Hessian of f at x, \f$\nabla^2 f(x)\f$, if it exists, or
+     * an element of the second-order subdifferential of f at x, \f$\partial^2 f(x)\f$.
+     * 
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the input %Matrix is of incompatible dimensions.
+     */
+    virtual int call(Matrix& x, double& f, Matrix& grad, Matrix& hessian); // returns also the Hessian at x
+    
     /**
      * Computes the proximal of this function at a point <code>x</code> with 
      * parameter <code>gamma</code>.
@@ -205,6 +234,35 @@ public:
      * is of incompatible dimensions.
      */
     virtual int callConj(Matrix& x, double& f_star, Matrix& grad); // Nabla f*(x)
+    
+    
+    /**
+     * Computes the conjugate of this function at a point <code>x</code> as well 
+     * as the corresponding gradient.
+     * 
+     * @param x The vector x where \f$f^*(x)\f$ should be computed.
+     * 
+     * @param f_star the computed value \f$f^*(x)\f$
+     * 
+     * @param grad the gradient of the conjugate function \f$\nabla f^*(x)\f$
+     * 
+     * @param hessian he Hessian of \f$f^*\f$ at \f$x\f$, \f$\nabla^2 f^*(x)\f$, if it exists, or
+     * an element of its second-order subdifferential at \f$x\f$, that is
+     * \f$\partial^2 f^*(x)\f$.
+     * 
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     * 
+     * \exception std::invalid_argument an <code>invalid_argument</code> exception
+     * is thrown in case the input %Matrix <code>x</code> or <code>grad</code> 
+     * is of incompatible dimensions.
+     */
+    virtual int callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian); // Nabla^2 f*(x)
 
 
 
@@ -220,19 +278,7 @@ protected:
      */
 
     Function(); /**< Default constructor */
-
-    /**
-     * Computes the gradient of this function at a given vector x. 
-     * @param x The vector x where the gradient of f should be computed.
-     * @param grad the computed gradient at x
-     * @return 
-     * status code which is equal to <code>STATUS_OK=0</code> if the computation
-     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
-     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
-     * if some numerical problems prevented the computation of a reliable result. 
-     * Custom implementations are allowed to return other non-zero error/warning
-     * status codes.
-     */
+    
     
 
 };
