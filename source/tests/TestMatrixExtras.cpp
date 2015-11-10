@@ -219,7 +219,8 @@ void TestMatrixExtras::test_mult_SS() {
         Matrix R = aAB + gC;
 
         Matrix C_copy(C);
-        Matrix::mult(C_copy, alpha, A, B, gamma);
+        int status = Matrix::mult(C_copy, alpha, A, B, gamma);
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
         _ASSERT_EQ(R, C_copy);
     }

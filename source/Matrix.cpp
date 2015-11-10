@@ -1542,9 +1542,9 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             }
         }
 
-        cholmod_triplet * r_to_triplet = cholmod_sparse_to_triplet(r, Matrix::cholmod_handle());
 
         if (is_gamma_zero) {
+            cholmod_triplet * r_to_triplet = cholmod_sparse_to_triplet(r, Matrix::cholmod_handle());
             // C := alpha * A * B = r
             C.m_sparse = r;
             C.m_triplet = r_to_triplet;
@@ -1555,7 +1555,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             temp_r.m_ncols = C.getNcols();
             temp_r.m_sparse = cholmod_copy_sparse(r, cholmod_handle());
             temp_r.m_type = MATRIX_SPARSE;
-            
+
             add(C, 1.0, temp_r, gamma);
             status = ForBESUtils::STATUS_OK;
         }
@@ -1631,7 +1631,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
 
     } else {
         //LCOV_EXCL_START
-//        throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
+        //        throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
         //LCOV_EXCL_STOP
     }
     return status;
