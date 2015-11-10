@@ -19,7 +19,12 @@ class TestMatrixExtras : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_add_SS);
     
     CPPUNIT_TEST(test_mult_DD);
+    CPPUNIT_TEST(test_mult_DDT);
     CPPUNIT_TEST(test_mult_DX);
+    CPPUNIT_TEST(test_mult_DH);
+    
+    CPPUNIT_TEST(test_mult_SS);
+    CPPUNIT_TEST(test_mult_SS2);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -34,7 +39,11 @@ private:
     void test_add_SS(); // SPARSE := gamma * SPARSE + alpha * SPARSE
     
     void test_mult_DD(); // DENSE := gamma * DENSE + alpha * DENSE * DENSE
+    void test_mult_DDT(); // DENSE := gamma * DENSE + alpha * DENSE * DENSE'
     void test_mult_DX(); // DENSE := gamma * DENSE + alpha * DENSE * DIAGONAL
+    void test_mult_DH(); // DENSE := gamma * DENSE + alpha * DENSE * SYMMETRIC
+    void test_mult_SS(); // SPARSE := gamma * SPARSE + alpha * SPARSE * SPARSE
+    void test_mult_SS2(); // SPARSE := gamma * SPARSE + alpha * SPARSE * SPARSE
 };
 
 #endif	/* TESTMATRIXEXTRAS_H */

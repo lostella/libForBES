@@ -135,6 +135,7 @@ Matrix::~Matrix() {
         m_sparse = NULL;
     }
     if (m_dense != NULL) {
+        m_dense->x = new double;
         cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
     }
 }
@@ -574,7 +575,7 @@ Matrix Matrix::operator*(Matrix & right) {
     }
     Matrix result;
     switch (m_type) {
-        case MATRIX_DENSE: // Left-hand side matrix is dense
+        case MATRIX_DENSE: // Left-hand side matrix is dense            
             result = multiplyLeftDense(right);
             break;
         case MATRIX_DIAGONAL:
@@ -651,19 +652,32 @@ Matrix & Matrix::operator=(const Matrix & right) {
 void Matrix::domm(const Matrix &right, Matrix & result) const {
     // multiply with LHS being dense
     double t;
-    //std::cout << "multiplication - left = " << m_nrows << "x" << m_ncols << std::endl;
     for (size_t i = 0; i < m_nrows; i++) {
         for (size_t j = 0; j < right.m_ncols; j++) {
             t = 0.0;
-            //std::cout << "For element C(" << i << "," << j << ")\n";
             for (size_t k = 0; k < m_ncols; k++) {
-                //std::cout << "  += A(" << i << "," << k << ") * B(" << k << "," << i << ")" << std::endl;
                 if (!(right.getType() == MATRIX_LOWERTR && k < j)) {
 
                     t += get(i, k) * right.get(k, j);
                 }
             }
             result.set(i, j, t);
+        }
+    }
+}
+
+void Matrix::domm(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
+    // multiply with A being dense
+    double t;
+    for (size_t i = 0; i < C.m_nrows; i++) {
+        for (size_t j = 0; j < B.m_ncols; j++) {
+            t = 0.0;
+            for (size_t k = 0; k < C.m_ncols; k++) {
+                if (!(B.getType() == MATRIX_LOWERTR && k < j)) {
+                    t += A.get(i, k) * B.get(k, j);
+                }
+            }
+            C._addIJ(i, j, alpha*t, gamma);
         }
     }
 }
@@ -795,9 +809,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                     Matrix::cholmod_handle());
 
             if (!right.m_transpose) {
-                for (size_t k = 0; k < right.length(); k++) {
-                    (static_cast<double*> (right.m_dense->x))[k] = right.m_data[k];
-                }
+                right.m_dense->x = right.m_data;
             } else {
                 /* Store RHS as transpose into right.m_dense */
                 for (size_t i = 0; i < right.getNrows(); i++) { /* SPARSE x DENSE' */
@@ -1116,7 +1128,7 @@ int Matrix::add(Matrix& C, double alpha, Matrix& A, double gamma) {
     if (C.getNcols() != A.getNcols() || C.getNrows() != A.getNrows()) {
         throw std::invalid_argument("A and C do not have compatible dimensions");
     }
-    // C := C + alpha * A
+    // C := gamma * C + alpha * A
     int status;
     switch (C.getType()) {
         case MATRIX_DENSE: /* DENSE += ? */
@@ -1400,8 +1412,8 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     // A and C must have compatible dimensions
     if (A.getNcols() != B.getNrows()) {
         std::ostringstream oss;
-        oss << "A (" << A.getNrows() << "x" << A.getNrows()
-                << ") and B (" << B.getNrows() << "x" << B.getNrows()
+        oss << "A (" << A.getNrows() << "x" << A.getNcols()
+                << ") and B (" << B.getNrows() << "x" << B.getNcols()
                 << ") do not have compatible dimensions";
         throw std::invalid_argument(oss.str().c_str());
     }
@@ -1415,7 +1427,7 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     }
     // C := gamma * C + alpha * A * B
     int status;
-    switch (C.getType()) {
+    switch (A.getType()) {
         case MATRIX_DENSE: /* DENSE += ? */
             status = multiply_helper_left_dense(C, alpha, A, B, gamma);
             break;
@@ -1429,7 +1441,7 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
             //            status = generic_add_helper_left_diagonal(C, alpha, A, gamma);
             break;
         case MATRIX_SPARSE: /* SPARSE += ? */
-            //            status = generic_add_helper_left_sparse(C, alpha, A, gamma);
+            status = multiply_helper_left_sparse(C, alpha, A, B, gamma);
             break;
         default:
             status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
@@ -1441,7 +1453,7 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
 int Matrix::multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     /* A is dense */
     int status = ForBESUtils::STATUS_OK;
-    if (C.m_dataLength < C.getNrows() * C.getNcols()){
+    if (C.m_dataLength < C.getNrows() * C.getNcols()) {
         C = Matrix(C.getNrows(), C.getNcols(), Matrix::MATRIX_DENSE);
         status = ForBESUtils::STATUS_HAD_TO_REALLOC;
     }
@@ -1470,9 +1482,8 @@ int Matrix::multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matri
         }
         status = ForBESUtils::STATUS_OK;
     } else if (MATRIX_SYMMETRIC == B.m_type || MATRIX_LOWERTR == B.m_type) {
-        //        Matrix result(m_nrows, right.m_ncols, Matrix::MATRIX_DENSE);
-        //        domm(right, result);
-        //        return result;
+        domm(C, alpha, A, B, gamma);
+        status = ForBESUtils::STATUS_OK;
     } else { /* {DENSE} * {SPARSE} =  */
         /*
          * Trick: For D: dense, S: sparse it is
@@ -1485,6 +1496,143 @@ int Matrix::multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matri
         //        r.transpose(); /*  r'  */
         //        (const_cast<Matrix&> (*this)).transpose(); /*  D  */
         //        return r;
+    }
+    return status;
+}
+
+int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
+    bool is_alpha_one = (std::abs(alpha - 1.0) < std::numeric_limits<double>::epsilon());
+    bool is_gamma_zero = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
+    bool is_gamma_one = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
+    int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    if (B.m_type == MATRIX_SPARSE) {
+        // RHS is sparse
+        if (A.m_sparse == NULL) {
+            A._createSparse();
+        }
+        if (B.m_sparse == NULL) {
+            B._createSparse();
+        }
+        if (C.m_sparse == NULL) {
+            C._createSparse();
+        }
+        cholmod_sparse *r; // r will store A * B
+        r = cholmod_ssmult(
+                (A.isColumnVector() && B.isColumnVector())
+                ? cholmod_transpose(A.m_sparse, 1, Matrix::cholmod_handle())
+                : A.m_sparse,
+                B.m_sparse,
+                0,
+                true,
+                false,
+                Matrix::cholmod_handle()); // r = A*B
+
+        /*
+         * SCALE: r *= alpha (unless alpha == 1)
+         */
+        if (!is_alpha_one) {
+            for (size_t j = 0; j < C.m_ncols; j++) {
+                int p = (static_cast<int*> (r->p))[j];
+                int pend = (r->packed == 1)
+                        ? ((static_cast<int*> (r->p))[j + 1])
+                        : p + (static_cast<int*> (r->nz))[j];
+                for (; p < pend; p++) {
+                    (static_cast<double*> (r->x))[p] *= alpha;
+                }
+            }
+        }
+
+        cholmod_triplet * r_to_triplet = cholmod_sparse_to_triplet(r, Matrix::cholmod_handle());
+
+        if (is_gamma_zero) {
+            // C := alpha * A * B = r
+            C.m_sparse = r;
+            C.m_triplet = r_to_triplet;
+            status = ForBESUtils::STATUS_OK;
+        } else {
+            Matrix temp_r = Matrix(true);
+            temp_r.m_nrows = C.getNrows();
+            temp_r.m_ncols = C.getNcols();
+            temp_r.m_sparse = cholmod_copy_sparse(r, cholmod_handle());
+            temp_r.m_type = MATRIX_SPARSE;
+            
+            add(C, 1.0, temp_r, gamma);
+            status = ForBESUtils::STATUS_OK;
+        }
+    } else if (B.m_type == MATRIX_DENSE) { /* SPRASE * DENSE */
+        // <editor-fold defaultstate="collapsed" desc="tbd">
+        //
+        // RHS is dense
+        //        Matrix result(A.getNrows(), B..getNcols());
+        //
+        //        if (m_triplet != NULL && m_sparse == NULL)
+        //            _createSparse();
+        //
+        //        double alpha[2] = {1.0, 0.0};
+        //        double beta[2] = {0.0, 0.0};
+        //
+        //        if (right.m_dense == NULL) { /* Prepare right.m_dense */
+        //            right.m_dense = cholmod_allocate_dense(
+        //                    right.getNrows(),
+        //                    right.getNcols(),
+        //                    right.getNrows(),
+        //                    CHOLMOD_REAL,
+        //                    Matrix::cholmod_handle());
+        //
+        //            if (!right.m_transpose) {
+        //                right.m_dense->x = right.m_data;
+        //            } else {
+        //                /* Store RHS as transpose into right.m_dense */
+        //                for (size_t i = 0; i < right.getNrows(); i++) { /* SPARSE x DENSE' */
+        //                    for (size_t j = 0; j < right.getNcols(); j++) {
+        //                        (static_cast<double*> (right.m_dense->x))[i + j * right.getNrows()] =
+        //                                right.get(i, j);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //
+        //        bool dotProd = isColumnVector() && right.isColumnVector();
+        //        result.m_dense = cholmod_allocate_dense(
+        //                dotProd ? 1 : result.getNrows(),
+        //                dotProd ? 1 : result.getNcols(),
+        //                dotProd ? 1 : result.getNrows(),
+        //                CHOLMOD_REAL,
+        //                Matrix::cholmod_handle());
+        //        if (m_transpose) {
+        //            this->transpose();
+        //        }
+        //        cholmod_sdmult(
+        //                m_sparse,
+        //                dotProd ? true : m_transpose,
+        //                alpha,
+        //                beta,
+        //                right.m_dense,
+        //                result.m_dense,
+        //                Matrix::cholmod_handle()
+        //                );
+        //        if (m_transpose) {
+        //            this->transpose();
+        //        }
+        //        for (size_t k = 0; k < result.length(); k++) {
+        //            result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
+        //        }
+        //        return result;
+        // </editor-fold>
+
+    } else if (B.m_type == MATRIX_DIAGONAL) { // SPARSE * DIAGONAL = SPARSE
+        // <editor-fold defaultstate="collapsed" desc="comment">
+        //        Matrix result(*this); // COPY [result := right]
+        //        for (size_t k = 0; k < result.m_triplet->nnz; k++) {
+        //            int j_ = (static_cast<int*> (result.m_triplet->j))[k];
+        //            (static_cast<double*> (result.m_triplet->x))[k] *= right.get(j_, j_);
+        //        }
+        //        return result;// </editor-fold>
+
+    } else {
+        //LCOV_EXCL_START
+//        throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
+        //LCOV_EXCL_STOP
     }
     return status;
 }

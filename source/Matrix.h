@@ -156,6 +156,9 @@ public:
      * Allocates a matrix of given dimensions and given type.
      * 
      * \remark this constructor will allocate memory of <code>nr*nc*sizeof(double)</code>.
+     * 
+     * \attention In general it is recommended to use MatrixFactory::MakeSparse to
+     * create instances of sparse matrices.
      *
      * @param nr number of rows
      * @param nc number of columns
@@ -568,7 +571,7 @@ public:
      * \exception std::invalid_argument An invalid argument exception is thrown
      * if the matrices are not conformable.
      * 
-     * \todo Handle the case where \f$\alpha = \gamma = 0\f$.
+     * \todo Handle the case where \f$\alpha = \gamma = 0.0\f$.
      */
     static int add(Matrix& C, double alpha, Matrix& A, double gamma);
 
@@ -586,6 +589,9 @@ public:
      * A status code. The method will return a \link ForBESUtils:STATUS_OK success code\endlink
      * if the operation has succeeded and there was no need to perform any memory allocation 
      * operations.
+     * 
+     * \todo Handle the case where \f$\alpha = \gamma = 0.0\f$. Especially the case
+     * \$\alpha=0.0\f$ should be trivially handled by <code>*=</code>.
      */
     static int mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 
@@ -700,6 +706,8 @@ private:
      */
     void domm(const Matrix &right, Matrix &result) const;
 
+    static void domm(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
+
     /**
      * Storage types for sparse matrix data.
      * This is a private enumeration.
@@ -758,12 +766,17 @@ private:
      * C := gamma*C + alpha*A, where C is lower triangular
      */
     static int generic_add_helper_left_lower_tri(Matrix& C, double alpha, Matrix& A, double gamma);
-    
+
     /**
      * 
      * C := gamma * C + alpha*A*B, where A is dense
      */
     static int multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
+    /**
+     * 
+     * C := gamma * C + alpha*A*B, where A is sparse
+     */
+    static int multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 
 };
 

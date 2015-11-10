@@ -113,7 +113,7 @@ Matrix MatrixFactory::ShallowMatrix(const Matrix& orig) {
     mat_shallow.m_transpose = orig.m_transpose;
     mat_shallow.m_nrows = orig.m_nrows;
     mat_shallow.m_ncols = orig.m_ncols;
-    mat_shallow.m_dataLength = mat_shallow.m_dataLength;
+    mat_shallow.m_dataLength = orig.m_dataLength;
     mat_shallow.m_delete_data = false;
     mat_shallow.m_data = orig.m_data;
     mat_shallow.m_type = orig.m_type;
