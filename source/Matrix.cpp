@@ -1299,10 +1299,53 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
         double __gamma_t[1] = {gamma};
         double __alpha_t[1] = {alpha};
 
-        if (C.m_sparse == NULL)
+
+        /*
+         * Comments on the following two blocks of code:
+         * IMPORTANT: READ ME
+         * Don't forget that m_triplet is not really transposed - see #transpose().
+         * When, at this point, m_sparse is NULL, the sparse data are stored in 
+         * m_triplet. 
+         * 
+         * Recall that the code in #transpose() regarding sparse matrices is merely:
+         * 
+         * if (m_type == MATRIX_SPARSE) {
+         *      _createSparse();
+         *      m_sparse = cholmod_transpose(m_sparse, 1, cholmod_handle());
+         * }
+         * 
+         * It doesn't modify m_triplet whatsoever. Now, take a look at #get():
+         * 
+         * double val = 0.0;
+         * int i_ = m_transpose ? j : i;
+         * int j_ = m_transpose ? i : j;
+         * for (size_t k = 0; k < m_triplet->nnz; k++) {
+         *     if (i_ == (static_cast<int*> (m_triplet->i))[k]) {
+         *         if (j_ == (static_cast<int*> (m_triplet->j))[k]) {
+         *             val = (static_cast<double*> (m_triplet->x))[k];
+         *             break;
+         *         }
+         *     }
+         * }
+         * 
+         * We swap ::i and ::j to get the correct entry and this is why the output
+         * stream operator works as well (it uses #get(size_t, size_t)).
+         * 
+         * ERGO: If we create m_sparse out of the non-transposed m_triplet, hell
+         * will brake loose. 
+         */
+
+        if (C.m_sparse == NULL) {
             C._createSparse(); /* CHOLMOD_SPARSE: create it 
                                 from other representations */
-
+            if (C.m_transpose) {
+                C.m_sparse = cholmod_transpose(C.m_sparse, 1, cholmod_handle());
+            }            
+        }
+        
+        if (C.m_transpose){
+            C.m_transpose = false;
+        }
 
         if (A.m_sparse == NULL) {
             A._createSparse(); /* Likewise for the RHS */
@@ -1318,11 +1361,13 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
                 __alpha_t,
                 true,
                 true,
-                Matrix::cholmod_handle()); /* Use cholmod_add to compute the sum A+=B */
+                Matrix::cholmod_handle()); /* Use cholmod_add to compute the sum C := gamma * C + alpha * A */
 
         C.m_triplet = cholmod_sparse_to_triplet(
                 C.m_sparse,
                 Matrix::cholmod_handle()); /* Update the triplet of the result (optional) */
+        
+        
     } else if (type_of_A == MATRIX_DIAGONAL) { /* SPARSE + DIAGONAL */
         C._createTriplet();
         if (C.m_triplet != NULL) {
