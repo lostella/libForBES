@@ -25,7 +25,7 @@ class TestMatrixExtras : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_add_SS);
     CPPUNIT_TEST(test_add_SST);
     CPPUNIT_TEST(test_add_STS);
-    //CPPUNIT_TEST(test_add_STST);
+    CPPUNIT_TEST(test_add_STST);
     
     CPPUNIT_TEST(test_mult_DD);
     CPPUNIT_TEST(test_mult_DDT);

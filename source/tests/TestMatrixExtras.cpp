@@ -153,9 +153,8 @@ void TestMatrixExtras::test_add_DTD() {
 
         Matrix A_copy(A);
         Matrix B_copy(B);
-
-        // A = gamma*A + alpha*B
-        int status = Matrix::add(A, alpha, B, gamma);
+        
+        int status = Matrix::add(A, alpha, B, gamma); // A = gamma*A + alpha*B
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
         _ASSERT_EQ(B_copy, B);
 
@@ -258,6 +257,8 @@ void TestMatrixExtras::test_add_STS() {
         int status = Matrix::add(A, alpha, B, gamma); // A' = gamma*A' + alpha*B
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
+        _ASSERT_EQ(n, A.getNrows());
+        _ASSERT_EQ(m, A.getNcols());
 
         for (size_t i = 0; i < n; i++) {
             for (size_t j = 0; j < m; j++) {
@@ -269,17 +270,17 @@ void TestMatrixExtras::test_add_STS() {
 }
 
 void TestMatrixExtras::test_add_STST() {
-    size_t n = 10;
-    size_t m = 15;
-    size_t nnz = 100;
     size_t repetitions = 300;
 
     for (size_t r = 0; r < repetitions; r++) {
+        size_t n = 10;
+        size_t m = 15;
+        size_t nnz = 70;
         Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
         Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
 
-        double alpha = 1.0;
-        double gamma = 1.0;
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
 
 
         Matrix A_copy(A);
@@ -290,10 +291,11 @@ void TestMatrixExtras::test_add_STST() {
         int status = Matrix::add(A, alpha, B, gamma); // A' = gamma*A' + alpha*B
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
-
-        for (size_t i = 0; i < n; i++) {
-            for (size_t j = 0; j < m; j++) {
-                _ASSERT_EQ(gamma * A_copy.get(j, i) + alpha * B.get(i, j), A.get(i, j));
+        _ASSERT_EQ(m, A.getNrows());
+        _ASSERT_EQ(n, A.getNcols());
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < n; j++) {
+                _ASSERT_EQ(gamma * A_copy.get(j, i) + alpha * B_copy.get(j, i), A.get(i, j));
             }
         }
 
