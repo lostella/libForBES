@@ -1189,10 +1189,14 @@ int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, do
     } else if (type_of_A == MATRIX_SPARSE) {
         A._createTriplet();
         assert(A.m_triplet != NULL);
+        if (!is_gamma_one) {
+            C *= gamma;
+        }
         for (size_t k = 0; k < A.m_triplet->nnz; k++) {
             int i_ = (static_cast<int *> (A.m_triplet->i))[k];
             int j_ = (static_cast<int *> (A.m_triplet->j))[k];
-            C._addIJ(A.m_transpose ? j_ : i_, A.m_transpose ? i_ : j_, alpha * (static_cast<double *> (A.m_triplet->x))[k], gamma);
+            if (A.m_transpose) std::swap(i_, j_);
+            C._addIJ(i_, j_, alpha * (static_cast<double *> (A.m_triplet->x))[k]);
         }
     } else { /* Symmetric and Dense+Dense' or Dense'+Dense (not of same transpose type) */
         for (size_t i = 0; i < A.getNrows(); i++) {
@@ -1555,7 +1559,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             temp_r.m_ncols = C.getNcols();
             temp_r.m_sparse = cholmod_copy_sparse(r, cholmod_handle());
             temp_r.m_type = MATRIX_SPARSE;
-
+            temp_r.m_triplet = cholmod_sparse_to_triplet(temp_r.m_sparse, Matrix::cholmod_handle());
             add(C, 1.0, temp_r, gamma);
             status = ForBESUtils::STATUS_OK;
         }

@@ -53,6 +53,29 @@ void TestMatrixExtras::test_add_DD() {
 
 }
 
+void TestMatrixExtras::test_add_DS() {
+    size_t n = 10;
+    size_t m = 15;
+    size_t nnz = 100;
+    Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+    Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
+
+    double alpha = 1.56;
+    double gamma = 2.35;
+
+
+    Matrix R(A);
+    R *= gamma;
+    Matrix T(B);
+    T *= alpha;
+    Matrix S = R + T;
+
+    int status = Matrix::add(A, alpha, B, gamma); // A = gamma * A + alpha * B
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_EQ(S, A);
+
+}
+
 void TestMatrixExtras::test_add_SS() {
     size_t n = 10;
     size_t m = 15;
@@ -228,7 +251,56 @@ void TestMatrixExtras::test_mult_SS() {
 }
 
 void TestMatrixExtras::test_mult_SS2() {
-    _ASSERT(false); // remember to build test with gamma = 0;
+    // testing with gamma = 0.0;
+    size_t n = 10;
+    size_t k = 8;
+    size_t m = 9;
+    size_t nnz = 20;
+
+    Matrix A = MatrixFactory::MakeRandomSparse(n, k, nnz, 2.0, 1.0);
+    Matrix B = MatrixFactory::MakeRandomSparse(k, m, nnz, 2.0, 1.0);
+    Matrix C = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
+
+    double alpha = -2.0 + 2.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+    double gamma = 0.0;
+
+
+    Matrix aAB = A*B;
+    aAB *= alpha; /*     aAB = a * A * B          */
+
+
+    Matrix C_copy(C);
+    int status = Matrix::mult(C_copy, alpha, A, B, gamma); /*    C_copy = a * A * B        */
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_EQ(aAB, C_copy);
 }
 
+void TestMatrixExtras::test_mult_SS3() {
+    // testing with C : DENSE
+    size_t n = 10;
+    size_t k = 8;
+    size_t m = 9;
+    size_t nnz = 20;
 
+    Matrix A = MatrixFactory::MakeRandomSparse(n, k, nnz, 2.0, 1.0);
+    Matrix B = MatrixFactory::MakeRandomSparse(k, m, nnz, 2.0, 1.0);
+    Matrix C = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+
+    double alpha = -2.0 + 2.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+    double gamma = -2.0 + 3.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+
+
+    Matrix aAB = A*B;
+    aAB *= alpha; /*     aAB = a * A * B          */
+
+    Matrix gC(C);
+    gC *= gamma; /*     gC  = g * C              */
+
+    Matrix R = aAB + gC;
+
+    Matrix C_copy(C);
+    int status = Matrix::mult(C_copy, alpha, A, B, gamma);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    _ASSERT_EQ(R, C_copy);
+}
