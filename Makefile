@@ -252,8 +252,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestSeparableSum
 	@echo "\n*** UTILITIES ***"
 	${BIN_TEST_DIR}/TestMatrixFactory
-	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestMatrixExtras
+	${BIN_TEST_DIR}/TestMatrix
 	${BIN_TEST_DIR}/TestOntRegistry
 	${BIN_TEST_DIR}/TestFunctionOntologicalClass
 	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
@@ -275,7 +275,7 @@ $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_D
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $(OBJ_TEST_DIR)/$*Runner.o $(TEST_DIR)/$*Runner.cpp
 	@echo
 	@echo [Linking $*]
-	$(CXX) $(LFLAGS) -o $(BIN_TEST_DIR)/$* $(OBJECTS) $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o $(lFLAGS) `cppunit-config --libs`
+	$(CXX) $(LFLAGS) -L./dist/Debug -o $(BIN_TEST_DIR)/$* $(OBJ_TEST_DIR)/$*.o $(OBJ_TEST_DIR)/$*Runner.o -lforbes $(lFLAGS) `cppunit-config --libs`
 	@echo "\n\n\n"
 
 main:

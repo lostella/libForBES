@@ -52,15 +52,21 @@ void TestOpAdjoint::testCall() {
 
 void TestOpAdjoint::testCallAdjoint() {
     const size_t n = 16;
+    const size_t m = 11;
     const double tol = 1e-8;
-    Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
-    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-
+    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix x = MatrixFactory::MakeRandomMatrix(m, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    
     LinearOperator *T = new MatrixOperator(A);
     LinearOperator *Tstar = new OpAdjoint(*T);
 
     Matrix Tx = T->callAdjoint(x);
     Matrix T_doubleAdj_x = Tstar->call(x);
+    
+    _ASSERT_EQ(n, T->dimensionIn().first);
+    _ASSERT_EQ(m, T->dimensionOut().first);
+    _ASSERT_EQ(m, Tstar->dimensionIn().first);
+    _ASSERT_EQ(n, Tstar->dimensionOut().first);
 
     for (size_t i = 0; i < n; i++) {
         _ASSERT_NUM_EQ(Tx.get(i, 0), T_doubleAdj_x.get(i, 0), tol);

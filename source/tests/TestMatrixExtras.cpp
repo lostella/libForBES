@@ -1,8 +1,21 @@
 /*
  * File:   TestMatrixExtras.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  *
  * Created on Nov 8, 2015, 4:33:46 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "TestMatrixExtras.h"
@@ -22,6 +35,28 @@ void TestMatrixExtras::setUp() {
 }
 
 void TestMatrixExtras::tearDown() {
+    Matrix::destroy_handle();
+}
+
+void TestMatrixExtras::test_add_wrong_args() {
+    Matrix A(5, 6);
+    Matrix B(5, 7);
+    _ASSERT_EXCEPTION(Matrix::add(A, 1.3, B, 0.8), std::invalid_argument);
+}
+
+void TestMatrixExtras::test_mult_wrong_args() {
+    {
+        Matrix A(5, 6);
+        Matrix B(6, 7);
+        Matrix C(5, 4);
+        _ASSERT_EXCEPTION(Matrix::mult(C, 1.3, A, B, 0.8), std::invalid_argument);
+    }
+    {
+        Matrix A(5, 6);
+        Matrix B(3, 7);
+        Matrix C(5, 7);
+        _ASSERT_EXCEPTION(Matrix::mult(C, 1.3, A, B, 0.8), std::invalid_argument);
+    }
 }
 
 /*****    ADDITION    ******/
@@ -35,8 +70,8 @@ void TestMatrixExtras::test_add_DD() {
         Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
         Matrix B = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
 
-        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
-        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double alpha = 2.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+        double gamma = -0.5 + static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
 
         Matrix A_copy(A);
         Matrix B_copy(B);
@@ -62,8 +97,8 @@ void TestMatrixExtras::test_add_DS() {
     Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
     Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
 
-    double alpha = 1.56;
-    double gamma = 2.35;
+    double alpha = -1.0 + 2.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+    double gamma = -0.5 + static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
 
 
     Matrix R(A);
@@ -78,6 +113,35 @@ void TestMatrixExtras::test_add_DS() {
 
 }
 
+void TestMatrixExtras::test_add_DST() {
+    for (size_t n = 11; n < 40; n += 5) {
+        for (size_t m = 13; m < 30; m += 3) {
+            size_t nnz = 100;
+            Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+            Matrix B = MatrixFactory::MakeRandomSparse(m, n, nnz, 2.0, 1.0);
+
+            Matrix A_copy(A);
+            Matrix B_copy(B);
+
+            B.transpose();
+
+            double alpha = -1.0 + 2.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+            double gamma = -0.5 + static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+            const double tol = 1e-8;
+
+            int status = Matrix::add(A, alpha, B, gamma); // A = gamma * A + alpha * B
+            _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+            _ASSERT_EQ(n, A.getNrows());
+            for (size_t i = 0; i < n; i++) {
+                for (size_t j = 0; j < m; j++) {
+                    _ASSERT_NUM_EQ(gamma * A_copy.get(i, j) + alpha * B_copy.get(j, i), A.get(i, j), tol);
+                }
+            }
+        }
+    }
+}
+
 void TestMatrixExtras::test_add_SS() {
     size_t n = 10;
     size_t m = 15;
@@ -88,8 +152,8 @@ void TestMatrixExtras::test_add_SS() {
     for (size_t r = 0; r < repetitions; r++) {
         Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
 
-        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
-        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double alpha = 2.0 * static_cast<double> (std::rand()) / RAND_MAX;
+        double gamma = -0.5 + static_cast<double> (std::rand()) / RAND_MAX;
 
         Matrix A_copy(A);
         Matrix B_copy(B);
@@ -129,6 +193,9 @@ void TestMatrixExtras::test_add_DDT() {
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
         _ASSERT_EQ(B_copy, B);
 
+        _ASSERT_EQ(n, A.getNrows());
+        _ASSERT_EQ(m, A.getNcols());
+
         A_copy *= gamma;
         B_copy *= alpha;
         Matrix C = A_copy + B_copy;
@@ -153,10 +220,13 @@ void TestMatrixExtras::test_add_DTD() {
 
         Matrix A_copy(A);
         Matrix B_copy(B);
-        
-        int status = Matrix::add(A, alpha, B, gamma); // A = gamma*A + alpha*B
+
+        int status = Matrix::add(A, alpha, B, gamma); // A = gamma*A + alpha*B'
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
         _ASSERT_EQ(B_copy, B);
+
+        _ASSERT_EQ(n, A.getNrows());
+        _ASSERT_EQ(m, A.getNcols());
 
         A_copy *= gamma;
         B_copy *= alpha;
@@ -187,7 +257,8 @@ void TestMatrixExtras::test_add_DTDT() {
         // A := gamma*A + alpha*B
         int status = Matrix::add(A, alpha, B, gamma);
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-
+        _ASSERT_EQ(m, A.getNrows());
+        _ASSERT_EQ(n, A.getNcols());
 
         for (size_t i = 0; i < m; i++) {
             for (size_t j = 0; j < n; j++) {
@@ -205,8 +276,8 @@ void TestMatrixExtras::test_add_SST() {
     size_t nnz = 100;
     size_t repetitions = 300;
 
-    Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
     for (size_t r = 0; r < repetitions; r++) {
+        Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
         Matrix B = MatrixFactory::MakeRandomSparse(m, n, nnz, 2.0, 1.0);
 
         double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
@@ -218,6 +289,9 @@ void TestMatrixExtras::test_add_SST() {
 
         int status = Matrix::add(A, alpha, B, gamma); // A = gamma*A + alpha*B'
         _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+        _ASSERT_EQ(n, A.getNrows());
+        _ASSERT_EQ(m, A.getNcols());
 
         for (size_t i = 0; i < n; i++) {
             for (size_t j = 0; j < m; j++) {
@@ -243,8 +317,8 @@ void TestMatrixExtras::test_add_STS() {
     size_t nnz = 100;
     size_t repetitions = 300;
 
-    Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
     for (size_t r = 0; r < repetitions; r++) {
+        Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
         Matrix A = MatrixFactory::MakeRandomSparse(m, n, nnz, 2.0, 1.0);
 
         double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);

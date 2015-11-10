@@ -485,27 +485,7 @@ Matrix& Matrix::operator+=(Matrix & right) {
 
     const double alpha = 1.0;
     const double gamma = 1.0;
-    add(*this, alpha, right, gamma);
-    //    switch (m_type) {
-    //        case MATRIX_DENSE: /* DENSE += ? */
-    //            /* (*this) = 1.0 * (*this) + 1.0 * (right) */
-    //            generic_add_helper_left_dense(*this, alpha, right, gamma);
-    //            break;
-    //        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-    //            generic_add_helper_left_symmetric(*this, alpha, right, gamma);
-    //            break;
-    //        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
-    //            generic_add_helper_left_lower_tri(*this, alpha, right, gamma);
-    //            break;
-    //        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
-    //            generic_add_helper_left_diagonal(*this, alpha, right, gamma);
-    //            break;
-    //        case MATRIX_SPARSE: /* SPARSE += ? */
-    //            generic_add_helper_left_sparse(*this, alpha, right, gamma);
-    //            break;
-    //        default:
-    //            throw std::logic_error("unsupported");
-    //    }
+    add(*this, alpha, right, gamma);    
     return *this;
 }
 
@@ -518,25 +498,7 @@ Matrix & Matrix::operator-=(Matrix & right) {
 
     const double alpha = -1.0;
     const double gamma = 1.0;
-    switch (m_type) {
-        case MATRIX_DENSE: /* DENSE += ? */
-            generic_add_helper_left_dense(*this, alpha, right, gamma);
-            break;
-        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-            generic_add_helper_left_symmetric(*this, alpha, right, gamma);
-            break;
-        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
-            generic_add_helper_left_lower_tri(*this, alpha, right, gamma);
-            break;
-        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
-            generic_add_helper_left_diagonal(*this, alpha, right, gamma);
-            break;
-        case MATRIX_SPARSE: /* SPARSE += ? */
-            generic_add_helper_left_sparse(*this, alpha, right, gamma);
-            break;
-        default:
-            throw std::logic_error("unsupported");
-    }
+    add(*this, alpha, right, gamma);
     return *this;
 }
 
@@ -573,7 +535,11 @@ Matrix Matrix::operator*(Matrix & right) {
         return r;
     }
     if (!(isColumnVector() && right.isColumnVector()) && (m_ncols != right.m_nrows)) {
-        throw std::invalid_argument("Incompatible dimensions!");
+        std::ostringstream oss;
+        oss << "Matrix::operator* : (*this) (" << getNrows() << "x" << getNcols()
+                << ") and RHS (" << right.getNrows() << "x" << right.getNcols()
+                << ") do not have compatible dimensions";
+        throw std::invalid_argument(oss.str().c_str());
     }
     Matrix result;
     switch (m_type) {
@@ -1130,7 +1096,7 @@ Matrix::Matrix(bool shallow) {
 int Matrix::add(Matrix& C, double alpha, Matrix& A, double gamma) {
     // A and C must have compatible dimensions
     if (C.getNcols() != A.getNcols() || C.getNrows() != A.getNrows()) {
-        throw std::invalid_argument("A and C do not have compatible dimensions");
+        throw std::invalid_argument("LHS and RHS do not have compatible dimensions");
     }
     // C := gamma * C + alpha * A
     int status;
@@ -1342,18 +1308,22 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
                 C.m_sparse = cholmod_transpose(C.m_sparse, 1, cholmod_handle());
             }            
         }
-        
-        if (C.m_transpose){
-            C.m_transpose = false;
-        }
-
+               
         if (A.m_sparse == NULL) {
             A._createSparse(); /* Likewise for the RHS */
             if (A.m_transpose) {
                 A.m_sparse = cholmod_transpose(A.m_sparse, 1, cholmod_handle());
             }
         }
-
+        
+        /*
+         * Don't store C as transpose any more - it will not have all values 
+         * in the right order.
+         */
+        if (C.m_transpose){
+            C.m_transpose = false;
+        }
+        
         C.m_sparse = cholmod_add(
                 C.m_sparse,
                 A.m_sparse,
@@ -1617,7 +1587,6 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             status = ForBESUtils::STATUS_OK;
         }
     } else if (B.m_type == MATRIX_DENSE) { /* SPRASE * DENSE */
-        // <editor-fold defaultstate="collapsed" desc="tbd">
         //
         // RHS is dense
         //        Matrix result(A.getNrows(), B..getNcols());
@@ -1675,7 +1644,6 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
         //            result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         //        }
         //        return result;
-        // </editor-fold>
 
     } else if (B.m_type == MATRIX_DIAGONAL) { // += alpha * SPARSE * DIAGONAL
         Matrix A_temp(A); //  Compute A_temp = A * alpha;
@@ -1683,9 +1651,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             int j_ = (static_cast<int*> (A_temp.m_triplet->j))[k];
             static_cast<double*> (A_temp.m_triplet->x)[k] *= (alpha * B.get(j_, j_));
         }
-        add(C, 1.0, A_temp, gamma);
-        status = ForBESUtils::STATUS_OK;
-
+        status = add(C, 1.0, A_temp, gamma);
     } else {
         //LCOV_EXCL_START
         throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");

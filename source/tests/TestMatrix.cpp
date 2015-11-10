@@ -35,6 +35,39 @@ void TestMatrix::setUp() {
 }
 
 void TestMatrix::tearDown() {
+    Matrix::destroy_handle();
+}
+
+void TestMatrix::testToggleDiagonal() {
+    // Diagonal to vector
+    size_t n = 10;
+    double alpha = 3.0;
+    Matrix X = MatrixFactory::MakeIdentity(n, alpha);
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, X.getType());
+    X.toggle_diagonal();
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, X.getType());
+    _ASSERT(X.isColumnVector());
+    _ASSERT_EQ(n, X.getNrows());
+    for (size_t i = 0; i < n; i++) {
+        _ASSERT_EQ(alpha, X[i]);
+    }
+
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+    _ASSERT_EQ(Matrix::MATRIX_DENSE, x.getType());
+    _ASSERT(x.isColumnVector());
+    x.toggle_diagonal();
+    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, x.getType());
+    x.toggle_diagonal();
+    _ASSERT(x.isColumnVector());
+    
+    
+    Matrix y = MatrixFactory::MakeRandomMatrix(2, n, 0.0, 1.0);
+    _ASSERT_EXCEPTION(y.toggle_diagonal(), std::invalid_argument);
+    
+    Matrix z = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_LOWERTR);
+    _ASSERT_EXCEPTION(z.toggle_diagonal(), std::invalid_argument);
+    
+    
 }
 
 void TestMatrix::testGetSet() {
@@ -1267,7 +1300,7 @@ void TestMatrix::testSparseQuadSparseX() {
     const size_t runs = 10;
     for (size_t p = 0; p < runs; p++) {
         for (size_t n = 2; n < 70; n += 3) {
-            size_t nnz_A = static_cast<size_t>(std::ceil(1.2 * n));
+            size_t nnz_A = static_cast<size_t> (std::ceil(1.2 * n));
             size_t nnz_x = std::max(static_cast<size_t> (1), static_cast<size_t> (std::ceil(0.75 * n)));
             Matrix A = MatrixFactory::MakeRandomSparse(n, n, nnz_A, 0.0, 10.0);
             Matrix x = MatrixFactory::MakeRandomSparse(n, 1, nnz_x, 0.0, 10.0);
@@ -1628,7 +1661,7 @@ void TestMatrix::test_ADST() {
 }
 
 void TestMatrix::test_ADWT() {
-    
+
 }
 
 void TestMatrix::test_ADXT() {

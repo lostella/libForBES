@@ -35,6 +35,7 @@ void TestMatrixFactory::setUp() {
 }
 
 void TestMatrixFactory::tearDown() {
+    Matrix::destroy_handle();
 }
 
 void TestMatrixFactory::testMakeIdentity() {

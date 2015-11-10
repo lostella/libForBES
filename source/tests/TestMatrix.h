@@ -81,6 +81,7 @@ class TestMatrix : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testSubmatrixTranspose);
     CPPUNIT_TEST(testSubmatrixMultiply);
     CPPUNIT_TEST(testSubmatrixMultiplyTr);
+    CPPUNIT_TEST(testToggleDiagonal);
 
 
     CPPUNIT_TEST(test_ADD1);
@@ -209,6 +210,7 @@ private:
     void testSubmatrixTranspose();
     void testSubmatrixMultiply();
     void testSubmatrixMultiplyTr();
+    void testToggleDiagonal();
 
     /*
      * A: add

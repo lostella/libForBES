@@ -192,7 +192,7 @@ void TestQuadratic::testCallWithGradient() {
     Matrix x = Matrix(n, 1, xdata);
 
     Function * quad = new Quadratic(Q);
-    double f = -999.0f;
+    double f = -999.0;
     Matrix grad;
     _ASSERT(quad->category().defines_f());
     _ASSERT(quad->category().defines_grad());
@@ -283,14 +283,14 @@ void TestQuadratic::testCallDiagonalMatrix() {
     const size_t n = 4;
     Matrix Q(n, n, Matrix::MATRIX_DIAGONAL);
     for (size_t i = 0; i < n; i++) {
-        Q[i] = i + 2.0f;
+        Q[i] = i + 2.0;
     }
 
     Function *f = new Quadratic(Q);
 
     Matrix x(n, 1);
     for (size_t i = 0; i < n; i++) {
-        x[i] = 2 * i + 1.0f;
+        x[i] = 2 * i + 1.0;
     }
 
     double val;
