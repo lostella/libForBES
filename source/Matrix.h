@@ -572,6 +572,8 @@ public:
      * if the matrices are not conformable.
      * 
      * \todo Handle the case where \f$\alpha = \gamma = 0.0\f$.
+     * 
+     * \bug SPARSE + LOWER_TRI is too slow!
      */
     static int add(Matrix& C, double alpha, Matrix& A, double gamma);
 
@@ -591,7 +593,7 @@ public:
      * operations.
      * 
      * \todo Handle the case where \f$\alpha = \gamma = 0.0\f$. Especially the case
-     * \$\alpha=0.0\f$ should be trivially handled by <code>*=</code>.
+     * \f$\alpha=0.0\f$ should be trivially handled by <code>*=</code>.
      */
     static int mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 

@@ -1019,7 +1019,7 @@ void TestMatrix::test_MSDT() {
     const size_t n = 13;
     const size_t m = 25;
     const size_t nnz = 18;
-    const size_t rep = 100;
+    const size_t rep = 50;
 
     for (size_t k = 0; k < rep; k++) {
         Matrix S = MatrixFactory::MakeRandomSparse(m, n, nnz, 0.2, 2.0);
@@ -1230,7 +1230,7 @@ void TestMatrix::testSparseAddSparse2() {
 void TestMatrix::testSparseQuad() {
     size_t n = 60;
     size_t nnz = std::floor(1.2f * n);
-    size_t tests = 100;
+    size_t tests = 20;
 
     Matrix *A = new Matrix();
     Matrix *x = new Matrix();
@@ -1264,7 +1264,7 @@ void TestMatrix::testSparseQuad() {
 
 void TestMatrix::testSparseQuadSparseX() {
     const double tol = 1e-6;
-    const size_t runs = 20;
+    const size_t runs = 10;
     for (size_t p = 0; p < runs; p++) {
         for (size_t n = 2; n < 70; n += 3) {
             size_t nnz_A = static_cast<size_t>(std::ceil(1.2 * n));
@@ -1406,7 +1406,7 @@ void TestMatrix::test_ADS() {
 }
 
 void TestMatrix::test_ADW() {
-
+    //std::cerr << "test_ADW:::EMPTY TEST!!!!\n";
 }
 
 void TestMatrix::test_ADX() {
@@ -1628,7 +1628,7 @@ void TestMatrix::test_ADST() {
 }
 
 void TestMatrix::test_ADWT() {
-
+    
 }
 
 void TestMatrix::test_ADXT() {
@@ -1818,7 +1818,7 @@ void TestMatrix::test_ASX() {
 }
 
 void TestMatrix::test_ASL() {
-    size_t n = 120;
+    size_t n = 20;
     size_t nnz = 60;
     const double tol = 1e-10;
     Matrix S = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 1.0);
@@ -2036,8 +2036,8 @@ void TestMatrix::testSubmatrix() {
 }
 
 void TestMatrix::testSubmatrixTranspose() {
-    const size_t n = 36;
-    const size_t m = 25;
+    const size_t n = 15;
+    const size_t m = 12;
     const double tol = 1e-12;
     Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 10.0, Matrix::MATRIX_DENSE);
 
@@ -2073,12 +2073,12 @@ void _testSubmatrixMultiply(Matrix& A, Matrix& B) {
     Matrix result;
 
 
-    for (size_t k = 0; k < 4; k++) {
-        for (size_t ds = 0; ds < 4; ds++) {
+    for (size_t k = 0; k < 3; k++) {
+        for (size_t ds = 0; ds < 3; ds++) {
             for (size_t s = 0; s < A.getNcols() - ds - 1; s++) {
-                for (size_t dj = 0; dj < 4; dj++) {
+                for (size_t dj = 0; dj < 6; dj++) {
                     for (size_t j = 0; j < B.getNcols() - dj - 1; j++) {
-                        for (size_t di = 0; di < 4; di++) {
+                        for (size_t di = 0; di < 2; di++) {
                             for (size_t i = 0; i < A.getNrows() - di - 1; i++) {
                                 Asub = A.submatrixCopy(i, i + di, s, s + ds);
                                 Bsub = B.submatrixCopy(k, k + ds, j, j + dj);
@@ -2099,20 +2099,20 @@ void _testSubmatrixMultiply(Matrix& A, Matrix& B) {
 }
 
 void TestMatrix::testSubmatrixMultiply() {
-    const size_t MA = 13;
-    const size_t NA = 14;
-    const size_t MB = 12;
-    const size_t NB = 17;
+    const size_t MA = 11;
+    const size_t NA = 10;
+    const size_t MB = 11;
+    const size_t NB = 9;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
     _testSubmatrixMultiply(A, B);
 }
 
 void TestMatrix::testSubmatrixMultiplyTr() {
-    const size_t MA = 10;
+    const size_t MA = 7;
     const size_t NA = 9;
-    const size_t MB = 16;
-    const size_t NB = 11;
+    const size_t MB = 8;
+    const size_t NB = 10;
     Matrix A = MatrixFactory::MakeRandomMatrix(MA, NA, 0.0, 10.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(MB, NB, 0.0, 2.0, Matrix::MATRIX_DENSE);
     A.transpose();

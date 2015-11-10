@@ -24,10 +24,12 @@ void TestMatrixExtras::setUp() {
 void TestMatrixExtras::tearDown() {
 }
 
+/*****    ADDITION    ******/
+
 void TestMatrixExtras::test_add_DD() {
     size_t n = 10;
     size_t m = 15;
-    size_t repetitions = 200;
+    size_t repetitions = 20;
 
     for (size_t r = 0; r < repetitions; r++) {
         Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
@@ -104,6 +106,144 @@ void TestMatrixExtras::test_add_SS() {
         _ASSERT_EQ(C, A);
     }
 }
+
+void TestMatrixExtras::test_add_DDT() {
+    size_t n = 10;
+    size_t m = 15;
+    size_t repetitions = 20;
+
+    for (size_t r = 0; r < repetitions; r++) {
+        Matrix A = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 1.0);
+        Matrix B = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+
+        A.transpose();
+
+        Matrix A_copy(A);
+        Matrix B_copy(B);
+
+        // A = gamma*A + alpha*B
+        int status = Matrix::add(A, alpha, B, gamma);
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+        _ASSERT_EQ(B_copy, B);
+
+        A_copy *= gamma;
+        B_copy *= alpha;
+        Matrix C = A_copy + B_copy;
+
+        _ASSERT_EQ(C, A);
+    }
+}
+
+void TestMatrixExtras::test_add_DTD() {
+    size_t n = 10;
+    size_t m = 15;
+    size_t repetitions = 20;
+
+    for (size_t r = 0; r < repetitions; r++) {
+        Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+        Matrix B = MatrixFactory::MakeRandomMatrix(m, n, 2.0, 1.0);
+
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+
+        B.transpose();
+
+        Matrix A_copy(A);
+        Matrix B_copy(B);
+
+        // A = gamma*A + alpha*B
+        int status = Matrix::add(A, alpha, B, gamma);
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+        _ASSERT_EQ(B_copy, B);
+
+        A_copy *= gamma;
+        B_copy *= alpha;
+        Matrix C = A_copy + B_copy;
+
+        _ASSERT_EQ(C, A);
+    }
+}
+
+void TestMatrixExtras::test_add_DTDT() {
+    size_t n = 10;
+    size_t m = 15;
+    size_t repetitions = 20;
+
+    for (size_t r = 0; r < repetitions; r++) {
+        Matrix A = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+        Matrix B = MatrixFactory::MakeRandomMatrix(n, m, 2.0, 1.0);
+
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+
+        Matrix A_copy(A);
+        Matrix B_copy(B);
+
+        A.transpose();
+        B.transpose();
+
+        // A := gamma*A + alpha*B
+        int status = Matrix::add(A, alpha, B, gamma);
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+
+        for (size_t i = 0; i < m; i++) {
+            for (size_t j = 0; j < n; j++) {
+                _ASSERT_EQ(gamma * A_copy.get(j, i) + alpha * B_copy.get(j, i), A.get(i, j));
+            }
+        }
+
+
+    }
+}
+
+void TestMatrixExtras::test_add_SST() {
+    size_t n = 10;
+    size_t m = 15;
+    size_t nnz = 100;
+    size_t repetitions = 300;
+
+    Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
+    for (size_t r = 0; r < repetitions; r++) {
+        Matrix B = MatrixFactory::MakeRandomSparse(m, n, nnz, 2.0, 1.0);
+
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+
+        Matrix B_copy(B);
+
+        B.transpose();
+
+        Matrix A_copy(A);
+
+
+
+        int status = Matrix::add(A, alpha, B, gamma); // A = gamma*A + alpha*B'
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+        
+
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < m; j++) {
+                _ASSERT_NUM_EQ(gamma*A_copy.get(i,j) + alpha*B_copy.get(j,i), A.get(i,j), 1e-8);
+            }
+        }
+        
+        Matrix S(A_copy);
+        S *= gamma;
+        Matrix T(B);
+        T *= alpha;
+        
+        S += T;
+        
+        _ASSERT_EQ(S, A);
+
+    }
+}
+
+/*****    MULTIPLICATION ******/
 
 void TestMatrixExtras::test_mult_DD() {
     size_t n = 8;

@@ -16,8 +16,14 @@ class TestMatrixExtras : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrixExtras);
 
     CPPUNIT_TEST(test_add_DD);
+    CPPUNIT_TEST(test_add_DDT);
+    CPPUNIT_TEST(test_add_DTD);
+    CPPUNIT_TEST(test_add_DTDT);
+    
     CPPUNIT_TEST(test_add_DS);
+    
     CPPUNIT_TEST(test_add_SS);
+    CPPUNIT_TEST(test_add_SST);
     
     CPPUNIT_TEST(test_mult_DD);
     CPPUNIT_TEST(test_mult_DDT);
@@ -37,17 +43,24 @@ public:
     void tearDown();
 
 private:
-    void test_add_DD(); // DENSE  := gamma * DENSE  + alpha * DENSE
-    void test_add_DS(); // DENSE  := gamma * DENSE  + alpha * SPARSE
-    void test_add_SS(); // SPARSE := gamma * SPARSE + alpha * SPARSE
+    void test_add_DD(); 
+    void test_add_DDT();
+    void test_add_DTD();
+    void test_add_DTDT();
     
-    void test_mult_DD(); // DENSE := gamma * DENSE + alpha * DENSE * DENSE
-    void test_mult_DDT(); // DENSE := gamma * DENSE + alpha * DENSE * DENSE'
-    void test_mult_DX(); // DENSE := gamma * DENSE + alpha * DENSE * DIAGONAL
-    void test_mult_DH(); // DENSE := gamma * DENSE + alpha * DENSE * SYMMETRIC
-    void test_mult_SS(); // SPARSE := gamma * SPARSE + alpha * SPARSE * SPARSE
-    void test_mult_SS2(); // SPARSE := gamma * SPARSE + alpha * SPARSE * SPARSE
-    void test_mult_SS3(); // SPARSE := gamma * SPARSE + alpha * SPARSE * SPARSE
+    void test_add_DS();
+    void test_add_SS();
+    void test_add_SST();
+    
+    
+    
+    void test_mult_DD();
+    void test_mult_DDT();
+    void test_mult_DX();
+    void test_mult_DH();
+    void test_mult_SS();
+    void test_mult_SS2();
+    void test_mult_SS3();
 };
 
 #endif	/* TESTMATRIXEXTRAS_H */

@@ -115,12 +115,13 @@ Matrix::Matrix(const Matrix& orig) {
             m_dense = cholmod_copy_dense(orig.m_dense, Matrix::cholmod_handle());
         }
     }
+    m_sparseStorageType = orig.m_sparseStorageType;
 }
 
 /********* DENSTRUCTOR ************/
 Matrix::~Matrix() {
-    this -> m_ncols = 0;
-    this -> m_nrows = 0;
+    m_ncols = 0;
+    m_nrows = 0;
     if (m_data != NULL && m_delete_data) {
         delete[] m_data;
     }
@@ -484,26 +485,27 @@ Matrix& Matrix::operator+=(Matrix & right) {
 
     const double alpha = 1.0;
     const double gamma = 1.0;
-    switch (m_type) {
-        case MATRIX_DENSE: /* DENSE += ? */
-            /* (*this) = 1.0 * (*this) + 1.0 * (right) */
-            generic_add_helper_left_dense(*this, alpha, right, gamma);
-            break;
-        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-            generic_add_helper_left_symmetric(*this, alpha, right, gamma);
-            break;
-        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
-            generic_add_helper_left_lower_tri(*this, alpha, right, gamma);
-            break;
-        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
-            generic_add_helper_left_diagonal(*this, alpha, right, gamma);
-            break;
-        case MATRIX_SPARSE: /* SPARSE += ? */
-            generic_add_helper_left_sparse(*this, alpha, right, gamma);
-            break;
-        default:
-            throw std::logic_error("unsupported");
-    }
+    add(*this, alpha, right, gamma);
+    //    switch (m_type) {
+    //        case MATRIX_DENSE: /* DENSE += ? */
+    //            /* (*this) = 1.0 * (*this) + 1.0 * (right) */
+    //            generic_add_helper_left_dense(*this, alpha, right, gamma);
+    //            break;
+    //        case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
+    //            generic_add_helper_left_symmetric(*this, alpha, right, gamma);
+    //            break;
+    //        case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
+    //            generic_add_helper_left_lower_tri(*this, alpha, right, gamma);
+    //            break;
+    //        case MATRIX_DIAGONAL: /* DIAGONAL += ? */
+    //            generic_add_helper_left_diagonal(*this, alpha, right, gamma);
+    //            break;
+    //        case MATRIX_SPARSE: /* SPARSE += ? */
+    //            generic_add_helper_left_sparse(*this, alpha, right, gamma);
+    //            break;
+    //        default:
+    //            throw std::logic_error("unsupported");
+    //    }
     return *this;
 }
 
@@ -605,6 +607,9 @@ Matrix & Matrix::operator=(const Matrix & right) {
     m_ncols = right.m_ncols;
     m_nrows = right.m_nrows;
     m_type = right.m_type;
+    m_triplet = NULL;
+    m_sparse = NULL;
+    m_dense = NULL;
 
     /* 
      * copy m_data only if 
@@ -640,7 +645,6 @@ Matrix & Matrix::operator=(const Matrix & right) {
         cblas_dcopy(m_dataLength, right.m_data, 1, m_data, 1);
 #else
         for (int i = 0; i < m_dataLength; i++) {
-
             m_data[i] = right[i];
         }
 #endif
@@ -1299,9 +1303,13 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
             C._createSparse(); /* CHOLMOD_SPARSE: create it 
                                 from other representations */
 
-        if (A.m_sparse == NULL)
-            A._createSparse(); /* Likewise for the RHS */
 
+        if (A.m_sparse == NULL) {
+            A._createSparse(); /* Likewise for the RHS */
+            if (A.m_transpose) {
+                A.m_sparse = cholmod_transpose(A.m_sparse, 1, cholmod_handle());
+            }
+        }
 
         C.m_sparse = cholmod_add(
                 C.m_sparse,
@@ -1624,18 +1632,18 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
         //        return result;
         // </editor-fold>
 
-    } else if (B.m_type == MATRIX_DIAGONAL) { // SPARSE * DIAGONAL = SPARSE
-        // <editor-fold defaultstate="collapsed" desc="comment">
-        //        Matrix result(*this); // COPY [result := right]
-        //        for (size_t k = 0; k < result.m_triplet->nnz; k++) {
-        //            int j_ = (static_cast<int*> (result.m_triplet->j))[k];
-        //            (static_cast<double*> (result.m_triplet->x))[k] *= right.get(j_, j_);
-        //        }
-        //        return result;// </editor-fold>
+    } else if (B.m_type == MATRIX_DIAGONAL) { // += alpha * SPARSE * DIAGONAL
+        Matrix A_temp(A); //  Compute A_temp = A * alpha;
+        for (size_t k = 0; k < A.m_triplet->nnz; k++) {
+            int j_ = (static_cast<int*> (A_temp.m_triplet->j))[k];
+            static_cast<double*> (A_temp.m_triplet->x)[k] *= (alpha * B.get(j_, j_));
+        }
+        add(C, 1.0, A_temp, gamma);
+        status = ForBESUtils::STATUS_OK;
 
     } else {
         //LCOV_EXCL_START
-        //        throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
+        throw std::invalid_argument("SPARSE * {SYMMETRIC/LOWER/UPPER TRIANGUAL}: not supported");
         //LCOV_EXCL_STOP
     }
     return status;
