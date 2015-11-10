@@ -248,16 +248,48 @@ void TestMatrixExtras::test_add_STS() {
     for (size_t r = 0; r < repetitions; r++) {
         Matrix A = MatrixFactory::MakeRandomSparse(m, n, nnz, 2.0, 1.0);
 
-        double alpha = 1.0;
-        double gamma = 1.0;
+        double alpha = 2.0 * static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
+        double gamma = -0.5 + static_cast<float> (std::rand()) / static_cast<float> (RAND_MAX);
 
 
         Matrix A_copy(A);
         A.transpose();
 
         int status = Matrix::add(A, alpha, B, gamma); // A' = gamma*A' + alpha*B
-        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);       
-        
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+
+        for (size_t i = 0; i < n; i++) {
+            for (size_t j = 0; j < m; j++) {
+                _ASSERT_EQ(gamma * A_copy.get(j, i) + alpha * B.get(i, j), A.get(i, j));
+            }
+        }
+
+    }
+}
+
+void TestMatrixExtras::test_add_STST() {
+    size_t n = 10;
+    size_t m = 15;
+    size_t nnz = 100;
+    size_t repetitions = 300;
+
+    for (size_t r = 0; r < repetitions; r++) {
+        Matrix A = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
+        Matrix B = MatrixFactory::MakeRandomSparse(n, m, nnz, 2.0, 1.0);
+
+        double alpha = 1.0;
+        double gamma = 1.0;
+
+
+        Matrix A_copy(A);
+        Matrix B_copy(B);
+        A.transpose();
+        B.transpose();
+
+        int status = Matrix::add(A, alpha, B, gamma); // A' = gamma*A' + alpha*B
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
 
         for (size_t i = 0; i < n; i++) {
             for (size_t j = 0; j < m; j++) {
