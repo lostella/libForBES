@@ -47,7 +47,6 @@ void TestOpReverseVector::testCall() {
             _ASSERT_EQ(y.get(i, 0), xrev.get(n - i - 1, 0));
         }
     }
-
 }
 
 void TestOpReverseVector::testCallNotFixedSize() {

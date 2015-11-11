@@ -19,6 +19,7 @@
  */
 
 #include "TestOpComposition.h"
+#include "OpReverseVector.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestOpComposition);
 
@@ -92,6 +93,39 @@ void TestOpComposition::testCall() {
     delete T2;
     delete G;
 
+}
+
+void TestOpComposition::testCall2() {
+    size_t n = 10;
+    size_t m = 15;
+
+    LinearOperator * rev_op = new OpReverseVector(n);
+    Matrix A = MatrixFactory::MakeRandomMatrix(m, n, -1.0, 2.0, Matrix::MATRIX_DENSE);
+    LinearOperator * mat_op = new MatrixOperator(A);
+
+    LinearOperator * op = new OpComposition(*mat_op, *rev_op);
+
+    Matrix y = MatrixFactory::MakeRandomMatrix(m, 1, 0.0, 3.0, Matrix::MATRIX_DENSE);
+
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 3.0, Matrix::MATRIX_DENSE);
+
+    double alpha = -3.52540;
+    double gamma = 1.41451;
+    Matrix y_copy(y);
+    int status = op->call(y, alpha, x, gamma);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+
+    // verify result;
+    Matrix x_rev = rev_op->call(x); // rev(x)
+    Matrix t = A*x_rev; //
+    t *= alpha;
+    y_copy *= gamma;
+    y_copy += t;
+    _ASSERT_EQ(y_copy, y);
+
+    delete rev_op;
+    delete mat_op;
+    delete op;
 }
 
 void TestOpComposition::testCallAdjoint() {

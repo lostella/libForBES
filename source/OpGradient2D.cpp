@@ -26,13 +26,14 @@ OpGradient2D::OpGradient2D() {
 OpGradient2D::~OpGradient2D() {
 }
 
-Matrix OpGradient2D::call(Matrix& x) {
+int OpGradient2D::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     throw std::logic_error("NIY");
 }
 
-Matrix OpGradient2D::callAdjoint(Matrix& x) {
+int OpGradient2D::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
     throw std::logic_error("NIY");
 }
+
 
 std::pair<size_t, size_t> OpGradient2D::dimensionIn() {
     throw std::logic_error("NIY");

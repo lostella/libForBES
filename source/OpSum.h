@@ -36,7 +36,6 @@
 class OpSum : public LinearOperator {
 public:
     OpSum();
-    OpSum(const OpSum& orig);
     virtual ~OpSum();
 private:
 
