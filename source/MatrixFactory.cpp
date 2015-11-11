@@ -33,8 +33,7 @@ Matrix MatrixFactory::MakeIdentity(size_t n, double alpha) {
     return mat;
 }
 
-Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale) {
-    std::srand(std::time(0));
+Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, float offset, float scale) {        
     Matrix R = MakeSparse(nrows, ncols, nnz, Matrix::SPARSE_UNSYMMETRIC);
     std::set<nice_pair> s;
     nice_pair p;
@@ -55,7 +54,6 @@ Matrix MatrixFactory::MakeRandomSparse(size_t nrows, size_t ncols, size_t nnz, f
 }
 
 Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset, float scale, Matrix::MatrixType type) {
-    std::srand(std::time(0));
     size_t len = 0;
     switch (type) {
         case Matrix::MATRIX_DENSE:
@@ -86,6 +84,12 @@ Matrix MatrixFactory::MakeRandomMatrix(size_t nrows, size_t ncols, float offset,
 }
 
 Matrix MatrixFactory::MakeSparse(size_t nrows, size_t ncols, size_t max_nnz, Matrix::SparseMatrixType stype) {
+    if (max_nnz > nrows * ncols) {
+        std::ostringstream oss;
+        oss << "Matrix " << nrows << "x" << ncols << "(max_size=" << (nrows*ncols) 
+            << " cannot allocate " << max_nnz << "non-zeros";
+        throw std::invalid_argument(oss.str().c_str());
+    }
     Matrix matrix(nrows, ncols, Matrix::MATRIX_SPARSE);
     matrix.m_triplet = cholmod_allocate_triplet(nrows, ncols, max_nnz, stype, CHOLMOD_REAL, Matrix::cholmod_handle());
     matrix.m_sparseStorageType = Matrix::CHOLMOD_TYPE_TRIPLET;
@@ -107,8 +111,7 @@ Matrix MatrixFactory::ReadSparse(FILE* fp) {
     return mat;
 }
 
-
-Matrix MatrixFactory::ShallowMatrix(const Matrix& orig) {   
+Matrix MatrixFactory::ShallowMatrix(const Matrix& orig) {
     Matrix mat_shallow = Matrix(true);
     mat_shallow.m_transpose = orig.m_transpose;
     mat_shallow.m_nrows = orig.m_nrows;

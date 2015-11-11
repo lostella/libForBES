@@ -20,8 +20,6 @@
 
 #include "OpDCT2.h"
 
-
-
 OpDCT2::OpDCT2() : LinearOperator(), m_dimension(_EMPTY_OP_DIM) {
 
 }
@@ -33,12 +31,14 @@ OpDCT2::~OpDCT2() {
 }
 
 Matrix OpDCT2::call(Matrix& x) {
-    size_t n = x.length();
+    size_t n = x.getNrows();
     Matrix Y(n, 1);
     for (size_t k = 0; k < n; k++) {
         double yk = 0.0;
+        double aik;
         for (size_t i = 0; i < n; i++) {
-            yk += (x.get(i, 0) * std::cos(k * M_PI * (i + 0.5) / n));
+            aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
+            yk += x.get(i, 0) * aik;
         }
         Y.set(k, 0, yk);
     }
@@ -46,14 +46,16 @@ Matrix OpDCT2::call(Matrix& x) {
 }
 
 Matrix OpDCT2::callAdjoint(Matrix& x) {
-    size_t n = x.length();
+    size_t n = x.getNrows();
     Matrix Yadj(n, 1);
     for (size_t k = 0; k < n; k++) {
-        double yk = 0.0;
+        double v = 0.0;
+        double aki;
         for (size_t i = 0; i < n; i++) {
-            yk += (x.get(i, 0) * std::cos(i * M_PI * (k + 0.5) / n));
+            aki = std::cos(M_PI * (static_cast<double> (k) + 0.5) * static_cast<double> (i) / static_cast<double> (n));
+            v += x.get(i, 0) * aki;
         }
-        Yadj.set(k, 0, yk);
+        Yadj.set(k,0,v);
     }
     return Yadj;
 }

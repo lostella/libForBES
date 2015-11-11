@@ -37,6 +37,90 @@ void TestOpDCT2::setUp() {
 void TestOpDCT2::tearDown() {
 }
 
+void TestOpDCT2::testAdj0() {
+    const size_t n = 10;
+    Matrix T(n, n);
+    for (size_t k = 0; k < n; k++) {
+        for (size_t i = 0; i < n; i++) {
+            T.set(k, i, std::cos(static_cast<double> (k) * M_PI * (static_cast<double> (i) + 0.5) / static_cast<double> (n)));
+        }
+    }
+
+    T.transpose(); // defines the adjoint of DCT-II
+    Matrix z = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+
+    Matrix Tz_correct = T*z;
+
+    LinearOperator * dct2 = new OpDCT2(n);
+    Matrix Tz = dct2->callAdjoint(z);
+    _ASSERT_EQ(Tz_correct, Tz);
+
+    delete dct2;
+}
+
+void TestOpDCT2::testCall1() {
+    const size_t n = 10;
+    Matrix T(n, n);
+    for (size_t k = 0; k < n; k++) {
+        for (size_t i = 0; i < n; i++) {
+            T.set(k, i, std::cos(static_cast<double> (k) * M_PI * (static_cast<double> (i) + 0.5) / static_cast<double> (n)));
+        }
+    }
+
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+
+    Matrix y_correct = T*x;
+
+    LinearOperator * dct2 = new OpDCT2(n);
+    Matrix y = dct2->call(x);
+    _ASSERT_EQ(y_correct, y);
+
+    delete dct2;
+}
+
+void TestOpDCT2::testCall0() {
+
+    const size_t n = 10;
+    const double tol = 1e-6;
+
+    LinearOperator * op = new OpDCT2(n);
+
+    double x_data[n] = {
+        0.368500000000000,
+        -0.965700000000000,
+        -1.332500000000000,
+        1.484300000000000,
+        -0.175200000000000,
+        -0.373400000000000,
+        -0.512200000000000,
+        0.808700000000000,
+        0.061900000000000,
+        0.034600000000000
+    };
+
+    Matrix x(n, 1, x_data);
+
+    double y_expected_data[n] = {
+        -0.601000000000000,
+        -1.162468863506907,
+        -0.197505868217353,
+        -0.411088627018780,
+        0.384982166602636,
+        4.028670175132235,
+        2.343482143524826,
+        -0.211797156859350,
+        -0.624017833397364,
+        -2.578437630903463
+    };
+
+    Matrix y_expected(n, 1, y_expected_data);
+
+    Matrix y = op->call(x);
+    _ASSERT_EQ(y_expected, y);
+
+
+}
+
 void TestOpDCT2::testCall() {
     const size_t n = 10;
     const size_t repeat = 50;
@@ -57,7 +141,7 @@ void TestOpDCT2::testCall() {
         *y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 
         Matrix T_y = op->call(*y);
-        Matrix Tstar_x = op->callAdjoint(*y);
+        Matrix Tstar_x = op->callAdjoint(*x);
 
         // make sure T_y and Tstar_x are not all zero
         bool T_y_OK = false;
@@ -78,7 +162,7 @@ void TestOpDCT2::testCall() {
         _ASSERT(T_y_OK);
         _ASSERT(Tstar_x_OK);
 
-        Matrix err = (*x) * T_y;        
+        Matrix err = (*x) * T_y;
         Matrix temp = (*y) * Tstar_x;
         Matrix::add(err, -1.0, temp, 1.0);
 
@@ -92,52 +176,32 @@ void TestOpDCT2::testCall() {
 }
 
 void testOperatorLinearity(LinearOperator* op) {
-    const size_t repeat = 50;
-    const double tol = 1e-10;
 
-    Matrix *x = new Matrix();
-    Matrix *y = new Matrix();
-    Matrix *ax = new Matrix();
-    Matrix *by = new Matrix();
-    Matrix *axby = new Matrix();
-    Matrix *Taxby = new Matrix();
-    Matrix *Tx = new Matrix();
-    Matrix *Ty = new Matrix();
-    Matrix *err = new Matrix();
+    double a = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+    double b = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
 
+    Matrix x = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, op->dimensionIn().second, 0.0, 1.0);
+    Matrix y = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, op->dimensionIn().second, 0.0, 1.0);
 
-    double a = 0.0;
-    double b = 0.0;
-    for (size_t r = 0; r < repeat; r++) {
-        *x = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-        *y = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-        a = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
-        *ax = a * (*x);
-        *by = b * (*y);
-        *axby = *ax + *by;
-        *Taxby = op->call(*axby);
-        *Ty = op->call(*x);
-        *Tx = op->call(*y);
-        *err = *Taxby;
-        Matrix::add(*err, -a, *Tx, 1.0);
-        Matrix::add(*err, -b, *Ty, 1.0);
-        for (size_t j = 0; j < op->dimensionOut().first; j++) {
-            _ASSERT(std::abs(err->get(j, 0)) < tol);
-        }
-    }
-
-    delete x;
-    delete y;
-    delete ax;
-    delete by;
-    delete axby;
-    delete Taxby;
-    delete Tx;
-    delete Ty;
-    delete err;
+    // create z = ax + by
+    Matrix z(x);
+    Matrix::add(z, b, y, a);
+    
+    Matrix Tx = op->call(x);
+    Matrix Ty = op->call(y);
+    
+    // create aTx + bTy
+    Matrix T(Tx);
+    Matrix::add(T, b, Ty, a);
+    
+    Matrix T2 = op->call(z);
+    
+    _ASSERT_EQ(T,T2);    
+   
 }
 
 void TestOpDCT2::testLinearity() {
+
     const size_t n = 50;
     LinearOperator * op = new OpDCT2(n);
     _ASSERT_EQ(n, op->dimensionIn().first);

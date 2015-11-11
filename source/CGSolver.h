@@ -54,8 +54,15 @@
  *      8. \f$z \leftarrow z_{+}\f$
  *      9. \f$r \leftarrow r_{+}\f$
  * 6. Repeat until the desired accuracy or the maximum number of iterations is reached.
+ * 7. Return \f$x\f$
+ * 
+ * Providing a preconditioner is optional. If no preconditioner is provided, it is 
+ * assumed that \f$P\f$ is the identity operator, \f$P(x)=x\f$.
  * 
  * 
+ * Systems of the form \f$Ax=b\f$, i.e., where \f$T(x)=Ax\f$ where \f$A\f$ is a 
+ * Matrix can be solved using the linear operator MatrixOperator which wraps 
+ * matrices as instances of LinearOperator.
  */
 class CGSolver : public LinOpSolver {
 public:

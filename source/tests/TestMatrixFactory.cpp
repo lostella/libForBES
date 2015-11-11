@@ -149,7 +149,7 @@ void TestMatrixFactory::testSparse2() {
     const size_t nnz = 6;
     Matrix N = MatrixFactory::MakeSparse(n, m, nnz, Matrix::SPARSE_UNSYMMETRIC);
     Matrix *M;
-    M = new Matrix(N);    
+    M = new Matrix(N);
     CPPUNIT_ASSERT_NO_THROW(delete M);
 
     _ASSERT_EQ(n, N.getNrows());
@@ -194,7 +194,7 @@ void TestMatrixFactory::testShallow1() {
 
     Matrix Y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 10.0);
     Y.transpose();
-    
+
     X_shallow_copy = MatrixFactory::ShallowVector(Y, 1);
     _ASSERT_EQ(Y.getNcols() - 1, X_shallow_copy.getNcols());
     _ASSERT_EQ(Y.getNrows(), X_shallow_copy.getNrows());
@@ -254,6 +254,12 @@ void TestMatrixFactory::testShallow4() {
     }
 
 }
+
+void TestMatrixFactory::testFailSafe() {
+    Matrix A;
+    _ASSERT_EXCEPTION(A = MatrixFactory::MakeRandomSparse(10, 10, 101, 0.0, 1.0), std::invalid_argument);
+}
+
 
 
 

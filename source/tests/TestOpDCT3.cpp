@@ -56,52 +56,28 @@ void TestOpDCT3::testCall() {
 }
 
 void testOperatorLinearity(LinearOperator* op) {
-    const size_t repeat = 50;
-    const double tol = 1e-10;
 
-    Matrix *x = new Matrix();
-    Matrix *y = new Matrix();
-    Matrix *ax = new Matrix();
-    Matrix *by = new Matrix();
-    Matrix *axby = new Matrix();
-    Matrix *Taxby = new Matrix();
-    Matrix *Tx = new Matrix();
-    Matrix *Ty = new Matrix();
-    Matrix *err = new Matrix();
+    double a = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
+    double b = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
 
+    Matrix x = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, op->dimensionIn().second, 0.0, 1.0);
+    Matrix y = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, op->dimensionIn().second, 0.0, 1.0);
 
-    double a = 0.0;
-    double b = 0.0;
-    for (size_t r = 0; r < repeat; r++) {
-        *x = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-        *y = MatrixFactory::MakeRandomMatrix(op->dimensionIn().first, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-        a = 10.0 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX);
-        *ax = a * (*x);
-        *by = b * (*y);
-        *axby = *ax + *by;
-        *Taxby = op->call(*axby);
-        *Ty = op->call(*x);
-        *Tx = op->call(*y);
-        
-        
-        *err = *Taxby;
-        Matrix::add(*err, -a, *Tx, 1.0);
-        Matrix::add(*err, -b, *Ty, 1.0);
-        
-        for (size_t j = 0; j < op->dimensionOut().first; j++) {
-            _ASSERT(std::abs(err->get(j, 0)) < tol);
-        }
-    }
-
-    delete x;
-    delete y;
-    delete ax;
-    delete by;
-    delete axby;
-    delete Taxby;
-    delete Tx;
-    delete Ty;
-    delete err;
+    // create z = ax + by
+    Matrix z(x);
+    Matrix::add(z, b, y, a);
+    
+    Matrix Tx = op->call(x);
+    Matrix Ty = op->call(y);
+    
+    // create aTx + bTy
+    Matrix T(Tx);
+    Matrix::add(T, b, Ty, a);
+    
+    Matrix T2 = op->call(z);
+    
+    _ASSERT_EQ(T,T2);    
+   
 }
 
 void TestOpDCT3::testLinearity() {

@@ -26,6 +26,7 @@ class TestMatrixFactory : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testShallow2);
     CPPUNIT_TEST(testShallow3);
     CPPUNIT_TEST(testShallow4);
+    CPPUNIT_TEST(testFailSafe);
     
     CPPUNIT_TEST_SUITE_END();
 
@@ -46,6 +47,7 @@ private:
     void testShallow2();
     void testShallow3();
     void testShallow4();
+    void testFailSafe();
 
 };
 

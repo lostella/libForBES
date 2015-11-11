@@ -485,7 +485,7 @@ Matrix& Matrix::operator+=(Matrix & right) {
 
     const double alpha = 1.0;
     const double gamma = 1.0;
-    add(*this, alpha, right, gamma);    
+    add(*this, alpha, right, gamma);
     return *this;
 }
 
@@ -1306,24 +1306,24 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
                                 from other representations */
             if (C.m_transpose) {
                 C.m_sparse = cholmod_transpose(C.m_sparse, 1, cholmod_handle());
-            }            
+            }
         }
-               
+
         if (A.m_sparse == NULL) {
             A._createSparse(); /* Likewise for the RHS */
             if (A.m_transpose) {
                 A.m_sparse = cholmod_transpose(A.m_sparse, 1, cholmod_handle());
             }
         }
-        
+
         /*
          * Don't store C as transpose any more - it will not have all values 
          * in the right order.
          */
-        if (C.m_transpose){
+        if (C.m_transpose) {
             C.m_transpose = false;
         }
-        
+
         C.m_sparse = cholmod_add(
                 C.m_sparse,
                 A.m_sparse,
@@ -1336,8 +1336,8 @@ int Matrix::generic_add_helper_left_sparse(Matrix& C, double alpha, Matrix& A, d
         C.m_triplet = cholmod_sparse_to_triplet(
                 C.m_sparse,
                 Matrix::cholmod_handle()); /* Update the triplet of the result (optional) */
-        
-        
+
+
     } else if (type_of_A == MATRIX_DIAGONAL) { /* SPARSE + DIAGONAL */
         C._createTriplet();
         if (C.m_triplet != NULL) {
@@ -1586,45 +1586,46 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             add(C, 1.0, temp_r, gamma);
             status = ForBESUtils::STATUS_OK;
         }
-    } else if (B.m_type == MATRIX_DENSE) { /* SPRASE * DENSE */
-        //
+    } else if (B.m_type == MATRIX_DENSE) { /* C = gamma * C + alpha * SPRASE * DENSE */
+
+
         // RHS is dense
-        //        Matrix result(A.getNrows(), B..getNcols());
-        //
-        //        if (m_triplet != NULL && m_sparse == NULL)
-        //            _createSparse();
-        //
-        //        double alpha[2] = {1.0, 0.0};
-        //        double beta[2] = {0.0, 0.0};
-        //
-        //        if (right.m_dense == NULL) { /* Prepare right.m_dense */
-        //            right.m_dense = cholmod_allocate_dense(
-        //                    right.getNrows(),
-        //                    right.getNcols(),
-        //                    right.getNrows(),
-        //                    CHOLMOD_REAL,
-        //                    Matrix::cholmod_handle());
-        //
-        //            if (!right.m_transpose) {
-        //                right.m_dense->x = right.m_data;
-        //            } else {
-        //                /* Store RHS as transpose into right.m_dense */
-        //                for (size_t i = 0; i < right.getNrows(); i++) { /* SPARSE x DENSE' */
-        //                    for (size_t j = 0; j < right.getNcols(); j++) {
-        //                        (static_cast<double*> (right.m_dense->x))[i + j * right.getNrows()] =
-        //                                right.get(i, j);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //
-        //        bool dotProd = isColumnVector() && right.isColumnVector();
-        //        result.m_dense = cholmod_allocate_dense(
-        //                dotProd ? 1 : result.getNrows(),
-        //                dotProd ? 1 : result.getNcols(),
-        //                dotProd ? 1 : result.getNrows(),
-        //                CHOLMOD_REAL,
-        //                Matrix::cholmod_handle());
+        //                Matrix result(A.getNrows(), B..getNcols());
+
+//        if (A.m_triplet != NULL && A.m_sparse == NULL)
+//            A._createSparse();
+//
+//        double alpha[2] = {1.0, 0.0};
+//        double beta[2] = {0.0, 0.0};
+//
+//        if (B.m_dense == NULL) { /* Prepare right.m_dense */
+//            B.m_dense = cholmod_allocate_dense(
+//                    B.getNrows(),
+//                    B.getNcols(),
+//                    B.getNrows(),
+//                    CHOLMOD_REAL,
+//                    Matrix::cholmod_handle());
+//
+//            if (!B.m_transpose) {
+//                B.m_dense->x = B.m_data;
+//            } else {
+//                /* Store RHS as transpose into right.m_dense */
+//                for (size_t i = 0; i < B.getNrows(); i++) { /* SPARSE x DENSE' */
+//                    for (size_t j = 0; j < B.getNcols(); j++) {
+//                        (static_cast<double*> (B.m_dense->x))[i + j * B.getNrows()] = B.get(i, j);
+//                    }
+//                }
+//            }
+//        }
+//
+//        bool dotProd = isColumnVector() && B.isColumnVector();
+//        C.m_dense = cholmod_allocate_dense(
+//                dotProd ? 1 : B.getNrows(),
+//                dotProd ? 1 : B.getNcols(),
+//                dotProd ? 1 : B.getNrows(),
+//                CHOLMOD_REAL,
+//                Matrix::cholmod_handle());
+        
         //        if (m_transpose) {
         //            this->transpose();
         //        }
@@ -1643,7 +1644,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
         //        for (size_t k = 0; k < result.length(); k++) {
         //            result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         //        }
-        //        return result;
+        
 
     } else if (B.m_type == MATRIX_DIAGONAL) { // += alpha * SPARSE * DIAGONAL
         Matrix A_temp(A); //  Compute A_temp = A * alpha;

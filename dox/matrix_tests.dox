@@ -105,14 +105,14 @@
  * <td></td>    
  * <td></td>    
  * <td>OK</td>   
- * <td></td>
+ * <td>OK</td>
  * <td></td>
  * </tr>
  * <tr>
  * <td>Symmetric</td>
  * <td></td>    
  * <td></td>    
- * <td></td>    
+ * <td>OK</td>    
  * <td>OK</td>
  * <td></td>
  * </tr>
@@ -139,7 +139,7 @@
  * </tr>
  * <tr>
  * <td>Dense</td>
- * <td></td>    
+ * <td>OK</td>    
  * <td></td>    
  * <td></td>    
  * <td></td>
@@ -158,14 +158,14 @@
  * <td></td>    
  * <td></td>    
  * <td>OK</td>   
- * <td></td>
+ * <td>OK</td>
  * <td></td>
  * </tr>
  * <tr>
  * <td>Symmetric</td>
  * <td></td>    
  * <td></td>    
- * <td></td>    
+ * <td>OK</td>    
  * <td>OK</td>
  * <td></td>
  * </tr>
@@ -212,14 +212,14 @@
  * <td></td>    
  * <td></td>    
  * <td>OK</td>   
- * <td></td>
+ * <td>OK</td>
  * <td></td>
  * </tr>
  * <tr>
  * <td>Symmetric</td>
  * <td></td>    
  * <td></td>    
- * <td></td>    
+ * <td>OK</td>    
  * <td>OK</td>
  * <td></td>
  * </tr>
@@ -305,7 +305,7 @@
  * </tr>
  * <tr>
  * <td>Dense</td>
- * <td></td>    
+ * <td>OK</td>    
  * <td></td>    
  * <td></td>    
  * <td></td>
@@ -314,7 +314,7 @@
  * <tr>
  * <td>Sparse</td>
  * <td>OK</td>    
- * <td></td>    
+ * <td>OK</td>    
  * <td></td>    
  * <td></td>
  * <td></td>

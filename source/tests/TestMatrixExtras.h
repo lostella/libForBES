@@ -54,8 +54,11 @@ class TestMatrixExtras : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_mult_DH);
     
     CPPUNIT_TEST(test_mult_SS);
+    CPPUNIT_TEST(test_mult_SST);
     CPPUNIT_TEST(test_mult_SS2);
     CPPUNIT_TEST(test_mult_SS3);
+    
+    CPPUNIT_TEST(test_mult_SX);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -90,9 +93,13 @@ private:
     void test_mult_DDT();
     void test_mult_DX();
     void test_mult_DH();
+    
     void test_mult_SS();
+    void test_mult_SST();
     void test_mult_SS2();
     void test_mult_SS3();
+    
+    void test_mult_SX();
 };
 
 #endif	/* TESTMATRIXEXTRAS_H */

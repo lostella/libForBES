@@ -31,6 +31,9 @@
 class TestOpDCT2 : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestOpDCT2);
 
+    CPPUNIT_TEST(testCall0);   
+    CPPUNIT_TEST(testCall1);   
+    CPPUNIT_TEST(testAdj0);   
     CPPUNIT_TEST(testCall);   
     CPPUNIT_TEST(testLinearity);   
     CPPUNIT_TEST(testAdjointLinearity);   
@@ -44,6 +47,9 @@ public:
     void tearDown();
 
 private:
+    void testCall0();
+    void testCall1();
+    void testAdj0();
     void testCall();
     void testLinearity();
     void testAdjointLinearity();
