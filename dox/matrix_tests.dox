@@ -3,7 +3,7 @@
  * 
  * \section tested-fun Tested functionality
  * We have written 116 unit tests to verify the functionality we outline hereafter
- * obtaining a 94.3\% coverage of the total lines of code aiming, eventually, at
+ * obtaining a 95.3\% coverage of the total lines of code aiming, eventually, at
  * fully tested functionality.
  *
  * We have so far tested and
@@ -453,7 +453,7 @@
  * </table> 
  *
  * \subsection quad-test Quadratic forms
- * Operations of the form \f$x'Qx\f$ or \f$x'Qx + q'x\f$
+ * Operations of the form \f$\frac{1}{2}x'Qx\f$ or \f$\frac{1}{2}x'Qx + q'x\f$
  *
  * <table>
  * <tr>

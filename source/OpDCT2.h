@@ -35,7 +35,8 @@
  * 
  * \ingroup LinOp
  * 
- * The DCT-II transformation is a linear square transformation \f$T:\mathbb{R}^n \to \mathbb{R}^n\f$
+ * The <a href="https://en.wikipedia.org/wiki/Discrete_cosine_transform#DCT-II">DCT-II
+ * transform</a> is a linear square transformation \f$T:\mathbb{R}^n \to \mathbb{R}^n\f$
  * given by
  * 
  * \f[
@@ -44,7 +45,7 @@
  * 
  * for \f$k=0,\ldots, n-1\f$.
  * 
- * The DCT, and especially this version of it - DCT-II - is popular in signal 
+ * The discrete cosine transform, and especially this version of it - DCT-II - is popular in signal 
  * and image processing, especially for lossy compression.
  */
 class OpDCT2 : public LinearOperator {

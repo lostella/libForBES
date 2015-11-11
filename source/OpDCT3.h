@@ -32,7 +32,8 @@
  * 
  * \ingroup LinOp
  * 
- * The DCT-III transform is a linear square transformation \f$T:\mathbb{R}^n \to \mathbb{R}^n\f$
+ * The <a href="https://en.wikipedia.org/wiki/Discrete_cosine_transform#DCT-III">DCT-III transform</a> 
+ * is a linear square transformation \f$T:\mathbb{R}^n \to \mathbb{R}^n\f$
  * given by
  * 
  * \f[
@@ -43,9 +44,7 @@
  * 
  * Because it is the inverse of DCT-II (up to a scale factor), this form is sometimes 
  * simply referred to as "the inverse DCT" ("IDCT").
- * 
- * The DCT, and especially this version of it - DCT-II - is popular in signal 
- * and image processing, especially for lossy compression.
+ *
  */
 class OpDCT3 : public LinearOperator {
 public:
