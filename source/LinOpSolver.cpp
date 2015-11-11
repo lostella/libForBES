@@ -1,8 +1,8 @@
 /* 
- * File:   FactoredSolver.cpp
+ * File:   LinOpSolver.cpp
  * Author: Pantelis Sopasakis
  * 
- * Created on July 30, 2015, 3:18 AM
+ * Created on November 11, 2015, 3:45 AM
  * 
  * ForBES is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,12 +18,14 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FactoredSolver.h"
+#include "LinOpSolver.h"
 
-FactoredSolver::FactoredSolver(Matrix& matrix) : MatrixSolver(matrix) {
-    
+
+LinOpSolver::LinOpSolver(LinearOperator& linop) :
+m_linop(&linop) {
+
 }
 
-FactoredSolver::~FactoredSolver() {
+LinOpSolver::~LinOpSolver() {
 }
 

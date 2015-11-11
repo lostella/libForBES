@@ -135,6 +135,9 @@ LFLAGS = \
 	-L$(LEXTRA)
 
 SOURCES = \
+	CGSolver.cpp \
+	LinOpSolver.cpp \
+	MatrixSolver.cpp \
 	LinSysSolver.cpp \
 	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \

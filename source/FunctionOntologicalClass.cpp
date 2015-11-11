@@ -51,10 +51,11 @@ FunctionOntologicalClass::FunctionOntologicalClass(string name) : m_name(name) {
     m_defines_prox = false;
     m_defines_conjugate = false;
     m_defines_conjugate_grad = false;
+    m_defines_hessian = false;
+    m_defines_hessian_conj = false;
 }
 
 //LCOV_EXCL_START
-
 std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) {
     os << "Function class : " << obj.m_name << "\n";
     os << " * f()              : " << (obj.m_defines_f ? "YES" : "NO") << "\n";

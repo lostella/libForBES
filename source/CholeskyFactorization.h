@@ -27,6 +27,7 @@
 /**
  * 
  * \brief Cholesky factorization and solver.
+ * \ingroup LinSysSolver-group
  */
 class CholeskyFactorization : public FactoredSolver {
 public:

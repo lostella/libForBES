@@ -23,6 +23,7 @@
 
 #include "Matrix.h"
 #include "LinSysSolver.h"
+#include "MatrixSolver.h"
 
 /**
  * \class FactoredSolver
@@ -30,6 +31,7 @@
  * \version version 0.1
  * \date Created on July 30, 2015, 3:18 AM
  * \author Pantelis Sopasakis
+ * \ingroup LinSysSolver-group
  * 
  * FactoredSolver is a solver for linear systems of the form \f$Ax=b\f$ where a
  * factorization of matrix \f$A\f$ is used. This class exports its functionality
@@ -38,7 +40,7 @@
  * 
  * \sa LinSysSolver
  */
-class FactoredSolver : public LinSysSolver {
+class FactoredSolver : public MatrixSolver {
 public:
 
     /**

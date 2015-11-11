@@ -1,8 +1,8 @@
 /* 
- * File:   FactoredSolver.cpp
+ * File:   MatrixSolver.cpp
  * Author: Pantelis Sopasakis
  * 
- * Created on July 30, 2015, 3:18 AM
+ * Created on November 11, 2015, 3:44 AM
  * 
  * ForBES is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,12 +18,16 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FactoredSolver.h"
+#include "MatrixSolver.h"
 
-FactoredSolver::FactoredSolver(Matrix& matrix) : MatrixSolver(matrix) {
-    
+
+MatrixSolver::MatrixSolver(Matrix& matrix) :
+LinSysSolver(), m_matrix(&matrix) {
+    m_matrix_nrows = matrix.getNrows();
+    m_matrix_ncols = matrix.getNcols();
+    m_matrix_type = matrix.getType();
 }
 
-FactoredSolver::~FactoredSolver() {
+MatrixSolver::~MatrixSolver() {
 }
 

@@ -24,8 +24,8 @@ LDLFactorization::LDLFactorization(Matrix& matr) : FactoredSolver(matr) {
     this->LDL = NULL;
     this->ipiv = NULL;
     this->m_sparse_ldl_factor = NULL;
-    this->m_matrix_type = m_matrix.getType();
-    this->m_matrix_nrows = m_matrix.getNrows();
+    this->m_matrix_type = m_matrix->getType();
+    this->m_matrix_nrows = m_matrix->getNrows();
     if (matr.isEmpty()){
         throw std::invalid_argument("LDL factorization cannot be applied to empty matrices");
     }
@@ -66,14 +66,14 @@ int LDLFactorization::factorize() {
         status = LAPACKE_dsptrf(LAPACK_COL_MAJOR, 'L', m_matrix_nrows, LDL, ipiv);
     } else if (this->m_matrix_type == Matrix::MATRIX_SPARSE) {
         // Factorize sparse matrix
-        m_matrix._createSparse();
+        m_matrix->_createSparse();
         int * Parent = new int[m_matrix_nrows];
         int * Lnz = new int[m_matrix_nrows];
         int * Flag = new int[m_matrix_nrows];
         m_sparse_ldl_factor->Lp = new int[m_matrix_nrows + 1];
         ldl_symbolic(m_matrix_nrows,
-                static_cast<int*>(m_matrix.m_sparse->p),
-                static_cast<int*>(m_matrix.m_sparse->i),
+                static_cast<int*>(m_matrix->m_sparse->p),
+                static_cast<int*>(m_matrix->m_sparse->i),
                 m_sparse_ldl_factor->Lp,
                 Parent,
                 Lnz,
@@ -89,9 +89,9 @@ int LDLFactorization::factorize() {
         int *Pattern = new int[m_matrix_nrows];
 
         d = ldl_numeric(m_matrix_nrows,
-                static_cast<int*>(m_matrix.m_sparse->p),
-                static_cast<int*>(m_matrix.m_sparse->i),
-                static_cast<double*>(m_matrix.m_sparse->x),
+                static_cast<int*>(m_matrix->m_sparse->p),
+                static_cast<int*>(m_matrix->m_sparse->i),
+                static_cast<double*>(m_matrix->m_sparse->x),
                 m_sparse_ldl_factor->Lp,
                 Parent,
                 Lnz,

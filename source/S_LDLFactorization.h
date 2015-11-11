@@ -32,6 +32,7 @@
  * \version version 0.1
  * \date Created on November 5, 2015, 1:12 AM
  * \author Pantelis Sopasakis
+ * \ingroup LinSysSolver-group
  * 
  * Let \f$A\in\mathbb{R}^{n\times m}\f$ be a non necessarily square matrix. This 
  * class, which is derived from the abstract class FactoredSolver, decomposes the

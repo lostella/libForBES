@@ -33,6 +33,7 @@
 #include <assert.h>
 
 #include "cholmod.h"
+#include "ForBESUtils.h"
 
 #ifdef USE_LIBS
 #include <cblas.h>
@@ -559,13 +560,13 @@ public:
      * @param A given matrix \f$A\f$
      * @param gamma scalar \f$\gamma\f$
      * @return 
-     * A status code. The method will return a \link ForBESUtils:STATUS_OK success code\endlink
+     * A status code. The method will return a \link ForBESUtils::STATUS_OK success code\endlink
      * if the operation has succeeded and there was no need to perform any memory allocation 
      * operations. It may happen that the method succeeds, but it is necessary to allocate memory
      * to carry out the operation. This may happen if \c C is symmetric and \c A is dense;
      * then, matrix \c C needs to be cast as a dense matrix. In such a case the success
-     * code \link ForBESUtils:STATUS_HAD_TO_REALLOC STATUS_HAD_TO_REALLOC\endlink is returned.
-     * In an operation is not supported, an \link ForBESUtils:STATUS_UNDEFINED_FUNCTION undefined\endlink
+     * code \link ForBESUtils::STATUS_HAD_TO_REALLOC STATUS_HAD_TO_REALLOC\endlink is returned.
+     * In an operation is not supported, an \link ForBESUtils::STATUS_UNDEFINED_FUNCTION undefined\endlink
      * status code will be returned.
      * 
      * \exception std::invalid_argument An invalid argument exception is thrown
@@ -574,7 +575,7 @@ public:
      * \todo Handle the case where \f$\alpha = \gamma = 0.0\f$.
      * 
      * \bug SPARSE + LOWER_TRI is too slow!
-     */
+     */    
     static int add(Matrix& C, double alpha, Matrix& A, double gamma);
 
     /**
@@ -588,7 +589,7 @@ public:
      * @param B matrix B
      * @param gamma scalar which multiplies C
      * @return 
-     * A status code. The method will return a \link ForBESUtils:STATUS_OK success code\endlink
+     * A status code. The method will return a \link ForBESUtils::STATUS_OK success code\endlink
      * if the operation has succeeded and there was no need to perform any memory allocation 
      * operations.
      * 

@@ -52,14 +52,14 @@ int S_LDLFactorization::factorize() {
         beta_temp[0] = m_beta;
         beta_temp[1] = 0.0;
 
-        if (m_matrix.m_sparse == NULL) {
-            m_matrix._createSparse();
+        if (m_matrix->m_sparse == NULL) {
+            m_matrix->_createSparse();
         }
 
-        m_matrix.m_sparse->stype = 0;
-        m_factor = cholmod_analyze(m_matrix.m_sparse, Matrix::cholmod_handle());
-        cholmod_factorize_p(m_matrix.m_sparse, beta_temp, NULL, 0, m_factor, Matrix::cholmod_handle());
-        return (m_factor->minor == m_matrix.m_nrows) ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
+        m_matrix->m_sparse->stype = 0;
+        m_factor = cholmod_analyze(m_matrix->m_sparse, Matrix::cholmod_handle());
+        cholmod_factorize_p(m_matrix->m_sparse, beta_temp, NULL, 0, m_factor, Matrix::cholmod_handle());
+        return (m_factor->minor == m_matrix->m_nrows) ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
     } else if (m_matrix_type == Matrix::MATRIX_DENSE) {
         /* 
          * We here need to factorize a dense matrix 
@@ -67,27 +67,27 @@ int S_LDLFactorization::factorize() {
          * 1. A is short (more columns than rows)
          * 2. A is tall  (more rows than columns)
          */
-        if (m_matrix.getNrows() <= m_matrix.getNcols()) {
+        if (m_matrix->getNrows() <= m_matrix->getNcols()) {
             /* this is a ###SHORT### matrix */
             /*
              * Note: here we're creating matrix F on the fly and we're passing
              * its REFERENCE to LDLFactorization. Eventually, m_delegated_solver will
              * lose track of the original matrix.
              */
-            Matrix F = multiply_AAtr_betaI(m_matrix, m_beta);
+            Matrix F = multiply_AAtr_betaI(*m_matrix, m_beta);
             m_delegated_solver = new LDLFactorization(F);
             int status = m_delegated_solver->factorize();
             return status;
         } else {
             /* this is a ~~~TALL~~~ matrix */
-            m_matrix.transpose();
+            m_matrix->transpose();
             /*
              * Note: here we're creating matrix F_tilde on the fly and we're passing
              * its REFERENCE to LDLFactorization. Eventually, m_delegated_solver will
              * lose track of the original matrix.
              */
-            Matrix F_tilde = multiply_AAtr_betaI(m_matrix, m_beta);
-            m_matrix.transpose();
+            Matrix F_tilde = multiply_AAtr_betaI(*m_matrix, m_beta);
+            m_matrix->transpose();
             m_delegated_solver = new LDLFactorization(F_tilde);
             int status = m_delegated_solver->factorize();
             return status;
@@ -122,15 +122,15 @@ int S_LDLFactorization::solve(Matrix& rhs, Matrix& solution) const {
             return status;
         } else {
             /* m_matrix is ~~~TALL~~~ and dense */
-            m_matrix.transpose();
-            Matrix temp = m_matrix * const_cast<Matrix&>(rhs);
-            m_matrix.transpose();
+            m_matrix->transpose();
+            Matrix temp = (*m_matrix) * const_cast<Matrix&>(rhs);
+            m_matrix->transpose();
             Matrix c;
             int status = m_delegated_solver->solve(temp, c);
             if (status != ForBESUtils::STATUS_OK){
                 return status;
             }
-            solution = m_matrix * c - rhs;
+            solution = *m_matrix * c - rhs;
             double beta_inv = -1.0/m_beta;
             solution *= beta_inv;
             return ForBESUtils::STATUS_OK;

@@ -47,17 +47,17 @@ CholeskyFactorization::~CholeskyFactorization() {
 int CholeskyFactorization::factorize() {
     if (m_matrix_type == Matrix::MATRIX_SPARSE) {
         /* Cholesky decomposition of a SPARSE matrix: */
-        if (m_matrix.m_sparse == NULL) {
-            m_matrix._createSparse();
+        if (m_matrix->m_sparse == NULL) {
+            m_matrix->_createSparse();
         }
         /* analyze */
-        m_factor = cholmod_analyze(m_matrix.m_sparse, Matrix::cholmod_handle());
+        m_factor = cholmod_analyze(m_matrix->m_sparse, Matrix::cholmod_handle());
         /* factorize */
-        cholmod_factorize(m_matrix.m_sparse, m_factor, Matrix::cholmod_handle());
+        cholmod_factorize(m_matrix->m_sparse, m_factor, Matrix::cholmod_handle());
         /* Success: status = 0, else 1*/
-        return (m_factor->minor == m_matrix.m_nrows) ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
+        return (m_factor->minor == m_matrix->m_nrows) ? ForBESUtils::STATUS_OK : ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
     } else { /* If this is any non-sparse matrix: */
-        memcpy(m_L, m_matrix.getData(), m_matrix.length() * sizeof (double)); /* m_L := m_matrix.m_data */
+        memcpy(m_L, m_matrix->getData(), m_matrix->length() * sizeof (double)); /* m_L := m_matrix.m_data */
         int info = ForBESUtils::STATUS_OK;
         if (m_matrix_type == Matrix::MATRIX_DENSE) { /* This is a dense matrix */
             info = LAPACKE_dpotrf(LAPACK_COL_MAJOR, 'L', m_matrix_nrows, m_L, m_matrix_nrows);

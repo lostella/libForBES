@@ -23,3 +23,9 @@
  * 
  */
 
+/** \defgroup LinSysSolver-group Linear systems solvers
+ *
+ * \brief Solvers for linear systems
+ *
+ */
+

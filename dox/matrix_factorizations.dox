@@ -29,13 +29,19 @@
  * \htmlonly
     <div align='center'>
         <embed src="class_factored_solver__inherit__graph.svg" 
-        width="528pt" height="210pt" 
+        width="823pt" height="327pt" 
         type="image/svg+xml" 
         pluginspage="http://www.adobe.com/svg/viewer/install/" />
     </div>
  * \endhtmlonly 
  *
- * 
+ * Note that a FactoredSolver, is a class derived from the abstract class
+ * MatrixSolver which is an abstraction layer for solvers of linear systems
+ * given in the form \f$Ax=b\f$, where \f$A\f$ is a matrix.
+ *
+ * A more general case is addressed by LinSysSolver which is a generic and abstract
+ * solver for linear systems given either in the above form or in the form 
+ * \f$T(x)=b\f$, where \f$T\f$ is a linear operator (instance of LinearOperator).
  *
  * \section Cholesky
  * The Cholesky factorization can be applied to any symmetric positive definite

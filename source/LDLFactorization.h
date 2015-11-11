@@ -32,8 +32,12 @@ extern "C" {
 }
 
 /**
- * 
- * \brief LDL factorization and solver.
+ * \class LDLFactorization
+ * \version 0.1
+ * \author Pantelis Sopasakis
+ * \date July 30, 2015, 3:02 AM
+ * \brief LDL factorization and solver
+ * \ingroup LinSysSolver-group
  */
 class LDLFactorization : public FactoredSolver {
 public:
