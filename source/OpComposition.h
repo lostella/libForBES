@@ -35,20 +35,50 @@
  */
 class OpComposition : public LinearOperator {
 public:        
+    
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
 
     OpComposition(LinearOperator& A, LinearOperator& B);
 
     virtual ~OpComposition();
 
-    virtual Matrix call(Matrix& x);
-
+    /**
+     * This method will update \c y as follows
+     * 
+     * \f[
+     * y \leftarrow \gamma y + \alpha A(B(x)).
+     * \f]
+     * @param y
+     * @param alpha
+     * @param x
+     * @param gamma
+     * @return 
+     */
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
+    
+    /**
+     * This method will update \c y as follows
+     * 
+     * \f[
+     * y \leftarrow \gamma y + \alpha B^*(A^*(x)).
+     * \f]
+     * 
+     * @param y
+     * @param alpha
+     * @param x
+     * @param gamma
+     * @return 
+     */
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
+    
     virtual std::pair<size_t, size_t> dimensionIn();
 
     virtual std::pair<size_t, size_t> dimensionOut();
 
     virtual bool isSelfAdjoint();
 
-    virtual Matrix callAdjoint(Matrix& x);
+    
 
 private:
 

@@ -30,34 +30,32 @@ bool MatrixOperator::isSelfAdjoint() {
 
 void MatrixOperator::SetMatrix(Matrix& A) {
     this->m_A = A;
-    m_isSelfAdjoint = A.isSymmetric();
+    m_isSelfAdjoint = (A.getNrows() == A.getNcols() && A.isSymmetric());
 }
 
-MatrixOperator::MatrixOperator(Matrix& A) :
-m_A(A) {
+MatrixOperator::MatrixOperator(Matrix& A) : m_A(A) {
     if (A.isSymmetric()) {
         this->m_isSelfAdjoint = true;
+    } else {
+        this->m_isSelfAdjoint = false;
     }
 }
 
 MatrixOperator::~MatrixOperator() {
 }
 
-Matrix MatrixOperator::call(Matrix& x) {
-    Matrix y;
-    y = m_A*x;
-    return y;
+int MatrixOperator::call(Matrix& y, double alpha, Matrix& x, double gamma) {
+    return Matrix::mult(y, alpha, m_A, x, gamma);
 }
 
-Matrix MatrixOperator::callAdjoint(Matrix& x) {
+int MatrixOperator::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
     if (isSelfAdjoint()) {
-        return call(x);
+        return call(y, alpha, x, gamma);
     }
-    Matrix y;
     m_A.transpose();
-    y = m_A*x;
+    int status = Matrix::mult(y, alpha, m_A, x, gamma);    
     m_A.transpose();
-    return y;
+    return status;
 }
 
 std::pair<size_t, size_t> MatrixOperator::dimensionIn() {

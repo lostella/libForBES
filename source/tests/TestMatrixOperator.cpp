@@ -49,8 +49,8 @@ void TestMatrixOperator::testCallAdjoint() {
     Matrix z;
 
     _ASSERT(T->isSelfAdjoint());
-    _ASSERT_OK(y = T->call(x));
-    _ASSERT_OK(z = T->callAdjoint(x));
+    y = T->call(x);
+    z = T->callAdjoint(x);
 
     _ASSERT_EQ(z, y);
 
@@ -58,7 +58,7 @@ void TestMatrixOperator::testCallAdjoint() {
     M = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 10.0, Matrix::MATRIX_DENSE);
     _ASSERT_OK(T->SetMatrix(M));
     _ASSERT_NOT(T->isSelfAdjoint());
-    
+
     M = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 10.0, Matrix::MATRIX_DENSE);
     _ASSERT_NOT(M.isSymmetric());
     _ASSERT_OK(T->SetMatrix(M));
@@ -66,7 +66,7 @@ void TestMatrixOperator::testCallAdjoint() {
     _ASSERT_OK(y = T->call(x));
     _ASSERT_OK(z = T->callAdjoint(x));
     _ASSERT_NOT(y == z);
-    
+
     delete T;
 }
 

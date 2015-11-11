@@ -27,19 +27,19 @@ OpAdjoint::OpAdjoint(LinearOperator& op) : LinearOperator(), m_originalOperator(
 OpAdjoint::~OpAdjoint() {
 }
 
-Matrix OpAdjoint::call(Matrix& x) {
-    return m_originalOperator.callAdjoint(x);
+int OpAdjoint::call(Matrix& y, double alpha, Matrix& x, double gamma) {
+    return m_originalOperator.callAdjoint(y, alpha, x, gamma);
 }
 
-Matrix OpAdjoint::callAdjoint(Matrix& x) {
-    return m_originalOperator.call(x);
+int OpAdjoint::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
+    return m_originalOperator.call(y, alpha, x, gamma);
 }
 
 std::pair<size_t, size_t> OpAdjoint::dimensionIn() {
     return m_originalOperator.dimensionOut();
 }
 
-std::pair<size_t, size_t> OpAdjoint::dimensionOut() {    
+std::pair<size_t, size_t> OpAdjoint::dimensionOut() {
     return m_originalOperator.dimensionIn();
 }
 

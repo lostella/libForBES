@@ -70,13 +70,13 @@ void TestOpComposition::testCall() {
     G = new OpComposition(*T1, *T2);
 
     _ASSERT_EQ(p, T1->dimensionOut().first);
-    _ASSERT_EQ(static_cast<size_t>(1), T1->dimensionOut().second);
-    
+    _ASSERT_EQ(static_cast<size_t> (1), T1->dimensionOut().second);
+
     _ASSERT_EQ(p, G->dimensionOut().first);
-    _ASSERT_EQ(static_cast<size_t>(1), G->dimensionOut().second);
-    
+    _ASSERT_EQ(static_cast<size_t> (1), G->dimensionOut().second);
+
     _ASSERT_EQ(m, G->dimensionIn().first);
-    _ASSERT_EQ(static_cast<size_t>(1), G->dimensionIn().second);
+    _ASSERT_EQ(static_cast<size_t> (1), G->dimensionIn().second);
 
     x = MatrixFactory::MakeRandomMatrix(m, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
 

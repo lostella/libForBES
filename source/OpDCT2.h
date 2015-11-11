@@ -50,15 +50,19 @@
  */
 class OpDCT2 : public LinearOperator {
 public:
+    
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
+    
     OpDCT2();
 
     explicit OpDCT2(size_t n);
 
     virtual ~OpDCT2();
 
-    virtual Matrix call(Matrix& x);
-
-    virtual Matrix callAdjoint(Matrix& x);
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
+   
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
 
     virtual std::pair<size_t, size_t> dimensionIn();
 
