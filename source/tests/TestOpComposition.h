@@ -30,6 +30,7 @@ class TestOpComposition : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestOpComposition);
 
     CPPUNIT_TEST(testCall);
+    CPPUNIT_TEST(testCall2);
     CPPUNIT_TEST(testCallAdjoint);
     CPPUNIT_TEST(testDimension);    
 
@@ -43,6 +44,7 @@ public:
 
 private:
     void testCall();
+    void testCall2();
     void testCallAdjoint();
     void testDimension();
 

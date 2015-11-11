@@ -48,20 +48,19 @@
  */
 class OpDCT3 : public LinearOperator {
 public:
+    
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
+    
     OpDCT3();
 
     explicit OpDCT3(size_t m_dimension);
 
     virtual ~OpDCT3();
+    
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
 
-    /**
-     * Returns the value of DCT-III at a given vector x.
-     * @param x input vector x
-     * @return 
-     */
-    virtual Matrix call(Matrix& x);
-
-    virtual Matrix callAdjoint(Matrix& x);
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
 
     virtual std::pair<size_t, size_t> dimensionIn();
 

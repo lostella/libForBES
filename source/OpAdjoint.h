@@ -34,14 +34,17 @@
  */
 class OpAdjoint : public LinearOperator {
 public:
+    
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
 
     explicit OpAdjoint(LinearOperator& op);
 
     virtual ~OpAdjoint();
 
-    virtual Matrix call(Matrix& x);
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
 
-    virtual Matrix callAdjoint(Matrix& x);
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
 
     virtual std::pair<size_t, size_t> dimensionIn();
 

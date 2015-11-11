@@ -19,6 +19,7 @@
  */
 
 #include "OpReverseVector.h"
+#include <limits>
 
 OpReverseVector::OpReverseVector() {
     m_vectorDim = 0;
@@ -31,19 +32,36 @@ OpReverseVector::OpReverseVector(size_t n) {
     this->m_vectorDim = n;
 }
 
-Matrix OpReverseVector::call(Matrix& x) {
-    Matrix y(x);
-    for (size_t i = 0; i < y.length() / 2; ++i) {
-        double temp;
-        temp = y.get(y.length() - i - 1, 0);
-        y.set(y.length() - i - 1, 0, y.get(i, 0));
-        y.set(i, 0, temp);
+int OpReverseVector::call(Matrix& y, double alpha, Matrix& x, double gamma) {
+    if (y.getNrows() == 0) {
+        y = Matrix(x.getNrows(), 1);
     }
-    return y;
+    bool is_gamma_zero = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
+    size_t n = x.length();
+    for (size_t i = 0; i < n / 2; ++i) {
+        double temp;
+        temp = x.get(n - i - 1, 0);
+        if (is_gamma_zero) {
+            y.set(n - i - 1, 0, alpha * x.get(i, 0));
+            y.set(i, 0, alpha * temp);
+        } else {
+            y.set(n - i - 1, 0, gamma * y.get(n - i - 1, 0) + alpha * x.get(i, 0));
+            y.set(i, 0, gamma * y.get(i, 0) + alpha * temp);
+        }
+    }
+    if (n % 2 == 1) {
+        size_t middle_idx = n / 2;
+        if (is_gamma_zero) {
+            y.set(middle_idx, 0, alpha * x.get(middle_idx, 0));
+        } else {
+            y.set(middle_idx, 0, gamma * y.get(middle_idx, 0) + alpha * x.get(middle_idx, 0));
+        }
+    }
+    return ForBESUtils::STATUS_OK;
 }
 
-Matrix OpReverseVector::callAdjoint(Matrix& x) {
-    return call(x);
+int OpReverseVector::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
+    return call(y, alpha, x, gamma);
 }
 
 std::pair<size_t, size_t> OpReverseVector::dimensionIn() {

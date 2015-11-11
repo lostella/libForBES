@@ -36,17 +36,17 @@ void TestOpReverseVector::tearDown() {
 }
 
 void TestOpReverseVector::testCall() {
-    size_t n = 50;
-    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
-    Matrix y(x);
-    LinearOperator *op = new OpReverseVector(n);
-    _ASSERT_EQ(n, op->dimensionIn().first);
-    _ASSERT_EQ(n, op->dimensionOut().first);
-    Matrix xrev = op -> call(x);
-    for (size_t i = 0; i < n; i++) {
-        _ASSERT_EQ(y.get(i, 0), xrev.get(n - i - 1, 0));
+    for (size_t n = 5; n < 15; n++) {
+        Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+        Matrix y(x);
+        OpReverseVector op(n);
+        _ASSERT_EQ(n, op.dimensionIn().first);
+        _ASSERT_EQ(n, op.dimensionOut().first);
+        Matrix xrev = op.call(x);
+        for (size_t i = 0; i < n; i++) {
+            _ASSERT_EQ(y.get(i, 0), xrev.get(n - i - 1, 0));
+        }
     }
-    delete op;
 }
 
 void TestOpReverseVector::testCallNotFixedSize() {

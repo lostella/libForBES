@@ -23,9 +23,6 @@
 OpSum::OpSum() {
 }
 
-OpSum::OpSum(const OpSum& orig) {
-}
-
 OpSum::~OpSum() {
 }
 

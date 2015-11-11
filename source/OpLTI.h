@@ -34,6 +34,9 @@
  */
 class OpLTI : public LinearOperator {
 public:
+    
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
 
     OpLTI(Matrix& A, Matrix& B);
 

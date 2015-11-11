@@ -903,9 +903,9 @@ void Matrix::_createTriplet() {
 }
 
 bool Matrix::isSymmetric() const {
-    return (Matrix::MATRIX_SYMMETRIC == m_type)
-            || (m_triplet != NULL && m_triplet->stype != 0)
-            || (Matrix::MATRIX_DIAGONAL == m_type);
+    return (m_nrows == m_ncols) && ((Matrix::MATRIX_SYMMETRIC == m_type)
+            || (Matrix::MATRIX_SPARSE == m_type && m_triplet != NULL && m_triplet->stype != 0)
+            || (Matrix::MATRIX_DIAGONAL == m_type));
 }
 
 Matrix& operator*=(Matrix& obj, double alpha) {
@@ -1592,40 +1592,40 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
         // RHS is dense
         //                Matrix result(A.getNrows(), B..getNcols());
 
-//        if (A.m_triplet != NULL && A.m_sparse == NULL)
-//            A._createSparse();
-//
-//        double alpha[2] = {1.0, 0.0};
-//        double beta[2] = {0.0, 0.0};
-//
-//        if (B.m_dense == NULL) { /* Prepare right.m_dense */
-//            B.m_dense = cholmod_allocate_dense(
-//                    B.getNrows(),
-//                    B.getNcols(),
-//                    B.getNrows(),
-//                    CHOLMOD_REAL,
-//                    Matrix::cholmod_handle());
-//
-//            if (!B.m_transpose) {
-//                B.m_dense->x = B.m_data;
-//            } else {
-//                /* Store RHS as transpose into right.m_dense */
-//                for (size_t i = 0; i < B.getNrows(); i++) { /* SPARSE x DENSE' */
-//                    for (size_t j = 0; j < B.getNcols(); j++) {
-//                        (static_cast<double*> (B.m_dense->x))[i + j * B.getNrows()] = B.get(i, j);
-//                    }
-//                }
-//            }
-//        }
-//
-//        bool dotProd = isColumnVector() && B.isColumnVector();
-//        C.m_dense = cholmod_allocate_dense(
-//                dotProd ? 1 : B.getNrows(),
-//                dotProd ? 1 : B.getNcols(),
-//                dotProd ? 1 : B.getNrows(),
-//                CHOLMOD_REAL,
-//                Matrix::cholmod_handle());
-        
+        //        if (A.m_triplet != NULL && A.m_sparse == NULL)
+        //            A._createSparse();
+        //
+        //        double alpha[2] = {1.0, 0.0};
+        //        double beta[2] = {0.0, 0.0};
+        //
+        //        if (B.m_dense == NULL) { /* Prepare right.m_dense */
+        //            B.m_dense = cholmod_allocate_dense(
+        //                    B.getNrows(),
+        //                    B.getNcols(),
+        //                    B.getNrows(),
+        //                    CHOLMOD_REAL,
+        //                    Matrix::cholmod_handle());
+        //
+        //            if (!B.m_transpose) {
+        //                B.m_dense->x = B.m_data;
+        //            } else {
+        //                /* Store RHS as transpose into right.m_dense */
+        //                for (size_t i = 0; i < B.getNrows(); i++) { /* SPARSE x DENSE' */
+        //                    for (size_t j = 0; j < B.getNcols(); j++) {
+        //                        (static_cast<double*> (B.m_dense->x))[i + j * B.getNrows()] = B.get(i, j);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //
+        //        bool dotProd = isColumnVector() && B.isColumnVector();
+        //        C.m_dense = cholmod_allocate_dense(
+        //                dotProd ? 1 : B.getNrows(),
+        //                dotProd ? 1 : B.getNcols(),
+        //                dotProd ? 1 : B.getNrows(),
+        //                CHOLMOD_REAL,
+        //                Matrix::cholmod_handle());
+
         //        if (m_transpose) {
         //            this->transpose();
         //        }
@@ -1644,7 +1644,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
         //        for (size_t k = 0; k < result.length(); k++) {
         //            result.m_data[k] = (static_cast<double*> (result.m_dense->x))[k];
         //        }
-        
+
 
     } else if (B.m_type == MATRIX_DIAGONAL) { // += alpha * SPARSE * DIAGONAL
         Matrix A_temp(A); //  Compute A_temp = A * alpha;

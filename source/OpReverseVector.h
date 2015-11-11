@@ -37,16 +37,19 @@
  */
 class OpReverseVector : public LinearOperator {
 public:
+    
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
+    
     OpReverseVector();
 
     explicit OpReverseVector(size_t n);
 
     virtual ~OpReverseVector();
 
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
 
-    virtual Matrix call(Matrix& x);
-
-    virtual Matrix callAdjoint(Matrix& x);
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
 
     virtual std::pair<size_t, size_t> dimensionIn();
 

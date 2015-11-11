@@ -52,12 +52,27 @@ class LinearOperator {
 public:
 
     /**
-     * Computes the value of the operator at a vector or matrix <code>x</code>.
+     * Computes the value of the operator at a vector or matrix <code>x</code>
+     * and updates <code>y</code> according to 
+     * 
+     * \f[
+     *  y \leftarrow \gamma y + \alpha T(x),
+     * \f]
+     * 
+     * where \f$\alpha\f$ and \f$\gamma\f$ are given constants.
+     * 
      * @param x vector or matrix where the operator should be calculated
-     * @return Value <code>T(x)</code>
+     * @param y vector or matrix to be updated (see above)
+     * @prarm alpha scalar \f$\alpha\f$
+     * @prarm gamma scalar \f$\gamma\f$
+     * @return status code
      * 
      */
-    virtual Matrix call(Matrix& x) = 0;
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma) = 0;
+    
+    virtual Matrix call(Matrix& x);
+    
+    virtual Matrix callAdjoint(Matrix& x);
     
     /**
      * Calls the adjoint of this operator. 
@@ -73,10 +88,23 @@ public:
      * and \f$y\in\mathbb{R}^m\f$ it is \f$\langle y, Mx \rangle = y'Mx = (M'y)'x = \langle M'y, x \rangle = 
      * \langle M^*(y), x \rangle\f$.    
      * 
+     * This method updates a given vector or matrix \f$y\f$ as
+     * 
+     * \f[
+     * y\leftarrow \gamma y + \alpha T^*(x),
+     * \f]
+     * 
+     * where \f$\alpha\f$ and \f$\gamma\f$ are given constant scalars.
+     * 
      * @param x Vector or matrix <code>x</code>
-     * @return The result \f$T^*(x)\f$
+     * @param y vector or matrix to be updated (see above)
+     * @prarm alpha scalar \f$\alpha\f$
+     * @prarm gamma scalar \f$\gamma\f$
+     * @return status code
      */
-    virtual Matrix callAdjoint(Matrix& x) = 0;
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) = 0;
+    
+    
     
     /**
      * Whether this operator is self-adjoint.

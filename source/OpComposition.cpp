@@ -30,9 +30,19 @@ OpComposition::OpComposition(LinearOperator& A, LinearOperator& B) : LinearOpera
 OpComposition::~OpComposition() {
 }
 
-Matrix OpComposition::call(Matrix& x) {
-    Matrix y = m_B.call(x);   // y = B(x)
-    return m_A.call(y);       // z = A(y)
+int OpComposition::call(Matrix& y, double alpha, Matrix& x, double gamma) {
+    Matrix t(m_B.dimensionOut().first, m_B.dimensionOut().second);
+    int status = m_B.call(t, 1.0, x, 0.0); // t = B(x)
+    if (ForBESUtils::is_status_error(status)) {
+        return status;
+    }
+    status = std::max(status, m_A.call(y, alpha, t, gamma));
+    return status;
+}
+
+int OpComposition::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
+    Matrix t = m_A.callAdjoint(x);            
+    return m_B.callAdjoint(y, alpha, t, gamma);
 }
 
 std::pair<size_t, size_t> OpComposition::dimensionIn() {
@@ -47,12 +57,4 @@ bool OpComposition::isSelfAdjoint() {
     return m_A.isSelfAdjoint() && m_B.isSelfAdjoint();
 }
 
-Matrix OpComposition::callAdjoint(Matrix& x) {
-    /*
-     * T(x) = A(B(x))
-     * so
-     * T*(x) = B*(A*(x)) = B*(y), where y = A*(x)
-     */
-    Matrix y = m_A.callAdjoint(x); // y = A*(x)
-    return m_B.callAdjoint(y);     // z = B*(y)
-}
+

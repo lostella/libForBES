@@ -26,3 +26,18 @@ LinearOperator::LinearOperator() {
 LinearOperator::~LinearOperator() {
 }
 
+Matrix LinearOperator::call(Matrix& x) {
+    Matrix y(dimensionOut().first, dimensionOut().second);
+    const double gamma = 0.0;
+    const double alpha = 1.0;
+    ForBESUtils::fail_on_error(call(y, alpha, x, gamma));
+    return y;
+}
+
+Matrix LinearOperator::callAdjoint(Matrix& x) {
+    Matrix y_star(dimensionIn().first, dimensionIn().second);
+    const double gamma = 0.0;
+    const double alpha = 1.0;
+    ForBESUtils::fail_on_error(callAdjoint(y_star, alpha, x, gamma));
+    return y_star;
+}

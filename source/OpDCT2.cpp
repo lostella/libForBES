@@ -30,9 +30,8 @@ OpDCT2::OpDCT2(size_t n) : m_dimension(_VECTOR_OP_DIM(n)) {
 OpDCT2::~OpDCT2() {
 }
 
-Matrix OpDCT2::call(Matrix& x) {
+int OpDCT2::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     size_t n = x.getNrows();
-    Matrix Y(n, 1);
     for (size_t k = 0; k < n; k++) {
         double yk = 0.0;
         double aik;
@@ -40,14 +39,13 @@ Matrix OpDCT2::call(Matrix& x) {
             aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
             yk += x.get(i, 0) * aik;
         }
-        Y.set(k, 0, yk);
+        y.set(k, 0, gamma * y.get(k, 0) + alpha * yk);
     }
-    return Y;
+    return ForBESUtils::STATUS_OK;
 }
 
-Matrix OpDCT2::callAdjoint(Matrix& x) {
+int OpDCT2::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
     size_t n = x.getNrows();
-    Matrix Yadj(n, 1);
     for (size_t k = 0; k < n; k++) {
         double v = 0.0;
         double aki;
@@ -55,9 +53,9 @@ Matrix OpDCT2::callAdjoint(Matrix& x) {
             aki = std::cos(M_PI * (static_cast<double> (k) + 0.5) * static_cast<double> (i) / static_cast<double> (n));
             v += x.get(i, 0) * aki;
         }
-        Yadj.set(k,0,v);
+        y.set(k, 0, gamma * y.get(k, 0) + alpha * v);
     }
-    return Yadj;
+    return ForBESUtils::STATUS_OK;
 }
 
 std::pair<size_t, size_t> OpDCT2::dimensionIn() {

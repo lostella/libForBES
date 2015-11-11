@@ -37,17 +37,20 @@
 class MatrixOperator : public LinearOperator {
 public:
 
+    using LinearOperator::call;
+    using LinearOperator::callAdjoint;
+
     explicit MatrixOperator(Matrix& A);
-    
+
     Matrix& GetMatrix() const;
 
     void SetMatrix(Matrix& A);
 
     virtual bool isSelfAdjoint();
 
-    virtual Matrix call(Matrix& x);
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
 
-    virtual Matrix callAdjoint(Matrix& x);
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
 
     virtual std::pair<size_t, size_t> dimensionIn();
 
