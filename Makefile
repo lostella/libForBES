@@ -48,8 +48,8 @@ endif
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
 CFLAGS_ADDITIONAL = -O0
-CFLAGS_ADDITIONAL += -fprofile-arcs
-CFLAGS_ADDITIONAL += -ftest-coverage
+#CFLAGS_ADDITIONAL += -fprofile-arcs
+#CFLAGS_ADDITIONAL += -ftest-coverage
 
 CFLAGS_WARNINGS = \
 	-pedantic \
@@ -82,7 +82,7 @@ CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 
 # Additional link flags
 # To create a test coverage report add: -fprofile-arcs
-LFLAGS_ADDITIONAL = -fprofile-arcs
+#LFLAGS_ADDITIONAL = -fprofile-arcs
 
 OBJ_DIR = build/Debug
 BIN_DIR = dist/Debug
@@ -134,54 +134,63 @@ LFLAGS = \
 	-L$(SS_DIR)/LDL/Lib \
 	-L$(LEXTRA)
 
-SOURCES = \
-	CGSolver.cpp \
+# LINEAR OPERATORS
+SOURCES = LinearOperator.cpp \
+	MatrixOperator.cpp \
+	OpAdjoint.cpp \
+	OpComposition.cpp \
+	OpDCT2.cpp \
+	OpDCT3.cpp \
+	OpReverseVector.cpp \
+	OpGradient.cpp
+		
+	
+# SOLVERS FOR LINEAR SYTEMS Ax=b AND T(x) = b
+SOURCES += CGSolver.cpp \
 	LinOpSolver.cpp \
 	MatrixSolver.cpp \
 	LinSysSolver.cpp \
 	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
 	FactoredSolver.cpp \
-	ForBESUtils.cpp \
-	Function.cpp \
+	LDLFactorization.cpp
+
+# FORBES UTILITIES	
+SOURCES += ForBESUtils.cpp \
+	FunctionOntologicalClass.cpp \
+	FunctionOntologyRegistry.cpp
+
+
+# MATRIX & MATRIX UTILITIES
+SOURCES += Matrix.cpp \
+	MatrixWriter.cpp \
+	MatrixFactory.cpp
+
+# FUNCTIONS
+SOURCES += Function.cpp \
 	IndBox.cpp \
 	IndSOC.cpp \
 	IndPos.cpp \
-	LDLFactorization.cpp \
-	LinearOperator.cpp \
-	Matrix.cpp \
-	MatrixFactory.cpp \
-	MatrixOperator.cpp \
-	MatrixWriter.cpp \
-	OpAdjoint.cpp \
-	OpComposition.cpp \
-	OpDCT2.cpp \
-	OpDCT3.cpp \
-	OpGradient.cpp \
-	OpGradient2D.cpp \
-	OpLinearCombination.cpp \
-	OpReverseVector.cpp \
-	OpSum.cpp \
 	QuadOverAffine.cpp \
 	QuadraticOperator.cpp \
 	Quadratic.cpp \
-	FunctionOntologicalClass.cpp \
-	FunctionOntologyRegistry.cpp \
 	DistanceToBox.cpp \
 	ElasticNet.cpp \
 	LogLogisticLoss.cpp \
 	QuadraticLoss.cpp \
 	HingeLoss.cpp \
 	HuberLoss.cpp \
+	ConjugateFunction.cpp \
 	Norm.cpp \
 	Norm1.cpp \
 	Norm2.cpp \
 	SeparableSum.cpp \
 	IndBall2.cpp \
 	QuadraticLossOverAffine.cpp \
-	SumOfNorm2.cpp \
-	ConjugateFunction.cpp \
-	FBProblem.cpp \
+	SumOfNorm2.cpp
+	
+# CORE
+SOURCES += FBProblem.cpp \
 	FBCache.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
@@ -266,8 +275,8 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOpComposition
 	${BIN_TEST_DIR}/TestOpDCT2
 	${BIN_TEST_DIR}/TestOpDCT3
+	${BIN_TEST_DIR}/TestOpReverseVector	
 	${BIN_TEST_DIR}/TestOpGradient
-	${BIN_TEST_DIR}/TestOpReverseVector
 	@echo "\n*** ALGORITHMS ***"
 	${BIN_TEST_DIR}/TestFBCache
 
@@ -327,3 +336,4 @@ docs:
 .SECONDARY:
 
 .PHONY: clean
+
