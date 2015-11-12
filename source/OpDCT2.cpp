@@ -35,8 +35,8 @@ int OpDCT2::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     size_t n = x.getNrows();
     for (size_t k = 0; k < n; k++) {
         double yk = 0.0;
-        double aik;
         for (size_t i = 0; i < n; i++) {
+            double aik;
             aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
             yk += x.get(i, 0) * aik;
         }
@@ -49,8 +49,8 @@ int OpDCT2::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
     size_t n = x.getNrows();
     for (size_t k = 0; k < n; k++) {
         double v = 0.0;
-        double aki;
         for (size_t i = 0; i < n; i++) {
+            double aki;
             aki = std::cos(M_PI * (static_cast<double> (k) + 0.5) * static_cast<double> (i) / static_cast<double> (n));
             v += x.get(i, 0) * aki;
         }

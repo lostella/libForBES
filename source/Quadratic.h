@@ -154,6 +154,7 @@ private:
     FactoredSolver *m_solver;     /**< Cholesky factor L */
     bool m_is_Q_eye;              /**< TRUE if Q is the identity matrix */
     bool m_is_q_zero;             /**< TRUE is q is the zero vector */
+    bool m_delete_Q;              /**< Whether to delete Q in the destructor */
 
     /**
      * Computes the gradient of this function at a given vector x. 

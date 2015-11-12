@@ -78,7 +78,8 @@ int QuadraticLoss::call(Matrix& x, double& f) {
 int QuadraticLoss::call(Matrix& x, double& f, Matrix& grad) {
     f = 0.0;
     for (size_t j = 0; j < x.getNrows(); j++) {
-        double fi, gi, w;
+        double fi;
+        double gi;
         fi = x.get(j, 0);
         if (!m_is_zero_p) {
             fi -= m_p->get(j, 0);
@@ -86,7 +87,7 @@ int QuadraticLoss::call(Matrix& x, double& f, Matrix& grad) {
         gi = fi;
         fi *= fi;
         if (!m_is_uniform_weights) {
-        	w = m_w->get(j, 0);
+            double w = m_w->get(j, 0);
             fi *= w;
             gi *= w;
         }
