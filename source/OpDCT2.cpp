@@ -19,6 +19,7 @@
  */
 
 #include "OpDCT2.h"
+#include <cmath>
 
 OpDCT2::OpDCT2() : LinearOperator(), m_dimension(_EMPTY_OP_DIM) {
 

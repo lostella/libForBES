@@ -38,14 +38,14 @@ public:
     using LinearOperator::call;
     using LinearOperator::callAdjoint;
 
-    OpLTI(Matrix& A, Matrix& B);
+    OpLTI(Matrix& A, Matrix& B, size_t N_horizon);
 
     virtual ~OpLTI();
 
-    virtual Matrix call(Matrix& u);
+    virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
 
-    virtual Matrix callAdjoint(Matrix& x);
-
+    virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma);
+    
     virtual std::pair<size_t, size_t> dimensionIn();
 
     virtual std::pair<size_t, size_t> dimensionOut();
@@ -54,8 +54,9 @@ public:
 
 private:
 
-    Matrix & A;
-    Matrix & B;
+    Matrix & m_A;
+    Matrix & m_B;
+    size_t m_N;
 
 };
 

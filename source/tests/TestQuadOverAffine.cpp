@@ -8,7 +8,7 @@
 #include "TestQuadOverAffine.h"
 #include "MatrixFactory.h"
 #include "QuadOverAffine.h"
-
+#include <cmath>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestQuadOverAffine);
 

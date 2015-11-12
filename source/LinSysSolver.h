@@ -23,6 +23,7 @@
 
 #include "Matrix.h"
 #include "LinearOperator.h"
+#include "MatrixFactory.h"
 
 /**
  * \class LinSysSolver

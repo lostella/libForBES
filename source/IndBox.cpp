@@ -18,9 +18,10 @@
  * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 
 #include "IndBox.h"
+#include <cmath>
+#include <assert.h>
 
 IndBox::IndBox(double& uniform_lb, double& uniform_ub) : Function() {
     m_uniform_lb = &uniform_lb;

@@ -28,47 +28,32 @@
 #include <map>
 
 #include "ForBES.h"
-#include "FunctionOntologyRegistry.h"
-#include "LogLogisticLoss.h"
-#include "Norm1.h"
-#include "S_LDLFactorization.h"
-#include "ConjugateFunction.h"
+#include "CGSolver.h"
 
 
 using namespace std;
 
 #define N 3
 
+void f11();
+
+void f11() {
+    Matrix::destroy_handle();
+    std::cout << "bye!";
+}
+
 int main(int argc, char** argv) {
 
-    Matrix b = MatrixFactory::MakeRandomMatrix(5, 1, -1.0, 2.0);
-    for (size_t i = 0; i < 5; i++) {
-        b.set(i, 0, 0.9 * i + 1.0);
-    }
+    double z_data[10] = {1.050000000000000, 1.070000000000000,1.090000000000000,1.110000000000000,1.130000000000000,1.150000000000000,1.170000000000000,1.190000000000000,1.210000000000000,1.230000000000000};
+    Matrix z(10,1,z_data);
+    OpDCT2 T(10);
+    
+    Matrix r = T.callAdjoint(z);
+    std::cout << r;
 
 
-    Function * f = new HingeLoss(b);
-    Function * f_conj = new ConjugateFunction(*f);
 
-    Matrix x = MatrixFactory::MakeRandomMatrix(5, 1, -1.0, 2.0);
-    for (size_t i = 0; i < 5; i++) {
-        x.set(i, 0, 0.1 * i + 0.08);
-    }
 
-    std::cout << x;
-
-    Matrix prox(5, 1);
-    f->callProx(x, 0.5, prox);
-
-    std::cout << prox;
-    prox = Matrix(5, 1);
-
-    f_conj ->callProx(x, 0.5, prox);
-    std::cout << prox;
-
-    delete f;
-    delete f_conj;
-
-    return (0);
+    return EXIT_SUCCESS;
 }
 

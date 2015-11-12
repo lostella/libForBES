@@ -20,7 +20,7 @@
 
 #include "TestConjugateFunction.h"
 #include "ConjugateFunction.h"
-
+#include <cmath>
 
 #define FORBES_TEST_UTILS
 #include "ForBES.h"

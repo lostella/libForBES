@@ -6,7 +6,7 @@
  */
 
 #include <math.h>
-
+#include <cmath>
 #include "TestIndSOC.h"
 #include "Matrix.h"
 #include "MatrixFactory.h"

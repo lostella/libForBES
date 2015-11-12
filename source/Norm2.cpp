@@ -19,6 +19,7 @@
  */
 
 #include "Norm2.h"
+#include <cmath>
 
 double vecNorm2(Matrix& x);
 

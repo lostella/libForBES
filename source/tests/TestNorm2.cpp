@@ -21,7 +21,7 @@
 #include "TestNorm2.h"
 #include "Norm2.h"
 #include <iostream>
-
+#include <cmath>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestNorm2);
 

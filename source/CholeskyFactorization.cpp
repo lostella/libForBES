@@ -19,7 +19,6 @@
  */
 
 #include "CholeskyFactorization.h"
-#include "ForBESUtils.h"
 
 CholeskyFactorization::CholeskyFactorization(Matrix& matrix) :
 FactoredSolver(matrix) {

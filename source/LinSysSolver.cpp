@@ -19,7 +19,6 @@
  */
 
 #include "LinSysSolver.h"
-#include "MatrixFactory.h"
 
 LinSysSolver::LinSysSolver() {    
    

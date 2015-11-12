@@ -19,6 +19,7 @@
  */
 
 #include "DistanceToBox.h"
+#include <cmath>
 
 void checkBounds(const Matrix* lb, const Matrix* ub);
 

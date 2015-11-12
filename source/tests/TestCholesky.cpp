@@ -19,7 +19,7 @@
  */
 
 #include "TestCholesky.h"
-
+#include <cmath>
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestCholesky);

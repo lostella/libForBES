@@ -19,6 +19,7 @@
  */
 
 #include "LogLogisticLoss.h"
+#include <cmath>
 
 LogLogisticLoss::LogLogisticLoss() {
     m_mu = 1.0;

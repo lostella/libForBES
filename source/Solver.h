@@ -33,7 +33,7 @@ protected:
 
   FBProblem prob;
 
-  FBSolver(FBProblem & prob) : this->prob(prob) {}
+  FBSolver(FBProblem & prob) : prob(prob) {}
 
   virtual ~FBSolver() {}
 

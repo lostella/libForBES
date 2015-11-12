@@ -19,7 +19,6 @@
  */
 
 #include "FunctionOntologicalClass.h"
-#include "FunctionOntologyRegistry.h"
 
 FunctionOntologicalClass::FunctionOntologicalClass(
         bool does_define_conjugate,
@@ -29,7 +28,7 @@ FunctionOntologicalClass::FunctionOntologicalClass(
         bool does_define_prox,
         bool does_define_hessian,
         bool does_define_hessian_conj,
-        string name,
+        std::string name,
         const FunctionOntologicalClass& super) :
 m_name(name),
 m_defines_f(does_define_f),
@@ -45,7 +44,7 @@ m_defines_hessian_conj(does_define_hessian_conj) {
 FunctionOntologicalClass::~FunctionOntologicalClass() {
 }
 
-FunctionOntologicalClass::FunctionOntologicalClass(string name) : m_name(name) {
+FunctionOntologicalClass::FunctionOntologicalClass(std::string name) : m_name(name) {
     m_defines_f = false;
     m_defines_grad = false;
     m_defines_prox = false;
@@ -66,11 +65,11 @@ std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) 
     os << " * hess[f*]()       : " << (obj.m_defines_hessian_conj ? "YES" : "NO") << "\n";
     os << " * prox(gamma*f)()  : " << (obj.m_defines_prox ? "YES" : "NO") << "\n";
     os << "Super-classes... \n";
-    list<FunctionOntologicalClass> li = obj.superClasses;
+    std::list<FunctionOntologicalClass> li = obj.superClasses;
     size_t i = 1;
-    for (list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); ++it) {
+    for (std::list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); ++it) {
         FunctionOntologicalClass entry = *it;
-        cout << " " << i << ". " << FunctionOntologyRegistry::nameSpace() << ":" << entry.getName() << "\n";
+        std::cout << " " << i << entry.getName() << "\n";
         i++;
     }
     return os;
@@ -97,7 +96,7 @@ bool FunctionOntologicalClass::defines_prox() const {
     return m_defines_prox;
 }
 
-list<FunctionOntologicalClass> FunctionOntologicalClass::getSuperclasses() const {
+std::list<FunctionOntologicalClass> FunctionOntologicalClass::getSuperclasses() const {
     return superClasses;
 }
 
@@ -137,7 +136,7 @@ void FunctionOntologicalClass::set_defines_hessian_conj(bool define_hessian_conj
     m_defines_hessian_conj = define_hessian_conj;
 }
 
-string FunctionOntologicalClass::getName() const {
+std::string FunctionOntologicalClass::getName() const {
     return this -> m_name;
 }
 

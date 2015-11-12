@@ -19,6 +19,8 @@
  */
 
 #include "OpDCT3.h"
+#include <cmath>
+#include <limits>
 
 OpDCT3::OpDCT3(size_t dimension) :
 LinearOperator(),

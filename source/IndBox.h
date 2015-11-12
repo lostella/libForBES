@@ -23,6 +23,7 @@
 
 #include "Matrix.h"
 #include "Function.h"
+#include <algorithm>
 
 /**
  * \class IndBox

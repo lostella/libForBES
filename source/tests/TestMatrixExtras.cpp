@@ -21,7 +21,7 @@
 #include "TestMatrixExtras.h"
 #include "MatrixFactory.h"
 #include "ForBES.h"
-
+#include <cmath>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestMatrixExtras);
 

@@ -22,6 +22,8 @@
 #define	LDLFACTORIZATION_AAT_H
 
 #include "FactoredSolver.h"
+#include "ForBESUtils.h"
+#include "LDLFactorization.h"
 
 #define __FCT_MISS_EXCPT "[factorization_missing] It seems #factorize has not been invoked, or it failed"
 

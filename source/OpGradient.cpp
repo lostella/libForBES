@@ -19,6 +19,7 @@
  */
 
 #include "OpGradient.h"
+#include <sstream>
 
 void call_1d(Matrix & Tx, Matrix& x, const size_t n, double alpha);
 void call_1d(Matrix & Tx, Matrix& x, const size_t n, double alpha, double gamma);

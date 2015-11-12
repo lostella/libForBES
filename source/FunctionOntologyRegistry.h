@@ -23,7 +23,7 @@
 
 #include "FunctionOntologicalClass.h"
 #include "Function.h"
-#include <iostream>
+#include <string>
 
 /**
  * 
@@ -32,7 +32,7 @@
 class FunctionOntologyRegistry {
 public:
 
-    static string nameSpace();
+    static std::string nameSpace();
 
     static FunctionOntologicalClass function();
 

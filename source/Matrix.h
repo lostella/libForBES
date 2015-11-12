@@ -22,23 +22,9 @@
 #ifndef MATRIX_H
 #define	MATRIX_H
 
-#include <iostream>
-#include <stdexcept>
-#include <complex>
-#include <cstdlib>
-#include <stdlib.h>
-#include <iomanip>
-#include <cmath>
-#include <cstring>
-#include <assert.h>
 
 #include "cholmod.h"
 #include "ForBESUtils.h"
-
-#ifdef USE_LIBS
-#include <cblas.h>
-#include <lapacke.h>
-#endif
 
 /**
  * \class Matrix

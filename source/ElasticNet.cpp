@@ -19,6 +19,7 @@
  */
 
 #include "ElasticNet.h"
+#include <cmath>
 
 ElasticNet::ElasticNet(double lambda, double mu) : Function(), m_mu(mu), m_lambda(lambda) {
 }

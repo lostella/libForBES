@@ -19,9 +19,7 @@
  */
 
 #include "QuadraticLossOverAffine.h"
-#include "LDLFactorization.h"
-#include "S_LDLFactorization.h"
-#include <iostream>
+#include <cmath>
 
 QuadraticLossOverAffine::QuadraticLossOverAffine(Matrix& A, Matrix& b, Matrix& w, Matrix& p) {
     m_A = &A;

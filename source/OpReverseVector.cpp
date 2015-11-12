@@ -19,7 +19,10 @@
  */
 
 #include "OpReverseVector.h"
+#include <algorithm>
+#include <iterator>
 #include <limits>
+#include <cmath>
 
 OpReverseVector::OpReverseVector() {
     m_vectorDim = 0;

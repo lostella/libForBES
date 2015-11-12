@@ -7,6 +7,7 @@
 
 #include "TestOpDCT3.h"
 #include "OpAdjoint.h"
+#include <cmath>
 
 void testOperatorLinearity(LinearOperator*);
 

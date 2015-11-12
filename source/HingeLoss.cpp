@@ -19,7 +19,6 @@
  */
 
 #include "HingeLoss.h"
-#include <iostream>
 
 HingeLoss::HingeLoss(Matrix& b, double mu) :
 Function(), m_mu(mu) {

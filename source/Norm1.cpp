@@ -19,6 +19,7 @@
  */
 
 #include "Norm1.h"
+#include <cmath>
 
 Norm1::Norm1() : Norm() {
     m_mu = 1.0;

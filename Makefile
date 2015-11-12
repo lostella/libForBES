@@ -142,7 +142,8 @@ SOURCES = LinearOperator.cpp \
 	OpDCT2.cpp \
 	OpDCT3.cpp \
 	OpReverseVector.cpp \
-	OpGradient.cpp
+	OpGradient.cpp \
+	OpLTI.cpp
 		
 	
 # SOLVERS FOR LINEAR SYTEMS Ax=b AND T(x) = b

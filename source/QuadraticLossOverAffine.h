@@ -23,6 +23,8 @@
 
 #include "Function.h"
 #include "FactoredSolver.h"
+#include "LDLFactorization.h"
+#include "S_LDLFactorization.h"
 #include <math.h>
 
 #define __QUADLOSS_AFFINE_EPSILON 1e-6

@@ -11,6 +11,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "MatrixOperator.h"
 #include "MatrixFactory.h"
+#include <math.h>
 
 #define FORBES_TEST_UTILS
 #include "ForBES.h"
@@ -19,6 +20,7 @@ class TestMatrixOperator : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(TestMatrixOperator);
 
     CPPUNIT_TEST(testCall);
+    CPPUNIT_TEST(testCall2);
     CPPUNIT_TEST(testCallAdjoint);
 
     CPPUNIT_TEST_SUITE_END();
@@ -31,6 +33,7 @@ public:
 
 private:
     void testCall();
+    void testCall2();
     void testCallAdjoint();
     
 };

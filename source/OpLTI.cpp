@@ -19,39 +19,69 @@
  */
 
 #include "OpLTI.h"
+#include "MatrixFactory.h"
+#include <sstream>
+#include <iostream>
 
-OpLTI::OpLTI(Matrix& A, Matrix& B) : LinearOperator(), A(A), B(B) {
-    if (A.getNrows() != B.getNrows()){
+
+OpLTI::OpLTI(Matrix& A, Matrix& B, size_t N_horizon) :
+LinearOperator(),
+m_A(A),
+m_B(B),
+m_N(N_horizon) {
+    if (A.getNrows() != A.getNcols()) {
+        throw std::invalid_argument("System matrix A must be square");
+    }
+    if (A.getNrows() != B.getNrows()) {
         throw std::invalid_argument("A and B have incompatible dimensions");
+    }
+    if (N_horizon == 0) {
+        throw std::invalid_argument("N_horizon cannot be zero");
     }
 }
 
 OpLTI::~OpLTI() {
 }
 
-Matrix OpLTI::call(Matrix& u) {
-    size_t n = A.getNrows();
-    size_t m = B.getNcols();
-    
-    if (u.isColumnVector()){
-        
-    } else {
-        
-    }    
-    throw std::logic_error("NIY");
+int OpLTI::call(Matrix& y, double alpha, Matrix& u, double gamma) {
+    // y := gamma * y + alpha * T(u)
+    // T(u) = [x1, x2, ..., xN]
+    if (!u.isColumnVector()) {
+        throw std::invalid_argument("u should be a column vector");
+    }
+    if (u.getNrows() != (m_N - 1) * m_B.getNcols()) {
+        std::ostringstream oss;
+        oss << "u: wrong dimension - should be (N-1)*n_u = "
+                << (m_N - 1) << "*" << m_B.getNcols()
+                << "=" << ((m_N - 1) * m_B.getNcols());
+        throw std::invalid_argument(oss.str().c_str());
+    }
+    size_t n = m_A.getNrows();
+    size_t m = m_B.getNcols();
+    const size_t zero = 0;
+    Matrix y0 = MatrixFactory::ShallowVector(y, n, zero);
+    Matrix u0 = MatrixFactory::ShallowVector(u, m, zero);
+    int status = Matrix::mult(y0, alpha, m_B, u0, gamma);
+    ForBESUtils::fail_on_error(status);
+    std::cout << std::endl;
+    for (size_t i = 1; i < m_N - 1; i++) {
+        Matrix ui = MatrixFactory::ShallowVector(u, m, i * m);
+        std::cout << "u[" << i << "] = " << ui << std::endl;
+    }
+    return ForBESUtils::STATUS_OK;
 }
 
-Matrix OpLTI::callAdjoint(Matrix& x) {
-    throw std::logic_error("NIY");
+int OpLTI::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
 std::pair<size_t, size_t> OpLTI::dimensionIn() {
-    std::pair<size_t, size_t> dims(static_cast<size_t>(0),static_cast<size_t>(1));
+    std::pair<size_t, size_t> dims(static_cast<size_t> (0), static_cast<size_t> (1));
     return dims;
 }
 
 std::pair<size_t, size_t> OpLTI::dimensionOut() {
-    std::pair<size_t, size_t> dims(static_cast<size_t>(0),static_cast<size_t>(1));
+    std::pair<size_t, size_t> dims(static_cast<size_t> (0), static_cast<size_t> (1));
     return dims;
 }
 

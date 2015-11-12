@@ -7,7 +7,7 @@
 
 #include "TestOpGradient.h"
 #include "OpAdjoint.h"
-
+#include <cmath>
 
 void testOperatorLinearity(LinearOperator* op);
 

@@ -19,10 +19,21 @@
  */
 
 #include "Matrix.h"
-#include "MatrixFactory.h"
-#include "ForBESUtils.h"
+#include <iostream>
+#include <stdexcept>
+#include <complex>
+#include <cstdlib>
+#include <stdlib.h>
+#include <iomanip>
+#include <cmath>
+#include <cstring>
 #include <assert.h>
 #include <limits>
+
+#ifdef USE_LIBS
+#include <cblas.h>
+#include <lapacke.h>
+#endif
 
 /* STATIC MEMBERS */
 

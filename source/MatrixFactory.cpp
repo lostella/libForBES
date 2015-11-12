@@ -23,6 +23,14 @@
 #include "MatrixFactory.h"
 #include "Matrix.h"
 
+#include <vector>       // std::vector
+#include <algorithm>    // std::random_shuffle
+#include <ctime>        // std::time
+#include <functional>
+
+#include <cmath>
+#include <sstream>
+
 typedef std::pair<size_t, size_t> nice_pair;
 
 Matrix MatrixFactory::MakeIdentity(size_t n, double alpha) {

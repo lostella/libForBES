@@ -6,7 +6,7 @@
  */
 
 #include "TestLDL.h"
-
+#include <cmath>
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLDL);

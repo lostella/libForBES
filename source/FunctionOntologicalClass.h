@@ -39,7 +39,7 @@ public:
      * Creates a new ontological class given its name/unique identifier.
      * @param name Name of the ontological class.
      */
-    explicit FunctionOntologicalClass(string name);
+    explicit FunctionOntologicalClass(std::string name);
 
     FunctionOntologicalClass(
             bool does_define_conjugate,
@@ -49,7 +49,7 @@ public:
             bool does_define_prox,
             bool does_define_hessian,
             bool does_define_hessian_conj,
-            string name,
+            std::string name,
             const FunctionOntologicalClass& super);
 
     /**
@@ -62,7 +62,7 @@ public:
      * 
      * @return Unique name/identifier as a string
      */
-    string getName() const;
+    std::string getName() const;
 
     /** 
      * Whether this function type defines f(x).
@@ -106,7 +106,7 @@ public:
      */
     bool defines_hessian_conj() const;
 
-    list<FunctionOntologicalClass> getSuperclasses() const;
+    std::list<FunctionOntologicalClass> getSuperclasses() const;
 
     friend std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj);
 
@@ -129,7 +129,7 @@ private:
 
     friend class FunctionOntologyRegistry;
 
-    string m_name;                  /**< Identifier of the ontological class (as string)                                */
+    std::string m_name;                  /**< Identifier of the ontological class (as string)                                */
     bool m_defines_f;               /**< Whether this function type defines f(x).                                       */
     bool m_defines_grad;            /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
     bool m_defines_conjugate;       /**< Whether this function type defines a conjugate f*(x)                           */
@@ -138,7 +138,7 @@ private:
     bool m_defines_hessian;         /**< Whether this function defines the Hessian of f                                 */
     bool m_defines_hessian_conj;    /**< Whether this function defines the Hessian of f^*                               */
 
-    list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
+    std::list<FunctionOntologicalClass> superClasses; /**< List of super-classes */
 
 
 

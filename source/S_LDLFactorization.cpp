@@ -19,8 +19,6 @@
  */
 
 #include "S_LDLFactorization.h"
-#include "ForBESUtils.h"
-#include "LDLFactorization.h"
 
 Matrix S_LDLFactorization::multiply_AAtr_betaI(Matrix& A, double beta) {
     size_t n = A.getNrows();

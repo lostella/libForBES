@@ -25,6 +25,11 @@
 #include "LinSysSolver.h"
 #include "MatrixSolver.h"
 
+#ifdef USE_LIBS
+#include <cblas.h>
+#include <lapacke.h>
+#endif
+
 /**
  * \class FactoredSolver
  * \brief An abstract factorization-based solver for linear systems.

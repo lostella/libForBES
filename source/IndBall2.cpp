@@ -19,6 +19,7 @@
  */
 
 #include "IndBall2.h"
+#include <cmath>
 
 void check_rho(double rho);
 

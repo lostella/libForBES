@@ -19,6 +19,7 @@
  */
 
 #include "HuberLoss.h"
+#include <cmath>
 
 HuberLoss::HuberLoss(double delta) :
 Function(), m_delta(delta) {

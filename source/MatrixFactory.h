@@ -22,10 +22,6 @@
 #define	MATRIXFACTORY_H
 
 #include "Matrix.h"
-#include <vector>       // std::vector
-#include <algorithm>    // std::random_shuffle
-#include <ctime>        // std::time
-#include <functional>
 
 /**
  * \class MatrixFactory

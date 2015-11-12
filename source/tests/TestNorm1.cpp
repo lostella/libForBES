@@ -20,7 +20,7 @@
 
 #include "TestNorm1.h"
 #include "Norm1.h"
-
+#include <cmath>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestNorm1);
 

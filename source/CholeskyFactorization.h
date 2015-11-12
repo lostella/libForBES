@@ -22,6 +22,7 @@
 #define	CHOLESKYFACTORIZATION_H
 
 #include "FactoredSolver.h"
+#include "ForBESUtils.h"
 #include <cstring>
 
 /**

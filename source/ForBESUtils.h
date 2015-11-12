@@ -28,6 +28,8 @@
 #define _FORBES_ERROR_MIN 500
 #define _FORBES_ERROR_MAX 1000
 
+#include <stdexcept>
+
 /**
  * \brief ForBES utilities such as status codes.
  */

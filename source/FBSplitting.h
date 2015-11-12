@@ -3,19 +3,22 @@
 
 #include "FBProblem.h"
 #include "Solver.h"
-#include "Solution.h"
+//#include "Solution.h"
 
 class FBSplitting : public FBSolver {
 private:
 
-	Matrix x, z;
-
+    Matrix x, z;
+    double gamma;
 public:
 
-	FBSplitting(FBProblem & prob, Matrix & x0, double gamma) :
-		FBSolver(prob), this->prob(prob), this->x(x0), this.gamma(gamma) {}
+    FBSplitting(FBProblem & prob, Matrix & x0, double gamma) :
+    FBSolver(prob),
+    x(x0),
+    gamma(gamma) {
+    }
 
-	virtual ~FBSplitting();
+    virtual ~FBSplitting();
 
 };
 

@@ -22,8 +22,6 @@
 #define	OPREVERSEVECTOR_H
 
 #include "LinearOperator.h"
-#include <algorithm>
-#include <iterator>
 
 
 /**
