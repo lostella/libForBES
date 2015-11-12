@@ -47,7 +47,6 @@ void TestOpGradient::testCall() {
     }
 
     Matrix Tx = op->call(x);
-    std::cout << "\nInvoking T* on y " << y.getNrows() << "x" << y.getNcols() << "\n";
     Matrix Tstar_y = op->callAdjoint(y);
 
     Matrix err = y * Tx;

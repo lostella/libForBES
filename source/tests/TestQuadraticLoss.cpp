@@ -69,27 +69,31 @@ void TestQuadraticLoss::testCall() {
     Matrix x(n, 1, xdata);
     Matrix grad(n, 1);
 
+    double f0;
     double f;
     const double f_expected = 97.181889336760406;
     const double tol = 1e-8;
     _ASSERT(quadLoss->category().defines_f());
-    int status = quadLoss->call(x, f, grad);
+    int status = quadLoss->call(x, f0, grad);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    status = quadLoss->call(x, f, grad);
+    _ASSERT_EQ(f, f0);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_expected, f, tol);
-    
+
     const double grad_expected_data[n] = {
-    	  -0.500642054839506,
-		   2.168280119185122,
-		   4.596933125463330,
-		   1.938002583347348,
-		   3.608026800264816,
-		  -0.633578881844680,
-		  -0.759156270155760,
-		   4.948013355555519,
-		   1.073783739399957,
-		  10.248257763916156
-	};
-	Matrix grad_expected(n, 1, grad_expected_data);
+        -0.500642054839506,
+        2.168280119185122,
+        4.596933125463330,
+        1.938002583347348,
+        3.608026800264816,
+        -0.633578881844680,
+        -0.759156270155760,
+        4.948013355555519,
+        1.073783739399957,
+        10.248257763916156
+    };
+    Matrix grad_expected(n, 1, grad_expected_data);
 
     _ASSERT_EQ(grad_expected, grad);
 
