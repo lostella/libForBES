@@ -97,6 +97,8 @@ public:
 
 
     virtual int call(Matrix& x, double& f);
+    
+    virtual int call(Matrix& x, double& f, Matrix& grad);
 
     virtual int callConj(Matrix& x, double& f_star);
 

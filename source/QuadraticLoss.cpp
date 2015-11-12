@@ -75,6 +75,31 @@ int QuadraticLoss::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_OK;
 }
 
+int QuadraticLoss::call(Matrix& x, double& f, Matrix& grad) {
+    f = 0.0;
+    for (size_t j = 0; j < x.getNrows(); j++) {
+        double fi, gi, w;
+        fi = x.get(j, 0);
+        if (!m_is_zero_p) {
+            fi -= m_p->get(j, 0);
+        }
+        gi = fi;
+        fi *= fi;
+        if (!m_is_uniform_weights) {
+        	w = m_w->get(j, 0);
+            fi *= w;
+            gi *= w;
+        }
+        f += fi;
+        grad.set(j, 0, gi);
+    }
+    if (m_is_uniform_weights) {
+        f *= m_uniform_w;
+    }
+    f /= 2.0;
+    return ForBESUtils::STATUS_OK;
+}
+
 int QuadraticLoss::callConj(Matrix& x, double& f_star) {
     f_star = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {

@@ -76,7 +76,7 @@ CFLAGS_WARNINGS = \
 	-Wno-unused \
 	-Wno-sign-compare
 	
-CFLAGS_WARNINGS += -Werror
+#CFLAGS_WARNINGS += -Werror
 	
 CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 
