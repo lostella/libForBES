@@ -20,9 +20,12 @@
 
 #include "OpDCT2.h"
 #include <cmath>
+#include <iostream>
+
 
 void update_y_helper_n_even(Matrix& y, double alpha, Matrix& x, double gamma, size_t n);
 void update_y_helper_n_odd(Matrix& y, double alpha, Matrix& x, double gamma, size_t n);
+double power_of_minus_one(size_t k);
 
 OpDCT2::OpDCT2() : LinearOperator(), m_dimension(_EMPTY_OP_DIM) {
 
@@ -36,17 +39,35 @@ OpDCT2::~OpDCT2() {
 
 static const double FOO[4] = {1.0, 0.0, -1.0, 0.0};
 
+inline double power_of_minus_one(size_t k) {
+    return (k % 2 == 0) ? 1.0 : -1.0;
+}
+
 void update_y_helper_n_even(Matrix& y, double alpha, Matrix& x, double gamma, size_t n) {
     size_t nu = n / 2;
+    bool apply_trick = (n >= 8) && (n % 4 == 0);
     for (size_t k = 1; k < n; k++) {
         double yk = 0.0;
-        for (size_t i = 0; i < nu; i++) {
-            double aik;
-            aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
-            if (k % 2 == 1) {
-                yk += (x.get(i, 0) - x.get(n - i - 1, 0)) * aik;
-            } else {
-                yk += (x.get(i, 0) + x.get(n - i - 1, 0)) * aik;
+        if (apply_trick && k % 2 == 0) {
+            for (size_t i = 0; i < nu / 2; i++) {
+                double aik;
+                size_t mu = k / 2;
+                aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
+                yk += (
+                        x.get(i, 0)
+                        + power_of_minus_one(mu) * (x.get(nu - i - 1, 0) + x.get(nu + i, 0))
+                        + x.get(n - i - 1, 0)
+                        ) * aik;
+            }
+        } else {
+            for (size_t i = 0; i < nu; i++) {
+                double aik;
+                aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
+                if (k % 2 == 1) {
+                    yk += (x.get(i, 0) - x.get(n - i - 1, 0)) * aik;
+                } else {
+                    yk += (x.get(i, 0) + x.get(n - i - 1, 0)) * aik;
+                }
             }
         }
         y.set(k, 0, gamma * y.get(k, 0) + alpha * yk);

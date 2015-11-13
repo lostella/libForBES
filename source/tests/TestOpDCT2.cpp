@@ -21,6 +21,7 @@
 #include "TestOpDCT2.h"
 #include "OpAdjoint.h"
 #include <cmath>
+#include <complex>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestOpDCT2);
 
@@ -60,7 +61,7 @@ void TestOpDCT2::testAdj0() {
 }
 
 void TestOpDCT2::testCall1() {
-    for (size_t n = 9; n < 15; n++) {
+    for (size_t n = 14; n < 30; n++) {
         Matrix T(n, n);
         for (size_t k = 0; k < n; k++) {
             for (size_t i = 0; i < n; i++) {
@@ -68,13 +69,21 @@ void TestOpDCT2::testCall1() {
             }
         }
 
-        Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+        Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 2.0);
+
 
         Matrix y_correct = T*x;
 
-        OpDCT2 dct2(n);
-        Matrix y = dct2.call(x);
-        _ASSERT_EQ(y_correct, y);
+        LinearOperator * dct2 = new OpDCT2(n);
+        Matrix y = dct2->call(x);
+
+        Matrix E = y_correct - y;
+        std::cout << E;
+        for (size_t j = 0; j < n; j++) {
+            _ASSERT(std::abs(E.get(j, 0)) < 1e-6);
+        }
+
+        delete dct2;
     }
 }
 
