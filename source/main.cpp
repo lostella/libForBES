@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <cmath>
 #include <stdio.h>
 #include <iostream>
 #include <set>
@@ -44,13 +45,34 @@ void f11() {
 
 int main(int argc, char** argv) {
 
-    double z_data[10] = {1.050000000000000, 1.070000000000000,1.090000000000000,1.110000000000000,1.130000000000000,1.150000000000000,1.170000000000000,1.190000000000000,1.210000000000000,1.230000000000000};
-    Matrix z(10,1,z_data);
-    OpDCT2 T(10);
-    
-    Matrix r = T.callAdjoint(z);
-    std::cout << r;
 
+    const size_t n = 11;
+    Matrix T(n, n);
+    for (size_t k = 0; k < n; k++) {
+        for (size_t i = 0; i < n; i++) {
+            T.set(k, i, std::cos(static_cast<double> (k) * M_PI * (static_cast<double> (i) + 0.5) / static_cast<double> (n)));
+        }
+    }
+
+    std::cout << T;
+    Matrix x(n, 1);
+
+    for (size_t j = 0; j < n; j++) {
+        x[j] = j + 1;
+    }
+
+    std::cout << x;
+    
+    Matrix y_correct = T*x;
+
+    LinearOperator * dct2 = new OpDCT2(n);
+    Matrix y = dct2->call(x);
+    
+    Matrix E = y_correct - y;
+    std::cout << E;
+    
+
+    delete dct2;
 
 
 

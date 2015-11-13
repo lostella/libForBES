@@ -30,3 +30,5 @@ octave-workspace
 Configuration
 main.cpp
 source/main.cpp
+*.mk
+

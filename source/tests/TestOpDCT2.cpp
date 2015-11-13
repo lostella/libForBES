@@ -60,23 +60,22 @@ void TestOpDCT2::testAdj0() {
 }
 
 void TestOpDCT2::testCall1() {
-    const size_t n = 10;
-    Matrix T(n, n);
-    for (size_t k = 0; k < n; k++) {
-        for (size_t i = 0; i < n; i++) {
-            T.set(k, i, std::cos(static_cast<double> (k) * M_PI * (static_cast<double> (i) + 0.5) / static_cast<double> (n)));
+    for (size_t n = 9; n < 15; n++) {
+        Matrix T(n, n);
+        for (size_t k = 0; k < n; k++) {
+            for (size_t i = 0; i < n; i++) {
+                T.set(k, i, std::cos(static_cast<double> (k) * M_PI * (static_cast<double> (i) + 0.5) / static_cast<double> (n)));
+            }
         }
+
+        Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+
+        Matrix y_correct = T*x;
+
+        OpDCT2 dct2(n);
+        Matrix y = dct2.call(x);
+        _ASSERT_EQ(y_correct, y);
     }
-
-    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
-
-    Matrix y_correct = T*x;
-
-    LinearOperator * dct2 = new OpDCT2(n);
-    Matrix y = dct2->call(x);
-    _ASSERT_EQ(y_correct, y);
-
-    delete dct2;
 }
 
 void TestOpDCT2::testCall0() {
@@ -187,18 +186,18 @@ void testOperatorLinearity(LinearOperator* op) {
     // create z = ax + by
     Matrix z(x);
     Matrix::add(z, b, y, a);
-    
+
     Matrix Tx = op->call(x);
     Matrix Ty = op->call(y);
-    
+
     // create aTx + bTy
     Matrix T(Tx);
     Matrix::add(T, b, Ty, a);
-    
+
     Matrix T2 = op->call(z);
-    
-    _ASSERT_EQ(T,T2);    
-   
+
+    _ASSERT_EQ(T, T2);
+
 }
 
 void TestOpDCT2::testLinearity() {
