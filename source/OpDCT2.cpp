@@ -75,19 +75,14 @@ void update_y_helper_n_even(Matrix& y, double alpha, Matrix& x, double gamma, si
 }
 
 void update_y_helper_n_odd(Matrix& y, double alpha, Matrix& x, double gamma, size_t n) {
-    size_t nu = n / 2;
     for (size_t k = 1; k < n; k++) {
         double yk = 0.0;
-        for (size_t i = 0; i < nu - 1; i++) {
+        for (size_t i = 0; i < n / 2; i++) {
             double aik;
             aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
-            if (k % 2 == 1) {
-                yk += (x.get(i, 0) - x.get(n - i - 1, 0)) * aik;
-            } else {
-                yk += (x.get(i, 0) + x.get(n - i - 1, 0)) * aik;
-            }
+            yk += (x.get(i, 0) + power_of_minus_one(k) * x.get(n - 1 - i, 0)) * aik;
         }
-        yk += FOO[k % 4] * x.get(nu, 0);
+        yk += FOO[k % 4] * x.get(n / 2, 0);
         y.set(k, 0, gamma * y.get(k, 0) + alpha * yk);
     }
 }
@@ -102,15 +97,7 @@ int OpDCT2::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     if (n % 2 == 0) { // if n is even
         update_y_helper_n_even(y, alpha, x, gamma, n);
     } else {
-        for (size_t k = 1; k < n; k++) {
-            double yk = 0.0;
-            for (size_t i = 0; i < n; i++) {
-                double aik;
-                aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
-                yk += x.get(i, 0) * aik;
-            }
-            y.set(k, 0, gamma * y.get(k, 0) + alpha * yk);
-        }
+        update_y_helper_n_odd(y, alpha, x, gamma, n);
     }
     return ForBESUtils::STATUS_OK;
 }
