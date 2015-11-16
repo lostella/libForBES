@@ -117,7 +117,7 @@ int LDLFactorization::factorize() {
     return status;
 }
 
-int LDLFactorization::solve(Matrix& rhs, Matrix& solution) const {
+int LDLFactorization::solve(Matrix& rhs, Matrix& solution) {
     solution = Matrix(m_matrix_nrows, 1, Matrix::MATRIX_DENSE); // solution = rhs (DENSE)
     for (size_t i = 0; i < m_matrix_nrows; i++) {
         solution.set(i, 0, rhs.get(i, 0));

@@ -74,7 +74,7 @@ public:
      * 
      * \todo Test solve() when rhs is sparse
      */
-    virtual int solve(Matrix& rhs, Matrix& solution) const;
+    virtual int solve(Matrix& rhs, Matrix& solution);
 
 
 

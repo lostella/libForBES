@@ -77,7 +77,7 @@ public:
      * 
      * \sa FactoredSolver::solve
      */
-    virtual int solve( Matrix& rhs, Matrix& solution) const;
+    virtual int solve( Matrix& rhs, Matrix& solution);
     
     double* getLDL() const;
 

@@ -89,15 +89,26 @@ public:
      * @param solution
      * @return 
      */
-    virtual int solve(Matrix& rhs, Matrix& solution) const;
+    virtual int solve(Matrix& rhs, Matrix& solution);
 
     int solve(Matrix& rhs, Matrix& solution, double tolerance, Matrix guess);
 
     virtual ~CGSolver();
+    
+    double last_error() const;
+    
+    size_t last_num_iter() const;
 
 private:
 
     LinearOperator * m_precond;
+    double m_tolerance;
+    double m_err;
+    size_t m_max_iterations;
+    size_t m_iterations_count;
+    
+    
+    void init();   
 
 
 protected:

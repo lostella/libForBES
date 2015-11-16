@@ -95,7 +95,7 @@ int S_LDLFactorization::factorize() {
     }
 }
 
-int S_LDLFactorization::solve(Matrix& rhs, Matrix& solution) const {
+int S_LDLFactorization::solve(Matrix& rhs, Matrix& solution) {
     solution = Matrix(rhs.m_nrows, rhs.m_ncols);
     if (m_matrix_type == Matrix::MATRIX_SPARSE) {
         if (m_factor == NULL) {

@@ -60,7 +60,7 @@ int Matrix::destroy_handle() {
 Matrix::Matrix() {
     m_nrows = 0;
     m_ncols = 0;
-    m_data = new double;
+    m_data = new double[1];
     *m_data = 0;
     m_type = MATRIX_DENSE;
     m_dataLength = 0;
@@ -108,9 +108,13 @@ Matrix::Matrix(const Matrix& orig) {
         if (n == 0) {
             n = 1;
         }
-        m_data = new double[n];
-        for (size_t i = 0; i < n; i++) {
-            m_data[i] = orig.m_data[i];
+        if (m_delete_data) {
+            m_data = new double[n];
+            for (size_t i = 0; i < n; i++) {
+                m_data[i] = orig.m_data[i];
+            }
+        } else {
+            m_data = orig.m_data;
         }
         m_dataLength = orig.m_dataLength;
     }
@@ -147,7 +151,7 @@ Matrix::~Matrix() {
         m_sparse = NULL;
     }
     if (m_dense != NULL) {
-        m_dense->x = new double;
+        m_dense->x = new double[1];
         cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
     }
 }
@@ -1696,15 +1700,15 @@ int Matrix::multiply_helper_left_diagonal(Matrix& C, double alpha, Matrix& A, Ma
 int Matrix::multiply_helper_left_symmetric(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     // multiply when the LHS is symmetric        
     if (B.isColumnVector()) {
-        cblas_dspmv(CblasColMajor, 
+        cblas_dspmv(CblasColMajor,
                 CblasLower,
-                A.m_nrows, 
-                alpha, 
+                A.m_nrows,
+                alpha,
                 A.m_data,
-                B.m_data, 
+                B.m_data,
                 1,
-                gamma, 
-                C.m_data, 
+                gamma,
+                C.m_data,
                 1);
     } else {
         domm(C, alpha, A, B, gamma);

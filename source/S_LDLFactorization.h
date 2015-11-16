@@ -179,7 +179,7 @@ public:
      * way that remain accessible from the %S_LDLFactorization object when #solve
      * is invoked.
      */
-    virtual int solve(Matrix& rhs, Matrix& solution) const;
+    virtual int solve(Matrix& rhs, Matrix& solution);
 
 private:
 

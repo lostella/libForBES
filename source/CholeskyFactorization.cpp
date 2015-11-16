@@ -74,7 +74,7 @@ int CholeskyFactorization::factorize() {
     }
 }
 
-int CholeskyFactorization::solve(Matrix& rhs, Matrix& solution) const {
+int CholeskyFactorization::solve(Matrix& rhs, Matrix& solution) {
     if (m_matrix_type == Matrix::MATRIX_SPARSE) {
         cholmod_dense *x;
 

@@ -55,7 +55,7 @@ public:
      * if numerical problems have hindered the computation of a solution.
      * 
      */
-    virtual int solve(Matrix& rhs, Matrix& solution) const = 0;
+    virtual int solve(Matrix& rhs, Matrix& solution) = 0;
 
 private:
 
