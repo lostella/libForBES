@@ -762,7 +762,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
                 true,
                 false,
                 Matrix::cholmod_handle());
-        Matrix result;
+        Matrix result(true);
         if (isColumnVector() && right.isColumnVector()) { /* Sparse-sparse dot product */
             result = Matrix(1, 1, Matrix::MATRIX_SPARSE);
         } else {
@@ -1470,13 +1470,13 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
             status = multiply_helper_left_dense(C, alpha, A, B, gamma);
             break;
         case MATRIX_SYMMETRIC: /* SYMMETRIC += ? */
-            //            status = generic_add_helper_left_symmetric(C, alpha, A, gamma);
+            status = multiply_helper_left_symmetric(C, alpha, A, B, gamma);
             break;
         case MATRIX_LOWERTR: /* LOWER TRIANGULAR += ? */
             //            status = generic_add_helper_left_lower_tri(C, alpha, A, gamma);
             break;
         case MATRIX_DIAGONAL: /* DIAGONAL += ? */
-            //            status = generic_add_helper_left_diagonal(C, alpha, A, gamma);
+            status = multiply_helper_left_diagonal(C, alpha, A, B, gamma);
             break;
         case MATRIX_SPARSE: /* SPARSE += ? */
             status = multiply_helper_left_sparse(C, alpha, A, B, gamma);
@@ -1670,4 +1670,44 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
         //LCOV_EXCL_STOP
     }
     return status;
+}
+
+int Matrix::multiply_helper_left_diagonal(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
+    for (size_t i = 0; i < C.m_nrows; i++) {
+        if (MATRIX_SYMMETRIC == B.m_type) {
+            for (size_t j = i; j < B.m_ncols; j++) {
+                C._addIJ(i, j, alpha * A.m_data[i] * B.get(i, j), gamma);
+            }
+        } else if (MATRIX_DENSE == B.m_type) {
+            for (size_t j = 0; j < B.m_ncols; j++) {
+                C._addIJ(i, j, alpha * A.m_data[i] * B.get(i, j), gamma);
+            }
+        } else if (MATRIX_DIAGONAL == B.m_type) {
+            C._addIJ(i, i, alpha * A.m_data[i] * B.m_data[i], gamma);
+        } else if (MATRIX_LOWERTR == B.m_type) {
+            for (size_t j = 0; j <= i; j++) {
+                C._addIJ(i, j, alpha * A.m_data[i] * B.get(i, j), gamma);
+            }
+        }
+    }
+    return ForBESUtils::STATUS_OK;
+}
+
+int Matrix::multiply_helper_left_symmetric(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
+    // multiply when the LHS is symmetric        
+    if (B.isColumnVector()) {
+        cblas_dspmv(CblasColMajor, 
+                CblasLower,
+                A.m_nrows, 
+                alpha, 
+                A.m_data,
+                B.m_data, 
+                1,
+                gamma, 
+                C.m_data, 
+                1);
+    } else {
+        domm(C, alpha, A, B, gamma);
+    }
+    return ForBESUtils::STATUS_OK;
 }

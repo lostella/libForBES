@@ -19,6 +19,8 @@
  */
 
 #include "CGSolver.h"
+#include <iostream>
+#include <lapacke.h>
 
 CGSolver::CGSolver(LinearOperator& linop) : LinOpSolver(linop) {
     m_precond = NULL;
@@ -35,9 +37,35 @@ int CGSolver::solve(Matrix& b, Matrix& solution) const {
     Matrix r = b;
     Matrix z = m_precond->call(r);
     Matrix p = z;
-    size_t k = 0;
-    
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    size_t k = 0;   
+    bool keepgoing = true;
+    Matrix Ap;
+    while (keepgoing) {
+        Ap = m_linop->call(p);                      // Ap = A * p
+        double a_denom = (p * Ap).get(0, 0);        //
+        double a_numer = (r * z).get(0, 0);         //
+        double alpha = a_numer / a_denom;           // alpha = (r,z)/(p, Ap);
+        Matrix::add(solution, alpha, p, 1.0);       // x = x + alpha * p
+        Matrix r_new = r;                           // r_new = r
+        double err = LAPACKE_dlange(LAPACK_COL_MAJOR, 'I', r_new.getNrows(), 1, r_new.getData(), r_new.getNrows());
+        std::cout << "*" << err << std::endl; 
+        if (err < 1e-4){
+            break;
+        }
+        Matrix::add(r_new, -alpha, Ap, 1.0);        // r_new = r - alpha A p;
+        Matrix z_new = m_precond->call(r_new);      // z_new = P(r_new)
+        double zr = (r_new * z_new).get(0, 0);      
+        double beta = zr / a_numer;
+        Matrix::add(p, 1.0, z_new, beta);
+        z = z_new;
+        r = r_new;
+        k++;
+        if (k > 1000) {
+            keepgoing = false;
+        }
+    }
+    std::cout << "solved in " << k << " iterations\n";
+    return ForBESUtils::STATUS_OK;
 }
 
 

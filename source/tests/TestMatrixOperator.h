@@ -21,6 +21,7 @@ class TestMatrixOperator : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testCall2);
+    CPPUNIT_TEST(testCallId);
     CPPUNIT_TEST(testCallAdjoint);
 
     CPPUNIT_TEST_SUITE_END();
@@ -34,6 +35,7 @@ public:
 private:
     void testCall();
     void testCall2();
+    void testCallId();
     void testCallAdjoint();
     
 };

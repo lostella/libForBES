@@ -766,6 +766,16 @@ private:
      * C := gamma * C + alpha*A*B, where A is sparse
      */
     static int multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
+    /**
+     * 
+     * C := gamma * C + alpha*A*B, where A is diagonal
+     */
+    static int multiply_helper_left_diagonal(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
+    /**
+     * 
+     * C := gamma * C + alpha*A*B, where A is symmetric
+     */
+    static int multiply_helper_left_symmetric(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma);
 
 };
 

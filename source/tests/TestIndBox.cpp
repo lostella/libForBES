@@ -67,7 +67,7 @@ void TestIndBox::testCall2() {
     }
 
     Function *F;
-    _ASSERT_OK(F = new IndBox(lb, ub));
+    F = new IndBox(lb, ub);
 
     Matrix x(n, 1);
 
@@ -87,14 +87,15 @@ void TestIndBox::testCall2() {
     Matrix y(n, n);
     _ASSERT_EXCEPTION(F->call(y, fval), std::invalid_argument);
 
-    lb = Matrix(n, n);
+    lb = Matrix(n, n);    
     _ASSERT_EXCEPTION(F = new IndBox(lb, ub), std::invalid_argument);
-
+    
+    
     lb = Matrix(n, 1);
     ub = Matrix(n, n);
-
+   
     _ASSERT_EXCEPTION(F = new IndBox(lb, ub), std::invalid_argument);
-    _ASSERT_OK(delete F);
+    delete F;
 }
 
 void TestIndBox::testCall3() {
@@ -149,15 +150,15 @@ void TestIndBox::testCallProx() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(0.0, fprox, tol);
 
-    _ASSERT_NUM_EQ(lb, prox.get(0,0), tol);
-    _ASSERT_NUM_EQ(x.get(1,0), prox.get(1,0), tol);
-    
+    _ASSERT_NUM_EQ(lb, prox.get(0, 0), tol);
+    _ASSERT_NUM_EQ(x.get(1, 0), prox.get(1, 0), tol);
+
     status = F->callProx(x, gamma, prox);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    
-    _ASSERT_NUM_EQ(lb, prox.get(0,0), tol);
-    _ASSERT_NUM_EQ(x.get(1,0), prox.get(1,0), tol);
-    
+
+    _ASSERT_NUM_EQ(lb, prox.get(0, 0), tol);
+    _ASSERT_NUM_EQ(x.get(1, 0), prox.get(1, 0), tol);
+
     _ASSERT_OK(delete F);
 }
 

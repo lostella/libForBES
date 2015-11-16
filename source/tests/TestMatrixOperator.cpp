@@ -26,29 +26,28 @@ void TestMatrixOperator::tearDown() {
 void TestMatrixOperator::testCall2() {
     size_t n = 10;
     size_t m = 3;
-    Matrix A = MatrixFactory::MakeRandomMatrix(n,m,-2.0, 4.0);
-    Matrix x = MatrixFactory::MakeRandomMatrix(m,1,0.0, 1.0);
-    Matrix y = MatrixFactory::MakeRandomMatrix(n,1,0.0, 1.0);
-    
+    Matrix A = MatrixFactory::MakeRandomMatrix(n, m, -2.0, 4.0);
+    Matrix x = MatrixFactory::MakeRandomMatrix(m, 1, 0.0, 1.0);
+    Matrix y = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+
     Matrix y_copy(y);
     LinearOperator * op = new MatrixOperator(A);
-    
+
     double alpha = M_PI;
     double gamma = M_SQRT2;
-    
+
     int status = op->call(y, alpha, x, gamma); // y = gamma * y + alpha * A * x
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    
+
     y_copy *= gamma;
     Matrix z = A * x;
     z *= alpha;
     y_copy += z;
-    
+
     _ASSERT_EQ(y_copy, y);
-        
+
     delete op;
 }
-
 
 void TestMatrixOperator::testCall() {
     size_t n = 10;
@@ -64,6 +63,15 @@ void TestMatrixOperator::testCall() {
     _ASSERT_EQ(z, y);
     delete T;
 
+}
+
+void TestMatrixOperator::testCallId() {
+    size_t n = 10;
+    Matrix Id = MatrixFactory::MakeIdentity(n, 1.0);
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1.0, 2.0, 2.0);
+    MatrixOperator IdOp(Id);
+    Matrix y = IdOp.call(x);
+    _ASSERT_EQ(x, y);
 }
 
 void TestMatrixOperator::testCallAdjoint() {

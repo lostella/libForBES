@@ -61,7 +61,7 @@ void TestOpDCT2::testAdj0() {
 }
 
 void TestOpDCT2::testCall1() {
-    for (size_t n = 14; n < 30; n++) {
+    for (size_t n = 14; n < 50; n++) {
         Matrix T(n, n);
         for (size_t k = 0; k < n; k++) {
             for (size_t i = 0; i < n; i++) {
@@ -78,7 +78,7 @@ void TestOpDCT2::testCall1() {
         Matrix y = dct2->call(x);
 
         Matrix E = y_correct - y;
-        std::cout << E;
+
         for (size_t j = 0; j < n; j++) {
             _ASSERT(std::abs(E.get(j, 0)) < 1e-6);
         }
