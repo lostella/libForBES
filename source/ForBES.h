@@ -41,6 +41,8 @@
 #include "LDLFactorization.h"       /* LDL factorization */
 #include "CholeskyFactorization.h"  /* Cholesky factorization */
 #include "S_LDLFactorization.h"     /* LDL' factorization of AA'+bI */
+#include "CGSolver.h"               /* Conjugate gradient solver (for linear operators) */
+#include "MatrixSolver.h"           /* Factorized solver for matrices */
 
 /* 
  * LINEAR OPERATORS

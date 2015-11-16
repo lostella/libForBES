@@ -57,6 +57,8 @@ public:
      * of numerical errors.
      */
     const static int STATUS_NUMERICAL_PROBLEMS;
+    
+    const static int STATUS_MAX_ITERATIONS_REACHED;
 
     static bool is_status_ok(int status);
     static bool is_status_warning(int status);

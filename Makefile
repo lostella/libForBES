@@ -201,6 +201,7 @@ TESTS = \
 	TestCholesky.test \
 	TestIndBox.test \
 	TestIndSOC.test \
+	TestCGSolver.test \
 	TestLDL.test \
 	TestMatrix.test \
 	TestMatrixFactory.test \
@@ -242,10 +243,11 @@ all: $(ARCHIVE)
 build-tests: $(ARCHIVE) $(TEST_BINS)
 
 test: build-tests
-	@echo "\n*** FACTORIZERS ***"
+	@echo "\n*** FACTORIZERS/SOLVERS ***"
 	${BIN_TEST_DIR}/TestCholesky
 	${BIN_TEST_DIR}/TestLDL
 	${BIN_TEST_DIR}/TestSLDL
+	${BIN_TEST_DIR}/TestCGSolver
 	@echo "\n*** FUNCTIONS ***"
 	${BIN_TEST_DIR}/TestConjugateFunction
 	${BIN_TEST_DIR}/TestQuadOverAffine

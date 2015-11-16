@@ -31,6 +31,13 @@ CGSolver::CGSolver(LinearOperator& linop, LinearOperator& preconditioner) : LinO
     init();
 }
 
+CGSolver::CGSolver(LinearOperator& linop, LinearOperator& preconditioner, double tolerance, size_t max_iterations)
+: LinOpSolver(linop), m_precond(&preconditioner), m_tolerance(tolerance), m_max_iterations(max_iterations) {
+    m_err = NAN;
+    m_iterations_count = 0;
+}
+
+
 CGSolver::~CGSolver() {
 }
 
@@ -80,6 +87,9 @@ int CGSolver::solve(Matrix& b, Matrix& solution) {
         if (m_iterations_count > m_max_iterations) {
             keepgoing = false;
         }
+    }
+    if (m_iterations_count>=m_max_iterations){
+        return ForBESUtils::STATUS_MAX_ITERATIONS_REACHED;
     }
     return ForBESUtils::STATUS_OK;
 }

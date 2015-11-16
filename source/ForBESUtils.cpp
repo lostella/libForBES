@@ -33,6 +33,7 @@ const int ForBESUtils::STATUS_HAD_TO_REALLOC = 1;
 
 const int ForBESUtils::STATUS_NUMERICAL_PROBLEMS = 500;
 const int ForBESUtils::STATUS_UNDEFINED_FUNCTION = 501;
+const int ForBESUtils::STATUS_MAX_ITERATIONS_REACHED = 502;
 
 void ForBESUtils::fail_on_error(int status) {
     if (is_status_error(status)) {

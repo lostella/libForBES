@@ -79,6 +79,8 @@ public:
      * @param preconditioner preconditioner as a linear operator
      */
     CGSolver(LinearOperator& linop, LinearOperator& preconditioner);
+    
+    CGSolver(LinearOperator& linop, LinearOperator& preconditioner, double tolerance, size_t max_iterations);
 
 
     /**
