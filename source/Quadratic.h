@@ -50,6 +50,16 @@
  * F^*(x^*) = (x^*-q)'Q^{-1}(x^*-q).
  * \f]
  * 
+ * One can compute the proximal operator of a quadratic function by
+ * 
+ * \f[
+ * \mathrm{prox}_{\gamma f}(v) = (I+\gamma Q)^{-1}(v-\gamma b),
+ * \f]
+ * 
+ * where the linear system \f$(I+\gamma Q)^{-1}(v-\gamma b)\f$ is solved using the
+ * conjugate gradient algorithm implemented in CGSolver.
+ * 
+ * 
  * Here is a simple example:
  * \code
  * size_t n = 10;
@@ -83,6 +93,7 @@ class Quadratic : public Function {
 public:
     
     using Function::callConj;
+    using Function::callProx;
     
     /**
      * Create a trivial quadratic function with zero Hessian and
@@ -105,6 +116,10 @@ public:
      * @param q A vector
      */
     Quadratic(Matrix& Q, Matrix& q); // both Q and q    
+    
+
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
+
 
 
     /**

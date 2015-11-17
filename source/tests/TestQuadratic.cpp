@@ -153,7 +153,7 @@ void TestQuadratic::testCallProx() {
     Matrix x;
     Matrix prox;
     _ASSERT_NOT(F->category().defines_prox());
-    _ASSERT_EQ(ForBESUtils::STATUS_UNDEFINED_FUNCTION, F->callProx(x, 0.5, prox));
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, F->callProx(x, 0.5, prox));
     _ASSERT_OK(delete F);
 }
 

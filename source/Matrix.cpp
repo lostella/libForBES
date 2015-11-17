@@ -103,23 +103,18 @@ Matrix::Matrix(const Matrix& orig) {
     m_triplet = NULL;
     m_sparse = NULL;
     m_dense = NULL;
+    m_type = orig.m_type;
     if (orig.m_type != MATRIX_SPARSE) {
         size_t n = orig.m_dataLength;
         if (n == 0) {
             n = 1;
         }
-        if (m_delete_data) {
-            m_data = new double[n];
-            for (size_t i = 0; i < n; i++) {
-                m_data[i] = orig.m_data[i];
-            }
-        } else {
-            m_data = orig.m_data;
+        m_data = new double[n];
+        for (size_t i = 0; i < n; i++) {
+            m_data[i] = orig.m_data[i];
         }
         m_dataLength = orig.m_dataLength;
-    }
-    m_type = orig.m_type;
-    if (m_type == MATRIX_SPARSE) {
+    } else {
         if (orig.m_triplet != NULL) {
             m_triplet = cholmod_copy_triplet(orig.m_triplet, Matrix::cholmod_handle());
         }
@@ -151,8 +146,9 @@ Matrix::~Matrix() {
         m_sparse = NULL;
     }
     if (m_dense != NULL) {
-        m_dense->x = new double[1];
+        m_dense->x = NULL;
         cholmod_free_dense(&m_dense, Matrix::cholmod_handle());
+        m_dense = NULL;
     }
 }
 
@@ -584,13 +580,14 @@ Matrix & Matrix::operator=(const Matrix & right) {
         return *this; // Yes, so skip assignment, and just return *this.
     }
     /* make sure shallow copies remain shallow */
-    m_delete_data = right.m_delete_data;
+    m_delete_data = (right.m_type != Matrix::MATRIX_SPARSE);
     m_ncols = right.m_ncols;
     m_nrows = right.m_nrows;
     m_type = right.m_type;
     m_triplet = NULL;
     m_sparse = NULL;
     m_dense = NULL;
+    
 
     /* 
      * copy m_data only if 
@@ -598,13 +595,8 @@ Matrix & Matrix::operator=(const Matrix & right) {
      * (ii) the matrix is not shallow
      */
     m_dataLength = right.m_dataLength;
-    if (!m_delete_data) {
-        m_data = right.m_data;
-    }
-    if (right.m_type != MATRIX_SPARSE && m_delete_data) {
-        if (m_data != NULL) {
-            delete m_data;
-        }
+    m_data = NULL;
+    if (right.m_type != MATRIX_SPARSE) {
         m_data = new double[m_dataLength];
     }
     m_transpose = right.m_transpose;
@@ -637,12 +629,11 @@ Matrix & Matrix::operator=(const Matrix & right) {
 void Matrix::domm(const Matrix &right, Matrix & result) const {
     // multiply with LHS being dense
     double t;
-    for (size_t i = 0; i < m_nrows; i++) {
-        for (size_t j = 0; j < right.m_ncols; j++) {
+    for (size_t j = 0; j < right.m_ncols; j++) {
+        for (size_t i = 0; i < m_nrows; i++) {
             t = 0.0;
             for (size_t k = 0; k < m_ncols; k++) {
                 if (!(right.getType() == MATRIX_LOWERTR && k < j)) {
-
                     t += get(i, k) * right.get(k, j);
                 }
             }
@@ -654,8 +645,8 @@ void Matrix::domm(const Matrix &right, Matrix & result) const {
 void Matrix::domm(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     // multiply with A being dense
     double t;
-    for (size_t i = 0; i < C.m_nrows; i++) {
-        for (size_t j = 0; j < B.m_ncols; j++) {
+    for (size_t j = 0; j < B.m_ncols; j++) {
+        for (size_t i = 0; i < C.m_nrows; i++) {
             t = 0.0;
             for (size_t k = 0; k < C.m_ncols; k++) {
                 if (!(B.getType() == MATRIX_LOWERTR && k < j)) {
@@ -713,7 +704,8 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix & right) const {
     Matrix result(m_nrows, right.m_ncols);
     if (right.isColumnVector()) {
 #ifdef USE_LIBS
-        cblas_dspmv(CblasColMajor, CblasLower,
+        cblas_dspmv(CblasColMajor, 
+                CblasLower,
                 m_nrows, 1.0, m_data,
                 right.m_data, 1,
                 0.0, result.m_data, 1);
@@ -721,7 +713,6 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix & right) const {
 #endif
     }
     domm(right, result);
-
     return result;
 }
 
@@ -1139,7 +1130,7 @@ int Matrix::add(Matrix& C, double alpha, Matrix& A, double gamma) {
 }
 
 int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, double gamma) {
-    /*    HEREAFTER, L is DENSE!     */
+    /*    HEREAFTER, C is DENSE!     */
 
     Matrix::MatrixType type_of_A = A.getType();
 
@@ -1148,7 +1139,7 @@ int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, do
     if (type_of_A == MATRIX_DENSE && C.m_transpose == A.m_transpose) {
         if (is_gamma_one) {
             cblas_daxpy(A.length(), alpha, A.m_data, 1, C.m_data, 1);
-            return 0;
+            return ForBESUtils::STATUS_OK;
         } else {
             for (size_t i = 0; i < A.length(); i++) {
                 C.m_data[i] = (gamma * C.m_data[i]) + (alpha * A.m_data[i]);

@@ -20,6 +20,7 @@
 
 #include "Quadratic.h"
 #include "MatrixFactory.h"
+#include "CGSolver.h"
 
 using namespace std;
 
@@ -54,7 +55,7 @@ Quadratic::~Quadratic() {
     if (m_solver != NULL) {
         delete m_solver;
     }
-    if (m_delete_Q){
+    if (m_delete_Q) {
         delete m_Q;
     }
 }
@@ -169,4 +170,54 @@ int Quadratic::computeGradient(Matrix& x, Matrix& grad) {
 FunctionOntologicalClass Quadratic::category() {
     return FunctionOntologyRegistry::quadratic();
 }
+
+int Quadratic::callProx(Matrix& v, double gamma, Matrix& prox) {
+    // (I+gamma Q)^{-1}(v-gamma q)
+    int status;
+    CGSolver * solver = NULL;
+    if (!m_is_Q_eye) {
+        // If Q is not I, we need to create a CGSolver for (I + gamma Q)
+        Matrix Q_tilde(*m_Q);
+        size_t n = m_Q->getNrows();
+        static Matrix Eye = MatrixFactory::MakeIdentity(n, 1.0);
+        status = Matrix::add(Q_tilde, 1.0, Eye, gamma);
+        if (!ForBESUtils::is_status_ok(status)) {
+            return status;
+        }
+        MatrixOperator Q_tilde_op(Q_tilde);
+        Matrix P(n, n, Matrix::MATRIX_DIAGONAL);
+        for (size_t i = 0; i < n; i++) {
+            P[i] = 1 / Q_tilde.get(i, i);
+        }
+        MatrixOperator P_op(P);
+        solver = new CGSolver(Q_tilde_op, P_op);
+    }
+    /*
+     * v_gamma_b = v - gamma * b
+     */
+    Matrix v_gamma_b = MatrixFactory::ShallowVector();
+    if (m_is_q_zero) {
+        v_gamma_b = MatrixFactory::ShallowMatrix(v);
+    } else {
+        v_gamma_b = v;
+        status = Matrix::add(v_gamma_b, -gamma, *m_q, 1.0);
+        if (!ForBESUtils::is_status_ok(status)) {
+            return status;
+        }
+    }
+    if (!m_is_Q_eye) {
+        status = solver->solve(v_gamma_b, prox);
+        if (!ForBESUtils::is_status_ok(status)) {
+            return status;
+        }
+    } else {
+        prox = v_gamma_b;
+    }
+    if (solver != NULL) {
+        delete solver;
+    }
+    return ForBESUtils::STATUS_OK;
+
+}
+
 
