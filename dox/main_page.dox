@@ -9,18 +9,16 @@
  *
  * \section install_sec Installation
  *
- * LibForBES is available as a static library which you can easily use in your
- * C++ code.
+ * You can download libforbes from our github page and build it on your system.
  * 
- * 5 steps to installation:
- *  1. Download and install <a href="http://www.openblas.net/">openblas</a> and 
- *     <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">SuiteSparse</a>
- *  2. Download <a href="https://github.com/lostella/libForBES/archive/master.zip">libforbes</a>
- *  3. Configure
- *  4. Install using make (<code>make</code>)
- *  5. Verify your installation (<code>make test</code>)
+ * Installing libforbes is very easy: just run the installation script \c install.sh.
+ * 
+ * If you are experiencing any trouble with the installation, contact the 
+ * developers.
  *
- * You can then use libforbes in your own C++ project
+ * See also our \ref doc-install "installation guide".
+ * 
+ * You can then use libforbes in your own C++ project:
  *
  * 1. Include the header file ForBES.h
  * 2. Link to the libforbes static library (libforbes.a)
@@ -29,5 +27,4 @@
  * The two cornerstones of the libforbes API are the \ref doc-functs "Functions API"
  * and the \ref doc-linops "Linear operators API".
  *  
- *
  */
