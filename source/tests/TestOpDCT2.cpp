@@ -21,7 +21,6 @@
 #include "TestOpDCT2.h"
 #include "OpAdjoint.h"
 #include <cmath>
-#include <complex>
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestOpDCT2);
 
