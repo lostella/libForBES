@@ -5,7 +5,9 @@
  * \brief Installation guide
  * 
  * Libforbes comes with an installation script (\c install.sh) which you can use
- * to setup the library automatically. However, if for any reason you would like to
+ * to setup the library automatically. 
+ *
+ * However, if for any reason you would like to
  * compile it manually, you will first need to install and setup the following 
  * dependencies:
  * 
@@ -13,7 +15,7 @@
  * Libforbes depends on the following third-part libraries:
  *   1. <a href="http://www.openblas.net/">openblas</a>
  *   2. <a href="http://faculty.cse.tamu.edu/davis/suitesparse.html">SuiteSparse</a>
- *   3. <a href="http://www.netlib.org/lapack/">lapack and lapacke</a>
+ *   3. <a href="http://www.netlib.org/blas/">BLAS</a>, <a href="http://www.netlib.org/lapack/">lapack and lapacke</a>
  *
  * To build libforbes you will need:
  *   1. <a href="https://www.gnu.org/software/make/">make</a>
@@ -21,7 +23,8 @@
  *   3. <a href="https://www.gnu.org/software/wget/">wget</a> (optional)
  * 
  * \subsection dep-repos Install libraries from repos
- * Let us first install 
+ * Certain libraries can be installed using \c apt. Let us first install \c BLAS
+ * and \c LAPACK
  *
  * \code{.sh}
  * sudo apt-get -y install libblas-dev checkinstall
@@ -39,8 +42,7 @@
  *   fi
  * fi
  * \endcode
- *
- * Certain libraries can be installed using \c apt.
+ * 
  *
  * \subsection dep-suitesparse Install SuiteSparse
  * 
@@ -78,9 +80,11 @@
  *
  * \section config Configure libforbes
  * Having installed all dependencies we now need to configure libforbes.
+ *
  * If you have used the installation script \c install.sh you don't need to 
- * provide any further configuration. Otherwise, you can edit file \c config.mk
- * to modify some compilation parameters.
+ * provide any further configuration. 
+ *
+ * Otherwise, you can edit file \c config.mk to modify some compilation parameters.
  *
  * This is an example of how file \c config.mk should look like:
  *
@@ -122,7 +126,9 @@
  * To use \c libforbes
  *
  * 1. Include the header file ForBES.h
- * 2. Link to the libforbes static library (libforbes.a)
+ * 2. Link to the libforbes static library (libforbes.a) using \c -lforbes
+ * 3. Link to the above third-party dependencies which are necessary for 
+ *    libforbes to work.
  *
  * 
  *

@@ -122,39 +122,42 @@ void TestQuadratic::testQuadratic3() {
     F->setQ(Q);
     _ASSERT_OK(status = F->callConj(x, fval));
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    //
-    //    Matrix q(n, 1);
-    //    for (size_t i = 0; i < n; ++i) {
-    //        q.set(i, 0, i + 1);
-    //        x.set(i, 0, 2 * i + 1);
-    //    }
-    //
-    //
-    //    Matrix grad;
-    //    static_cast<Quadratic*> (F)->setq(q);
-    //
-    //    _ASSERT_OK(status = F->callConj(x, fval, grad));
-    //    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    //
-    //    const double fval_exp = 190.002976190476;
-    //    const double tol = 1e-8;
-    //
-    //    _ASSERT_NUM_EQ(fval_exp, fval, tol);
-    //
-    //    double grad0_exp = -0.0446428571428572;
-    //    _ASSERT_NUM_EQ(grad0_exp, grad.get(0, 0), tol);
-    //
-    //    std::cout << fval;
-    //    _ASSERT_OK(delete F);
+    
+        Matrix q(n, 1);
+        for (size_t i = 0; i < n; ++i) {
+            q.set(i, 0, i + 1);
+            x.set(i, 0, 2 * i + 1);
+        }
+    
+    
+        Matrix grad;
+        static_cast<Quadratic*> (F)->setq(q);
+    
+        _ASSERT_OK(status = F->callConj(x, fval, grad));
+        _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    
+        const double fval_exp = 190.002976190476;
+        const double tol = 1e-8;
+    
+        _ASSERT_NUM_EQ(fval_exp, fval, tol);
+    
+        double grad0_exp = -0.0446428571428572;
+        _ASSERT_NUM_EQ(grad0_exp, grad.get(0, 0), tol);
+    
+        std::cout << fval;
+        _ASSERT_OK(delete F);
 }
 
 void TestQuadratic::testCallProx() {
-    Function *F = new Quadratic();
+    Function *F = new Quadratic(); // F(x) = (1/2)x'x
     Matrix x;
     Matrix prox;
     _ASSERT_NOT(F->category().defines_prox());
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->callProx(x, 0.5, prox));
-    _ASSERT_OK(delete F);
+    
+    
+    
+    delete F;
 }
 
 void TestQuadratic::testCall() {

@@ -349,14 +349,14 @@ double Matrix::quad(Matrix & x) const {
     double result = 0.0;
 
     if (MATRIX_DENSE == m_type || MATRIX_LOWERTR == m_type) { /* DENSE or LOWER TRIANGULAR */
-        for (size_t i = 0; i < m_nrows; i++) {
-            for (size_t j = 0; j < m_ncols; j++) {
-                result += x[i] * get(i, j) * x[j];
+        for (size_t j = 0; j < m_ncols; j++) {
+            for (size_t i = 0; i < m_nrows; i++) {
+                result += x[i] * (!m_transpose ? m_data[i + j * m_nrows] : m_data[j + i * m_ncols]) * x[j];
             }
         }
     } else if (MATRIX_DIAGONAL == m_type) { /* DIAGONAL */
         for (size_t i = 0; i < m_nrows; i++) {
-            result += x[i] * x[i] * get(i, i);
+            result += x[i] * x[i] * m_data[i];
         }
     } else if (MATRIX_SYMMETRIC == m_type) { /* SYMMETRIC */
         for (size_t i = 0; i < m_nrows; i++) {
