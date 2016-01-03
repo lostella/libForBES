@@ -102,6 +102,7 @@ IFLAGS = \
 	-I$(SS_DIR)/CHOLMOD/Include \
 	-I$(SS_DIR)/LDL/Include \
 	-I$(SS_DIR)/SuiteSparse_config \
+	-I/usr/local/include \
 	-I$(IEXTRA)
 
 
@@ -122,6 +123,8 @@ lFLAGS = \
 	-llapack \
 	-lopenblas \
 	-lm \
+	-lcppunit \
+	-lgfortran \
 	$(LFLAGS_ADDITIONAL)
 
 LFLAGS = \
@@ -132,6 +135,7 @@ LFLAGS = \
 	-L$(SS_DIR)/CCOLAMD/Lib \
 	-L$(SS_DIR)/CAMD/Lib \
 	-L$(SS_DIR)/LDL/Lib \
+	-L/usr/local/lib \
 	-L$(LEXTRA)
 
 # LINEAR OPERATORS
