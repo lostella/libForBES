@@ -59,15 +59,15 @@ void TestMatrix::testToggleDiagonal() {
     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, x.getType());
     x.toggle_diagonal();
     _ASSERT(x.isColumnVector());
-    
-    
+
+
     Matrix y = MatrixFactory::MakeRandomMatrix(2, n, 0.0, 1.0);
     _ASSERT_EXCEPTION(y.toggle_diagonal(), std::invalid_argument);
-    
+
     Matrix z = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_LOWERTR);
     _ASSERT_EXCEPTION(z.toggle_diagonal(), std::invalid_argument);
-    
-    
+
+
 }
 
 void TestMatrix::testGetSet() {
@@ -87,6 +87,26 @@ void TestMatrix::testGetSet() {
     Matrix o;
     _ASSERT(o.isEmpty());
     _ASSERT_EXCEPTION(o.get(0, 0), std::out_of_range);
+}
+
+void TestMatrix::testOpplus() {
+    size_t n = 1000;
+    size_t m = 50;
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, m, -1.5, 2.0);
+    Matrix y(x);    
+
+    x.plusop();        
+
+    const double tol = 1e-12;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        for (size_t j = 0; j < x.getNcols(); j++) {
+            if (y.get(i, j) >= 0.0) {
+                _ASSERT_NUM_EQ(y.get(i, j), x.get(i, j), tol);
+            } else {
+                _ASSERT_NUM_EQ(0.0, x.get(i, j), tol);
+            }
+        }
+    }
 }
 
 void TestMatrix::testQuadratic() {

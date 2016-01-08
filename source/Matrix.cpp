@@ -403,6 +403,23 @@ double Matrix::quad(Matrix& x, Matrix & q) const {
     return t;
 }
 
+void Matrix::plusop() {
+    if (m_type != Matrix::MATRIX_SPARSE) {
+        for (size_t i = 0; i < length(); i++) {
+            if (m_data[i] < 0) {
+                m_data[i] = 0.0;
+            }
+        }
+    } else {
+        for (size_t k = 0; k < m_triplet->nnz; k++) {
+            double * val = (static_cast<double*> (m_triplet->x)) + k;
+            if (*val < 0) {
+                *val = 0.0;
+            }
+        }
+    }
+}
+
 /********* OPERATORS ************/
 bool Matrix::operator==(const Matrix & right) const {
     const double tol = 1e-9;
@@ -586,7 +603,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
     m_triplet = NULL;
     m_sparse = NULL;
     m_dense = NULL;
-    
+
 
     /* 
      * copy m_data only if 
@@ -703,7 +720,7 @@ Matrix Matrix::multiplyLeftSymmetric(const Matrix & right) const {
     Matrix result(m_nrows, right.m_ncols);
     if (right.isColumnVector()) {
 #ifdef USE_LIBS
-        cblas_dspmv(CblasColMajor, 
+        cblas_dspmv(CblasColMajor,
                 CblasLower,
                 m_nrows, 1.0, m_data,
                 right.m_data, 1,

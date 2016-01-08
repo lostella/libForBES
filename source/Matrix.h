@@ -341,7 +341,7 @@ public:
      * instance of <code>Matrix</code>.</p>
      *
      * <p>This method can only be applied on square matrices Q while x and q
-     * need to be of combatible dimensions.</p>
+     * need to be of compatible dimensions.</p>
      *
      * @param x The vector x.
      * @param q The parameter vector x.
@@ -365,6 +365,21 @@ public:
      */
     void toggle_diagonal();
 
+    /**
+     * This idempotent method updates the entries of the current matrix by applying
+     * element-wise the function <code>max(x, 0)</code>, i.e., it replaces all negative
+     * values with zeroes.
+     * 
+     * This operation is often denoted as \f$[x]_+\f$.
+     */
+    void plusop(); 
+    
+    /**
+     * This method is the same as the idempotent method Matrix::plusop() but the 
+     * result is stored in a given memory location specified by <code>mat</code>.
+     * @param mat Matrix to be updated with the result
+     */
+    void plusop(Matrix* mat);
 
 
     /* Operators */

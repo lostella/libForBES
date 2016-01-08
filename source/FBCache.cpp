@@ -221,7 +221,7 @@ int FBCache::update_forward_backward_step(double gamma) {
 }
 
 int FBCache::update_eval_FBE(double gamma) {
-    if (gamma != m_gamma) {
+    if (gamma != m_gamma) { /* Use tolerance */
         reset(FBCache::STATUS_EVALF);
     }
 
@@ -231,6 +231,9 @@ int FBCache::update_eval_FBE(double gamma) {
 
     if (m_status < FBCache::STATUS_FORWARDBACKWARD) {
         int status = update_forward_backward_step(gamma);
+        if (!ForBESUtils::is_status_ok(status)){
+            return status;
+        }
     }
 
     Matrix innprox_mat(1,1);
@@ -241,7 +244,6 @@ int FBCache::update_eval_FBE(double gamma) {
 
 
     m_FBEx = m_fx + m_gz - innprod + 0.5 / m_gamma*m_sqnormFPRx;
-
     m_gamma = gamma;
     m_flag_evalFBE = 1;
 
@@ -259,6 +261,9 @@ int FBCache::update_grad_FBE(double gamma) {
 
     if (m_status < FBCache::STATUS_FORWARDBACKWARD) {
         int status = update_forward_backward_step(gamma);
+        if (!ForBESUtils::is_status_ok(status)){
+            return status;
+        }
     }
 
     /* TODO: fill in here */
@@ -280,7 +285,7 @@ double FBCache::get_eval_FBE(double gamma) {
 }
 
 double FBCache::get_eval_f() {
-    int status = update_eval_f();
+    int status = update_eval_f();    
     return m_fx;
 }
 
