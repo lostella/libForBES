@@ -95,10 +95,13 @@ public:
 
     virtual ~FBCache();
     
-    void set_x(Matrix& x);
+    void set_point(Matrix& x);
     
     Matrix * get_forward_step(double gamma);
     Matrix * get_forward_backward_step(double gamma);
+    
+    Matrix * get_fpr();
+    double get_norm_fpr();
 
     double get_eval_f();
     double get_eval_FBE(double gamma);

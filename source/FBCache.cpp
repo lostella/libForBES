@@ -21,6 +21,9 @@
 #include "FBCache.h"
 #include "LinearOperator.h"
 
+//#include <iostream>
+#include <cmath>
+
 void FBCache::reset(int status) {
 	if (status < m_status) m_status = status;
 	m_flag_evalFBE = 0;
@@ -101,16 +104,20 @@ int FBCache::update_eval_f() {
     }
 
     if (m_f1 != NULL) {
+//    	cout << "there's f1" << endl;
         if (m_L1 != NULL) {
+//        	cout << "there's L1" << endl;
             *m_res1x = m_L1->call(*m_x);
         } else {
             *m_res1x = *m_x;
         }
         if (m_d1 != NULL) {
+//        	cout << "there's d1" << endl;
             *m_res1x += *m_d1;
         }
         int status = m_f1->call(*m_res1x, m_f1x, *m_gradf1x);
         if (ForBESUtils::STATUS_OK != status) {
+        	cout << "ERROR: " << status << endl;
             return status;
         }
     }
@@ -198,12 +205,13 @@ int FBCache::update_forward_backward_step(double gamma) {
     if (m_status < FBCache::STATUS_FORWARD) {
         int status = update_forward_step(gamma);
     }
-    
+    double c;
     int status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
     *m_FPRx = (*m_x - *m_z);
     m_sqnormFPRx = 0;
     for (int i = 0; i < m_FPRx->length(); i++) {
-		m_sqnormFPRx += (*m_FPRx)[i]*(*m_FPRx)[i];
+    	c = (*m_FPRx)[i];
+		m_sqnormFPRx += c*c;
     }
     
     m_gamma = gamma;
@@ -262,8 +270,8 @@ int FBCache::update_grad_FBE(double gamma) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-void FBCache::set_x(Matrix& x) {
-	m_x = &x;
+void FBCache::set_point(Matrix& x) {
+	*m_x = x;
 	reset(FBCache::STATUS_NONE);
 }
 
@@ -285,6 +293,16 @@ Matrix* FBCache::get_forward_step(double gamma) {
 Matrix* FBCache::get_forward_backward_step(double gamma) {
     update_forward_backward_step(gamma);
     return m_z;
+}
+
+Matrix* FBCache::get_fpr() {
+	update_forward_backward_step(m_gamma);
+	return m_FPRx;
+}
+
+double FBCache::get_norm_fpr() {
+	update_forward_backward_step(m_gamma);
+	return sqrt(m_sqnormFPRx);
 }
 
 FBCache::~FBCache() {

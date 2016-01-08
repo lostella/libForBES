@@ -29,6 +29,7 @@ void FBProblem::init() {
     m_d2 = NULL;
     m_lin = NULL;
 }
+
 FBProblem::FBProblem(
         Function& fun_f1,
         LinearOperator& L_1,
@@ -49,23 +50,23 @@ FBProblem::FBProblem(
 }
 
 FBProblem::FBProblem(
-        Function& fun_f1,
-        LinearOperator& L_1,
-        Matrix& d_1,
+        Function& fun_f,
+        LinearOperator& L,
+        Matrix& d,
         Function& fun_g) {
 	init();
-    m_f1 = &fun_f1;
-    m_L1 = &L_1;
-    m_d1 = &d_1;
-    m_g = &fun_g;
+	m_f1 = &fun_f;
+	m_L1 = &L;
+	m_d1 = &d;
+	m_g = &fun_g;
 }
 
 FBProblem::FBProblem(
-        Function& fun_f1,
+        Function& fun_f,
         Function& fun_g) {
 	init();
-    m_f1 = &fun_f1;
-    m_g = &fun_g;
+	m_f1 = &fun_f;
+	m_g = &fun_g;
 }
 
 LinearOperator * FBProblem::L1() {
