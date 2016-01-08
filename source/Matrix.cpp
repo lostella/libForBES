@@ -411,7 +411,6 @@ bool Matrix::operator==(const Matrix & right) const {
             (m_nrows == right.m_nrows);
     for (unsigned int i = 0; i < m_nrows; i++) {
         for (size_t j = 0; j < m_ncols; j++) {
-
             result = result && (std::abs(get(i, j) - right.get(i, j)) < tol);
         }
     }

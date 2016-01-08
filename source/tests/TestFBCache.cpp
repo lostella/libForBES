@@ -71,24 +71,24 @@ void TestFBCache::testBoxQP_small() {
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g01[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g01[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g01[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g01[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g01, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g01, FBEx, 1e-7);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g02[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g02[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g02[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g02[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g02, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g02, FBEx, 1e-7);
 	
 	delete x;
 	
@@ -100,24 +100,24 @@ void TestFBCache::testBoxQP_small() {
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g01[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g01[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g01[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g01[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g01, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g01, FBEx, 1e-7);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g02[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g02[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g02[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g02[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g02, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g02, FBEx, 1e-7);
 	
 	delete x;
 	delete cache;
@@ -182,24 +182,24 @@ void TestFBCache::testSparseLeastSquares_small() {
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, 1e-7);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, 1e-7);
 	
 	delete x;
 	
@@ -211,24 +211,24 @@ void TestFBCache::testSparseLeastSquares_small() {
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g1[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g1[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g1[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g1[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g1, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g1, FBEx, 1e-7);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g2[i], y->get(i, 0), 1e-14);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g2[i], z->get(i, 0), 1e-14);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g2[i], y->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g2[i], z->get(i, 0), 1e-7);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g2, FBEx, 1e-14);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g2, FBEx, 1e-7);
 	
 	delete x;	
 	delete cache;
