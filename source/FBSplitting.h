@@ -8,9 +8,9 @@
 class FBSplitting : public IterativeSolver {
 private:
 
-	FBProblem * m_prob;
-	double m_gamma;
-	
+    FBProblem * m_prob;
+    double m_gamma;
+
     FBCache m_cache;
     int m_it;
     int m_maxit;
@@ -18,18 +18,18 @@ private:
 
 protected:
 
-	virtual int iterate();
-	virtual int stop();
-    
+    virtual int iterate();
+    virtual int stop();
+
 public:
 
     FBSplitting(FBProblem & prob, Matrix & x0, double gamma);
-    
+
     int setMaxIt(int maxit);
     int setTol(double tol);
-	
-	int getIt();
-	Matrix& getSolution();
+
+    int getIt();
+    Matrix& getSolution();
 
     virtual ~FBSplitting();
 

@@ -58,7 +58,7 @@ int IndBox::call(Matrix& x, double& f) {
     if (m_uniform_lb != NULL && !isinf(-(*m_uniform_lb))) { /* there's a uniform LB and this is not -inf*/
         while (i < x.getNrows() && isInside) {
             if (m_uniform_lb != NULL) {
-                isInside = isInside && (x.get(i, 0) >= *m_uniform_lb);
+                isInside = isInside && (x[i] >= *m_uniform_lb);
             }
             i++;
         }
@@ -68,7 +68,7 @@ int IndBox::call(Matrix& x, double& f) {
     if (m_uniform_ub != NULL && !isinf(*m_uniform_ub)) {/* there's a uniform UB and this is not +inf*/
         while (i < x.getNrows() && isInside) {
             if (m_uniform_lb != NULL) {
-                isInside = isInside && x.get(i, 0) <= *m_uniform_ub;
+                isInside = isInside && x[i] <= *m_uniform_ub;
             }
             i++;
         }
@@ -77,7 +77,7 @@ int IndBox::call(Matrix& x, double& f) {
 
     if (m_lb != NULL) {
         while (i < x.getNrows() && isInside) {
-            isInside = isInside && x.get(i, 0) >= m_lb->get(i, 0);
+            isInside = isInside && x[i] >= m_lb->getData()[i];
             i++;
         }
         i = 0;
@@ -85,7 +85,7 @@ int IndBox::call(Matrix& x, double& f) {
 
     if (m_ub != NULL) {
         while (i < x.getNrows() && isInside) {
-            isInside = isInside && x.get(i, 0) <= m_ub->get(i, 0);
+            isInside = isInside && x[i] <= m_ub->getData()[i];
             i++;
         }
     }
@@ -101,9 +101,9 @@ int IndBox::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     // prox = max(LB, x)
     for (size_t i = 0; i < x.getNrows(); i++) {
         if (m_lb != NULL) {
-            prox.set(i, 0, std::max(m_lb->get(i, 0), x.get(i, 0)));
+            prox[i] = std::max(m_lb->getData()[i], x[i]);
         } else if (m_uniform_lb != NULL) {
-            prox.set(i, 0, std::max(*m_uniform_lb, x.get(i, 0)));
+            prox[i] = std::max(*m_uniform_lb, x[i]);
         }
     }
 
@@ -111,9 +111,9 @@ int IndBox::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     // prox = min(UB, prox)
     for (size_t i = 0; i < x.getNrows(); i++) {
         if (m_ub != NULL) {
-            prox.set(i, 0, std::min(m_ub->get(i, 0), prox.get(i, 0)));
+            prox[i] = std::min(m_ub->getData()[i], prox[i]);
         } else if (m_uniform_ub != NULL) {
-            prox.set(i, 0, std::min(*m_uniform_ub, prox.get(i, 0)));
+            prox[i] = std::min(*m_uniform_ub, prox[i]);
         }
     }
     return ForBESUtils::STATUS_OK;
@@ -128,38 +128,10 @@ FunctionOntologicalClass IndBox::category() {
     return FunctionOntologyRegistry::indicator();
 }
 
-
-/* PROTECTED METHODS */
-//LCOV_EXCL_START
-void IndBox::SetLb(Matrix* lb) {
-    m_lb = lb;
+int IndBox::callConj(Matrix& x, double& f_star, Matrix& grad) {
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-void IndBox::SetUb(Matrix* ub) {
-    m_ub = ub;
-}
 
-void IndBox::SetUniform_lb(double* uniform_lb) {
-    m_uniform_lb = uniform_lb;
-}
 
-void IndBox::SetUniform_ub(double* uniform_ub) {
-    m_uniform_ub = uniform_ub;
-}
-
-Matrix* IndBox::GetLb() const {
-    return m_lb;
-}
-
-Matrix* IndBox::GetUb() const {
-    return m_ub;
-}
-
-double* IndBox::GetUniform_lb() const {
-    return m_uniform_lb;
-}
-
-double* IndBox::GetUniform_ub() const {
-    return m_uniform_ub;
-}
 //LCOV_EXCL_STOP

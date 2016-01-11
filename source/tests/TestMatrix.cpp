@@ -93,9 +93,50 @@ void TestMatrix::testOpplus() {
     size_t n = 1000;
     size_t m = 50;
     Matrix x = MatrixFactory::MakeRandomMatrix(n, m, -1.5, 2.0);
-    Matrix y(x);    
+    Matrix y(x);
 
-    x.plusop();        
+    x.plusop();
+
+    const double tol = 1e-12;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        for (size_t j = 0; j < x.getNcols(); j++) {
+            if (y.get(i, j) >= 0.0) {
+                _ASSERT_NUM_EQ(y.get(i, j), x.get(i, j), tol);
+            } else {
+                _ASSERT_NUM_EQ(0.0, x.get(i, j), tol);
+            }
+        }
+    }
+}
+
+void TestMatrix::testOpplus2() {
+    size_t n = 10;
+    size_t m = 1000;
+    Matrix x = MatrixFactory::MakeRandomMatrix(n, m, -1.5, 2.0);   
+    
+    Matrix z(n, m);
+    x.plusop(&z);
+    
+    const double tol = 1e-12;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        for (size_t j = 0; j < x.getNcols(); j++) {
+            if (x.get(i, j) >= 0.0) {
+                _ASSERT_NUM_EQ(x.get(i, j), z.get(i, j), tol);
+            } else {
+                _ASSERT_NUM_EQ(0.0, z.get(i, j), tol);
+            }
+        }
+    }
+}
+
+void TestMatrix::testOpplusSparse() {
+    size_t n = 1000;
+    size_t m = 50;
+    size_t nnz = 200;
+    Matrix x = MatrixFactory::MakeRandomSparse(n, m, nnz, -1.5, 2.0);
+    Matrix y(x);
+
+    x.plusop();
 
     const double tol = 1e-12;
     for (size_t i = 0; i < x.getNrows(); i++) {

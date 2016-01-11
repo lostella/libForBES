@@ -143,6 +143,7 @@ public:
      * @param x given vector of appropriate dimensions
      * @param gamma gamma parameter of the proximal operator
      * @param prox the result of the prox operator
+     * @param f_at_prox the value of f at the proximal point
      * @return 
      * status code which is equal to <code>STATUS_OK</code> if the computation
      * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if

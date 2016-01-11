@@ -47,15 +47,39 @@
  * 
  * The proximal operator of this function is defined as 
  * \f[
- * \delta^*(x^*|B_{[l,u]}) = \mathrm{mid}(x^*; l, u) = \min (\max(x^*, l), u)
+ * \mathrm{prox}_{\gamma\delta(\cdot|B_{[l,u]})}(v) = \mathrm{mid}(v; l, u) = \min (\max(v, l), u)
  * \f]
  * These two functions are implemented and are available through #call and 
  * #callProx.
+ * 
+ * The conjugate of the indicator function of a box is the support function of
+ * that box, that is
+ * 
+ * \f[
+ * \begin{align}
+ * \delta^*(y\mid B_{[l,u]}) &= \sup_{x\in B_{[l,u]}} \langle y, x\rangle = \sup_{l \leq x \leq u} \langle y, x\rangle\\
+ * &= \sup_{l \leq x \leq u} \sum_{i=1}^{n}y_ix_i\\
+ * &= \sum_{i=1}^{n} \sup_{l_i \leq x_i \leq u_i} y_ix_i
+ * \end{align}
+ * \f]
+ * 
+ * Now notice that for \f$x,y,l,u\in\mathbb{R}\f$ it is
+ * 
+ * \f[
+ * \sup_{l\leq x \leq u}yx = \begin{cases}
+ * 0,&\text{ if } y = 0,\\
+ * u, &\text{ if } y>0,\\
+ * l, &\text{ if } y<0
+ * \end{cases}
+ * \f]
+ * 
+ * This function is available though #callConj.
  */
 class IndBox : public Function {
 public:
     
     using Function::call;
+    using Function::callConj;
 
     IndBox(double& uniform_lb, double& uniform_ub);
 
@@ -67,29 +91,15 @@ public:
     
     virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 
-    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);            
+     
+    virtual int callConj(Matrix& x, double& f_star, Matrix& grad);
     
     virtual FunctionOntologicalClass category();
 
 
 
-protected:
 
-    void SetLb(Matrix* lb);
-    
-    void SetUb(Matrix* ub);
-
-    void SetUniform_lb(double* uniform_lb);
-
-    void SetUniform_ub(double* uniform_ub);
-
-    Matrix* GetLb() const;
-
-    Matrix* GetUb() const;
-
-    double* GetUniform_lb() const;
-
-    double* GetUniform_ub() const;
 
 private:
 

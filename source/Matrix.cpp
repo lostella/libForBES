@@ -411,12 +411,40 @@ void Matrix::plusop() {
             }
         }
     } else {
-        for (size_t k = 0; k < m_triplet->nnz; k++) {
-            double * val = (static_cast<double*> (m_triplet->x)) + k;
-            if (*val < 0) {
-                *val = 0.0;
+        if (m_triplet != NULL) {
+            for (size_t k = 0; k < m_triplet->nnz; k++) {
+                double * val = (static_cast<double*> (m_triplet->x)) + k;
+                if (*val < 0) {
+                    *val = 0.0;
+                }
+            }
+        } else if (m_sparse != NULL) {
+            for (size_t j = 0; j < m_ncols; j++) {
+                int p = (static_cast<int*> (m_sparse->p))[j];
+                int pend = (m_sparse->packed == 1)
+                        ? ((static_cast<int*> (m_sparse->p))[j + 1])
+                        : p + (static_cast<int*> (m_sparse->nz))[j];
+                for (; p < pend; p++) {
+                    double * val = (static_cast<double*> (m_sparse->x)) + p;
+                    if (*val < 0) {
+                        *val = 0.0;
+                    }
+                }
             }
         }
+    }
+}
+
+void Matrix::plusop(Matrix* mat) {
+    if (m_type != Matrix::MATRIX_SPARSE) {
+        if (length() != mat->length()) {
+            throw std::invalid_argument("Input matrix allocation/size error");
+        }
+        for (size_t i = 0; i < length(); i++) {
+            mat->m_data[i] = m_data[i] < 0 ? 0.0 : m_data[i];
+        }
+    } else {
+        throw std::logic_error("Not implemented yet");
     }
 }
 
@@ -692,7 +720,7 @@ Matrix Matrix::multiplyLeftDense(const Matrix & right) const {
         Matrix result(getNrows(), getNcols());
         for (size_t j = 0; j < getNcols(); j++) {
             for (size_t i = 0; i < getNrows(); i++) {
-                result.set(i, j, get(i, j) * right.get(j, j));
+                result.set(i, j, (!m_transpose ? m_data[i + j * m_nrows] : m_data[j + i * m_ncols]) * right.m_data[j]);
             }
         }
         return result;
@@ -738,18 +766,18 @@ Matrix Matrix::multiplyLeftDiagonal(const Matrix & right) const {
     for (size_t i = 0; i < m_nrows; i++) {
         if (MATRIX_SYMMETRIC == right.m_type) {
             for (size_t j = i; j < right.m_ncols; j++) {
-                result.set(i, j, get(i, i) * right.get(i, j));
+                result.set(i, j, m_data[i] * right.get(i, j));
             }
         } else if (MATRIX_DENSE == right.m_type) {
             for (size_t j = 0; j < right.m_ncols; j++) {
-                result.set(i, j, get(i, i) * right.get(i, j));
+                result.set(i, j, m_data[i] * right.get(i, j));
             }
         } else if (MATRIX_DIAGONAL == right.m_type) {
             result.set(i, i, m_data[i] * right.m_data[i]);
         } else if (MATRIX_LOWERTR == right.m_type) {
             for (size_t j = 0; j <= i; j++) {
 
-                result.set(i, j, get(i, i) * right.get(i, j));
+                result.set(i, j, m_data[i] * right.get(i, j));
             }
         }
     }
@@ -843,7 +871,7 @@ Matrix Matrix::multiplyLeftSparse(Matrix & right) {
         Matrix result(*this); // COPY [result := right]
         for (size_t k = 0; k < result.m_triplet->nnz; k++) {
             int j_ = (static_cast<int*> (result.m_triplet->j))[k];
-            (static_cast<double*> (result.m_triplet->x))[k] *= right.get(j_, j_);
+            (static_cast<double*> (result.m_triplet->x))[k] *= right.m_data[j_];
         }
         return result;
     } else {
@@ -1163,7 +1191,7 @@ int Matrix::generic_add_helper_left_dense(Matrix& C, double alpha, Matrix& A, do
         }
     } else if (type_of_A == MATRIX_DIAGONAL) { /* DENSE + DIAGONAL */
         for (size_t i = 0; i < A.getNrows(); i++) {
-            C._addIJ(i, i, alpha * A.get(i, i), gamma);
+            C._addIJ(i, i, alpha * A.m_data[i], gamma);
         }
     } else if (type_of_A == MATRIX_LOWERTR) { /* DENSE + LOWER */
         /* TODO This is to be tested!!! */
@@ -1216,7 +1244,9 @@ int Matrix::generic_add_helper_left_symmetric(Matrix& C, double alpha, Matrix& A
         }
     } else if (type_of_A == MATRIX_DIAGONAL) { /* SYMMETRIC + DIAGONAL */
         for (size_t i = 0; i < ncols; i++) {
-            C._addIJ(i, i, alpha * A.get(i, i), gamma);
+            size_t idx = i + C.m_nrows * i - i * (i + 1) / 2;
+            double val = C.m_data[idx];
+            C.m_data[idx] = gamma * val + alpha * A.m_data[i];
         }
     } else if (type_of_A == MATRIX_LOWERTR || type_of_A == MATRIX_DENSE) { /* SYMMETRIC + LOWER_TRI/DENSE = DENSE */
         C.m_dataLength = ncols * nrows; /* SYMMETRIC + DENSE = DENSE     */
