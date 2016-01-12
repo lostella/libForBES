@@ -31,6 +31,19 @@
  * \ingroup Functions
  * \date Created on October 30, 2015, 6:54 PM
  * \author Pantelis Sopasakis
+ * 
+ * This class defines the function
+ * 
+ * \f[
+ * f(x) = \mu\|x\|_2,
+ * \f]
+ * 
+ * for vectors \f$x\in\mathbb{R}^n\f$ and scalars \f$\mu>0\f$. Function \f$f\f$ is
+ * a norm \f$\|x\| = f(x)\f$ for all \f$\mu>0\f$ with dual
+ * 
+ * \f[
+ *  \|x\|_* = \frac{1}{\mu}\|x\|_2.
+ * \f]
  */
 class Norm2 : public Norm {
 public:
@@ -38,8 +51,16 @@ public:
     using Function::call;
     using Norm::callConj;
     
+    /**
+     * Default constructor. Here, it is assumed that \f$\mu=1\f$. It 
+     * constructs an instance of the function \f$f(x) = \mu\|x\|_2\f$.
+     */
     Norm2();
     
+    /**
+     * Constructs an instance of the function \f$f(x) = \mu\|x\|_2\f$
+     * @param mu
+     */
     explicit Norm2(double mu);
     
     virtual ~Norm2();

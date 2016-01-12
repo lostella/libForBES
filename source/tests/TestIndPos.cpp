@@ -239,16 +239,51 @@ void TestIndPos::testProx2() {
     }
     Function * ind_pos = new IndPos(lb);
 
-    ind_pos -> callProx(x, 1.0, prox);
-    
-    for (size_t i = 0; i<n; i++){
-        if (i % 2 == 0){
+    int status = ind_pos -> callProx(x, 1.0, prox);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+
+    for (size_t i = 0; i < n; i++) {
+        if (i % 2 == 0) {
             _ASSERT_NUM_EQ(lb[i], prox[i], 1e-14);
         } else {
             _ASSERT_NUM_EQ(x[i], prox[i], 1e-14);
         }
     }
-       
+
+    delete ind_pos;
+}
+
+void TestIndPos::testProx3() {
+    double uniform_lb = -1.50;
+    Function * ind_pos = new IndPos(uniform_lb);
+    size_t n = 10;
+    Matrix x(n, 1); // y = 0
+    
+
+    Matrix prox(n, 1);    
+
+    int status = ind_pos -> callProx(x, 1.0, prox);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+    _ASSERT_EQ(x, prox);
+
+    for (size_t i = 0; i < n; i++) {
+        if (i % 2 == 0) {
+            x[i] = -1.0*i - 2.0;
+        } else {
+            x[i] = 1.0*i + 2.0;
+        }
+    }
+    status = ind_pos -> callProx(x, 1.0, prox);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+    for (size_t i = 0; i < n; i++) {
+        _ASSERT_NUM_EQ(std::max(uniform_lb, x[i]), prox[i], 1e-14);
+        if (i % 2 == 0) {
+            _ASSERT_NUM_EQ(uniform_lb, prox[i], 1e-14);
+        } else {
+            _ASSERT_NUM_EQ(i + 2.0, prox[i], 1e-14);
+        }
+    }
+
     delete ind_pos;
 }
 

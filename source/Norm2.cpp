@@ -72,9 +72,7 @@ int Norm2::callProx(Matrix& x, double gamma, Matrix& prox) {
     double gm = gamma*m_mu;
     if (norm_x > gm) {
         double s = 1 - gm / norm_x;
-        for (size_t i = 0; i < x.getNrows(); i++) {
-            prox.set(i, 0, s * x[i]); // prox = s * x;
-        }
+        prox = s * x;
     }
     return ForBESUtils::STATUS_OK;
 }
