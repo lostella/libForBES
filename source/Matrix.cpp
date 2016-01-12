@@ -441,7 +441,7 @@ void Matrix::plusop(Matrix* mat) {
             throw std::invalid_argument("Input matrix allocation/size error");
         }
         for (size_t i = 0; i < length(); i++) {
-            mat->m_data[i] = m_data[i] < 0 ? 0.0 : m_data[i];
+            mat->m_data[i] = m_data[i] < 0.0 ? 0.0 : m_data[i];
         }
     } else {
         throw std::logic_error("Not implemented yet");

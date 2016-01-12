@@ -36,7 +36,7 @@ Norm2::~Norm2() {
 inline double vecNorm2(Matrix& x) {
     double norm_x = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        norm_x += std::pow(x.get(i, 0), 2);
+        norm_x += std::pow(x[i], 2);
     }
     norm_x = std::sqrt(norm_x);
     return norm_x;
@@ -73,7 +73,7 @@ int Norm2::callProx(Matrix& x, double gamma, Matrix& prox) {
     if (norm_x > gm) {
         double s = 1 - gm / norm_x;
         for (size_t i = 0; i < x.getNrows(); i++) {
-            prox.set(i, 0, s * x.get(i, 0)); // prox = s * x;
+            prox.set(i, 0, s * x[i]); // prox = s * x;
         }
     }
     return ForBESUtils::STATUS_OK;
@@ -90,7 +90,7 @@ int Norm2::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     if (norm_x > gm) {
         double s = 1 - gm / norm_x;
         for (size_t i = 0; i < x.getNrows(); i++) {
-            prox.set(i, 0, s * x.get(i, 0)); // prox = s * x;
+            prox.set(i, 0, s * x[i]); // prox = s * x;
         }
         f_at_prox = m_mu * s * norm_x;
     } else {

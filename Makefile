@@ -206,6 +206,7 @@ TESTS = \
 	TestSLDL.test \
 	TestCholesky.test \
 	TestIndBox.test \
+	TestIndPos.test \
 	TestIndSOC.test \
 	TestCGSolver.test \
 	TestLDL.test \
@@ -261,6 +262,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestQuadratic
 	${BIN_TEST_DIR}/TestQuadraticOperator
 	${BIN_TEST_DIR}/TestIndBox
+	${BIN_TEST_DIR}/TestIndPos
 	${BIN_TEST_DIR}/TestIndSOC
 	${BIN_TEST_DIR}/TestNorm1
 	${BIN_TEST_DIR}/TestNorm2

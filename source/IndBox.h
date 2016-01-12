@@ -72,10 +72,37 @@ public:
     using Function::call;
     using Function::callConj;
 
+    /**
+     * Constructor of instances of IndBox given a uniform lower bound and a uniform
+     * upper bound. This then will be the indicator function of the set
+     * \f[
+     * B_{[l,u]} = \{x\in\mathbb{R}: l \leq x_i \leq u, \forall i=1,\ldots, n\},
+     * \f]
+     * where \f$l,u\in\mathbb{R}\f$ with \f$l\leq u\f$ are the uniform bounds
+     * provided in this constructor.
+     * @param uniform_lb Uniform lower bound
+     * @param uniform_ub Uniform upper bound
+     */
     IndBox(double& uniform_lb, double& uniform_ub);
 
+    /**
+     * Constructor of instances of IndBox given the lower and upper bounds as
+     * instances of Matrix (column vectors). This then will be the indicator 
+     * function of the set
+     * \f[
+     * B_{[l,u]} = \{x\in\mathbb{R}: l_i \leq x_i \leq u_i, \forall i=1,\ldots, n\},
+     * \f]
+     * where \f$l,u\in\mathbb{R}^n\f$ with \f$l_i\leq u_i\f$ are the bounds (column vectors,
+     * instances of Matrix) provided in this constructor.
+     * 
+     * @param lb lower bound
+     * @param ub upper bound
+     */
     IndBox(Matrix& lb, Matrix& ub);
 
+    /**
+     * Default destructor
+     */
     virtual ~IndBox();
 
     virtual int call(Matrix& x, double& f);
@@ -108,15 +135,12 @@ public:
     virtual FunctionOntologicalClass category();
 
 
-
-
-
 private:
 
-    Matrix* m_lb;
-    Matrix* m_ub;
-    double* m_uniform_lb;
-    double* m_uniform_ub;
+    Matrix * m_lb;
+    Matrix * m_ub;
+    double * m_uniform_lb;
+    double * m_uniform_ub;
 
 
 };

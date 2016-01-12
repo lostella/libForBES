@@ -3,6 +3,19 @@
  * Author: Pantelis Sopasakis
  *
  * Created on Jul 26, 2015, 5:41:14 PM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *  
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "TestIndBox.h"
@@ -150,7 +163,7 @@ void TestIndBox::testCallProx() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(0.0, fprox, tol);
 
-    _ASSERT_NUM_EQ(lb, prox.get(0, 0), tol);
+    _ASSERT_NUM_EQ(lb, prox[0], tol);
     _ASSERT_NUM_EQ(x.get(1, 0), prox.get(1, 0), tol);
 
     status = F->callProx(x, gamma, prox);
