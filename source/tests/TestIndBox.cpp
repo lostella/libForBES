@@ -162,4 +162,35 @@ void TestIndBox::testCallProx() {
     _ASSERT_OK(delete F);
 }
 
+void TestIndBox::testCategory() {
+    double lb = 1.0;
+    double ub = 2.0;
+    Function * ind_box = new IndBox(lb, ub);
+    FunctionOntologicalClass cat = ind_box -> category();
+    _ASSERT(cat.defines_conjugate());
+    _ASSERT(cat.defines_prox());
+    _ASSERT(cat.defines_f());
+    _ASSERT_NOT(cat.defines_conjugate_grad());
+    _ASSERT_NOT(cat.defines_grad());
+    _ASSERT_NOT(cat.defines_hessian());
+    _ASSERT_NOT(cat.defines_hessian_conj());
+    delete ind_box;
+}
+
+void TestIndBox::testCallConj() {
+    double lb = -1.5;
+    double ub = 2.0;
+    Function * ind_box = new IndBox(lb, ub);
+    
+    Matrix x(5,1);
+    x[1] = 10;
+    x[2] = -0.5;
+    x[3] = -1.0;
+    x[4] = -1.5;
+    double f_star = 0.0;
+    ind_box->callConj(x, f_star);    
+    _ASSERT_NUM_EQ(24.5, f_star, 1e-8);
+    delete ind_box;
+}
+
 

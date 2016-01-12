@@ -31,7 +31,6 @@ IndBox::IndBox(double& uniform_lb, double& uniform_ub) : Function() {
 }
 
 IndBox::IndBox(Matrix& lb, Matrix& ub) : Function() {
-    /* empty */
     if (!lb.isColumnVector()) {
         throw std::invalid_argument("LB must be a vector");
     }
@@ -46,7 +45,6 @@ IndBox::IndBox(Matrix& lb, Matrix& ub) : Function() {
 
 IndBox::~IndBox() {
 }
-
 
 int IndBox::call(Matrix& x, double& f) {
     if (!x.isColumnVector()) {
@@ -125,13 +123,28 @@ int IndBox::callProx(Matrix& x, double gamma, Matrix& prox) {
 }
 
 FunctionOntologicalClass IndBox::category() {
-    return FunctionOntologyRegistry::indicator();
+    FunctionOntologicalClass ind_box_category = FunctionOntologyRegistry::indicator();
+    ind_box_category.set_defines_conjugate(true);
+    return ind_box_category;
 }
 
-int IndBox::callConj(Matrix& x, double& f_star, Matrix& grad) {
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+int IndBox::callConj(Matrix& x, double& f_star) {
+    f_star = 0.0;
+    /*
+     * Note: either m_lb or m_uniform_lb will be non-NULL. 
+     * Check out the two constructors of this class.
+     */
+    if (m_uniform_lb == NULL) {
+        for (size_t i = 0; i < x.getNrows(); i++) {
+            double val = x[i];
+            f_star += std::max(val * m_lb->getData()[i], val * m_ub->getData()[i]);
+        }
+    } else {
+        for (size_t i = 0; i < x.getNrows(); i++) {
+            double val = x[i];
+            f_star += std::max(val * (*m_uniform_lb), val * (*m_uniform_ub));
+        }
+    }
+
+    return ForBESUtils::STATUS_OK;
 }
-
-
-
-//LCOV_EXCL_STOP

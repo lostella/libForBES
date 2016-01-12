@@ -59,25 +59,16 @@
  * \begin{align}
  * \delta^*(y\mid B_{[l,u]}) &= \sup_{x\in B_{[l,u]}} \langle y, x\rangle = \sup_{l \leq x \leq u} \langle y, x\rangle\\
  * &= \sup_{l \leq x \leq u} \sum_{i=1}^{n}y_ix_i\\
- * &= \sum_{i=1}^{n} \sup_{l_i \leq x_i \leq u_i} y_ix_i
+ * &= \sum_{i=1}^{n} \sup_{l_i \leq x_i \leq u_i} y_ix_i\\
+ * &= \sum_{i=1}^{n} \max \{ y_i l, y_i u \}
  * \end{align}
- * \f]
- * 
- * Now notice that for \f$x,y,l,u\in\mathbb{R}\f$ it is
- * 
- * \f[
- * \sup_{l\leq x \leq u}yx = \begin{cases}
- * 0,&\text{ if } y = 0,\\
- * u, &\text{ if } y>0,\\
- * l, &\text{ if } y<0
- * \end{cases}
  * \f]
  * 
  * This function is available though #callConj.
  */
 class IndBox : public Function {
 public:
-    
+
     using Function::call;
     using Function::callConj;
 
@@ -86,15 +77,34 @@ public:
     IndBox(Matrix& lb, Matrix& ub);
 
     virtual ~IndBox();
-    
-    virtual int call(Matrix& x, double& f);    
-    
+
+    virtual int call(Matrix& x, double& f);
+
     virtual int callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox);
 
-    virtual int callProx(Matrix& x, double gamma, Matrix& prox);            
-     
-    virtual int callConj(Matrix& x, double& f_star, Matrix& grad);
-    
+    virtual int callProx(Matrix& x, double gamma, Matrix& prox);
+
+    /**
+     * Computes the conjugate of IndBox at a point <code>x</code> which is 
+     * given by
+     * 
+     * \f[
+     * \delta^*(y\mid B_{[l,u]}) = \sum_{i=1}^{n} \max \{ y_i l, y_i u \}
+     * \f]
+     * 
+     * @param x The vector x where \f$f^*(x)\f$ should be computed.
+     * @param f_star the computed value \f$f^*(x)\f$
+     * @return 
+     * status code which is equal to <code>STATUS_OK=0</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION=2</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS=1</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     * 
+     */
+    virtual int callConj(Matrix& x, double& f_star);
+
     virtual FunctionOntologicalClass category();
 
 
