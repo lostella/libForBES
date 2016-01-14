@@ -91,12 +91,12 @@ void TestMatrixOperator::testCallAdjoint() {
 
 
     M = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 10.0, Matrix::MATRIX_DENSE);
-    _ASSERT_OK(T->SetMatrix(M));
+    _ASSERT_OK(T->setMatrix(M));
     _ASSERT_NOT(T->isSelfAdjoint());
 
     M = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 10.0, Matrix::MATRIX_DENSE);
     _ASSERT_NOT(M.isSymmetric());
-    _ASSERT_OK(T->SetMatrix(M));
+    _ASSERT_OK(T->setMatrix(M));
     _ASSERT_NOT(T->isSelfAdjoint());
     _ASSERT_OK(y = T->call(x));
     _ASSERT_OK(z = T->callAdjoint(x));

@@ -38,7 +38,8 @@ public:
     using Function::callConj;
 
     /**
-     * Define the dual norm which is defined as
+     * The dual norm is defined as 
+     * 
      * \f[
      *  \|x\|_\star = \sup_{\|z\|\leq 1} \langle z, x\rangle.
      * \f]

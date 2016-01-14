@@ -80,7 +80,7 @@ int Quadratic::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
             m_Q = new Matrix(n, n, Matrix::MATRIX_DIAGONAL);
             m_delete_Q = true;
             for (size_t i = 0; i < n; i++) {
-                m_Q->set(i, i, 1.0);
+                m_Q->getData()[i] = 1.0; /* here, m_Q is diagonal */
             }
         }
     }
@@ -136,8 +136,8 @@ int Quadratic::callConj(Matrix& y, double& f_star, Matrix& g) {
         g = z;
         f_star = 0.0;
         for (size_t i = 0; i < z.getNrows(); i++) {
-            g.set(i, 0, g.get(i, 0) / m_Q->get(i, i));
-            f_star += z.get(i, 0) * g.get(i, 0);
+            g[i] /= m_Q->get(i, i);
+            f_star += z[i] * g[i];
         }
         return ForBESUtils::STATUS_OK;
     }

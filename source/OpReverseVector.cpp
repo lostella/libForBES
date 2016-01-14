@@ -45,19 +45,19 @@ int OpReverseVector::call(Matrix& y, double alpha, Matrix& x, double gamma) {
         double temp;
         temp = x.get(n - i - 1, 0);
         if (is_gamma_zero) {
-            y.set(n - i - 1, 0, alpha * x.get(i, 0));
-            y.set(i, 0, alpha * temp);
+            y[n - i - 1] = alpha * x[i];
+            y[i] = alpha * temp;
         } else {
-            y.set(n - i - 1, 0, gamma * y.get(n - i - 1, 0) + alpha * x.get(i, 0));
-            y.set(i, 0, gamma * y.get(i, 0) + alpha * temp);
+            y[n - i - 1] = gamma * y[n - i - 1] + alpha * x[i];
+            y[i] = gamma * y[i] + alpha * temp;
         }
     }
     if (n % 2 == 1) {
         size_t middle_idx = n / 2;
         if (is_gamma_zero) {
-            y.set(middle_idx, 0, alpha * x.get(middle_idx, 0));
+            y[middle_idx] = alpha * x[middle_idx];
         } else {
-            y.set(middle_idx, 0, gamma * y.get(middle_idx, 0) + alpha * x.get(middle_idx, 0));
+            y[middle_idx] = gamma * y[middle_idx] + alpha * x[middle_idx];
         }
     }
     return ForBESUtils::STATUS_OK;

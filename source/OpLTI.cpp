@@ -68,7 +68,7 @@ int OpLTI::call(Matrix& y, double alpha, Matrix& u, double gamma) {
         Matrix ui = MatrixFactory::ShallowVector(u, m, i * m);
         std::cout << "u[" << i << "] = " << ui << std::endl;
     }
-    return ForBESUtils::STATUS_OK;
+    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
 int OpLTI::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {

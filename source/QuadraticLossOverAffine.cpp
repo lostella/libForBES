@@ -41,7 +41,7 @@ QuadraticLossOverAffine::QuadraticLossOverAffine(Matrix& A, Matrix& b, Matrix& w
     m_F = new Matrix();
     Matrix W_inv_sqrt(w);
     for (size_t i = 0; i < w.getNrows(); ++i) {
-        W_inv_sqrt.set(i, 0, 1 / std::sqrt(W_inv_sqrt.get(i, 0)));
+        W_inv_sqrt[i] = 1 / std::sqrt(W_inv_sqrt[i]);
     }
     W_inv_sqrt.toggle_diagonal();
     *m_F = A * W_inv_sqrt;
@@ -67,7 +67,7 @@ int QuadraticLossOverAffine::callConj(Matrix& y, double& f_star, Matrix& grad) {
     size_t ny = y.getNrows();
     Matrix sigma(ny, 1);
     for (size_t i = 0; i < ny; i++) {
-        sigma.set(i, 0, y.get(i, 0) / m_w->get(i, 0) + m_p->get(i, 0));
+        sigma[i] =  y[i] / m_w->get(i) + m_p->get(i);
     }
     Matrix h = (*m_A) * sigma - (*m_b);
     Matrix q;
@@ -79,9 +79,9 @@ int QuadraticLossOverAffine::callConj(Matrix& y, double& f_star, Matrix& grad) {
     Matrix c = (*m_A) * q;
     m_A->transpose();
     for (size_t i = 0; i < ny; i++) {
-        grad.set(i, 0, sigma.get(i, 0) - c.get(i, 0) / m_w->get(i, 0));
+        grad[i] = sigma[i] - c[i] / m_w->get(i);
     }
-    f_star = (grad *  (y)).get(0, 0);
+    f_star = (grad *  (y))[0];
     return ForBESUtils::STATUS_OK;
 }
 

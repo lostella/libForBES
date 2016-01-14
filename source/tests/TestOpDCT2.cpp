@@ -39,7 +39,7 @@ void TestOpDCT2::tearDown() {
 }
 
 void TestOpDCT2::testAdj0() {
-    const size_t n = 10;
+    const size_t n = 190;
     Matrix T(n, n);
     for (size_t k = 0; k < n; k++) {
         for (size_t i = 0; i < n; i++) {
@@ -60,7 +60,7 @@ void TestOpDCT2::testAdj0() {
 }
 
 void TestOpDCT2::testCall1() {
-    for (size_t n = 14; n < 50; n++) {
+    for (size_t n = 14; n < 60; n++) {
         Matrix T(n, n);
         for (size_t k = 0; k < n; k++) {
             for (size_t i = 0; i < n; i++) {
@@ -89,7 +89,6 @@ void TestOpDCT2::testCall1() {
 void TestOpDCT2::testCall0() {
 
     const size_t n = 10;
-    const double tol = 1e-6;
 
     LinearOperator * op = new OpDCT2(n);
 
@@ -131,8 +130,8 @@ void TestOpDCT2::testCall0() {
 
 void TestOpDCT2::testCall() {
     const size_t n = 10;
-    const size_t repeat = 50;
-    const double tol = 1e-7;
+    const size_t repeat = 550;
+    const double tol = 1e-8;
 
     LinearOperator * op = new OpDCT2(n);
 
@@ -219,7 +218,7 @@ void TestOpDCT2::testLinearity() {
 }
 
 void TestOpDCT2::testAdjointLinearity() {
-    const size_t n = 100;
+    const size_t n = 200;
     LinearOperator * op = new OpDCT2(n);
     LinearOperator *adj = new OpAdjoint(*op);
     _ASSERT_EQ(n, adj->dimensionIn().first);

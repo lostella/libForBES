@@ -57,11 +57,11 @@ double IndBall2::norm_div(const Matrix& x) {
     double ndiv = 0.0;
     if (m_is_xc_zero) {
         for (size_t i = 0; i < x.getNrows(); i++) {
-            ndiv += std::pow(x.get(i, 0), 2);
+            ndiv += std::pow(x[i], 2);
         }
     } else {
         for (size_t i = 0; i < x.getNrows(); i++) {
-            ndiv += std::pow(x.get(i, 0) - m_xc->get(i, 0), 2);
+            ndiv += std::pow(x[i] - m_xc->get(i), 2);
         }
     }
     ndiv = std::sqrt(ndiv);
@@ -78,10 +78,8 @@ int IndBall2::callProx(Matrix& x, double gamma, Matrix& prox) {
     } else {
         double alpha = m_rho / normDiv;
         for (size_t i = 0; i < x.getNrows(); i++) {
-            prox.set(i, 0,
-                    (m_is_xc_zero ? 0.0 : m_xc->get(i, 0))
-                    + alpha * (x.get(i, 0) - (m_is_xc_zero ? 0.0 : m_xc->get(i, 0)))
-                    );
+            prox[i] = (m_is_xc_zero ? 0.0 : m_xc->get(i))
+                    + alpha * (x[i] - (m_is_xc_zero ? 0.0 : m_xc->get(i)));
         }
     }
     return ForBESUtils::STATUS_OK;

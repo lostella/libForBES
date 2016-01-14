@@ -44,37 +44,37 @@ OpGradient::~OpGradient() {
  */
 void call_1d(Matrix & Tx, Matrix& x, const size_t n, double alpha) {
     for (size_t i = 0; i < n - 1; i++) {
-        Tx.set(i, 0, alpha * (x.get(i + 1, 0) - x.get(i, 0)));
+        Tx[i] = alpha * (x[i + 1] - x[i]);
     }
 }
 
 void call_1d(Matrix & Tx, Matrix& x, const size_t n, double alpha, double gamma) {
     for (size_t i = 0; i < n - 1; i++) {
-        Tx.set(i, 0, gamma * Tx.get(i, 0) + alpha * (x.get(i + 1, 0) - x.get(i, 0)));
+        Tx[i] = gamma * Tx[i] + alpha * (x[i + 1] - x[i]);
     }
 }
 
 void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n, double alpha) {
-    Tstar_x.set(0, 0, -alpha * y.get(0, 0));
+    Tstar_x[0] = -alpha * y[0];
     for (size_t i = 1; i < n - 1; i++) {
-        Tstar_x.set(i, 0, alpha * (y.get(i - 1, 0) - y.get(i, 0)));
+        Tstar_x[i] = alpha * (y[i - 1] - y[i]);
     }
-    Tstar_x.set(n - 1, 0, alpha * y.get(n - 2, 0));
+    Tstar_x[n - 1] = alpha * y[n - 2];
 }
 
 void callAdjoint_1d(Matrix& Tstar_x, Matrix& y, const size_t n, double alpha, double gamma) {
     Tstar_x.set(0, 0, gamma * Tstar_x.get(0, 0) - alpha * y.get(0, 0));
     for (size_t i = 1; i < n - 1; i++) {
-        Tstar_x.set(i, 0, gamma * Tstar_x.get(i, 0) + alpha * (y.get(i - 1, 0) - y.get(i, 0)));
+        Tstar_x[i] = gamma * Tstar_x[i] + alpha * (y[i - 1] - y[i]);
     }
-    Tstar_x.set(n - 1, 0, gamma * Tstar_x.get(n - 1, 0) + alpha * y.get(n - 2, 0));
+    Tstar_x[n - 1] = gamma * Tstar_x[n - 1] + alpha * y[n - 2];
 }
 
 int OpGradient::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     const size_t n = x.getNrows();
     if (m_dimension.first != 0 && n != m_dimension.first) {
         std::ostringstream oss;
-        oss << "[call] OpGradient operator with dimension " << m_dimension.first 
+        oss << "[call] OpGradient operator with dimension " << m_dimension.first
                 << "; argument is of incompatible dimensions " << n << "x" << x.getNcols();
         throw std::invalid_argument(oss.str().c_str());
     }
@@ -86,7 +86,7 @@ int OpGradient::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     return ForBESUtils::STATUS_OK;
 }
 
-int OpGradient::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {    
+int OpGradient::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
     callAdjoint_1d(y, x, x.getNrows() + 1, alpha);
     return ForBESUtils::STATUS_OK;
 }

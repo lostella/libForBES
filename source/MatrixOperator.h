@@ -40,12 +40,30 @@ public:
     using LinearOperator::call;
     using LinearOperator::callAdjoint;
 
+    /**
+     * Defines a constructs a new instance of MatrixOperator providing a reference
+     * to an instance of Matrix.
+     * @param A Matrix
+     */
     explicit MatrixOperator(Matrix& A);
 
-    Matrix& GetMatrix() const;
+    /**
+     * Provides access to the underlying matrix.
+     * @return this operator as a matrix.
+     */
+    Matrix& getMatrix() const;
 
-    void SetMatrix(Matrix& A);
+    /**
+     * Allows the update of the underlying matrix.
+     * @param A a new instance of Matrix
+     */
+    void setMatrix(Matrix& A);
 
+    /**
+     * Whether this operator is self-adjoint, i.e., whether the underlying matrix
+     * is symmetric.
+     * @return whether the operator is self-adjoint
+     */
     virtual bool isSelfAdjoint();
 
     virtual int call(Matrix& y, double alpha, Matrix& x, double gamma);
@@ -56,11 +74,14 @@ public:
 
     virtual std::pair<size_t, size_t> dimensionOut();
 
+    /**
+     * Default destructor
+     */
     virtual ~MatrixOperator();
 
 private:
-    Matrix & m_A;
-    bool m_isSelfAdjoint;
+    Matrix & m_A; /**< matrix which defines the operator */
+    bool m_isSelfAdjoint;/**< whether this is self-adjoint */
 };
 
 #endif	/* MATRIXOPERATOR_H */

@@ -116,8 +116,8 @@ QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
 int QuadOverAffine::callConj(Matrix& y, double& f_star, Matrix& grad) {
     /* Update sigma(x) */
     for (size_t i = 0; i < m_Q->getNrows(); i++) {
-        m_sigma->set(i, 0, y.get(i, 0) - m_q->get(i, 0));
-    }
+        m_sigma->getData()[i] = y[i] - m_q->get(i);
+    }    
     /* Solve F*grad = sigma */
     int status = m_Fsolver->solve(*m_sigma, grad);
     /* Take the first n elements of grad */
@@ -125,7 +125,7 @@ int QuadOverAffine::callConj(Matrix& y, double& f_star, Matrix& grad) {
     /* f_star = grad' * Q * grad / 2.0 */
     f_star = m_Q->quad(grad);
     for (size_t i = 0; i < grad.getNrows(); i++) { /* Dot product */
-        f_star += grad.get(i, 0) * (m_q->get(i, 0) - y.get(i, 0));
+        f_star += grad[i] * (m_q->get(i) - y[i]);
     }
     f_star = -f_star;
     return status;

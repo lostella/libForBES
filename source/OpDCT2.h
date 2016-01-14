@@ -54,8 +54,15 @@ public:
     using LinearOperator::call;
     using LinearOperator::callAdjoint;
     
+    /**
+     * Default constructor for the DCT-II operator.
+     */
     OpDCT2();
 
+    /**
+     * Constructor for an instance of the DCT-II operator with a given size.
+     * @param n dimension
+     */
     explicit OpDCT2(size_t n);
 
     virtual ~OpDCT2();

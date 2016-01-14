@@ -90,10 +90,10 @@ DistanceToBox::~DistanceToBox() {
 
 int DistanceToBox::compute_dx(const Matrix& x, const size_t n, Matrix& dx) const {
     for (size_t i = 0; i < n; i++) {
-        if (x.get(i, 0) < (m_is_bounds_uniform ? m_uniform_lb : m_lb->get(i, 0))) {
-            dx.set(i, 0, x.get(i, 0) - (m_is_bounds_uniform ? m_uniform_lb : m_lb->get(i, 0)));
-        } else if (x.get(i, 0) > (m_is_bounds_uniform ? m_uniform_ub : m_ub->get(i, 0))) {
-            dx.set(i, 0, x.get(i, 0) - (m_is_bounds_uniform ? m_uniform_ub : m_ub->get(i, 0)));
+        if (x[i] < (m_is_bounds_uniform ? m_uniform_lb : m_lb->get(i))) {
+            dx[i] = x[i] - (m_is_bounds_uniform ? m_uniform_lb : m_lb->get(i));
+        } else if (x[i] > (m_is_bounds_uniform ? m_uniform_ub : m_ub->get(i))) {
+            dx[i] = x[i] - (m_is_bounds_uniform ? m_uniform_ub : m_ub->get(i));
         }
     }
     return ForBESUtils::STATUS_OK;

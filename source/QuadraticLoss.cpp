@@ -58,13 +58,13 @@ int QuadraticLoss::call(Matrix& x, double& f) {
     f = 0.0;
     for (size_t j = 0; j < x.getNrows(); j++) {
         double fi;
-        fi = x.get(j, 0);
+        fi = x[j];
         if (!m_is_zero_p) {
-            fi -= m_p->get(j, 0);
+            fi -= m_p->getData()[j];
         }
         fi *= fi;
         if (!m_is_uniform_weights) {
-            fi *= m_w->get(j, 0);
+            fi *= m_w->getData()[j];
         }
         f += fi;
     }
@@ -80,19 +80,19 @@ int QuadraticLoss::call(Matrix& x, double& f, Matrix& grad) {
     for (size_t j = 0; j < x.getNrows(); j++) {
         double fi;
         double gi;
-        fi = x.get(j, 0);
+        fi = x[j];
         if (!m_is_zero_p) {
-            fi -= m_p->get(j, 0);
+            fi -= m_p->getData()[j];
         }
         gi = fi;
         fi *= fi;
         if (!m_is_uniform_weights) {
-            double w = m_w->get(j, 0);
+            double w = m_w->getData()[j];
             fi *= w;
             gi *= w;
         }
         f += fi;
-        grad.set(j, 0, gi);
+        grad[j] = gi;
     }
     if (m_is_uniform_weights) {
         f *= m_uniform_w;
@@ -104,8 +104,8 @@ int QuadraticLoss::call(Matrix& x, double& f, Matrix& grad) {
 int QuadraticLoss::callConj(Matrix& x, double& f_star) {
     f_star = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        f_star += x.get(i, 0)*(2.0 * (m_is_zero_p ? 0.0 : m_p->get(i, 0))
-                + (x.get(i, 0) / (m_is_uniform_weights ? m_uniform_w : m_w->get(i, 0))));
+        f_star += x[i]*(2.0 * (m_is_zero_p ? 0.0 : m_p->get(i))
+                + (x[i] / (m_is_uniform_weights ? m_uniform_w : m_w->get(i))));
     }
     f_star /= 2.0;
     return ForBESUtils::STATUS_OK;
@@ -116,10 +116,10 @@ int QuadraticLoss::callConj(Matrix& x, double& f_star, Matrix& grad) {
     for (size_t i = 0; i < x.getNrows(); i++) {
         double gradi;
         double pi;
-        pi = m_is_zero_p ? 0.0 : m_p->get(i, 0);
-        gradi = pi + x.get(i, 0) / (m_is_uniform_weights ? m_uniform_w : m_w->get(i, 0));
+        pi = m_is_zero_p ? 0.0 : m_p->get(i);
+        gradi = pi + x[i] / (m_is_uniform_weights ? m_uniform_w : m_w->get(i));
         grad.set(i, 0, gradi);
-        f_star += x.get(i, 0)*(gradi + pi);
+        f_star += x[i]*(gradi + pi);
     }
     f_star /= 2.0;
     return ForBESUtils::STATUS_OK;

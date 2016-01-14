@@ -213,6 +213,10 @@ int Matrix::reshape(size_t nrows, size_t ncols) {
     return 0;
 }
 
+double Matrix::get(const size_t i) const {
+    return m_data[i];
+}
+
 double Matrix::get(const size_t i, const size_t j) const {
     //LCOV_EXCL_START
     if (isEmpty()) {
@@ -480,7 +484,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
                     : p + (static_cast<int*> (obj.m_sparse->nz))[j];
             for (; p < pend; p++) {
                 os << "(" << (static_cast<int*> (obj.m_sparse->i))[p] << "," << j << ")  : "
-                        << std::setw(8) << std::setprecision(4) << (static_cast<double*> (obj.m_sparse->x))[p] << std::endl;
+                        << std::setw(9) << std::setprecision(4) << (static_cast<double*> (obj.m_sparse->x))[p] << std::endl;
             }
         }
         return os;

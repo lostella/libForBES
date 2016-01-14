@@ -48,9 +48,21 @@ protected:
      */
     explicit MatrixSolver(Matrix& matrix);
 
-    Matrix* m_matrix;
+    /**
+     * Underlying matrix.
+     */
+    Matrix * m_matrix;
+    /**
+     * Type of the matrix
+     */
     Matrix::MatrixType m_matrix_type;
+    /**
+     * Rows of the matrix
+     */
     size_t m_matrix_nrows;
+    /**
+     * Columns of the matrix
+     */
     size_t m_matrix_ncols;
 
 };

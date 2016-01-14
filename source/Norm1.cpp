@@ -42,7 +42,7 @@ int Norm1::call(Matrix& x, double& f) {
     //LCOV_EXCL_STOP
     f = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        f += std::abs(x.get(i, 0));
+        f += std::abs(x[i]);
     }
     f *= m_mu;
     return ForBESUtils::STATUS_OK;
@@ -57,11 +57,11 @@ int Norm1::callProx(Matrix& x, double gamma, Matrix& prox) {
     double gm = gamma * m_mu;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
-        xi = x.get(i, 0);
+        xi = x[i];
         if (xi >= gm) {
-            prox.set(i, 0, xi - gm);
+            prox[i] = xi - gm;
         } else if (xi <= -gm) {
-            prox.set(i, 0, xi + gm);
+            prox[i] = xi + gm;
         }
     }
     return ForBESUtils::STATUS_OK;
@@ -77,7 +77,7 @@ int Norm1::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     f_at_prox = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double pi;
-        double xi = x.get(i, 0);
+        double xi = x[i];
         if (xi >= gm) {
             pi = xi - gm;
         } else if (xi <= -gm) {
@@ -85,7 +85,7 @@ int Norm1::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
         } else {
             pi = 0.0;
         }
-        prox.set(i, 0, pi);
+        prox[i] = pi;
         f_at_prox += std::abs(pi);
     }
     f_at_prox *= m_mu;
@@ -98,9 +98,9 @@ int Norm1::dualNorm(Matrix& x, double& norm) {
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    norm = std::abs(x.get(0, 0));
+    norm = std::abs(x[0]);
     for (size_t i = 1; i < x.getNrows(); i++) {
-        double absi = std::abs(x.get(i, 0));
+        double absi = std::abs(x[i]);
         if (absi > norm) {
             norm = absi;
         }

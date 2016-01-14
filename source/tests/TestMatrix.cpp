@@ -602,13 +602,13 @@ void TestMatrix::testSubtract() {
     Matrix X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix Y = X - X;
     for (size_t i = 0; i < n * n; i++) {
-        _ASSERT_EQ(0.0, Y.getData()[i]);
+        _ASSERT_EQ(0.0, Y.get(i));
     }
 
     X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     X -= X;
     for (size_t i = 0; i < n * n; i++) {
-        _ASSERT_EQ(0.0, X.getData()[i]);
+        _ASSERT_EQ(0.0, X.get(i));
     }
 
     X = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);

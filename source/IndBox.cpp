@@ -75,7 +75,7 @@ int IndBox::call(Matrix& x, double& f) {
 
     if (m_lb != NULL) {
         while (i < x.getNrows() && isInside) {
-            isInside = isInside && x[i] >= m_lb->getData()[i];
+            isInside = isInside && x[i] >= m_lb->get(i);
             i++;
         }
         i = 0;
@@ -83,7 +83,7 @@ int IndBox::call(Matrix& x, double& f) {
 
     if (m_ub != NULL) {
         while (i < x.getNrows() && isInside) {
-            isInside = isInside && x[i] <= m_ub->getData()[i];
+            isInside = isInside && x[i] <= m_ub->get(i);
             i++;
         }
     }
@@ -99,7 +99,7 @@ int IndBox::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     // prox = max(LB, x)
     for (size_t i = 0; i < x.getNrows(); i++) {
         if (m_lb != NULL) {
-            prox[i] = std::max(m_lb->getData()[i], x[i]);
+            prox[i] = std::max(m_lb->get(i), x[i]);
         } else if (m_uniform_lb != NULL) {
             prox[i] = std::max(*m_uniform_lb, x[i]);
         }
@@ -109,7 +109,7 @@ int IndBox::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     // prox = min(UB, prox)
     for (size_t i = 0; i < x.getNrows(); i++) {
         if (m_ub != NULL) {
-            prox[i] = std::min(m_ub->getData()[i], prox[i]);
+            prox[i] = std::min(m_ub->get(i), prox[i]);
         } else if (m_uniform_ub != NULL) {
             prox[i] = std::min(*m_uniform_ub, prox[i]);
         }
@@ -137,7 +137,7 @@ int IndBox::callConj(Matrix& x, double& f_star) {
     if (m_uniform_lb == NULL) {
         for (size_t i = 0; i < x.getNrows(); i++) {
             double val = x[i];
-            f_star += std::max(val * m_lb->getData()[i], val * m_ub->getData()[i]);
+            f_star += std::max(val * m_lb->get(i), val * m_ub->get(i));
         }
     } else {
         for (size_t i = 0; i < x.getNrows(); i++) {

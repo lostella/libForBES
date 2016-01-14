@@ -48,6 +48,9 @@ protected:
      */
     explicit LinOpSolver(LinearOperator& linop);
 
+    /**
+     * Underlying linear operator
+     */
     LinearOperator * m_linop;
 
 };

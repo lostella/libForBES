@@ -38,11 +38,31 @@
  * f(x) = \mu\|x\|_2,
  * \f]
  * 
- * for vectors \f$x\in\mathbb{R}^n\f$ and scalars \f$\mu>0\f$. Function \f$f\f$ is
+ * for vectors \f$x\in\mathbb{R}^n\f$ and scalars \f$\mu>0\f$. %Function \f$f\f$ is
  * a norm \f$\|x\| = f(x)\f$ for all \f$\mu>0\f$ with dual
  * 
  * \f[
  *  \|x\|_* = \frac{1}{\mu}\|x\|_2.
+ * \f]
+ * 
+ * This allows us to define the conjugate function of this function which is
+ * the indicator of the \f$\|\cdot\|_*\f$-ball, that is
+ * 
+ *  \f[
+ *  f^*(y) = 
+ *  \begin{cases}
+ *      0,&\text{if } \|y\|_\star \leq 1,\\
+ *      \infty,&\text{otherwise}
+ *  \end{cases}
+ * \f]
+ * 
+ * The proximal operator of this function is given by
+ * 
+ * \f[
+ * \mathrm{prox}_{\gamma f}(v) = \begin{cases}
+ * 0, &\text{ if } \|v\| \leq \gamma \mu,\\
+ * (1-\frac{\gamma\mu}{\|v\|})v,&\text{ otherwise}
+ * \end{cases}
  * \f]
  */
 class Norm2 : public Norm {
@@ -50,19 +70,22 @@ public:
 
     using Function::call;
     using Norm::callConj;
-    
+
     /**
      * Default constructor. Here, it is assumed that \f$\mu=1\f$. It 
      * constructs an instance of the function \f$f(x) = \mu\|x\|_2\f$.
      */
     Norm2();
-    
+
     /**
      * Constructs an instance of the function \f$f(x) = \mu\|x\|_2\f$
      * @param mu
      */
     explicit Norm2(double mu);
-    
+
+    /**
+     * Default destructor.
+     */
     virtual ~Norm2();
 
     virtual int dualNorm(Matrix& x, double& norm);

@@ -63,8 +63,8 @@ public:
      * 
      * @param x vector or matrix where the operator should be calculated
      * @param y vector or matrix to be updated (see above)
-     * @prarm alpha scalar \f$\alpha\f$
-     * @prarm gamma scalar \f$\gamma\f$
+     * @param alpha scalar \f$\alpha\f$
+     * @param gamma scalar \f$\gamma\f$
      * @return status code
      * 
      */
@@ -98,8 +98,8 @@ public:
      * 
      * @param x Vector or matrix <code>x</code>
      * @param y vector or matrix to be updated (see above)
-     * @prarm alpha scalar \f$\alpha\f$
-     * @prarm gamma scalar \f$\gamma\f$
+     * @param alpha scalar \f$\alpha\f$
+     * @param gamma scalar \f$\gamma\f$
      * @return status code
      */
     virtual int callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) = 0;

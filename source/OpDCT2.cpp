@@ -54,9 +54,9 @@ void update_y_helper_n_even(Matrix& y, double alpha, Matrix& x, double gamma, si
                 size_t mu = k / 2;
                 aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
                 yk += (
-                        x.get(i, 0)
-                        + power_of_minus_one(mu) * (x.get(nu - i - 1, 0) + x.get(nu + i, 0))
-                        + x.get(n - i - 1, 0)
+                        x[i]
+                        + power_of_minus_one(mu) * (x[nu - i - 1] + x[nu + i])
+                        + x[n - i - 1]
                         ) * aik;
             }
         } else {
@@ -64,13 +64,13 @@ void update_y_helper_n_even(Matrix& y, double alpha, Matrix& x, double gamma, si
                 double aik;
                 aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
                 if (k % 2 == 1) {
-                    yk += (x.get(i, 0) - x.get(n - i - 1, 0)) * aik;
+                    yk += (x[i] - x[n - i - 1]) * aik;
                 } else {
-                    yk += (x.get(i, 0) + x.get(n - i - 1, 0)) * aik;
+                    yk += (x[i] + x[n - i - 1]) * aik;
                 }
             }
         }
-        y.set(k, 0, gamma * y.get(k, 0) + alpha * yk);
+        y[k] = gamma * y[k] + alpha * yk;
     }
 }
 
@@ -80,20 +80,20 @@ void update_y_helper_n_odd(Matrix& y, double alpha, Matrix& x, double gamma, siz
         for (size_t i = 0; i < n / 2; i++) {
             double aik;
             aik = std::cos(M_PI * (static_cast<double> (i) + 0.5) * static_cast<double> (k) / static_cast<double> (n));
-            yk += (x.get(i, 0) + power_of_minus_one(k) * x.get(n - 1 - i, 0)) * aik;
+            yk += (x[i] + power_of_minus_one(k) * x[n - 1 - i]) * aik;
         }
-        yk += FOO[k % 4] * x.get(n / 2, 0);
-        y.set(k, 0, gamma * y.get(k, 0) + alpha * yk);
+        yk += FOO[k % 4] * x[n / 2];
+        y[k] = gamma * y[k] + alpha * yk;
     }
 }
 
 int OpDCT2::call(Matrix& y, double alpha, Matrix& x, double gamma) {
     size_t n = x.getNrows();
-    double y0 = gamma * y.get(0, 0);
+    double y0 = gamma * y[0];
     for (size_t i = 0; i < n; i++) {
-        y0 += alpha * x.get(i, 0);
+        y0 += alpha * x[i];
     }
-    y.set(0, 0, y0);
+    y[0] = y0;
     if (n % 2 == 0) { // if n is even
         update_y_helper_n_even(y, alpha, x, gamma, n);
     } else {
@@ -109,9 +109,9 @@ int OpDCT2::callAdjoint(Matrix& y, double alpha, Matrix& x, double gamma) {
         for (size_t i = 0; i < n; i++) {
             double aki;
             aki = std::cos(M_PI * (static_cast<double> (k) + 0.5) * static_cast<double> (i) / static_cast<double> (n));
-            v += x.get(i, 0) * aki;
+            v += x[i] * aki;
         }
-        y.set(k, 0, gamma * y.get(k, 0) + alpha * v);
+        y[k] = gamma * y[k] + alpha * v;
     }
     return ForBESUtils::STATUS_OK;
 }

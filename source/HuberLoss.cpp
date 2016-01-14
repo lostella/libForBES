@@ -37,7 +37,7 @@ int HuberLoss::call(Matrix& x, double& f) {
     f = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
-        xi = x.get(i, 0);
+        xi = x[i];
         if (std::abs(xi) <= m_delta) {
             f += std::pow(xi, 2) / (2.0 * m_delta);
         } else {
@@ -56,13 +56,13 @@ int HuberLoss::call(Matrix& x, double& f, Matrix& grad) {
     f = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
-        xi = x.get(i, 0);
+        xi = x[i];
         if (std::abs(xi) <= m_delta) {
             f += std::pow(xi, 2) / (2.0 * m_delta);
-            grad.set(i, 0, xi / m_delta);
+            grad[i] = xi / m_delta;
         } else {
             f += std::abs(xi) - m_delta / 2.0;
-            grad.set(i, 0, std::signbit(xi) ? -1.0 : 1.0);
+            grad[i] = std::signbit(xi) ? -1.0 : 1.0;
         }
     }
     return ForBESUtils::STATUS_OK;

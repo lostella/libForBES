@@ -158,7 +158,8 @@ SOURCES += CGSolver.cpp \
 	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
 	FactoredSolver.cpp \
-	LDLFactorization.cpp
+	LDLFactorization.cpp \
+	LeastSquares.cpp
 
 # FORBES UTILITIES	
 SOURCES += ForBESUtils.cpp \
@@ -180,6 +181,7 @@ SOURCES += Function.cpp \
 	QuadraticOperator.cpp \
 	Quadratic.cpp \
 	DistanceToBox.cpp \
+	DistanceToBall2.cpp \
 	ElasticNet.cpp \
 	LogLogisticLoss.cpp \
 	QuadraticLoss.cpp \
@@ -224,6 +226,7 @@ TESTS = \
 	TestQuadraticOperator.test \
 	TestOntRegistry.test \
 	TestDistanceToBox.test \
+	TestDistanceToBall2.test \
 	TestElasticNet.test \
 	TestQuadraticLoss.test \
 	TestLogLogisticLoss.test \
@@ -268,6 +271,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestNorm2
 	${BIN_TEST_DIR}/TestIndBall2
 	${BIN_TEST_DIR}/TestDistanceToBox
+	${BIN_TEST_DIR}/TestDistanceToBall2
 	${BIN_TEST_DIR}/TestElasticNet
 	${BIN_TEST_DIR}/TestQuadraticLoss
 	${BIN_TEST_DIR}/TestLogLogisticLoss

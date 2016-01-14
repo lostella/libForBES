@@ -51,7 +51,7 @@ public:
     /**
      * Creates a new instance of FactoredSolver given a reference to the matrix
      * to be factorized.
-     * @param m_matrix new instance of FactoredSolver.
+     * @param matrix new instance of FactoredSolver.
      */
     explicit FactoredSolver(Matrix& matrix);
 

@@ -36,7 +36,7 @@ int ElasticNet::call(Matrix& x, double& f) {
     f = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
-        xi = x.get(i, 0);
+        xi = x[i];
         f += m_mu * std::abs(xi) + (m_lambda / 2.0) * std::pow(xi, 2);
     }
     return ForBESUtils::STATUS_OK;
@@ -54,9 +54,9 @@ int ElasticNet::callProx(Matrix& x, double gamma, Matrix& prox, double& g_at_pro
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
         double yi;
-        xi = x.get(i, 0);
+        xi = x[i];
         yi = max(0.0, abs(xi) - gm) / alpha;
-        prox.set(i, 0, (xi < 0 ? -1 : 1) * yi);
+        prox[i] = (xi < 0 ? -1 : 1) * yi;
         g_at_prox += m_mu * yi + (m_lambda / 2.0) * std::pow(yi, 2);
     }
     return ForBESUtils::STATUS_OK;
@@ -72,8 +72,8 @@ int ElasticNet::callProx(Matrix& x, double gamma, Matrix& prox) {
     double alpha = 1 + m_lambda * gamma; // alpha > 0 [assuming gamma>0 and lambda>0].
     for (size_t i = 0; i < x.getNrows(); i++) {
         double xi;
-        xi = x.get(i, 0);
-        prox.set(i, 0, (xi < 0 ? -1 : 1) * max(0.0, abs(xi) - gm) / alpha);
+        xi = x[i];
+        prox[i] = (xi < 0 ? -1 : 1) * max(0.0, abs(xi) - gm) / alpha;
     }
     return ForBESUtils::STATUS_OK;
 }

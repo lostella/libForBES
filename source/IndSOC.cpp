@@ -35,11 +35,11 @@ int IndSOC::call(Matrix& x, double& f) {
     volatile size_t i = 0;
     size_t n = x.getNrows();
     double squaredNorm = 0;
-    double t = x.get(n - 1, 0);
+    double t = x[n - 1];
 
     while (i < n - 1 && isInside) {
         double xi;
-        xi = x.get(i, 0);
+        xi = x[i];
         squaredNorm += xi*xi;
         i++;
     }
@@ -60,10 +60,10 @@ int IndSOC::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     size_t i = 0;
     size_t n = x.getNrows();
     double norm = 0, xi, scal;
-    double t = x.get(n - 1, 0);
+    double t = x[n-1];
 
     while (i < n - 1) {
-        xi = x.get(i, 0);
+        xi = x[i];
         norm += xi*xi;
         i++;
     }
@@ -74,16 +74,16 @@ int IndSOC::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
         prox = Matrix(x); // prox = x
     } else if (t < -norm) { // prox = zero vector
         for (size_t j = 0; j < n; j++) {
-            prox.set(j, 0, 0.0);
+            prox[j] = 0.0;
         }
     } else {
         /* perform actual projection here */
         scal = (1 + t / norm) / 2;
         for (size_t j = 0; j < n - 1; j++) {
-            xi = x.get(j, 0);
-            prox.set(j, 0, scal * xi);
+            xi = x[j];
+            prox[j] = scal * xi;
         }
-        prox.set(n - 1, 0, (norm + t) / 2.0);
+        prox[n - 1] = (norm + t) / 2.0;
     }
     return ForBESUtils::STATUS_OK;
 }

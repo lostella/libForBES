@@ -68,8 +68,8 @@ class CGSolver : public LinOpSolver {
 public:
 
     /**
-     * Constructs a new instance of CGSolver
-     * @param linop
+     * Constructs a new instance of CGSolver    
+     * @param linop the underlying linear operator
      */
     explicit CGSolver(LinearOperator& linop);
 
@@ -80,6 +80,16 @@ public:
      */
     CGSolver(LinearOperator& linop, LinearOperator& preconditioner);
     
+    
+    /**
+     * 
+     * @param linop linear operator which defined the system \f$T(x) = b\f$
+     * @param preconditioner preconditioner as a linear operator
+     * @param tolerance tolerance (default value, when other constructors are
+     * used, is <code>1e-4</code>).
+     * @param max_iterations maximum number of iterations after which the algorithm terminates
+     * (the default value, when other constructors are used, is <code>500</code>).
+     */
     CGSolver(LinearOperator& linop, LinearOperator& preconditioner, double tolerance, size_t max_iterations);
 
 
@@ -87,18 +97,36 @@ public:
      * 
      * Solves the operator equation \f$T(x) = b\f$ for a given right-hand side \f$b\f$.
      * 
-     * @param rhs
-     * @param solution
-     * @return 
+     * @param rhs the right-hand side of the equation
+     * @param solution the solution to be computed
+     * @return status code
      */
     virtual int solve(Matrix& rhs, Matrix& solution);
 
     int solve(Matrix& rhs, Matrix& solution, double tolerance, Matrix guess);
 
+    /**
+     * Default destructor.
+     */
     virtual ~CGSolver();
     
+    /**
+     * Returns the infinity-norm of the last error recorded while the algorithm
+     * was running. To assess the quality of the solution, it important to take into
+     * account the exit flag of #solve as well as the number of iterations returned
+     * by #last_num_iter.
+     * @return last error
+     * 
+     * \sa #last_num_iter
+     */
     double last_error() const;
     
+    /**
+     * The number of iterations of the algorithm on its last run.
+     * @return number of iterations on last invocation.
+     * 
+     * \sa #last_num_iter
+     */
     size_t last_num_iter() const;
 
 private:

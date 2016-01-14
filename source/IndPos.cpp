@@ -50,7 +50,7 @@ int IndPos::call(Matrix& x, double& f) {
         }
     } else if (m_lb != NULL) {
         for (size_t i = 0; i < x.getNrows(); i++) {
-            if (x[i] < m_lb->getData()[i]) {
+            if (x[i] < m_lb->get(i)) {
                 f = INFINITY;
                 break;
             }
@@ -85,7 +85,7 @@ int IndPos::callConj(Matrix& y, double& f_star) {
                 f_star = INFINITY;
                 break;
             }
-            f_star += y[i] * m_lb->getData()[i];
+            f_star += y[i] * m_lb->get(i);
         }
     } else { /* this is like m_uniform_lb = 0.0 */
         for (size_t i = 0; i < y.getNrows(); i++) {
@@ -108,7 +108,7 @@ int IndPos::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
         }
     } else if (m_lb != NULL) {
         for (size_t i = 0; i < x.getNrows(); i++) {
-            prox[i] = std::max(x[i], m_lb->getData()[i]);
+            prox[i] = std::max(x[i], m_lb->get(i));
         }
     } else {
         x.plusop(&prox);

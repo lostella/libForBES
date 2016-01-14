@@ -40,7 +40,7 @@ int HingeLoss::call(Matrix& x, double& f) {
     }
     f = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        double si = 1 - m_b->get(i, 0) * x.get(i, 0);
+        double si = 1 - m_b->get(i) * x[i];
         if (si > 0) {
             f += si;
         }
@@ -57,12 +57,12 @@ int HingeLoss::callProx(Matrix& x, double gamma, Matrix& prox) {
     for (size_t i = 0; i < x.getNrows(); i++) {
         double bi;
         double bxi;
-        bi = m_b->get(i, 0);
-        bxi = bi * x.get(i, 0);
+        bi = m_b->get(i);
+        bxi = bi * x[i];
         if (bxi < 1) {
-            prox.set(i, 0, bi * std::min(1.0, bxi + gm));
+            prox[i] = bi * std::min(1.0, bxi + gm);
         } else {
-            prox.set(i, 0, x.get(i, 0));
+            prox[i] = x[i];
         }
     }
     return ForBESUtils::STATUS_OK;
@@ -79,18 +79,18 @@ int HingeLoss::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox
         double pi;
         double bi;
         double bxi;
-        bi = m_b->get(i, 0);
-        bxi = bi * x.get(i, 0);
+        bi = m_b->get(i);
+        bxi = bi * x[i];
         if (bxi < 1) {
             pi = bi * std::min(1.0, bxi + gm);
         } else {
-            pi = x.get(i, 0);
+            pi = x[i];
         }
-        si = 1 - m_b->get(i, 0) * pi;
+        si = 1 - m_b->get(i) * pi;
         if (si > 0) {
             f_at_prox += si;
         }
-        prox.set(i, 0, pi);
+        prox[i] = pi;
     }
     f_at_prox *= m_mu;
     return ForBESUtils::STATUS_OK;

@@ -216,8 +216,26 @@ public:
      * 
      * \exception std::out_of_range in case some of the indices exceeds the maximum
      * row or column dimension of the matrix.
+     * 
+     * \note It is faster to use get(size_t), although it is not so convenient.
      */
     double get(const size_t i, const size_t j) const;
+    
+    /**
+     * This is the same as <code>operator[]</code>, i.e., it directly accesses the
+     * internal state of the Matrix. This method is also equivalent to (and a shorthand
+     * for) <code>get(i)</code>.
+     * 
+     * 
+     * @param i data index
+     * @return data value
+     * 
+     * \warning this method will result in unexpected results or may cause the
+     * programme to crash if the index provided does not correspond to a valid
+     * position in memory. This will happen if the matrix is empty, or
+     * <code>i>=length()</code>, or the matrix is if type Matrix::MATRIX_SPARSE.
+     */
+    double get(const size_t i) const;
 
 
     /**
@@ -238,19 +256,25 @@ public:
 
     /**
      * Get the number of columns of the current matrix.
-     * @return columns as <code>int</code>.
+     * @return number of columns as <code>int</code>.
      */
     size_t getNcols() const;
 
     /**
      * Get the number of rows of the current matrix.
-     * @return rows as <code>int</code>.
+     * @return number of rows as <code>int</code>.
      */
     size_t getNrows() const;
 
     /**
      * Getter for the matrix data. Provides direct access to the matrix data which
      * are stored as an array of <code>double</code> (datatype <code>double*</code>).
+     * Non-sparse matrices are stored in column-major order. Lower triangular matrices
+     * are stored in packed column-major order. For symmetric matrices, only their 
+     * lower triangular part is stored. For diagonal matrices we store only their
+     * diagonal elements. Note that when a matrix is transposed, the stored data are
+     * not affected - instead a boolean flag is used to indicate that the matrix
+     * is transposed.
      *
      * @return Pointer to the matrix data
      */
@@ -262,6 +286,12 @@ public:
      */
     MatrixType getType() const;
 
+    /**
+     * Returns the type of this matrix as a string.
+     * @return type as string
+     * 
+     * \sa #getType
+     */
     std::string getTypeString() const;
 
     /* Utilities */
@@ -279,6 +309,12 @@ public:
     int reshape(size_t nrows, size_t ncols);
 
 
+    /**
+     * Whether the matrix is symmetric. Returns \c true if the matrix type is
+     * either MATRIX_DIAGONAL or MATRIX_SYMMETRIC.
+     * 
+     * @return 
+     */
     bool isSymmetric() const;
 
     /**
@@ -437,7 +473,8 @@ public:
 
     /**
      * Operator *= with a scalar - scale a matrix.
-     * @param right
+     * @param obj current modifiable matrix
+     * @param alpha scalar
      * @return
      */
     friend Matrix& operator*=(Matrix& obj, double alpha);
@@ -446,7 +483,7 @@ public:
 
     /**
      * Assignment operator.
-     * @param right is the right-hand operand.
+     * @param v is the right-hand operand.
      * @return A copy of the current object.
      */
     Matrix& operator=(const double& v);
@@ -621,6 +658,7 @@ private:
     friend class LDLFactorization;
     friend class S_LDLFactorization;
     friend class MatrixWriter;
+    friend class LeastSquares;
 
     size_t m_nrows; /**< Number of rows */
     size_t m_ncols; /**< Number of columns */

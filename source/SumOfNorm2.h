@@ -38,10 +38,26 @@ class SumOfNorm2 : public Function {
 public:
     using Function::call;
     
+    /**
+     * Defines a sum-of-norms function with a given partition length \f$k\f$
+     * @param k partition length
+     */
     explicit SumOfNorm2(size_t k);
     
+    /**
+     * Defines a sum-of-norms function with a given partition length \f$k\f$ and
+     * a given scaling parameter
+     * 
+     * @param mu scaling parameter
+     * @param k partition length
+     */
     SumOfNorm2(double mu, size_t k);
 
+    /**
+     * Default destructor. This will <code>delete</code> an internal private member
+     * <code>m_norm</code> which is an instance of <code>Function</code> used to 
+     * compute the norm-2 values of the subvectors.
+     */
     virtual ~SumOfNorm2();
     
     virtual int call(Matrix& x, double& f);
@@ -57,6 +73,9 @@ public:
 
 
 private:
+    /**
+     * Parameter mu (scaling)
+     */
     double m_mu;
     
     /**

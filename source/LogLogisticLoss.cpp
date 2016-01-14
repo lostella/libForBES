@@ -41,7 +41,7 @@ int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
     f = 0.0;
     int status = ForBESUtils::STATUS_OK;
     for (size_t i = 0; i < x.getNrows(); i++) {        
-        double xi = x.get(i,0);
+        double xi = x[i];
         if (xi < 33) {                      /* because for values higher than 33, 
                                              * s1 is practically equal to 1. 
                                              * This saves the computational burden for
@@ -49,7 +49,7 @@ int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
             double si = std::exp(xi);       /* si = e^xi              */
             si = si / (1 + si);             /* si = e^xi / (1+e^xi)   */
             f -= std::log(si);              /* f -= ln(si)            */
-            grad.set(i, 0, m_mu * (si - 1));  /* prox_i = mu*(si-1)     */
+            grad[i] = m_mu * (si - 1);      /* prox_i = mu*(si-1)     */
         }
     }
     f *= m_mu;
@@ -64,7 +64,7 @@ int LogLogisticLoss::call(Matrix& x, double& f) {
     //LCOV_EXCL_STOP
     f = 0.0;
     for (size_t i = 0; i < x.getNrows(); i++) {
-        double si = std::exp(x.get(i, 0));
+        double si = std::exp(x[i]);
         si /= (1.0 + si);
         f -= std::log(si);
     }

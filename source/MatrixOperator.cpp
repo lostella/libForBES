@@ -20,7 +20,7 @@
 
 #include "MatrixOperator.h"
 
-Matrix& MatrixOperator::GetMatrix() const {
+Matrix& MatrixOperator::getMatrix() const {
     return m_A;
 }
 
@@ -28,7 +28,7 @@ bool MatrixOperator::isSelfAdjoint() {
     return m_isSelfAdjoint;
 }
 
-void MatrixOperator::SetMatrix(Matrix& A) {
+void MatrixOperator::setMatrix(Matrix& A) {
     this->m_A = A;
     m_isSelfAdjoint = (A.getNrows() == A.getNcols() && A.isSymmetric());
 }
