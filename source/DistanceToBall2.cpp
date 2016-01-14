@@ -35,7 +35,25 @@ DistanceToBall2::~DistanceToBall2() {
 }
 
 int DistanceToBall2::call(Matrix& x, double& f, Matrix& grad) {
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    double norm_x_minus_c;
+    f = 0.0;
+    grad = x;
+    if (m_center != NULL) {
+        grad -= *m_center;
+    }
+    norm_x_minus_c = std::sqrt((grad * grad)[0]);
+    if (norm_x_minus_c > m_rho) {
+        f = 0.5 * m_w * std::pow(norm_x_minus_c - m_rho, 2);
+        grad *= (1-m_rho/norm_x_minus_c);
+    } else {
+        for (size_t i = 0; i < grad.getNrows(); i++){
+            grad[i] = 0.0;
+        }
+    }    
+    if (std::abs(m_w - 1.0) > 1e-14) {
+        grad *= m_w;
+    }
+    return ForBESUtils::STATUS_OK;
 }
 
 int DistanceToBall2::call(Matrix& x, double& f) {

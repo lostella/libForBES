@@ -159,7 +159,7 @@ void TestDistanceToBall2::testCall5() {
     double rho = 3.23;
     double w = 0.887;
     for (size_t i = 0; i < 10; i++) {
-        c[i] += rho/11.0;
+        c[i] += rho / 11.0;
     }
 
     Function * d2b = new DistanceToBall2(w, rho, c);
@@ -168,5 +168,101 @@ void TestDistanceToBall2::testCall5() {
     int status = d2b->call(x, f);
     _ASSERT(ForBESUtils::is_status_ok(status));
     _ASSERT_NUM_EQ(expected, f, 1e-8);
+    delete d2b;
+}
+
+void TestDistanceToBall2::testGradient() {
+    Function * d2b = new DistanceToBall2(5.4312);
+    double x_values[10] = {
+        0.438744359656398,
+        0.381558457093008,
+        0.765516788149002,
+        0.795199901137063,
+        0.186872604554379,
+        0.489764395788231,
+        0.445586200710899,
+        0.646313010111265,
+        0.709364830858073,
+        0.754686681982361
+    };
+    Matrix x(10, 1, x_values);
+    Matrix grad(10, 1);
+
+    double grad_expected_values[10] = {
+        1.112859194860052,
+        0.967809221946716,
+        1.941705637375089,
+        2.016995779558804,
+        0.473995600555761,
+        1.242269670645696,
+        1.130213277162638,
+        1.639349567076561,
+        1.799278229238064,
+        1.914235464907696
+
+    };
+    Matrix grad_expected(10, 1, grad_expected_values);
+    double expected = 2.084995711340361;
+    double f;
+    int status = d2b->call(x, f, grad);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+    _ASSERT_NUM_EQ(expected, f, 1e-8);
+    _ASSERT_EQ(grad_expected, grad);
+
+    delete d2b;
+}
+
+void TestDistanceToBall2::testGradient2() {
+    double x_values[10] = {
+        0.438744359656398,
+        0.381558457093008,
+        0.765516788149002,
+        0.795199901137063,
+        0.186872604554379,
+        0.489764395788231,
+        0.445586200710899,
+        0.646313010111265,
+        0.709364830858073,
+        0.754686681982361
+    };
+    Matrix x(10, 1, x_values);
+
+    double c_values[10] = {
+        -1.089064295052236,
+        0.032557464164973,
+        0.552527021112224,
+        1.100610217880866,
+        1.544211895503951,
+        0.085931133175425,
+        -1.491590310637609,
+        -0.742301837259857,
+        -1.061581733319986,
+        2.350457224002042
+    };
+    Matrix c_shallow = MatrixFactory::ShallowVector(c_values, 10, 0);
+
+    double grad_expected_values[10] = {
+        0.555435626832365,
+        0.126879491534933,
+        0.077432539996649,
+        -0.111032078656484,
+        -0.493461401445295,
+        0.146813791546350,
+        0.704261522900583,
+        0.504831646162784,
+        0.643828539607569,
+        -0.580143206124434
+
+    };
+    Matrix grad_expected(10, 1, grad_expected_values);
+
+    Function * d2b = new DistanceToBall2(0.998, 2.54, c_shallow);
+    Matrix grad(10, 1);
+    double expected = 1.057069197096058;
+    double f;
+    int status = d2b->call(x, f, grad);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+    _ASSERT_NUM_EQ(expected, f, 1e-8);
+    _ASSERT_EQ(grad_expected, grad);
     delete d2b;
 }

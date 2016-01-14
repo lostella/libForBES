@@ -23,6 +23,8 @@ class TestDistanceToBall2 : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCall3);
     CPPUNIT_TEST(testCall4);
     CPPUNIT_TEST(testCall5);
+    CPPUNIT_TEST(testGradient);
+    CPPUNIT_TEST(testGradient2);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -38,6 +40,8 @@ private:
     void testCall3();
     void testCall4();
     void testCall5();
+    void testGradient();
+    void testGradient2();
 
 };
 
