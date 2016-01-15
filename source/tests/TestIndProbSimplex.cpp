@@ -47,6 +47,7 @@ void TestIndProbSimplex::testCallProx() {
         0.575494859702814, 0.530051704765016, 0.275069755821935, 0.248628959661970};
 
     Matrix x(n, 1, x_vals);
+    Matrix x_orig(x);
     Matrix prox(n, 1);
     int status = F->callProx(x, 1.0, prox);
     _ASSERT(ForBESUtils::is_status_ok(status));
@@ -58,26 +59,26 @@ void TestIndProbSimplex::testCallProx() {
     double f_at_prox = 2.0;
     status = F->callProx(x, 1.0, prox, f_at_prox);
     _ASSERT(ForBESUtils::is_status_ok(status));
-    _ASSERT_NUM_EQ(0.0, f_at_prox, 1e-14);
-
+    _ASSERT_NUM_EQ(0.0, f_at_prox, 1e-14);   
     _ASSERT_EQ(prox_expected, prox);
-
+    _ASSERT_EQ(x_orig, x);
     delete F;
 
 }
 
 void TestIndProbSimplex::testCallProxLarge() {
-    const size_t n = 10000;
+    std::srand(10);
+    const size_t n = 1e6;
     Function * F = new IndProbSimplex();
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
     Matrix prox(n, 1);
 
-    clock_t start = clock();
+//    clock_t start = clock();
     int status = F->callProx(x, 1.0, prox);
-    clock_t end = clock();
-    float elapsed_time_secs = static_cast<float>(end - start) / CLOCKS_PER_SEC;
+//    clock_t end = clock();
+//    float elapsed_time_secs = static_cast<float>(end - start)*1000.0 / CLOCKS_PER_SEC;
     _ASSERT(ForBESUtils::is_status_ok(status));
-    _ASSERT(elapsed_time_secs < 0.1);
+    
 //    std::cout << "\ntime = " << elapsed_time_secs << std::endl;
     delete F;
 }

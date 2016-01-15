@@ -19,6 +19,7 @@
  */
 
 #include "IndProbSimplex.h"
+#include "MatrixFactory.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -34,33 +35,32 @@ int IndProbSimplex::callProx(Matrix& x, double gamma, Matrix& prox) {
 
     size_t n = x.getNrows();
 
-    /* x_hat := x */
-    Matrix x_hat(x);
-    for (size_t j = 0; j < n; j++) {
-        if (x_hat[j] < 0.0) {
-            x_hat[j] = 0.0;
-        }
-    }
+    std::vector<double> x_hat_vec(x.getData(), x.getData() + n);
 
     /* x_hat := rev_sort(x_hat) */
-    std::vector<double> x_hat_vec(x_hat.getData(), x_hat.getData() + n);
-    //std::sort(x_hat_vec.begin(), x_hat_vec.end(), std::greater<double>());
     std::sort(x_hat_vec.rbegin(), x_hat_vec.rend());
 
     double t = 0.0;
     bool flag = true;
     size_t i = 0;
     double val;
-    do {
-        val = x_hat_vec[i];
+
+    std::vector<double>::iterator it;
+
+    /* skipping negative data */
+    for (it = x_hat_vec.begin(); it != x_hat_vec.end() && *it < 0.0; ++it, ++i) {
+    }
+ 
+    
+    for (it = x_hat_vec.begin(); flag && it != x_hat_vec.end(); ++it, ++i) {
+        val = std::max(0.0, *it);
         t += val;
         flag = val * (i + 1.0) > t - 1.0;
-        ++i;
-    } while (flag && i < n - 1);
+    }
     t -= 1.0 + val;
 
     double theta = std::max(0.0, t / (i - 1));
-
+    
     for (size_t j = 0; j < n; j++) {
         prox[j] = std::max(0.0, x[j] - theta);
     }

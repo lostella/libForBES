@@ -109,11 +109,10 @@ Matrix::Matrix(const Matrix& orig) {
         if (n == 0) {
             n = 1;
         }
-        m_data = new double[n];
-        for (size_t i = 0; i < n; i++) {
-            m_data[i] = orig.m_data[i];
-        }
+        m_data = new double[n];        
+        memcpy(m_data, orig.m_data, n*sizeof(double));
         m_dataLength = orig.m_dataLength;
+        m_delete_data = true;
     } else {
         if (orig.m_triplet != NULL) {
             m_triplet = cholmod_copy_triplet(orig.m_triplet, Matrix::cholmod_handle());
