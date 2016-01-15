@@ -36,7 +36,7 @@
  * 
  * where \f$w>0\f$ is a positive scalar and
  * \f[
- *  \mathrm{proj}(x, B_2) = \mathrm{argmin}_{\|y-c\|\leq \rho}\|y-x\|
+ *  \mathrm{proj}(x, B_2) = \mathrm{argmin}\limits_{\|y-c\|\leq \rho}\|y-x\|
  * \f] 
  * is the projection of \f$x\f$ on \f$B_2(\rho, c)\f$. This is computed as
  * 
@@ -60,7 +60,13 @@
  * The gradient of \f$f\f$ is given by
  * 
  * \f[
- *  \nabla f (x) = \frac{w}{2}(x-\mathrm{proj}(x, B_2(\rho, c))).
+ * \begin{align}
+ *  \nabla f (x) &= \frac{w}{2}(x-\mathrm{proj}(x, B_2(\rho, c)))\\
+ *               &= \begin{cases}
+ *                      0, & \text{if } \|x-c\|\leq \rho,\\
+ *                      \left(1-\frac{\rho}{\|x-c\|}\right)(x-c), &\text{otherwise}
+ *                  \end{cases}
+ * \end{align}
  * \f]
  * 
  */
@@ -102,7 +108,7 @@ public:
      * 
      * @param w scaling parameter
      */
-    DistanceToBall2(double w);
+    explicit DistanceToBall2(double w);
     
     
     /**

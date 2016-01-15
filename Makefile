@@ -47,7 +47,7 @@ endif
 
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
-CFLAGS_ADDITIONAL = -O0
+CFLAGS_ADDITIONAL = -O3
 #CFLAGS_ADDITIONAL += -fprofile-arcs
 #CFLAGS_ADDITIONAL += -ftest-coverage
 
@@ -176,6 +176,7 @@ SOURCES += Function.cpp \
 	IndBox.cpp \
 	IndSOC.cpp \
 	IndPos.cpp \
+	IndProbSimplex.cpp \
 	QuadOverAffine.cpp \
 	QuadraticOperator.cpp \
 	Quadratic.cpp \
@@ -209,6 +210,7 @@ TESTS = \
 	TestIndBox.test \
 	TestIndPos.test \
 	TestIndSOC.test \
+	TestIndProbSimplex.test \
 	TestCGSolver.test \
 	TestLDL.test \
 	TestMatrix.test \
@@ -266,6 +268,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestIndBox
 	${BIN_TEST_DIR}/TestIndPos
 	${BIN_TEST_DIR}/TestIndSOC
+	${BIN_TEST_DIR}/TestIndProbSimplex
 	${BIN_TEST_DIR}/TestNorm1
 	${BIN_TEST_DIR}/TestNorm2
 	${BIN_TEST_DIR}/TestIndBall2

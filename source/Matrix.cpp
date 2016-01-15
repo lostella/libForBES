@@ -506,9 +506,9 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
 
 double &Matrix::operator[](size_t sub) const {
     //LCOV_EXCL_START
-    if (sub >= length()) {
-        throw std::out_of_range("Exception: Index out of range for Matrix");
-    }
+//    if (sub >= length()) {
+//        throw std::out_of_range("Exception: Index out of range for Matrix");
+//    }
     //LCOV_EXCL_STOP
     return m_data[sub];
 }

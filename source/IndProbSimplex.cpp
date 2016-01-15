@@ -1,8 +1,21 @@
 /* 
  * File:   IndProbSimplex.cpp
- * Author: chung
+ * Author: Pantelis Sopasakis
  * 
  * Created on January 15, 2016, 2:37 AM
+ * 
+ * ForBES is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ForBES is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with ForBES. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "IndProbSimplex.h"
@@ -11,62 +24,45 @@
 #include <cmath>
 
 IndProbSimplex::IndProbSimplex() {
+
 }
 
 IndProbSimplex::~IndProbSimplex() {
 }
 
-/**
- * Computes the value of g(t;x) = 1'(x-t1)-1
- * @param x reference to input vector
- * @param t current estimate of t
- * @return g(t;x)
- */
-double compute_f893301(Matrix &x, double t) {
-    double g = 0.0;
-    double diff;
-    for (size_t i = 0; i < x.getNrows(); i++) {
-        diff = x[i] - t;
-        if (diff > 0) {
-            g += diff;
-        }
-    }
-    return g - 1.0;
-}
-
 int IndProbSimplex::callProx(Matrix& x, double gamma, Matrix& prox) {
-    std::vector<double> Avec(x.getData(), x.getData() + x.getNrows());
-    double max_val = *std::max_element(Avec.begin(), Avec.end());
 
-    /* BISECTION */
-    double t0 = max_val - 1.0;
-    double t1 = max_val;
-    double t2;
-    double f2 = 1;
-    const size_t max_iter = 1000;
-    const double tol = 1e-10;
-    size_t i = 0;
-    do {
-        t2 = (t0 + t1) / 2;
-        double f0 = compute_f893301(x, t0);
-        double f1 = compute_f893301(x, t1);
-        f2 = compute_f893301(x, t2);
-        if (f0 * f2 < 0) {
-            t1 = t2;
-        } else {
-            t0 = t2;
+    size_t n = x.getNrows();
+
+    /* x_hat := x */
+    Matrix x_hat(x);
+    for (size_t j = 0; j < n; j++) {
+        if (x_hat[j] < 0.0) {
+            x_hat[j] = 0.0;
         }
-        i++;
-    } while (std::abs(f2) > tol && i < max_iter);
-
-    /* CHECK QUALITY OF SOLUTION (max_iter, tolerance) */
-    if (i == max_iter && std::abs(f2) > tol) {
-        return ForBESUtils::STATUS_NUMERICAL_PROBLEMS;
     }
 
-    /* CONSTRUCT THE PROX */
-    for (size_t i = 0; i < prox.getNrows(); i++) {
-        prox[i] = std::max(0.0, x[i] - t2);
+    /* x_hat := rev_sort(x_hat) */
+    std::vector<double> x_hat_vec(x_hat.getData(), x_hat.getData() + n);
+    //std::sort(x_hat_vec.begin(), x_hat_vec.end(), std::greater<double>());
+    std::sort(x_hat_vec.rbegin(), x_hat_vec.rend());
+
+    double t = 0.0;
+    bool flag = true;
+    size_t i = 0;
+    double val;
+    do {
+        val = x_hat_vec[i];
+        t += val;
+        flag = val * (i + 1.0) > t - 1.0;
+        ++i;
+    } while (flag && i < n - 1);
+    t -= 1.0 + val;
+
+    double theta = std::max(0.0, t / (i - 1));
+
+    for (size_t j = 0; j < n; j++) {
+        prox[j] = std::max(0.0, x[j] - theta);
     }
 
     return ForBESUtils::STATUS_OK;
