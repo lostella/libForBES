@@ -158,8 +158,7 @@ SOURCES += CGSolver.cpp \
 	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
 	FactoredSolver.cpp \
-	LDLFactorization.cpp \
-	LeastSquares.cpp
+	LDLFactorization.cpp 
 
 # FORBES UTILITIES	
 SOURCES += ForBESUtils.cpp \
