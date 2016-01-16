@@ -21,8 +21,9 @@
 #include "FBCache.h"
 #include "LinearOperator.h"
 
-//#include <iostream>
+// #include <iostream>
 #include <cmath>
+#include <limits>
 
 void FBCache::reset(int status) {
     if (status < m_status) m_status = status;
@@ -90,6 +91,9 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), 
     m_y = new Matrix(m_x_rows, m_x_cols);
     m_FPRx = new Matrix(m_x_rows, m_x_cols);
     m_gradFBEx = new Matrix(m_x_rows, m_x_cols);
+
+    m_FBEx = std::numeric_limits<double>::infinity();
+    m_sqnormFPRx = std::numeric_limits<double>::infinity();
 
     m_f1x = 0.0;
     m_f2x = 0.0;
@@ -242,7 +246,6 @@ int FBCache::update_eval_FBE(double gamma) {
     m_FPRx -> transpose();
     double innprod = innprox_mat.get(0,0);
 
-
     m_FBEx = m_fx + m_gz - innprod + 0.5 / m_gamma*m_sqnormFPRx;
     m_gamma = gamma;
     m_flag_evalFBE = 1;
@@ -255,7 +258,7 @@ int FBCache::update_grad_FBE(double gamma) {
         reset(FBCache::STATUS_EVALF);
     }
 
-    if (m_flag_evalFBE == 1) {
+    if (m_flag_gradFBE == 1) {
         return ForBESUtils::STATUS_OK;
     }
 
@@ -266,12 +269,30 @@ int FBCache::update_grad_FBE(double gamma) {
         }
     }
 
-    /* TODO: fill in here */
+    *m_gradFBEx = *m_FPRx;
+
+    if (m_f1 != NULL) {
+        Matrix gradf1_diff = Matrix(m_x_rows, m_x_cols);
+        double dummy; // because Function::call also returns the function value
+        if (m_L1 != NULL) {
+            Matrix L1diff = m_L1->call(*m_FPRx);
+            Matrix gradf1_L1diff = Matrix(m_res1_rows, m_res1_cols);
+            // m_f1->hessianVectorProduct(*m_x, L1diff, gradf1_L1diff);
+            gradf1_diff = m_L1->callAdjoint(gradf1_L1diff);
+        } else {
+            // m_f1->hessianVectorProduct(*m_x, *m_FPRx, gradf1_diff);
+        }
+        Matrix::add(*m_gradFBEx, -1.0, gradf1_diff, 1.0/gamma);
+    }
+
+    if (m_f2 != NULL) {
+        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    }
 
     m_gamma = gamma;
     m_flag_gradFBE = 1;
 
-    return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+    return ForBESUtils::STATUS_OK;
 }
 
 void FBCache::set_point(Matrix& x) {
@@ -282,6 +303,11 @@ void FBCache::set_point(Matrix& x) {
 double FBCache::get_eval_FBE(double gamma) {
     int status = update_eval_FBE(gamma);
     return m_FBEx;
+}
+
+Matrix * FBCache::get_grad_FBE(double gamma) {
+    int status = update_grad_FBE(gamma);    
+    return m_gradFBEx;
 }
 
 double FBCache::get_eval_f() {

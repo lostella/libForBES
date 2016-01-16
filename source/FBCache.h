@@ -26,11 +26,27 @@
 
 /**
  * \class FBCache
- * \brief Low-level cache management system
+ * \brief Low-level forward-backward operations management class
  * \version version 0.0
  * \ingroup FBSolver-group
  * 
+ * FBCache handles forward-backward operations related to the problem:
  * 
+ * \f[
+ *  \min f(x) + g(x),
+ * \f]
+ * 
+ * where
+ *
+ * \f[
+ *  f(x) = f_1(L_1 x + d_1) + f_2(L_2 x + d_2) + \langle l,x \rangle.
+ * \f]
+ *
+ * In particular, objects of the FBCache class are initialized given an
+ * FBProblem p, a point x (of class Matrix) and a scalar parameter gamma.
+ * It allows to evaluate the proximal-gradient operation starting from x,
+ * and the value of the forward-backward envelope function (FBE) associated
+ * with p.
  */
 class FBCache {
 private:
@@ -81,30 +97,127 @@ private:
     double m_FBEx;
     double m_sqnormFPRx;
 
+    /**
+     * Evaluates f(x) and updates the internal status
+     *
+     * @return Status code, see ForBESUtils.
+     */
     int update_eval_f();
+
+    /**
+     * Evaluates the forward (gradient) step at x with parameter gamma,
+     * and updates the internal status.
+     *
+     * @return Status code, see ForBESUtils.
+     */
     int update_forward_step(double gamma);
+
+    /**
+     * Evaluates the forward-backward (or proximal-gradient) step at x with parameter gamma,
+     * and updates the internal status.
+     *
+     * @return Status code, see ForBESUtils.
+     */
     int update_forward_backward_step(double gamma);
 
+    /**
+     * Evaluates the FBE at x with parameter gamma,
+     * and updates the internal status.
+     *
+     * @return Status code, see ForBESUtils.
+     */
     int update_eval_FBE(double gamma);
+
+    /**
+     * Evaluates the gradient of the FBE at x with parameter gamma,
+     * and updates the internal status.
+     *
+     * @return Status code, see ForBESUtils.
+     */
     int update_grad_FBE(double gamma);
 
+    /**
+     * Used to set the internal status of the object at a specific value.
+     * For example, if the point at which to evaluate operations is changed
+     * (using set_point) then the status is reset to STATUS_NONE; if gamma
+     * instead is changed, the status is reset to STATUS_EVALF. In fact, the
+     * value of f is independent of gamma, and is not to be recomputed.
+     *
+     * @return Status code, see ForBESUtils.
+     */
     void reset(int status);
 
 public:
+    /**
+     * Initialize an FBCache object
+     *
+     * @param p reference to FBProblem
+     * @param x reference to Matrix, the point at which to perform the operations
+     * @param gamma the initial stepsize parameter for the operations
+     */
     FBCache(FBProblem & p, Matrix & x, double gamma);
 
     virtual ~FBCache();
     
+    /**
+     * Sets the point at which the FBCache object refers
+     *
+     * @param x new point at which to evaluate the steps
+     */
     void set_point(Matrix& x);
     
+    /**
+     * Gets the result of the forward (gradient) step, with stepsize gamma, at x
+     *
+     * @param gamma stepsize parameter
+     * @return a pointer to Matrix containing the forward step
+     */
     Matrix * get_forward_step(double gamma);
+
+    /**
+     * Gets the result of the forward-backward (proximal-gradient) with stepsize gamma step at x
+     *
+     * @param gamma stepsize parameter
+     * @return a pointer to Matrix containing the forward-backward step
+     */
     Matrix * get_forward_backward_step(double gamma);
     
+    /**
+     * Gets the fixed-point residual at x with parameter gamma
+     *
+     * @return a pointer to Matrix containing the fixed-point residual
+     */
     Matrix * get_fpr();
+
+    /**
+     * Gets the norm of the fixed point residual
+     *
+     * @return Euclidean norm of the fixed-point residual
+     */
     double get_norm_fpr();
 
+    /**
+     * Gets the value of f at x
+     *
+     * @return f(x)
+     */
     double get_eval_f();
+
+    /**
+     * Gets the value of the FBE at x with a given parameter gamma
+     *
+     * @param gamma stepsize parameter
+     * @return value of the FBE at x with parameter gamma
+     */
     double get_eval_FBE(double gamma);
+
+    /**
+     * Gets the gradient of the FBE at x with a given parameter gamma
+     *
+     * @param gamma stepsize parameter
+     * @return pointer to Matrix containing the gradient of the FBE
+     */
+    Matrix * get_grad_FBE(double gamma);
 };
 
 #endif /* FBCACHE_H */

@@ -12,8 +12,6 @@ private:
     double m_gamma;
 
     FBCache m_cache;
-    int m_it;
-    int m_maxit;
     double m_tol;
 
 protected:
@@ -23,12 +21,22 @@ protected:
 
 public:
 
+	/**
+     * Initialize an FBSplitting object.
+     *
+     * @param p reference to the FBProblem to solve
+     * @param x0 reference to Matrix, the starting point for the solver
+     * @param gamma the initial stepsize parameter for the operations
+     */
     FBSplitting(FBProblem & prob, Matrix & x0, double gamma);
 
-    int setMaxIt(int maxit);
-    int setTol(double tol);
+    void setTol(double tol);
 
-    int getIt();
+    /**
+     * Gets the solution point computed by the algorithm.
+     *
+     * @return reference to a Matrix object, containing the problem solution
+     */
     Matrix& getSolution();
 
     virtual ~FBSplitting();

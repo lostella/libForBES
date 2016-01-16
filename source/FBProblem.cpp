@@ -63,6 +63,16 @@ FBProblem::FBProblem(
 
 FBProblem::FBProblem(
         Function& fun_f,
+        LinearOperator& L,
+        Function& fun_g) {
+    init();
+    m_f1 = &fun_f;
+    m_L1 = &L;
+    m_g = &fun_g;
+}
+
+FBProblem::FBProblem(
+        Function& fun_f,
         Function& fun_g) {
 	init();
 	m_f1 = &fun_f;

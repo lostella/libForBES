@@ -3,6 +3,8 @@
 
 #include "TestFBCache.h"
 
+#define DOUBLES_EQUAL_DELTA 1e-8
+
 CPPUNIT_TEST_SUITE_REGISTRATION(TestFBCache);
 
 TestFBCache::TestFBCache() {
@@ -44,6 +46,9 @@ void TestFBCache::testBoxQP_small() {
 	double ref_z1_g02[] = {-1.00, -0.34, -0.90, -1.00};
 	double ref_FBEx1_g01 =  -3.417500000000000;
 	double ref_FBEx1_g02 = -10.514000000000003;
+	double ref_gradFBEx1_g01[] = {1.379999999999999, 3.409999999999999, 2.480000000000000, 0.909999999999999};
+	double ref_gradFBEx1_g02[] = {-5.779999999999999, -0.020000000000000, 3.300000000000000, 2.840000000000000};
+
 	// reference results 2
 	double ref_fx2 = -6.000000000000000;
 	double ref_y2_g01[] = {-0.50, -0.80, -1.30, -1.60};
@@ -60,7 +65,7 @@ void TestFBCache::testBoxQP_small() {
 	FBProblem prob = FBProblem(f, g);
 	
 	FBCache * cache;
-	Matrix * x, * y, * z;
+	Matrix * x, * y, * z, * gradFBEx;
 	double fx, FBEx;
 	
 	// test FB operations starting from x1
@@ -70,25 +75,29 @@ void TestFBCache::testBoxQP_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g01[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g01[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g01[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g01[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g01[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g01, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g01, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g02[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g02[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g02[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g02[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g02[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g02, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g02, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	delete x;
 	
@@ -99,25 +108,27 @@ void TestFBCache::testBoxQP_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g01[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g01[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g01[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g01[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g01, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g01, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g02[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g02[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g02[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g02[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g02, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g02, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	delete x;
 	delete cache;
@@ -171,7 +182,7 @@ void TestFBCache::testSparseLeastSquares_small() {
 	FBProblem prob = FBProblem(f, OpA, minusb, g);
 	
 	FBCache * cache;
-	Matrix * x, * y, * z;
+	Matrix * x, * y, * z, * gradFBEx;
 	double fx, FBEx;
 	
 	// test FB operations starting from x1
@@ -181,25 +192,27 @@ void TestFBCache::testSparseLeastSquares_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	delete x;
 	
@@ -210,30 +223,102 @@ void TestFBCache::testSparseLeastSquares_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g1[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g1[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g1, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g1, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
 	
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g2[i], y->get(i, 0), 1e-7);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g2[i], z->get(i, 0), 1e-7);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g2, FBEx, 1e-7);
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g2, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	delete x;	
 	delete cache;
 }
 
 void TestFBCache::testSparseLogReg_small() {
+	size_t n = 5;
+	size_t m = 4;
+	// problem data
+	double data_A[] = {
+		1, 2, -1, -1,
+		-2, -1, 0, -1,
+		3, 0, 4, -1,
+		-4, -1, -3, 1,
+		5, 3, 2, 3
+	};
+	double data_minusb[] = {
+		-1, 1, -1, 1
+	};
+	double gamma1 = 0.1;
+	double gamma2 = 0.05;
+	// starting points
+	double data_x1[] = {0, 0, 0, 0, 0};
+	// reference results
+	double ref_fx1 = 3.253046750072892;
+	double ref_y1_g1[] = {0.026894142137000, -0.200000000000000, 0.484846862904004, -0.511741005041004, 0.673105857863000};
+	double ref_z1_g1[] = {0, -0.100000000000000, 0.384846862904004, -0.411741005041004, 0.573105857863001};
+	double ref_FBEx1_g1 = -0.027393687107681;
+	double ref_y1_g2[] = {0.013447071068500, -0.100000000000000, 0.242423431452002, -0.255870502520502, 0.336552928931500};
+	double ref_z1_g2[] = {0, -0.050000000000000, 0.192423431452002, -0.205870502520502, 0.286552928931500};
+	double ref_FBEx1_g2 = 1.612826531482605;
 	
+	Matrix A = Matrix(m, n, data_A);
+	Matrix minusb = Matrix(m, 1, data_minusb);
+	Matrix * x0;
+	Matrix xstar;
+	LogLogisticLoss f = LogLogisticLoss(1.0);
+	MatrixOperator OpA = MatrixOperator(A);
+	Norm1 g = Norm1(1.0);
+	FBProblem prob = FBProblem(f, OpA, minusb, g);
+
+	FBCache * cache;
+	Matrix * x, * y, * z, * gradFBEx;
+	double fx, FBEx;
+	
+	// test FB operations starting from x1
+	x = new Matrix(n, 1, data_x1);
+	cache = new FBCache(prob, *x, 1.0);
+	fx = cache->get_eval_f();
+	y = cache->get_forward_step(gamma1);
+	z = cache->get_forward_backward_step(gamma1);
+	FBEx = cache->get_eval_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
+	
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
+	for (int i=0; i < n; i++) {
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+	}
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, DOUBLES_EQUAL_DELTA);
+	
+	// change gamma
+	y = cache->get_forward_step(gamma2);
+	z = cache->get_forward_backward_step(gamma2);
+	FBEx = cache->get_eval_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
+	
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
+	for (int i=0; i < n; i++) {
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+	}
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, DOUBLES_EQUAL_DELTA);
+	
+	delete x;
+
+	delete cache;
 }
