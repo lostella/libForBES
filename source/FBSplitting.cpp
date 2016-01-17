@@ -6,6 +6,7 @@ FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma) : m_cache(
     m_gamma = gamma;
     setMaxIt(1000);
     m_tol = 1e-6;
+    m_it = 0;
 }
 
 int FBSplitting::iterate() {
