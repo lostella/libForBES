@@ -45,13 +45,12 @@ int IndProbSimplex::callProx(Matrix& x, double gamma, Matrix& prox) {
     size_t i = 0;
     double val;
 
-    std::vector<double>::iterator it;
-
     /* skipping negative data */
-    for (it = x_hat_vec.begin(); it != x_hat_vec.end() && *it < 0.0; ++it, ++i) {
-    }
- 
-    
+    const std::vector<double>::iterator lb = std::lower_bound(x_hat_vec.begin(), x_hat_vec.end(), 0.0, std::greater<double>());
+
+    std::vector<double>::iterator it;
+    it += (lb - x_hat_vec.begin());
+
     for (it = x_hat_vec.begin(); flag && it != x_hat_vec.end(); ++it, ++i) {
         val = std::max(0.0, *it);
         t += val;
@@ -59,8 +58,8 @@ int IndProbSimplex::callProx(Matrix& x, double gamma, Matrix& prox) {
     }
     t -= 1.0 + val;
 
-    double theta = std::max(0.0, t / (i - 1));
-    
+    const double theta = std::max(0.0, t / (i - 1));
+
     for (size_t j = 0; j < n; j++) {
         prox[j] = std::max(0.0, x[j] - theta);
     }

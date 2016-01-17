@@ -68,7 +68,7 @@ void TestIndProbSimplex::testCallProx() {
 
 void TestIndProbSimplex::testCallProxLarge() {
     std::srand(10);
-    const size_t n = 1e6;
+    const size_t n = 5e5;
     Function * F = new IndProbSimplex();
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
     Matrix prox(n, 1);
