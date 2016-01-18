@@ -21,7 +21,7 @@ protected:
 
 public:
 
-	/**
+    /**
      * Initialize an FBSplitting object.
      *
      * @param p reference to the FBProblem to solve

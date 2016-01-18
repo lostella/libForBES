@@ -50,11 +50,11 @@
  */
 class FBCache {
 private:
-	static const int STATUS_NONE = 0;
+    static const int STATUS_NONE = 0;
     static const int STATUS_EVALF = 1;
     static const int STATUS_FORWARD = 2;
     static const int STATUS_FORWARDBACKWARD = 3;
-    
+
     int m_status;
     int m_flag_evalFBE;
     int m_flag_gradFBE;
@@ -158,14 +158,14 @@ public:
     FBCache(FBProblem & p, Matrix & x, double gamma);
 
     virtual ~FBCache();
-    
+
     /**
      * Sets the point at which the FBCache object refers
      *
      * @param x new point at which to evaluate the steps
      */
     void set_point(Matrix& x);
-    
+
     /**
      * Gets the result of the forward (gradient) step, with stepsize gamma, at x
      *
@@ -181,7 +181,7 @@ public:
      * @return a pointer to Matrix containing the forward-backward step
      */
     Matrix * get_forward_backward_step(double gamma);
-    
+
     /**
      * Gets the fixed-point residual at x with parameter gamma
      *

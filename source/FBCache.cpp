@@ -33,7 +33,7 @@ void FBCache::reset(int status) {
 
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), m_gamma(gamma) {
     reset(FBCache::STATUS_NONE);
-
+    
     // store pointers to problem and all relevant details
     m_f1 = p.f1();
     m_L1 = p.L1();
@@ -42,7 +42,7 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), 
     m_L2 = p.L2();
     m_d2 = p.d2();
     m_lin = p.lin();
-    m_g = p.g();
+    m_g = p.g();    
 
     // get dimensions of things
     m_x_rows = m_x->getNrows();
