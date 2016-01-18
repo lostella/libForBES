@@ -15,33 +15,32 @@
  * where \f$x\f$ is the current iterate.
  */
 class FBStopping {
-
 protected:
 
-     double m_tol;
+    double m_tol;
 
 public:
 
-     /**
-      * @brief Instantiate FBStopping given a tolerance
-      * 
-      * @param tol the prescribed tolerance on the fixed-point
-      * residual.
-      */
-     FBStopping(double tol);
+    /**
+     * @brief Instantiate FBStopping given a tolerance
+     * 
+     * @param tol the prescribed tolerance on the fixed-point
+     * residual.
+     */
+    FBStopping(double tol);
 
-     /**
-      * @brief Checks wheter the algorithm should stop
-      * 
-      * @param c FBCache object containing the current state of
-      * the algorithm.
-      * @return 0 if the algorithm should go on, nonzero if it
-      * should stop.
-      */
-	virtual int stop(FBCache & c);
+    /**
+     * @brief Checks whether the algorithm should stop
+     * 
+     * @param c FBCache object containing the current state of
+     * the algorithm.
+     * @return 0 if the algorithm should go on, nonzero if it
+     * should stop.
+     */
+    virtual int stop(FBCache & c);
 
-	virtual ~FBStopping();
-	
+    virtual ~FBStopping();
+
 };
 
 #endif /* FBSTOPPING_H */

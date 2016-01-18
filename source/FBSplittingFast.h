@@ -14,9 +14,9 @@
  * \ingroup FBSolver-group
  * 
  * FBSplittingFast extends FBSplitting by prepending the Nesterov
- * extrapolation step to the iterate() method. On convex problems
+ * extrapolation step to the <code>iterate()</code> method. On convex problems
  * this is known to enforce the optimal convergence rate (for the
- * objective value) of order \f$O(1/k^2)$\f.
+ * objective value) of order \f$\mathcal{O}(1/k^2)$\f$.
  */
 class FBSplittingFast : public FBSplitting {
 private:
@@ -30,10 +30,10 @@ public:
     virtual int iterate();
     virtual int stop();
 
-	/**
+    /**
      * Initialize an FBSplittingFast object. By default, the maximum number
-     * of iterations is set to 1000, and the tolerance on the fixed-point
-     * residual is set to 1e-6.
+     * of iterations is set to \c 1000, and the tolerance on the fixed-point
+     * residual is set to \c 1e-6.
      *
      * @param p reference to the FBProblem to solve
      * @param x0 reference to Matrix, the starting point for the solver
@@ -43,7 +43,7 @@ public:
 
     /**
      * Initialize an FBSplittingFast object. By default, the maximum number
-     * of iterations is set to 1000.
+     * of iterations is set to \c 1000.
      *
      * @param p reference to the FBProblem to solve
      * @param x0 reference to Matrix, the starting point for the solver
@@ -54,7 +54,7 @@ public:
 
     /**
      * Initialize an FBSplittingFast object. By default, the tolerance on the
-     * fixed-point residual is set to 1e-6.
+     * fixed-point residual is set to \c 1e-6.
      *
      * @param p reference to the FBProblem to solve
      * @param x0 reference to Matrix, the starting point for the solver

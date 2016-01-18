@@ -17,6 +17,7 @@ class TestIndProbSimplex : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testCallProx);
     CPPUNIT_TEST(testCallProxLarge);
+    CPPUNIT_TEST(testCategory);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -29,6 +30,7 @@ public:
 private:
     void testCallProx();
     void testCallProxLarge();
+    void testCategory();
 
 };
 

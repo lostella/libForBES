@@ -43,7 +43,7 @@ int IndProbSimplex::callProx(Matrix& x, double gamma, Matrix& prox) {
     double t = 0.0;
     bool flag = true;
     size_t i = 0;
-    double val;
+    double val = 0.0;
 
     /* skipping negative data */
     const std::vector<double>::iterator lb = std::lower_bound(x_hat_vec.begin(), x_hat_vec.end(), 0.0, std::greater<double>());

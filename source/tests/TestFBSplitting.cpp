@@ -5,7 +5,7 @@
 #include "MatrixOperator.h"
 #include "TestFBSplitting.h"
 
-#include <iostream>
+// #include <iostream>
 
 #define DOUBLES_EQUAL_DELTA 1e-4
 #define MAXIT 1000
@@ -61,7 +61,7 @@ void TestFBSplitting::testBoxQP_small() {
 	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	// cout << "*** iters (slow) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
@@ -74,7 +74,7 @@ void TestFBSplitting::testBoxQP_small() {
 	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	// cout << "*** iters (slow) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
@@ -122,7 +122,7 @@ void TestFBSplitting::testLasso_small() {
 	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	// cout << "*** iters (slow) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
@@ -167,7 +167,7 @@ void TestFBSplitting::testSparseLogReg_small() {
 	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	// cout << "*** iters (slow) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);

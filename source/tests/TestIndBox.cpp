@@ -66,7 +66,7 @@ void TestIndBox::testCall() {
     _ASSERT(isinf(fval));
 
 
-    _ASSERT_OK(delete F);
+    delete F;
 
 }
 
@@ -140,7 +140,7 @@ void TestIndBox::testCall3() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, F->call(x, f));
     _ASSERT(isinf(f));
 
-    _ASSERT_OK(delete F);
+    delete F;
 }
 
 void TestIndBox::testCallProx() {
@@ -172,7 +172,7 @@ void TestIndBox::testCallProx() {
     _ASSERT_NUM_EQ(lb, prox.get(0, 0), tol);
     _ASSERT_NUM_EQ(x.get(1, 0), prox.get(1, 0), tol);
 
-    _ASSERT_OK(delete F);
+    delete F;
 }
 
 void TestIndBox::testCategory() {

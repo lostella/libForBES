@@ -217,7 +217,7 @@ public:
 
     /**
      * Erases the internal status of the cache, i.e., set its status to
-     * STATUS_NONE. This means that any get_<something> call will require
+     * STATUS_NONE. This means that any getter will require
      * recomputing all the steps.
      */
     void reset();

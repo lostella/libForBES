@@ -49,6 +49,7 @@ void TestIndProbSimplex::testCallProx() {
     Matrix x(n, 1, x_vals);
     Matrix x_orig(x);
     Matrix prox(n, 1);
+    _ASSERT(F->category().defines_prox());
     int status = F->callProx(x, 1.0, prox);
     _ASSERT(ForBESUtils::is_status_ok(status));
 
@@ -59,7 +60,7 @@ void TestIndProbSimplex::testCallProx() {
     double f_at_prox = 2.0;
     status = F->callProx(x, 1.0, prox, f_at_prox);
     _ASSERT(ForBESUtils::is_status_ok(status));
-    _ASSERT_NUM_EQ(0.0, f_at_prox, 1e-14);   
+    _ASSERT_NUM_EQ(0.0, f_at_prox, 1e-14);
     _ASSERT_EQ(prox_expected, prox);
     _ASSERT_EQ(x_orig, x);
     delete F;
@@ -73,14 +74,27 @@ void TestIndProbSimplex::testCallProxLarge() {
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
     Matrix prox(n, 1);
 
-//    clock_t start = clock();
+    _ASSERT(F->category().defines_prox());
+
+    //    clock_t start = clock();
     int status = F->callProx(x, 1.0, prox);
-//    clock_t end = clock();
-//    float elapsed_time_secs = static_cast<float>(end - start)*1000.0 / CLOCKS_PER_SEC;
+    //    clock_t end = clock();
+    //    float elapsed_time_secs = static_cast<float>(end - start)*1000.0 / CLOCKS_PER_SEC;
     _ASSERT(ForBESUtils::is_status_ok(status));
-    
-//    std::cout << "\ntime = " << elapsed_time_secs << std::endl;
+
+    //    std::cout << "\ntime = " << elapsed_time_secs << std::endl;
     delete F;
 }
 
+void TestIndProbSimplex::testCategory() {
+    Function * F = new IndProbSimplex();
+    _ASSERT(F->category().defines_prox());
+    _ASSERT(F->category().defines_f());
+    _ASSERT_NOT(F->category().defines_grad());
+    _ASSERT_NOT(F->category().defines_conjugate());
+    _ASSERT_NOT(F->category().defines_conjugate_grad());
+    _ASSERT_NOT(F->category().defines_hessian());
+    _ASSERT_NOT(F->category().defines_hessian_conj());
+    delete F;
+}
 

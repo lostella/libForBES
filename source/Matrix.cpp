@@ -645,6 +645,7 @@ Matrix & Matrix::operator=(const Matrix & right) {
     m_data = NULL;
     if (right.m_type != MATRIX_SPARSE) {
         m_data = new double[m_dataLength];
+        m_delete_data = true;
     }
     m_transpose = right.m_transpose;
     m_sparseStorageType = right.m_sparseStorageType;
@@ -1508,7 +1509,7 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
         throw std::invalid_argument(oss.str().c_str());
     }
     // C := gamma * C + alpha * A * B
-    int status;
+    int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     switch (A.getType()) {
         case MATRIX_DENSE: /* DENSE += ? */
             status = multiply_helper_left_dense(C, alpha, A, B, gamma);
@@ -1526,7 +1527,6 @@ int Matrix::mult(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
             status = multiply_helper_left_sparse(C, alpha, A, B, gamma);
             break;
         default:
-            status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
             break;
     }
     return status;
