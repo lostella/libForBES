@@ -6,10 +6,12 @@ IterativeSolver::IterativeSolver(int maxit) {
 }
 
 int IterativeSolver::run() {
-    while (m_it < m_maxit && !stop()) {
-        iterate();
+    int status = ForBESUtils::STATUS_OK;
+    while (m_it < m_maxit && !stop() && !ForBESUtils::is_status_error(status)) {
+        status = iterate();
         m_it++;
     }
+    return status;
 }
 
 int IterativeSolver::getIt() {
