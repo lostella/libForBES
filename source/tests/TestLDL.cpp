@@ -27,9 +27,9 @@ void TestLDL::testSolveDense() {
     const size_t n = 40;
     const double tol = 1e-7;
     const size_t repetitions = 20;
-    FactoredSolver *ldlSolver;
 
     for (size_t k = 0; k < repetitions; k++) {
+        FactoredSolver *ldlSolver;
         Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
         Matrix At(A);
         At.transpose();
@@ -62,10 +62,10 @@ void TestLDL::testSolveSymmetric() {
     const size_t n = 10;
     const double tol = 1e-7;
     const size_t repetitions = 15;
-    FactoredSolver *ldlSolver;
     Matrix b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix x;
     for (size_t k = 0; k < repetitions; k++) {
+        FactoredSolver *ldlSolver;
         Matrix S = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_SYMMETRIC);
         Matrix S_copy(S);
         ldlSolver = new LDLFactorization(S);
@@ -113,7 +113,7 @@ void TestLDL::testSolveSparse() {
     Matrix A_copy(A);
 
     LDLFactorization * solver = new LDLFactorization(A);
-    int status = 9999;
+    int status;
     _ASSERT_OK(status = solver->factorize());
 
 
@@ -157,7 +157,7 @@ void TestLDL::testSolveSparse2() {
     Matrix A_copy(A);
 
     FactoredSolver * solver = new LDLFactorization(A);
-    int status = 9999;
+    int status;
     status = solver->factorize();
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 

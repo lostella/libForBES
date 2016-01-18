@@ -132,7 +132,6 @@ void TestOpComposition::testCallAdjoint() {
     const size_t p = 8;
     const size_t n = 15;
     const size_t m = 6;
-    const double tol = 1e-8;
 
     Matrix A = MatrixFactory::MakeRandomMatrix(p, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
     Matrix B = MatrixFactory::MakeRandomMatrix(n, m, 0.0, 1.0, Matrix::MATRIX_DENSE);

@@ -152,11 +152,10 @@ void TestMatrix::testOpplusSparse() {
 
 void TestMatrix::testQuadratic() {
     /* Test quadratic with diagonal matrices */
-    Matrix *f;
-    Matrix *x;
+    Matrix *f;    
     for (size_t n = 5; n < 12; n++) {
+	Matrix *x = new Matrix(n, 1);
         f = new Matrix(n, n);
-        x = new Matrix(n, 1);
         for (size_t i = 0; i < n; i++) {
             _ASSERT_OK(f -> set(i, i, 1.0));
             (*x)[i] = i + 1;
@@ -415,17 +414,16 @@ void TestMatrix::testIsRowVector() {
 }
 
 void TestMatrix::testLength() {
-    size_t nRep = 20;
-    size_t x, y;
-    Matrix *f;
-    f = new Matrix(3, 4);
+    size_t nRep = 20;    
+
     for (size_t i = 0; i < nRep; i++) {
-        x = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
-        y = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
-        f = new Matrix(x, y);
+	size_t x = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        size_t y = static_cast<size_t> (5 + 50 * static_cast<double> (std::rand()) / static_cast<double> (RAND_MAX));
+        Matrix * f = new Matrix(x, y);
         _ASSERT_EQ(x*y, f->length());
+        delete f;
     }
-    delete f;
+
 }
 
 void TestMatrix::testReshape() {
@@ -1333,8 +1331,7 @@ void TestMatrix::testSparseQuad() {
         _ASSERT_OK(*A = MatrixFactory::MakeRandomSparse(n, n, nnz, 0.0, 10.0));
         _ASSERT_OK(*x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0, Matrix::MATRIX_DENSE));
 
-        double r = 0.0;
-        _ASSERT_OK(r = A->quad(*x));
+        double r = A->quad(*x);
 
         double r_exp = 0.0;
         for (size_t i = 0; i < n; i++) {

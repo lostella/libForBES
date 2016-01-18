@@ -181,7 +181,7 @@ void TestNorm1::testDualNorm() {
 
 void TestNorm1::testConjugate() {
     const size_t n = 2;
-    Matrix x(2,1); x[0] = 1;
+    Matrix x(n,1); x[0] = 1;
     Norm1 norm;
     double f_1;
     double f_inf;

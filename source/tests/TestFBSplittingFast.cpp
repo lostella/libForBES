@@ -57,30 +57,33 @@ void TestFBSplittingFast::testBoxQP_small() {
 	FBSplittingFast * solver;
 	
 	// test FB operations starting from x1
-	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	//cout << "*** iters (fast) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
-	}
-	delete x0;
-	delete solver;
+	size_t repeat = 100;
+	for (size_t r = 0; r < repeat; r++) {
+		x0 = new Matrix(n, 1, data_x1);
+		solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		//cout << "*** iters (fast) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	
-	// test FB operations starting from x2
-	x0 = new Matrix(n, 1, data_x2);
-	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	//cout << "*** iters (fast) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		// test FB operations starting from x2
+		x0 = new Matrix(n, 1, data_x2);
+		solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		//cout << "*** iters (fast) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	}
-	delete x0;
-	delete solver;
 }
 
 void TestFBSplittingFast::testLasso_small() {
@@ -97,6 +100,9 @@ void TestFBSplittingFast::testLasso_small() {
 	double data_minusb[] = {
 		-1, -2, -3, -4
 	};
+	/*
+	 * WARNING: data_w is not used anywhere...
+	 */
 	double data_w[] = {
 		1, 1, 1, 1
 	};
@@ -117,18 +123,21 @@ void TestFBSplittingFast::testLasso_small() {
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
 	FBSplittingFast * solver;
 	
-	// test FB operations starting from x1
-	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	//cout << "*** iters (fast) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+	size_t repeat = 200;
+	for (size_t r = 0; r < repeat; r++) {
+		// test FB operations starting from x1
+		x0 = new Matrix(n, 1, data_x1);
+		solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		//cout << "*** iters (fast) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	}
-	delete x0;
-	delete solver;
 }
 
 void TestFBSplittingFast::testSparseLogReg_small() {
@@ -162,16 +171,19 @@ void TestFBSplittingFast::testSparseLogReg_small() {
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
 	FBSplittingFast * solver;
 	
-	// test FB operations starting from x1
-	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	//cout << "*** iters (fast) : " << solver->getIt() << endl << flush;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+	size_t repeat = 100;
+	for (size_t r = 0; r < repeat; r++) {
+		// test FB operations starting from x1
+		x0 = new Matrix(n, 1, data_x1);
+		solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		//cout << "*** iters (fast) : " << solver->getIt() << endl << flush;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	}
-	delete x0;
-	delete solver;
 }

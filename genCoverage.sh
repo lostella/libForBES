@@ -1,5 +1,8 @@
 #!/bin/bash
-#make clean
+make clean
+rm -rf coverage
+rm coverage.info
+rm libforbes-coverage.info
 #make
 #make build-tests
 make -j 8 test

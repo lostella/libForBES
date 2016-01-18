@@ -27,7 +27,7 @@ public:
      * @param tol the prescribed tolerance on the fixed-point
      * residual.
      */
-    FBStopping(double tol);
+    explicit FBStopping(double tol);
 
     /**
      * @brief Checks whether the algorithm should stop

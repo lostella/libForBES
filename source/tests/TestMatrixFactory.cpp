@@ -165,8 +165,7 @@ void TestMatrixFactory::testShallow1() {
     /*
      * shallow copies (with various offsets)...
      */
-    Matrix X_shallow_copy = MatrixFactory::ShallowVector();
-    X_shallow_copy = MatrixFactory::ShallowVector(X, 1);
+    Matrix X_shallow_copy = MatrixFactory::ShallowVector(X, 1);
     _ASSERT_EQ(n - 1, X_shallow_copy.getNrows());
     _ASSERT_EQ(n - 1, X_shallow_copy.length());
     for (size_t i = 0; i < n - 1; i++) {

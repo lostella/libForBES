@@ -46,6 +46,9 @@ void TestFBCache::testBoxQP_small() {
 	double ref_z1_g02[] = {-1.00, -0.34, -0.90, -1.00};
 	double ref_FBEx1_g01 =  -3.417500000000000;
 	double ref_FBEx1_g02 = -10.514000000000003;
+	/*
+	 * WARNING: The following two arrays are never used
+         */
 	double ref_gradFBEx1_g01[] = {1.379999999999999, 3.409999999999999, 2.480000000000000, 0.909999999999999};
 	double ref_gradFBEx1_g02[] = {-5.779999999999999, -0.020000000000000, 3.300000000000000, 2.840000000000000};
 
@@ -153,7 +156,6 @@ void TestFBCache::testSparseLeastSquares_small() {
 	double data_minusb[] = {1, 4, -6, 2, 3};
 	double gamma1 = 0.0017;
 	double gamma2 = 0.003;
-	double lambda = 1.0;
 	// starting points
 	double data_x1[] = {-0.14, -0.24, -0.15, 0.03, 0.03, 0.04, -0.02, 0.01, -0.05, 0.08};
 	double data_x2[] = {-0.14, 0.04,  -0.09, -0.04,0.05, 0.10, -0.12, 0.12, 0.06, -0.01};
@@ -278,7 +280,6 @@ void TestFBCache::testSparseLogReg_small() {
 	
 	Matrix A = Matrix(m, n, data_A);
 	Matrix minusb = Matrix(m, 1, data_minusb);
-	Matrix * x0;
 	Matrix xstar;
 	LogLogisticLoss f = LogLogisticLoss(1.0);
 	MatrixOperator OpA = MatrixOperator(A);

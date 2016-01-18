@@ -17,15 +17,14 @@
  * where \f$x\f$ is the current iterate.
  */
 class FBStoppingRelative : public FBStopping {
-
 public:
 
-    FBStoppingRelative(double tol);
+    explicit FBStoppingRelative(double tol);
 
-	virtual int stop(FBCache & c);
+    virtual int stop(FBCache & c);
 
-	virtual ~FBStoppingRelative();
-	
+    virtual ~FBStoppingRelative();
+
 };
 
 #endif /* FBSTOPPINGRELATIVE_H */

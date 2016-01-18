@@ -39,7 +39,7 @@ public:
      * 
      * @param maxit maximum number of iterations
      */
-    IterativeSolver(int maxit);
+    explicit IterativeSolver(int maxit);
 
     /**
      * Runs the solver: until maximum number of iterations is met,

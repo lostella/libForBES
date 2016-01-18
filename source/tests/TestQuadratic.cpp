@@ -61,9 +61,8 @@ void TestQuadratic::testQuadratic() {
     _ASSERT_NEQ(quad, NULL);
 
     double f;
-    int info;
     _ASSERT(quad->category().defines_f());
-    _ASSERT_OK(info = quad -> call(x, f));
+    int info = quad -> call(x, f);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, info);
 
     if (quad != NULL) {

@@ -110,6 +110,7 @@ void TestNorm2::testCallProx() {
     
     x *= 0.05;
     status = norm2_fun ->callProx(x, gamma, prox, f_at_prox);
+    _ASSERT(ForBESUtils::is_status_ok(status));
     _ASSERT_EQ(0.0, f_at_prox);
     
     delete norm2_fun;

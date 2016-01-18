@@ -38,7 +38,7 @@ void FBCache::reset() {
 
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), m_gamma(gamma) {
     reset(FBCache::STATUS_NONE);
-    
+
     // store pointers to problem and all relevant details
     m_f1 = p.f1();
     m_L1 = p.L1();
@@ -47,7 +47,7 @@ FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), 
     m_L2 = p.L2();
     m_d2 = p.d2();
     m_lin = p.lin();
-    m_g = p.g();    
+    m_g = p.g();
 
     // get dimensions of things
     m_x_rows = m_x->getNrows();
@@ -165,6 +165,9 @@ int FBCache::update_forward_step(double gamma) {
 
     if (m_status < FBCache::STATUS_EVALF) {
         int status = update_eval_f();
+        if (!ForBESUtils::is_status_ok(status)) {
+            return status;
+        }
     }
 
     if (m_f1 != NULL) {
@@ -204,6 +207,8 @@ int FBCache::update_forward_step(double gamma) {
 
 int FBCache::update_forward_backward_step(double gamma) {
     // cout << "CALL FBCache::update_forward_backward_step" << endl << flush;
+    int status;
+
     if (gamma != m_gamma) {
         reset(FBCache::STATUS_EVALF);
     }
@@ -214,14 +219,19 @@ int FBCache::update_forward_backward_step(double gamma) {
 
     if (m_status < FBCache::STATUS_FORWARD) {
         // cout << "recomputing forward step" << endl << flush;
-        int status = update_forward_step(gamma);
+        status = update_forward_step(gamma);
+        if (!ForBESUtils::is_status_ok(status)) {
+            return status;
+        }
     }
-    double c;
-    int status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
+    status = m_g->callProx(*m_y, gamma, *m_z, m_gz);
+    if (!ForBESUtils::is_status_ok(status)) {
+        return status;
+    }
     *m_FPRx = (*m_x - *m_z);
     m_sqnormFPRx = 0;
     for (int i = 0; i < m_FPRx->length(); i++) {
-        c = (*m_FPRx)[i];
+        double c = (*m_FPRx)[i];
         m_sqnormFPRx += c*c;
     }
 
@@ -242,16 +252,16 @@ int FBCache::update_eval_FBE(double gamma) {
 
     if (m_status < FBCache::STATUS_FORWARDBACKWARD) {
         int status = update_forward_backward_step(gamma);
-        if (!ForBESUtils::is_status_ok(status)){
+        if (!ForBESUtils::is_status_ok(status)) {
             return status;
         }
     }
 
-    Matrix innprox_mat(1,1);
+    Matrix innprox_mat(1, 1);
     m_FPRx -> transpose();
     Matrix::mult(innprox_mat, 1.0, *m_FPRx, *m_gradfx, 0.0);
     m_FPRx -> transpose();
-    double innprod = innprox_mat.get(0,0);
+    double innprod = innprox_mat.get(0, 0);
 
     m_FBEx = m_fx + m_gz - innprod + 0.5 / m_gamma*m_sqnormFPRx;
     m_gamma = gamma;
@@ -271,7 +281,7 @@ int FBCache::update_grad_FBE(double gamma) {
 
     if (m_status < FBCache::STATUS_FORWARDBACKWARD) {
         int status = update_forward_backward_step(gamma);
-        if (!ForBESUtils::is_status_ok(status)){
+        if (!ForBESUtils::is_status_ok(status)) {
             return status;
         }
     }
@@ -280,16 +290,16 @@ int FBCache::update_grad_FBE(double gamma) {
 
     if (m_f1 != NULL) {
         Matrix gradf1_diff = Matrix(m_x_rows, m_x_cols);
-        double dummy; // because Function::call also returns the function value
+//        double dummy; // because Function::call also returns the function value
         if (m_L1 != NULL) {
-            Matrix L1diff = m_L1->call(*m_FPRx);
+            // Matrix L1diff = m_L1->call(*m_FPRx);
             Matrix gradf1_L1diff = Matrix(m_res1_rows, m_res1_cols);
             // m_f1->hessianVectorProduct(*m_x, L1diff, gradf1_L1diff);
             gradf1_diff = m_L1->callAdjoint(gradf1_L1diff);
         } else {
             // m_f1->hessianVectorProduct(*m_x, *m_FPRx, gradf1_diff);
         }
-        Matrix::add(*m_gradFBEx, -1.0, gradf1_diff, 1.0/gamma);
+        Matrix::add(*m_gradFBEx, -1.0, gradf1_diff, 1.0 / gamma);
     }
 
     if (m_f2 != NULL) {
@@ -312,17 +322,17 @@ Matrix * FBCache::get_point() {
 }
 
 double FBCache::get_eval_FBE(double gamma) {
-    int status = update_eval_FBE(gamma);
+    update_eval_FBE(gamma);
     return m_FBEx;
 }
 
 Matrix * FBCache::get_grad_FBE(double gamma) {
-    int status = update_grad_FBE(gamma);    
+    update_grad_FBE(gamma);
     return m_gradFBEx;
 }
 
 double FBCache::get_eval_f() {
-    int status = update_eval_f();    
+    update_eval_f();
     return m_fx;
 }
 

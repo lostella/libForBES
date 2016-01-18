@@ -20,9 +20,20 @@
 class FBSplitting : public IterativeSolver {
 private:
 
+    /**
+     * Specifications of the optimisation problem.
+     */
     FBProblem * m_prob;
+    /**
+     * Pointer to stopping criterion object.
+     */
     FBStopping * m_sc;
-
+    /**
+     * Whether m_sc should be deleted in the class's destructor. This should be
+     * set to \c true whenever a new FBStopping object is contructed internally
+     * and to \c false whenever m_sc points to an external object.
+     */
+    bool delete_sc; 
     double m_gamma;
 
 protected:
