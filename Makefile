@@ -200,7 +200,10 @@ SOURCES += Function.cpp \
 SOURCES += FBProblem.cpp \
 	FBCache.cpp \
 	IterativeSolver.cpp \
-	FBSplitting.cpp
+	FBSplitting.cpp \
+	FBSplittingFast.cpp \
+	FBStopping.cpp \
+	FBStoppingRelative.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
@@ -242,7 +245,8 @@ TESTS = \
 	TestConjugateFunction.test \
 	TestMatrixExtras.test \
 	TestFBCache.test \
-	TestFBSplitting.test
+	TestFBSplitting.test \
+	TestFBSplittingFast.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -298,6 +302,7 @@ test: build-tests
 	@echo "\n*** ALGORITHMS ***"
 	${BIN_TEST_DIR}/TestFBCache
 	${BIN_TEST_DIR}/TestFBSplitting
+	${BIN_TEST_DIR}/TestFBSplittingFast
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo

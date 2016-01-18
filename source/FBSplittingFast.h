@@ -1,44 +1,37 @@
-#ifndef FBSPLITTING_H
-#define	FBSPLITTING_H
+#ifndef FBSPLITTINGFAST_H
+#define	FBSPLITTINGFAST_H
 
 #include "FBProblem.h"
 #include "FBCache.h"
 #include "IterativeSolver.h"
+#include "FBSplitting.h"
 #include "FBStopping.h"
 
 /**
- * \class FBSplitting
- * \brief Forward-backward splitting algorithm
+ * \class FBSplittingFast
+ * \brief Fast forward-backward splitting algorithm
  * \version version 0.0
  * \ingroup FBSolver-group
  * 
- * FBSplitting specializes IterativeSolver by defining how the
- * iterate() method works. In particular, it computes the next
- * iterate as the forward-backward (or proximal gradient) step
- * at the current point.
+ * FBSplittingFast extends FBSplitting by prepending the Nesterov
+ * extrapolation step to the iterate() method. On convex problems
+ * this is known to enforce the optimal convergence rate (for the
+ * objective value) of order \f$O(1/k^2)$\f.
  */
-class FBSplitting : public IterativeSolver {
+class FBSplittingFast : public FBSplitting {
 private:
 
-    FBProblem * m_prob;
-    FBStopping * m_sc;
-
-    double m_gamma;
+    Matrix * m_previous;
 
 protected:
-
-    FBCache m_cache;
 
 public:
 
     virtual int iterate();
     virtual int stop();
 
-
-public:
-
-    /**
-     * Initialize an FBSplitting object. By default, the maximum number
+	/**
+     * Initialize an FBSplittingFast object. By default, the maximum number
      * of iterations is set to 1000, and the tolerance on the fixed-point
      * residual is set to 1e-6.
      *
@@ -46,10 +39,10 @@ public:
      * @param x0 reference to Matrix, the starting point for the solver
      * @param gamma the initial stepsize parameter for the operations
      */
-    FBSplitting(FBProblem & prob, Matrix & x0, double gamma);
+    FBSplittingFast(FBProblem & prob, Matrix & x0, double gamma);
 
     /**
-     * Initialize an FBSplitting object. By default, the maximum number
+     * Initialize an FBSplittingFast object. By default, the maximum number
      * of iterations is set to 1000.
      *
      * @param p reference to the FBProblem to solve
@@ -57,10 +50,10 @@ public:
      * @param gamma the initial stepsize parameter for the operations
      * @param sc reference to the FBStopping to be used as stopping criterion
      */
-    FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc);
+    FBSplittingFast(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc);
 
     /**
-     * Initialize an FBSplitting object. By default, the tolerance on the
+     * Initialize an FBSplittingFast object. By default, the tolerance on the
      * fixed-point residual is set to 1e-6.
      *
      * @param p reference to the FBProblem to solve
@@ -68,10 +61,10 @@ public:
      * @param gamma the initial stepsize parameter for the operations
      * @param maxit maximum number of iterations
      */
-    FBSplitting(FBProblem & prob, Matrix & x0, double gamma, int maxit);
+    FBSplittingFast(FBProblem & prob, Matrix & x0, double gamma, int maxit);
 
     /**
-     * Initialize an FBSplitting object.
+     * Initialize an FBSplittingFast object.
      *
      * @param p reference to the FBProblem to solve
      * @param x0 reference to Matrix, the starting point for the solver
@@ -79,7 +72,7 @@ public:
      * @param sc reference to the FBStopping to be used as stopping criterion
      * @param maxit maximum number of iterations
      */
-    FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc, int maxit);
+    FBSplittingFast(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc, int maxit);
 
     /**
      * Gets the solution point computed by the algorithm.
@@ -88,8 +81,8 @@ public:
      */
     Matrix& getSolution();
 
-    virtual ~FBSplitting();
+    virtual ~FBSplittingFast();
 
 };
 
-#endif /* FBSPLITTING_H */
+#endif /* FBSPLITTINGFAST_H */

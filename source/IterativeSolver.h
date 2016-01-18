@@ -3,6 +3,10 @@
 
 #include "Matrix.h"
 
+/**
+ * \class IterativeSolver
+ * \brief Abstract class for iterative solvers
+ */
 class IterativeSolver {
 protected:
 
@@ -30,19 +34,20 @@ protected:
 public:
 
     /**
+     * Constructs an iterative solver given the maximum number
+     * of iterations to be executed.
+     * 
+     * @param maxit maximum number of iterations
+     */
+    IterativeSolver(int maxit);
+
+    /**
      * Runs the solver: until maximum number of iterations is met,
      * or stop() returns 1, execute iterate()
      *
      * \todo fix the return value
      */
     int run();
-
-    /**
-     * Sets the maximum number of iterations to perform.
-     *
-     * @param maxit the maximum number of iterations.
-     */
-    void setMaxIt(int maxit);
 
     /**
      * Gets the number of iterations performed by the solver.

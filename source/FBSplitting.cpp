@@ -1,27 +1,47 @@
 #include "FBCache.h"
 #include "FBSplitting.h"
+#include "FBStopping.h"
 
-FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma) : m_cache(FBCache(prob, x0, gamma)) {
+#include <iostream>
+
+#define DEFAULT_MAXIT 1000
+#define DEFAULT_TOL 1e-6
+
+FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma) :
+    IterativeSolver(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
     m_prob = &prob;
     m_gamma = gamma;
-    setMaxIt(1000);
-    m_tol = 1e-6;
-    m_it = 0;
+    m_sc = new FBStopping(DEFAULT_TOL);
+}
+
+FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc) :
+    IterativeSolver(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
+    m_prob = &prob;
+    m_gamma = gamma;
+    m_sc = &sc;
+}
+
+FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, int maxit) :
+    IterativeSolver(maxit), m_cache(FBCache(prob, x0, gamma)) {
+    m_prob = &prob;
+    m_gamma = gamma;
+    m_sc = new FBStopping(DEFAULT_TOL);
+}
+
+FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc, int maxit) :
+    IterativeSolver(maxit), m_cache(FBCache(prob, x0, gamma)) {
+    m_prob = &prob;
+    m_gamma = gamma;
+    m_sc = &sc;
 }
 
 int FBSplitting::iterate() {
-    Matrix * z = m_cache.get_forward_backward_step(m_gamma);
-    m_cache.set_point(*z);
+    m_cache.set_point(*m_cache.get_forward_backward_step(m_gamma));
     return 0;
 }
 
 int FBSplitting::stop() {
-    if (m_cache.get_norm_fpr() / m_gamma <= m_tol) return 1;
-    return 0;
-}
-
-void FBSplitting::setTol(double tol) {
-    m_tol = tol;
+    return m_sc->stop(m_cache);
 }
 
 Matrix& FBSplitting::getSolution() {
