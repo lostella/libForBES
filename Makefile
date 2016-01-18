@@ -200,7 +200,9 @@ SOURCES += Function.cpp \
 SOURCES += FBProblem.cpp \
 	FBCache.cpp \
 	IterativeSolver.cpp \
-	FBSplitting.cpp
+	FBSplitting.cpp \
+	FBStopping.cpp \
+	FBStoppingRelative.cpp
 
 OBJECTS = $(SOURCES:%.cpp=$(OBJ_DIR)/%.o)
 
@@ -242,7 +244,7 @@ TESTS = \
 	TestConjugateFunction.test \
 	TestMatrixExtras.test \
 	TestFBCache.test \
-	TestFBSplitting.test
+	TestFBSplitting.test \
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 

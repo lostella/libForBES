@@ -30,18 +30,7 @@
  * \version version 0.0
  * \ingroup FBSolver-group
  * 
- * FBCache handles forward-backward operations related to the problem:
- * 
- * \f[
- *  \min f(x) + g(x),
- * \f]
- * 
- * where
- *
- * \f[
- *  f(x) = f_1(L_1 x + d_1) + f_2(L_2 x + d_2) + \langle l,x \rangle.
- * \f]
- *
+ * FBCache handles forward-backward operations related to an FBProblem
  * In particular, objects of the FBCache class are initialized given an
  * FBProblem p, a point x (of class Matrix) and a scalar parameter gamma.
  * It allows to evaluate the proximal-gradient operation starting from x,
@@ -142,8 +131,8 @@ private:
      * (using set_point) then the status is reset to STATUS_NONE; if gamma
      * instead is changed, the status is reset to STATUS_EVALF. In fact, the
      * value of f is independent of gamma, and is not to be recomputed.
-     *
-     * @return Status code, see ForBESUtils.
+     * 
+     * @param status a status code (see static private const members)
      */
     void reset(int status);
 
@@ -165,6 +154,13 @@ public:
      * @param x new point at which to evaluate the steps
      */
     void set_point(Matrix& x);
+
+    /**
+     * Gets (a pointer to) the point at which the FBCache object refers
+     *
+     * @return a pointer to Matrix containing the handled point
+     */
+    Matrix * get_point();
     
     /**
      * Gets the result of the forward (gradient) step, with stepsize gamma, at x
@@ -218,6 +214,13 @@ public:
      * @return pointer to Matrix containing the gradient of the FBE
      */
     Matrix * get_grad_FBE(double gamma);
+
+    /**
+     * Erases the internal status of the cache, i.e., set its status to
+     * STATUS_NONE. This means that any get_<something> call will require
+     * recomputing all the steps.
+     */
+    void reset();
 };
 
 #endif /* FBCACHE_H */

@@ -24,11 +24,16 @@
 // #include <iostream>
 #include <cmath>
 #include <limits>
+#include <iostream>
 
 void FBCache::reset(int status) {
     if (status < m_status) m_status = status;
     m_flag_evalFBE = 0;
     m_flag_gradFBE = 0;
+}
+
+void FBCache::reset() {
+    FBCache::reset(FBCache::STATUS_NONE);
 }
 
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), m_gamma(gamma) {
@@ -108,20 +113,20 @@ int FBCache::update_eval_f() {
     }
 
     if (m_f1 != NULL) {
-        //    	cout << "there's f1" << endl;
+        //    	cout << "there's f1" << endl << flush;
         if (m_L1 != NULL) {
-            //        	cout << "there's L1" << endl;
+            //        	cout << "there's L1" << endl << flush;
             *m_res1x = m_L1->call(*m_x);
         } else {
             *m_res1x = *m_x;
         }
         if (m_d1 != NULL) {
-            //        	cout << "there's d1" << endl;
+            //        	cout << "there's d1" << endl << flush;
             *m_res1x += *m_d1;
         }
         int status = m_f1->call(*m_res1x, m_f1x, *m_gradf1x);
         if (ForBESUtils::STATUS_OK != status) {
-            cout << "ERROR: " << status << endl;
+            // cout << "ERROR: " << status << endl << flush;
             return status;
         }
     }
@@ -198,6 +203,7 @@ int FBCache::update_forward_step(double gamma) {
 }
 
 int FBCache::update_forward_backward_step(double gamma) {
+    // cout << "CALL FBCache::update_forward_backward_step" << endl << flush;
     if (gamma != m_gamma) {
         reset(FBCache::STATUS_EVALF);
     }
@@ -207,6 +213,7 @@ int FBCache::update_forward_backward_step(double gamma) {
     }
 
     if (m_status < FBCache::STATUS_FORWARD) {
+        // cout << "recomputing forward step" << endl << flush;
         int status = update_forward_step(gamma);
     }
     double c;
@@ -300,6 +307,10 @@ void FBCache::set_point(Matrix& x) {
     reset(FBCache::STATUS_NONE);
 }
 
+Matrix * FBCache::get_point() {
+    return m_x;
+}
+
 double FBCache::get_eval_FBE(double gamma) {
     int status = update_eval_FBE(gamma);
     return m_FBEx;
@@ -321,6 +332,7 @@ Matrix* FBCache::get_forward_step(double gamma) {
 }
 
 Matrix* FBCache::get_forward_backward_step(double gamma) {
+    // cout << "CALL FBCache::get_forward_backward_step" << endl << flush;
     update_forward_backward_step(gamma);
     return m_z;
 }
@@ -363,5 +375,13 @@ FBCache::~FBCache() {
     if (m_gradfx != NULL) {
         delete m_gradfx;
         m_gradfx = NULL;
+    }
+    if (m_FPRx != NULL) {
+        delete m_FPRx;
+        m_FPRx = NULL;
+    }
+    if (m_gradFBEx != NULL) {
+        delete m_gradFBEx;
+        m_gradFBEx = NULL;
     }
 }

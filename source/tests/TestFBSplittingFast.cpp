@@ -1,9 +1,9 @@
-#include "FBSplitting.h"
+#include "FBSplittingFast.h"
 #include "FBProblem.h"
 #include "FBStoppingRelative.h"
 #include "MatrixFactory.h"
 #include "MatrixOperator.h"
-#include "TestFBSplitting.h"
+#include "TestFBSplittingFast.h"
 
 #include <iostream>
 
@@ -11,21 +11,21 @@
 #define MAXIT 1000
 #define TOLERANCE 1e-6
 
-CPPUNIT_TEST_SUITE_REGISTRATION(TestFBSplitting);
+CPPUNIT_TEST_SUITE_REGISTRATION(TestFBSplittingFast);
 
-TestFBSplitting::TestFBSplitting() {
+TestFBSplittingFast::TestFBSplittingFast() {
 }
 
-TestFBSplitting::~TestFBSplitting() {
+TestFBSplittingFast::~TestFBSplittingFast() {
 }
 
-void TestFBSplitting::setUp() {
+void TestFBSplittingFast::setUp() {
 }
 
-void TestFBSplitting::tearDown() {
+void TestFBSplittingFast::tearDown() {
 }
 
-void TestFBSplitting::testBoxQP_small() {
+void TestFBSplittingFast::testBoxQP_small() {
 	size_t n = 4;
 	// problem data
 	double data_Q[] = {
@@ -54,14 +54,14 @@ void TestFBSplitting::testBoxQP_small() {
 	IndBox g = IndBox(lb, ub);
 	FBProblem prob = FBProblem(f, g);
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
-	FBSplitting * solver;
+	FBSplittingFast * solver;
 	
 	// test FB operations starting from x1
 	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	cout << "*** iters (fast) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
@@ -71,10 +71,10 @@ void TestFBSplitting::testBoxQP_small() {
 	
 	// test FB operations starting from x2
 	x0 = new Matrix(n, 1, data_x2);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	cout << "*** iters (fast) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
@@ -83,7 +83,7 @@ void TestFBSplitting::testBoxQP_small() {
 	delete solver;
 }
 
-void TestFBSplitting::testLasso_small() {
+void TestFBSplittingFast::testLasso_small() {
 	size_t n = 5;
 	size_t m = 4;
 	// problem data
@@ -115,14 +115,14 @@ void TestFBSplitting::testLasso_small() {
 	Norm1 g = Norm1(5.0);
 	FBProblem prob = FBProblem(f, OpA, minusb, g);
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
-	FBSplitting * solver;
+	FBSplittingFast * solver;
 	
 	// test FB operations starting from x1
 	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	cout << "*** iters (fast) : " << solver->getIt() << endl;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
@@ -131,7 +131,7 @@ void TestFBSplitting::testLasso_small() {
 	delete solver;
 }
 
-void TestFBSplitting::testSparseLogReg_small() {
+void TestFBSplittingFast::testSparseLogReg_small() {
 	size_t n = 5;
 	size_t m = 4;
 	// problem data
@@ -160,14 +160,14 @@ void TestFBSplitting::testSparseLogReg_small() {
 	Norm1 g = Norm1(1.0);
 	FBProblem prob = FBProblem(f, OpA, minusb, g);
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
-	FBSplitting * solver;
+	FBSplittingFast * solver;
 	
 	// test FB operations starting from x1
 	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+	solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
 	solver->run();
 	xstar = solver->getSolution();
-	cout << "*** iters (slow) : " << solver->getIt() << endl;
+	cout << "*** iters (fast) : " << solver->getIt() << endl << flush;
 	_ASSERT(solver->getIt() < MAXIT);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
