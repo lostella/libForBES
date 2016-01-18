@@ -31,7 +31,7 @@ int FBSplittingFast::iterate() {
     if (m_previous != NULL) {
         // y = x + k/(k+2) (x - x')
         //   = (2k+2)/(k+2) x - k/(k+2) x'
-        Matrix::add(*m_cache.get_point(), -m_it/(m_it+2), *m_previous, (2*m_it+2)/(m_it+2));
+        Matrix::add(*m_cache.get_point(), -(1.0*m_it)/(m_it+2), *m_previous, (2.0*m_it+2.0)/(m_it+2));
         // tell FBCache that the point has changed
         m_cache.reset();
         // delete previously allocated 'm_previous'
