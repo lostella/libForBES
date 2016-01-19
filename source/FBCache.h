@@ -51,21 +51,8 @@ private:
     FBProblem & m_prob;
     Matrix * m_x;
 
-    /* Reference to problem details */
-    Function * m_f1;
-    Function * m_f2;
-    Function * m_g;
-    LinearOperator * m_L1;
-    LinearOperator * m_L2;
-    Matrix * m_d1;
-    Matrix * m_d2;
-    Matrix * m_lin;
 
-    /* Vectors dimensions */
-    size_t m_x_rows;
-    size_t m_x_cols;
-    size_t m_res1_rows, m_res1_cols;
-    size_t m_res2_rows, m_res2_cols;
+        
 
     /* Internal storage for computing proximal-gradient steps */
     Matrix * m_y;
@@ -76,7 +63,7 @@ private:
     Matrix * m_res2x;
     Matrix * m_gradf2x;
     Matrix * m_gradfx;
-    Matrix * m_gradFBEx;
+    Matrix * m_gradFBEx;    
     double m_f1x;
     double m_f2x;
     double m_linx;
@@ -87,9 +74,9 @@ private:
     double m_sqnormFPRx;
 
     /**
-     * Evaluates f(x) and updates the internal status
+     * Evaluates \f$f(x)\f$ and updates the internal status of FBCache.
      *
-     * @return Status code, see ForBESUtils.
+     * @return status code (see ForBESUtils).
      */
     int update_eval_f();
 
@@ -128,8 +115,8 @@ private:
     /**
      * Used to set the internal status of the object at a specific value.
      * For example, if the point at which to evaluate operations is changed
-     * (using set_point) then the status is reset to STATUS_NONE; if gamma
-     * instead is changed, the status is reset to STATUS_EVALF. In fact, the
+     * (using set_point) then the status is reset to \c STATUS_NONE; if \c gamma
+     * instead is changed, the status is reset to \c STATUS_EVALF. In fact, the
      * value of f is independent of gamma, and is not to be recomputed.
      * 
      * @param status a status code (see static private const members)
@@ -171,7 +158,8 @@ public:
     Matrix * get_forward_step(double gamma);
 
     /**
-     * Gets the result of the forward-backward (proximal-gradient) with stepsize gamma step at x
+     * Gets the result of the forward-backward (proximal-gradient) with stepsize 
+     * \c gamma step at x
      *
      * @param gamma stepsize parameter
      * @return a pointer to Matrix containing the forward-backward step
@@ -216,9 +204,9 @@ public:
     Matrix * get_grad_FBE(double gamma);
 
     /**
-     * Erases the internal status of the cache, i.e., set its status to
-     * STATUS_NONE. This means that any getter will require
-     * recomputing all the steps.
+     * Erases the internal status of the cache, i.e., sets its status to
+     * \c STATUS_NONE. This means that any getter will require to recompute all 
+     * steps.
      */
     void reset();
 };

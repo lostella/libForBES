@@ -42,7 +42,6 @@ void TestSeparableSum::tearDown() {
 }
 
 void TestSeparableSum::testCall() {
-    size_t num_functs = 2; /* 2 functions */
     size_t num_idx_1 = 3; /* Function #1 points to 3 indices */
     size_t num_idx_2 = 2; /* Function #2 points to 2 indices */
 
@@ -106,7 +105,6 @@ void TestSeparableSum::testCall() {
 }
 
 void TestSeparableSum::testCallProx() {
-    size_t num_functs = 2; /* 2 functions */
     size_t num_idx_1 = 3; /* Function #1 points to 3 indices */
     size_t num_idx_2 = 2; /* Function #2 points to 2 indices */
 
@@ -170,12 +168,9 @@ void TestSeparableSum::testCallProx() {
     _ASSERT_NUM_EQ(prox2[1], prox[2], tol);
     _ASSERT_NUM_EQ(prox1[1], prox[3], tol);
     _ASSERT_NUM_EQ(prox1[2], prox[4], tol);
-   
+
 
     delete f1;
     delete f2;
     delete sep_sum;
 }
-
-
-

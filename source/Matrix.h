@@ -25,6 +25,7 @@
 
 #include "cholmod.h"
 #include "ForBESUtils.h"
+#include <utility>
 
 /**
  * \class Matrix
@@ -139,6 +140,9 @@ public:
      */
     Matrix(size_t nr, size_t nc);
 
+
+    Matrix(std::pair<size_t,size_t> dimensions);
+
     /**
      * Allocates a matrix of given dimensions and given type.
      * 
@@ -220,7 +224,7 @@ public:
      * \note It is faster to use get(size_t), although it is not so convenient.
      */
     double get(const size_t i, const size_t j) const;
-    
+
     /**
      * This is the same as <code>operator[]</code>, i.e., it directly accesses the
      * internal state of the Matrix. This method is also equivalent to (and a shorthand
@@ -348,6 +352,29 @@ public:
      * @return Data length.
      */
     size_t length() const;
+    
+    /**
+     * This method returns the squared 2-norm of a vector or the squared Frobenius
+     * norm of a Matrix.
+     * 
+     * For \f$x\in\mathbb{R}^n\f$, the squared 2-norm is
+     * 
+     * \f[
+     *  \|x\|_2^2 = \sum_{i=1}^{n}x_i^2.
+     * \f]
+     * 
+     * The squared Frobenius norm of matrix \f$A\in\mathbb{R}^{m\times n}\f$ is
+     * defined as
+     * 
+     * \f[
+     * \|A\|_{\mathrm{fro}}^2 = \sum_{i=1}^{m}\sum_{j=1}^{n}A_{i,j}^2.
+     * \f]
+     * 
+     * Returns \c 0.0 if the matrix is empty.
+     * 
+     * @return Squared Frobenius norm.
+     */
+    double norm_fro_sq();
 
     /**
      * Computes the quadratic form <code>0.5 * x'*Q*x</code>.
@@ -408,8 +435,8 @@ public:
      * 
      * This operation is often denoted as \f$[x]_+\f$.
      */
-    void plusop(); 
-    
+    void plusop();
+
     /**
      * This method is the same as the idempotent method Matrix::plusop() but the 
      * result is stored in a given memory location specified by <code>mat</code>.
@@ -613,7 +640,7 @@ public:
      * \todo Handle the case where \f$\alpha = \gamma = 0.0\f$.
      * 
      * \bug SPARSE + LOWER_TRI is too slow!
-     */    
+     */
     static int add(Matrix& C, double alpha, Matrix& A, double gamma);
 
     /**

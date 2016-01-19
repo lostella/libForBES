@@ -72,6 +72,10 @@ Matrix::Matrix() {
     m_delete_data = true;
 }
 
+Matrix::Matrix(std::pair<size_t,size_t> dimensions){
+    init(dimensions.first, dimensions.second, MATRIX_DENSE);
+}
+
 Matrix::Matrix(size_t nr, size_t nc) {
     init(nr, nc, MATRIX_DENSE);
 }
