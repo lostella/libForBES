@@ -72,7 +72,7 @@ FunctionOntologicalClass HuberLoss::category() {
     FunctionOntologicalClass huberLoss("HuberLoss");
     huberLoss.set_defines_f(true);
     huberLoss.set_defines_grad(true);
-    huberLoss.getSuperclasses().push_back(FunctionOntologyRegistry::loss());
+    huberLoss.add_superclass(FunctionOntologyRegistry::loss());
     return huberLoss;
 }
 

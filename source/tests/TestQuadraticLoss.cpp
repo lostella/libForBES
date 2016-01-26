@@ -184,3 +184,20 @@ void TestQuadraticLoss::testCallConj() {
     delete quadLoss;
 }
 
+void TestQuadraticLoss::testCategory() {
+    Function * ql = new QuadraticLoss();
+    std::list<FunctionOntologicalClass> list;
+    list = ql->category().getSuperclasses();
+    _ASSERT_EQ(static_cast<long unsigned int> (2), list.size());
+    bool loss_found = false;
+    bool quad_found = false;
+    for (std::list<FunctionOntologicalClass>::iterator it = list.begin(); it != list.end(); ++it) {
+        FunctionOntologicalClass entry = *it;
+        loss_found = loss_found || it->getName().compare("LossFunction") == 0;
+        quad_found = quad_found || it->getName().compare("Quadratic") == 0;
+    }
+    _ASSERT(loss_found);
+    _ASSERT(quad_found);
+    
+    delete ql;
+}

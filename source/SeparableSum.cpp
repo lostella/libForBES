@@ -188,7 +188,7 @@ FunctionOntologicalClass SeparableSum::category() {
     meta.set_defines_grad(true);
     meta.set_defines_prox(true);
     meta.set_defines_conjugate(true);
-    meta.getSuperclasses().push_back(FunctionOntologyRegistry::function());
+    meta.add_superclass(FunctionOntologyRegistry::function());
     return meta;
 }
 

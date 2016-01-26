@@ -140,7 +140,7 @@ FunctionOntologicalClass DistanceToBox::category() {
     FunctionOntologicalClass distToBox("DistanceToBox");
     distToBox.set_defines_f(true);
     distToBox.set_defines_grad(true);
-    distToBox.getSuperclasses().push_back(FunctionOntologyRegistry::distance());
+    distToBox.add_superclass(FunctionOntologyRegistry::distance());
     return distToBox;
 }
 

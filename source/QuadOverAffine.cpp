@@ -135,7 +135,7 @@ FunctionOntologicalClass QuadOverAffine::category() {
     FunctionOntologicalClass meta("QuadraticOverAffine");
     meta.set_defines_conjugate(true);
     meta.set_defines_conjugate_grad(true);
-    meta.getSuperclasses().push_back(FunctionOntologyRegistry::conj_quadratic());
+    meta.add_superclass(FunctionOntologyRegistry::conj_quadratic());
     return meta;
 }
 

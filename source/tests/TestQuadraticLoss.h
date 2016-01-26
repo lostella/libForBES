@@ -18,6 +18,7 @@ class TestQuadraticLoss : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testCallConj);
+    CPPUNIT_TEST(testCategory);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -30,6 +31,7 @@ public:
 private:
     void testCall();
     void testCallConj();
+    void testCategory();
 
 };
 

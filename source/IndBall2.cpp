@@ -93,7 +93,7 @@ int IndBall2::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox)
 
 FunctionOntologicalClass IndBall2::category() {
     FunctionOntologicalClass meta("IndBall2");
-    meta.getSuperclasses().push_back(FunctionOntologyRegistry::indicator());
+    meta.add_superclass(FunctionOntologyRegistry::indicator());
     meta.set_defines_prox(true);
     return meta;
 }

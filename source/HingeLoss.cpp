@@ -101,6 +101,6 @@ FunctionOntologicalClass HingeLoss::category() {
     hingeLoss.set_defines_f(true);
     hingeLoss.set_defines_grad(true);
     hingeLoss.set_defines_prox(true);
-    hingeLoss.getSuperclasses().push_back(FunctionOntologyRegistry::loss());
+    hingeLoss.add_superclass(FunctionOntologyRegistry::loss());
     return hingeLoss;
 }

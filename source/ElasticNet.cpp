@@ -85,6 +85,6 @@ FunctionOntologicalClass ElasticNet::category() {
     ont.set_defines_f(true);
     ont.set_defines_grad(false);
     ont.set_defines_prox(true);
-    ont.getSuperclasses().push_back(FunctionOntologyRegistry::function());
+    ont.add_superclass(FunctionOntologyRegistry::function());
     return ont;
 }

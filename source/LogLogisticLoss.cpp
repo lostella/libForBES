@@ -76,7 +76,7 @@ FunctionOntologicalClass LogLogisticLoss::category() {
     FunctionOntologicalClass logLogisticLoss("LogLogisticLoss");
     logLogisticLoss.set_defines_f(true);
     logLogisticLoss.set_defines_grad(true);
-    logLogisticLoss.getSuperclasses().push_back(FunctionOntologyRegistry::loss());
+    logLogisticLoss.add_superclass(FunctionOntologyRegistry::loss());
     return logLogisticLoss;
 }
 

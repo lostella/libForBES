@@ -72,7 +72,7 @@ Matrix::Matrix() {
     m_delete_data = true;
 }
 
-Matrix::Matrix(std::pair<size_t,size_t> dimensions){
+Matrix::Matrix(std::pair<size_t, size_t> dimensions) {
     init(dimensions.first, dimensions.second, MATRIX_DENSE);
 }
 
@@ -113,8 +113,8 @@ Matrix::Matrix(const Matrix& orig) {
         if (n == 0) {
             n = 1;
         }
-        m_data = new double[n];        
-        memcpy(m_data, orig.m_data, n*sizeof(double));
+        m_data = new double[n];
+        memcpy(m_data, orig.m_data, n * sizeof (double));
         m_dataLength = orig.m_dataLength;
         m_delete_data = true;
     } else {
@@ -331,6 +331,18 @@ void Matrix::set(size_t i, size_t j, double v) {
 
 }
 
+double Matrix::norm_fro_sq() {
+    if (m_type == Matrix::MATRIX_DENSE || m_type == Matrix::MATRIX_DIAGONAL || m_type == Matrix::MATRIX_LOWERTR) {
+        return cblas_dnrm2(m_dataLength, m_data, 1);
+    } else if (m_type == Matrix::MATRIX_SYMMETRIC) {
+        // double t;        
+        throw std::logic_error("Frobenius norm of symmetric matrices is not implemented yet.");
+    } else {
+        double * sparse_data = static_cast<double*> (m_triplet->x);
+        return cblas_dnrm2(m_triplet->nnz, sparse_data, 1);
+    }
+}
+
 double Matrix::quadFromTriplet(const Matrix& x) const {
     double r = 0.0;
     for (size_t k = 0; k < m_triplet->nnz; k++) {
@@ -509,9 +521,9 @@ std::ostream& operator<<(std::ostream& os, const Matrix & obj) {
 
 double &Matrix::operator[](size_t sub) const {
     //LCOV_EXCL_START
-//    if (sub >= length()) {
-//        throw std::out_of_range("Exception: Index out of range for Matrix");
-//    }
+    //    if (sub >= length()) {
+    //        throw std::out_of_range("Exception: Index out of range for Matrix");
+    //    }
     //LCOV_EXCL_STOP
     return m_data[sub];
 }

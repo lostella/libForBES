@@ -108,6 +108,8 @@ public:
 
     std::list<FunctionOntologicalClass> getSuperclasses() const;
 
+    void add_superclass(FunctionOntologicalClass fun_ont_class);
+    
     friend std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj);
 
     void set_defines_conjugate(bool defines_conjugate);

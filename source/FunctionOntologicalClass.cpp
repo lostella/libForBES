@@ -19,6 +19,7 @@
  */
 
 #include "FunctionOntologicalClass.h"
+#include "FunctionOntologyRegistry.h"
 
 FunctionOntologicalClass::FunctionOntologicalClass(
         bool does_define_conjugate,
@@ -51,10 +52,11 @@ FunctionOntologicalClass::FunctionOntologicalClass(std::string name) : m_name(na
     m_defines_conjugate = false;
     m_defines_conjugate_grad = false;
     m_defines_hessian = false;
-    m_defines_hessian_conj = false;
+    m_defines_hessian_conj = false;   
 }
 
 //LCOV_EXCL_START
+
 std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) {
     os << "Function class : " << obj.m_name << "\n";
     os << " * f()              : " << (obj.m_defines_f ? "YES" : "NO") << "\n";
@@ -98,6 +100,10 @@ bool FunctionOntologicalClass::defines_prox() const {
 
 std::list<FunctionOntologicalClass> FunctionOntologicalClass::getSuperclasses() const {
     return superClasses;
+}
+
+void FunctionOntologicalClass::add_superclass(FunctionOntologicalClass fun_ont_class){    
+    superClasses.push_back(fun_ont_class);
 }
 
 void FunctionOntologicalClass::set_defines_conjugate(bool define_conjugate) {
