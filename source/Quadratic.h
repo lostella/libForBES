@@ -156,7 +156,7 @@ public:
 
     virtual int call(Matrix& x, double& f, Matrix& grad);
     
-    virtual int call(Matrix& x, double& f, Matrix& grad, Matrix& hessian);
+    virtual int hessianProduct(Matrix& x, Matrix& z, Matrix& Hz);
 
     virtual int callConj(Matrix& x, double& f_star);
 

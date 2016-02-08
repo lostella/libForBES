@@ -37,7 +37,11 @@ int Function::call(Matrix& x, double& f, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int Function::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
+// int Function::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
+//     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+// }
+
+int Function::hessianProduct(Matrix& x, Matrix& z, Matrix& Hz) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
@@ -49,7 +53,11 @@ int Function::callConj(Matrix& x, double& f_star, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int Function::callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian) {
+// int Function::callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian) {
+//     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+// }
+
+int Function::hessianProductConj(Matrix& x, Matrix& z, Matrix& Hz) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 

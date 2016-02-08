@@ -71,37 +71,6 @@ void Quadratic::setq(Matrix& q) {
     this->m_q = &q;
 }
 
-int Quadratic::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
-    int status = call(x, f, grad);
-    if (m_is_Q_eye) {
-        if (m_Q == NULL) {
-            // update m_Q and store an identity matrix
-            const size_t n = x.getNrows();
-            m_Q = new Matrix(n, n, Matrix::MATRIX_DIAGONAL);
-            m_delete_Q = true;
-            for (size_t i = 0; i < n; i++) {
-                m_Q->getData()[i] = 1.0; /* here, m_Q is diagonal */
-            }
-        }
-    }
-    if (m_Q->getType() != Matrix::MATRIX_SPARSE) {
-        hessian = MatrixFactory::ShallowMatrix(*m_Q); // just point to data
-    } else {
-        hessian = *m_Q; // copy
-    }
-    return status;
-}
-
-int Quadratic::call(Matrix& x, double& f, Matrix& grad) {
-    int statusComputeGrad = computeGradient(x, grad); // compute the gradient of f at x (grad)
-    if (statusComputeGrad != ForBESUtils::STATUS_OK) {
-        return statusComputeGrad;
-    }
-    // f = (1/2)*(grad+q)'*x
-    f = ((m_is_q_zero ? grad : grad + (*m_q)) * x).get(0, 0) / 2;
-    return ForBESUtils::STATUS_OK;
-}
-
 int Quadratic::call(Matrix& x, double& f) {
     if (!m_is_Q_eye) {
         if (m_is_q_zero) {
@@ -116,6 +85,41 @@ int Quadratic::call(Matrix& x, double& f) {
         }
     }
     return ForBESUtils::STATUS_OK;
+}
+
+int Quadratic::call(Matrix& x, double& f, Matrix& grad) {
+    int statusComputeGrad = computeGradient(x, grad); // compute the gradient of f at x (grad)
+    if (statusComputeGrad != ForBESUtils::STATUS_OK) {
+        return statusComputeGrad;
+    }
+    // f = (1/2)*(grad+q)'*x
+    f = ((m_is_q_zero ? grad : grad + (*m_q)) * x).get(0, 0) / 2;
+    return ForBESUtils::STATUS_OK;
+}
+
+// int Quadratic::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
+//     int status = call(x, f, grad);
+//     if (m_is_Q_eye) {
+//         if (m_Q == NULL) {
+//             // update m_Q and store an identity matrix
+//             const size_t n = x.getNrows();
+//             m_Q = new Matrix(n, n, Matrix::MATRIX_DIAGONAL);
+//             m_delete_Q = true;
+//             for (size_t i = 0; i < n; i++) {
+//                 m_Q->getData()[i] = 1.0; /* here, m_Q is diagonal */
+//             }
+//         }
+//     }
+//     if (m_Q->getType() != Matrix::MATRIX_SPARSE) {
+//         hessian = MatrixFactory::ShallowMatrix(*m_Q); // just point to data
+//     } else {
+//         hessian = *m_Q; // copy
+//     }
+//     return status;
+// }
+
+int Quadratic::hessianProduct(Matrix& x, Matrix& z, Matrix& Hz) {
+    return Matrix::mult(Hz, 1.0, *m_Q, z, 0.0);
 }
 
 int Quadratic::callConj(Matrix& y, double& f_star) {

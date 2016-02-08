@@ -1657,7 +1657,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             add(C, 1.0, temp_r, gamma);
             status = ForBESUtils::STATUS_OK;
         }
-    } else if (B.m_type == MATRIX_DENSE) { /* C = gamma * C + alpha * SPRASE * DENSE */
+    } else if (B.m_type == MATRIX_DENSE) { /* C = gamma * C + alpha * SPARSE * DENSE */
 
 
         // RHS is dense

@@ -44,8 +44,8 @@ class TestQuadratic : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCallSparse3);
     CPPUNIT_TEST(testCallConjSparse);
     CPPUNIT_TEST(testHessian);
-    CPPUNIT_TEST(testHessianSparse);
-    CPPUNIT_TEST(testHessianQisEye);
+    // CPPUNIT_TEST(testHessianSparse);
+    // CPPUNIT_TEST(testHessianQisEye);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -74,7 +74,7 @@ private:
     
     void testHessian();
     void testHessianSparse();
-    void testHessianQisEye();
+    // void testHessianQisEye();
 
 };
 

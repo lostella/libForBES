@@ -46,9 +46,7 @@ void TestFBCache::testBoxQP_small() {
 	double ref_z1_g02[] = {-1.00, -0.34, -0.90, -1.00};
 	double ref_FBEx1_g01 =  -3.417500000000000;
 	double ref_FBEx1_g02 = -10.514000000000003;
-	/*
-	 * WARNING: The following two arrays are never used
-         */
+
 	double ref_gradFBEx1_g01[] = {1.379999999999999, 3.409999999999999, 2.480000000000000, 0.909999999999999};
 	double ref_gradFBEx1_g02[] = {-5.779999999999999, -0.020000000000000, 3.300000000000000, 2.840000000000000};
 
@@ -60,6 +58,9 @@ void TestFBCache::testBoxQP_small() {
 	double ref_z2_g02[] = {+0.00, -0.60, -1.00, -1.00};
 	double ref_FBEx2_g01 =  -7.450000000000000;
 	double ref_FBEx2_g02 =  -8.900000000000000;
+
+	double ref_gradFBEx2_g01[] = {-1.100000000000000, -0.400000000000000, -1.000000000000000, -0.700000000000000};
+	double ref_gradFBEx2_g02[] = {2.800000000000000, 1.200000000000000, -2.000000000000000, -1.400000000000000};
 
 	Matrix Q = Matrix(n, n, data_Q);
 	Matrix q = Matrix(n, 1, data_q);
@@ -78,7 +79,7 @@ void TestFBCache::testBoxQP_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
-	gradFBEx = cache->get_grad_FBE(gamma1);
+	// gradFBEx = cache->get_grad_FBE(gamma1);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
@@ -92,7 +93,7 @@ void TestFBCache::testBoxQP_small() {
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
-	gradFBEx = cache->get_grad_FBE(gamma2);
+	// gradFBEx = cache->get_grad_FBE(gamma2);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
@@ -111,12 +112,13 @@ void TestFBCache::testBoxQP_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
-	gradFBEx = cache->get_grad_FBE(gamma1);
+	// gradFBEx = cache->get_grad_FBE(gamma1);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g01[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g01[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx2_g01[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g01, FBEx, DOUBLES_EQUAL_DELTA);
 	
@@ -124,12 +126,13 @@ void TestFBCache::testBoxQP_small() {
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
-	gradFBEx = cache->get_grad_FBE(gamma2);
+	// gradFBEx = cache->get_grad_FBE(gamma2);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g02[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g02[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx2_g02[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g02, FBEx, DOUBLES_EQUAL_DELTA);
 	
@@ -167,6 +170,10 @@ void TestFBCache::testSparseLeastSquares_small() {
 	double ref_z1_g2[] = {-0.09848,-0.17007,0.13896,-0.24756,0.00075,0.00460,-0.10904, 0.23839,-0.17855,0.13757};
 	double ref_FBEx1_g1 =  24.874158335000004;
 	double ref_FBEx1_g2 =  6.877117650000010;
+	double ref_gradFBEx1_g01[] = {-3.808741999999999, -15.806659000000007, -20.393580000000014, 15.842146000000014,
+		-8.141769000000005, -32.874061999999995, 15.022123999999996, -40.329886999999999, 0.966641000000017, 12.457114999999991};
+	double ref_gradFBEx1_g02[] = {3.862220000000004, -10.068809999999996, 37.667799999999971, -42.793860000000024,
+		-21.823709999999995, -67.036580000000029, 3.813159999999993, -12.953329999999987, -31.061810000000001, 36.657850000000010};
 	// reference results 2
 	double ref_fx2 = 33.691600000000001;
 	double ref_y2_g1[] = {-0.093607, 0.018614, 0.070837, -0.171631, 0.050833, 0.043475, -0.145942, 0.222323, 0.021240, 0.091524};
@@ -175,6 +182,10 @@ void TestFBCache::testSparseLeastSquares_small() {
 	double ref_z2_g2[] = {-0.05513,0,0.19083,-0.26929,0.04847,0,-0.16278,0.29757,-0.00540,0.16616};
 	double ref_FBEx2_g1 =  13.450436129999996;
 	double ref_FBEx2_g2 =  -2.445831616666666;
+	double ref_gradFBEx2_g01[] = {-9.098988999999996, 2.283653000000003, -14.115925999999988, 5.971681000000004,
+		-14.242260000000003, -21.045202999999994, 8.419293000000010, -27.748738000000003, -5.550822999999998, -2.789898000000008};
+	double ref_gradFBEx2_g02[] = {5.459000000000003, -6.654586666666662, 46.149910000000020, -46.888040000000018,
+		-25.802650000000000, -63.421406666666677, 4.355229999999997, -3.890279999999990, -29.185900000000011, 39.907110000000010};
 
 	Matrix A = Matrix(m, n, data_A);
 	Matrix minusb = Matrix(m, 1, data_minusb);
@@ -194,25 +205,27 @@ void TestFBCache::testSparseLeastSquares_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
-	gradFBEx = cache->get_grad_FBE(gamma1);
+	// gradFBEx = cache->get_grad_FBE(gamma1);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g01[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, DOUBLES_EQUAL_DELTA);
-	
+
 	// change gamma
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
-	gradFBEx = cache->get_grad_FBE(gamma2);
+	// gradFBEx = cache->get_grad_FBE(gamma2);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g02[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, DOUBLES_EQUAL_DELTA);
 	
@@ -225,12 +238,13 @@ void TestFBCache::testSparseLeastSquares_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
-	gradFBEx = cache->get_grad_FBE(gamma1);
+	// gradFBEx = cache->get_grad_FBE(gamma1);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx2_g01[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g1, FBEx, DOUBLES_EQUAL_DELTA);
 	
@@ -238,12 +252,13 @@ void TestFBCache::testSparseLeastSquares_small() {
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
-	gradFBEx = cache->get_grad_FBE(gamma2);
+	// gradFBEx = cache->get_grad_FBE(gamma2);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx2, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y2_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z2_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		// CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx2_g02[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx2_g2, FBEx, DOUBLES_EQUAL_DELTA);
 	

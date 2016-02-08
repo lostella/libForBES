@@ -148,7 +148,8 @@ public:
      * \exception std::invalid_argument an <code>invalid_argument</code> exception
      * is thrown in case the input %Matrix is of incompatible dimensions.
      */
-    virtual int call(Matrix& x, double& f, Matrix& grad, Matrix& hessian); // returns also the Hessian at x
+    // virtual int call(Matrix& x, double& f, Matrix& grad, Matrix& hessian); // returns also the Hessian at x
+    virtual int hessianProduct(Matrix& x, Matrix& z, Matrix& Hz);
     
     /**
      * Computes the proximal of this function at a point <code>x</code> with 
@@ -262,8 +263,8 @@ public:
      * is thrown in case the input %Matrix <code>x</code> or <code>grad</code> 
      * is of incompatible dimensions.
      */
-    virtual int callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian); // Nabla^2 f*(x)
-
+    // virtual int callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian); // Nabla^2 f*(x)
+    virtual int hessianProductConj(Matrix& x, Matrix& z, Matrix& Hz);
 
 
 private:

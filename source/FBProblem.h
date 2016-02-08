@@ -36,6 +36,15 @@ private:
 
     void init();
 
+    /**
+     * @brief Checks whether the argument Function object defines a function
+     * of category "Quadratic"
+     * 
+     * @param fun_f Reference to Function object to check
+     * @return true if the argument defines a function of category "Quadratic", false otherwise
+     */
+    bool isQuadratic(Function& fun_f);
+
 public:
 
     /**

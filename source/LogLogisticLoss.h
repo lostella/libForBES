@@ -80,6 +80,8 @@ public:
 
     virtual int call(Matrix& x, double& f);
 
+    virtual int hessianProduct(Matrix& x, Matrix& z, Matrix& Hz);
+
     virtual FunctionOntologicalClass category();
 
 

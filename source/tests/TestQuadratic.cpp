@@ -413,14 +413,17 @@ void TestQuadratic::testHessian() {
 
     Matrix Q = MatrixFactory::MakeRandomMatrix(n, n, 5.0, 1.0);
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
-    Matrix grad;
-    Matrix hess;
+    Matrix d = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+    Matrix Hd = Matrix(n, 1);
+    Matrix Hd_reference = Matrix(n, 1);
 
     Function * quad = new Quadratic(Q);
-    double f;
-    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+    int status = Matrix::mult(Hd_reference, 1.0, Q, d, 0.0);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+    status = quad->hessianProduct(x, d, Hd);
+    _ASSERT(ForBESUtils::is_status_ok(status));
 
-    _ASSERT_EQ(Q, hess);
+    _ASSERT_EQ(Hd, Hd_reference);
 
     delete quad;
 }
@@ -431,39 +434,42 @@ void TestQuadratic::testHessianSparse() {
 
     Matrix Q = MatrixFactory::MakeRandomSparse(n, n, nnz, 5.0, 1.0);
     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
-    Matrix grad;
-    Matrix hess;
+    Matrix d = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0);
+    Matrix Hd = Matrix(n, 1);
+    Matrix Hd_reference = Matrix(n, 1);
 
     Function * quad = new Quadratic(Q);
-    double f;
-    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+    int status = Matrix::mult(Hd_reference, 1.0, Q, d, 0.0);
+    _ASSERT(ForBESUtils::is_status_ok(status));
+    status = quad->hessianProduct(x, d, Hd);
+    _ASSERT(ForBESUtils::is_status_ok(status));
 
-    _ASSERT_EQ(Q, hess);
-
-    delete quad;
-}
-
-void TestQuadratic::testHessianQisEye() {
-    
-    
-    const size_t n = 10;
-    Matrix Id = MatrixFactory::MakeIdentity(n, 1.0);
-    Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
-    Matrix grad;
-    Matrix hess;
-
-    Function * quad = new Quadratic();
-    double f;
-    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
-    
-    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, hess.getType());
-    _ASSERT_EQ(Id, hess);
-    
-    
-    _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
-    _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, hess.getType());
-    _ASSERT_EQ(Id, hess);
+    _ASSERT_EQ(Hd, Hd_reference);
 
     delete quad;
 }
+
+// void TestQuadratic::testHessianQisEye() {
+    
+    
+//     const size_t n = 10;
+//     Matrix Id = MatrixFactory::MakeIdentity(n, 1.0);
+//     Matrix x = MatrixFactory::MakeRandomMatrix(n, 1, 1.0, 2.0);
+//     Matrix grad;
+//     Matrix hess;
+
+//     Function * quad = new Quadratic();
+//     double f;
+//     _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+    
+//     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, hess.getType());
+//     _ASSERT_EQ(Id, hess);
+    
+    
+//     _ASSERT(ForBESUtils::is_status_ok(quad -> call(x, f, grad, hess)));
+//     _ASSERT_EQ(Matrix::MATRIX_DIAGONAL, hess.getType());
+//     _ASSERT_EQ(Id, hess);
+
+//     delete quad;
+// }
 

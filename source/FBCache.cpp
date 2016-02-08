@@ -24,7 +24,6 @@
 // #include <iostream>
 #include <cmath>
 #include <limits>
-#include <iostream>
 
 void FBCache::reset(int status) {
     if (status < m_status) m_status = status;
@@ -285,13 +284,31 @@ int FBCache::update_grad_FBE(double gamma) {
 
     *m_gradFBEx = *m_FPRx;
 
+    // gradFBE(x) = (I-gamma*H(x))*FPR(x)/gamma
+    // if the smooth term is f(Lx+d) then H(x) = L'*hessf(x)*L
+    // so in general the way to compute gradFBE(x) should be:
+    //
+    //  v1 <- L*FPR(x)
+    //  v2 <- H(x)*v1
+    //  v3 <- L'*v2
+    //  gradFBE(x) <- FPR(x)/gamma - v3
+    //
+    // and when L is not present (that is L = Identity):
+    //
+    //  v1 <- H(x)*FPR(x)
+    //  gradFBE(x) <- FPR(x)/gamma - v1
+
     if (m_prob.f1() != NULL) {
         if (m_prob.L1() != NULL) {
-            Matrix gradf1_L1diff = Matrix(m_prob.L1()->dimensionOut());
-            Matrix gradf1_diff = m_prob.L1()->callAdjoint(gradf1_L1diff);
-            Matrix::add(*m_gradFBEx, -1.0, gradf1_diff, 1.0 / gamma);
+            Matrix v1 = m_prob.L1()->call(*m_FPRx);
+            Matrix v2 = Matrix(m_prob.L1()->dimensionOut());
+            m_prob.f1()->hessianProduct(*m_x, v1, v2);
+            Matrix v3 = m_prob.L1()->callAdjoint(v2);
+            Matrix::add(*m_gradFBEx, -1.0, v3, 1.0 / gamma);
         } else {
-
+            Matrix v1 = Matrix(m_x->getNrows(), m_x->getNcols());
+            m_prob.f1()->hessianProduct(*m_x, *m_FPRx, v1);
+            Matrix::add(*m_gradFBEx, -1.0, v1, 1.0 / gamma);
         }
     }
 
