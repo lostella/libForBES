@@ -127,9 +127,11 @@ int QuadraticLoss::callConj(Matrix& x, double& f_star, Matrix& grad) {
 
 int QuadraticLoss::hessianProduct(Matrix& x, Matrix& z, Matrix& Hz) {
     if (m_is_uniform_weights) {
-        for (size_t i = 0; i < x.getNrows(); i++) Hz[i] = m_uniform_w*z[i];
+        Hz = m_uniform_w * z;
     } else {
-        for (size_t i = 0; i < x.getNrows(); i++) Hz[i] = (*m_w)[i]*z[i];
+        m_w->toggle_diagonal();
+        Hz = (*m_w)*z;
+        m_w->toggle_diagonal();
     }
     return ForBESUtils::STATUS_OK;
 }
