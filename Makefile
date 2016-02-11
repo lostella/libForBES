@@ -246,7 +246,8 @@ TESTS = \
 	TestMatrixExtras.test \
 	TestFBCache.test \
 	TestFBSplitting.test \
-	TestFBSplittingFast.test
+	TestFBSplittingFast.test \
+	TestLasso.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -303,6 +304,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestFBCache
 	${BIN_TEST_DIR}/TestFBSplitting
 	${BIN_TEST_DIR}/TestFBSplittingFast
+	${BIN_TEST_DIR}/TestLasso
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo
