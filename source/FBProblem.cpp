@@ -19,6 +19,8 @@
 
 #include "FBProblem.h"
 
+#define QUADRATIC_NAME "Quadratic"
+
 void FBProblem::init() {
     m_f1 = NULL;
     m_f2 = NULL;
@@ -32,16 +34,19 @@ void FBProblem::init() {
 
 bool FBProblem::isQuadratic(Function& fun_f) {
     FunctionOntologicalClass foc = fun_f.category();
-    cout << endl << foc << endl;
-    if (foc.getName() == "Quadratic") return true;
-    std::list<FunctionOntologicalClass>::iterator cl;
-    for (cl = foc.getSuperclasses().begin();
-         cl != foc.getSuperclasses().end();
-         ++cl) {
-        cout << endl << "checking superclasses" << endl;
-        if ((*cl).getName() == "Quadratic") return true;
+    if (foc.getName().compare(QUADRATIC_NAME) == 0) return true;
+    
+    bool gauge = false;    
+    std::list<FunctionOntologicalClass> superclasses = foc.getSuperclasses();
+    for (std::list<FunctionOntologicalClass>::iterator cl = superclasses.begin(); 
+            cl != superclasses.end(); 
+            ++cl) {
+        if ((*cl).getName().compare(QUADRATIC_NAME) == 0) {
+            gauge = true;
+            break;
+        }
     }
-    return false;
+    return gauge;
 }
 
 FBProblem::FBProblem(
@@ -69,20 +74,16 @@ FBProblem::FBProblem(
         Matrix& d,
         Function& fun_g) {
 	init();
-    cout << endl << "checking f" << endl;
     if (isQuadratic(fun_f)) {
-        cout << endl << "f is quadratic" << endl;
         m_f1 = &fun_f;
         m_L1 = &L;
         m_d1 = &d;
     } else {
-        cout << endl << "f is NOT quadratic" << endl;
         m_f2 = &fun_f;
         m_L2 = &L;
         m_d2 = &d;
     }
 	m_g = &fun_g;
-    cout << endl << "done checking f" << endl;
 }
 
 FBProblem::FBProblem(
