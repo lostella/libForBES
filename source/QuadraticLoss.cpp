@@ -139,7 +139,7 @@ FunctionOntologicalClass QuadraticLoss::category() {
     quadLoss.set_defines_f(true);
     quadLoss.set_defines_conjugate(true);
     quadLoss.set_defines_conjugate_grad(true);
-    quadLoss.set_defines_grad(false);
+    quadLoss.set_defines_grad(true);
     quadLoss.add_superclass(FunctionOntologyRegistry::loss());
     quadLoss.add_superclass(FunctionOntologyRegistry::quadratic());
     return quadLoss;

@@ -32,14 +32,13 @@ void FBProblem::init() {
 
 bool FBProblem::isQuadratic(Function& fun_f) {
     FunctionOntologicalClass foc = fun_f.category();
+    cout << endl << foc << endl;
     if (foc.getName() == "Quadratic") return true;
     std::list<FunctionOntologicalClass>::iterator cl;
-    // PROBLEM HERE:
-    // it looks like fun_f.category().getSuperclasses() always
-    // has zero elements
     for (cl = foc.getSuperclasses().begin();
          cl != foc.getSuperclasses().end();
          ++cl) {
+        cout << endl << "checking superclasses" << endl;
         if ((*cl).getName() == "Quadratic") return true;
     }
     return false;
@@ -70,16 +69,20 @@ FBProblem::FBProblem(
         Matrix& d,
         Function& fun_g) {
 	init();
+    cout << endl << "checking f" << endl;
     if (isQuadratic(fun_f)) {
+        cout << endl << "f is quadratic" << endl;
         m_f1 = &fun_f;
         m_L1 = &L;
         m_d1 = &d;
     } else {
+        cout << endl << "f is NOT quadratic" << endl;
         m_f2 = &fun_f;
         m_L2 = &L;
         m_d2 = &d;
     }
 	m_g = &fun_g;
+    cout << endl << "done checking f" << endl;
 }
 
 FBProblem::FBProblem(
