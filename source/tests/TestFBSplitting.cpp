@@ -46,13 +46,13 @@ void TestFBSplitting::testBoxQP_small() {
 	// reference results
 	double ref_xstar[] = {-0.352941176470588, -0.764705882352941, -1.000000000000000, -1.000000000000000};
 
-	Matrix Q = Matrix(n, n, data_Q);
-	Matrix q = Matrix(n, 1, data_q);
+	Matrix * Q = new Matrix(n, n, data_Q);
+	Matrix * q = new Matrix(n, 1, data_q);
 	Matrix * x0;
 	Matrix xstar;
-	Quadratic f = Quadratic(Q, q);
-	IndBox g = IndBox(lb, ub);
-	FBProblem prob = FBProblem(f, g);
+	Function * f = new Quadratic(*Q, *q);
+	Function * g = new IndBox(lb, ub);
+	FBProblem prob = FBProblem(*f, *g);
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
 	FBSplitting * solver;
 	
@@ -81,6 +81,11 @@ void TestFBSplitting::testBoxQP_small() {
 	}
 	delete x0;
 	delete solver;
+
+	delete Q;
+	delete q;
+	delete f;
+	delete g;
 }
 
 void TestFBSplitting::testLasso_small() {
@@ -106,14 +111,14 @@ void TestFBSplitting::testLasso_small() {
 	// reference results
 	double ref_xstar[] = {-0.010238907849511, 0, 0, 0, 0.511945392491421};
 
-	Matrix A = Matrix(m, n, data_A);
-	Matrix minusb = Matrix(m, 1, data_minusb);
+	Matrix * A = new Matrix(m, n, data_A);
+	Matrix * minusb = new Matrix(m, 1, data_minusb);
 	Matrix * x0;
 	Matrix xstar;
-	QuadraticLoss f = QuadraticLoss();
-	MatrixOperator OpA = MatrixOperator(A);
-	Norm1 g = Norm1(5.0);
-	FBProblem prob = FBProblem(f, OpA, minusb, g);
+	Function * f = new QuadraticLoss();
+	LinearOperator * OpA = new MatrixOperator(*A);
+	Function * g = new Norm1(5.0);
+	FBProblem prob = FBProblem(*f, *OpA, *minusb, *g);
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
 	FBSplitting * solver;
 	
@@ -129,6 +134,12 @@ void TestFBSplitting::testLasso_small() {
 	}
 	delete x0;
 	delete solver;
+
+	delete A;
+	delete minusb;
+	delete OpA;
+	delete f;
+	delete g;
 }
 
 void TestFBSplitting::testSparseLogReg_small() {
@@ -151,14 +162,14 @@ void TestFBSplitting::testSparseLogReg_small() {
 	// reference results
 	double ref_xstar[] = {0.0, 0.0, 0.215341883018748, 0.0, 0.675253988559914};
 
-	Matrix A = Matrix(m, n, data_A);
-	Matrix minusb = Matrix(m, 1, data_minusb);
+	Matrix * A = new Matrix(m, n, data_A);
+	Matrix * minusb = new Matrix(m, 1, data_minusb);
 	Matrix * x0;
 	Matrix xstar;
-	LogLogisticLoss f = LogLogisticLoss(1.0);
-	MatrixOperator OpA = MatrixOperator(A);
-	Norm1 g = Norm1(1.0);
-	FBProblem prob = FBProblem(f, OpA, minusb, g);
+	Function * f = new LogLogisticLoss();
+	LinearOperator * OpA = new MatrixOperator(*A);
+	Function * g = new Norm1(1.0);
+	FBProblem prob = FBProblem(*f, *OpA, *minusb, *g);
 	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
 	FBSplitting * solver;
 	
@@ -174,5 +185,11 @@ void TestFBSplitting::testSparseLogReg_small() {
 	}
 	delete x0;
 	delete solver;
+
+	delete A;
+	delete minusb;
+	delete OpA;
+	delete f;
+	delete g;
 }
 

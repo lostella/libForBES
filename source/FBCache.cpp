@@ -38,7 +38,6 @@ void FBCache::reset() {
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), m_gamma(gamma) {
     reset(FBCache::STATUS_NONE);
 
-
     // get dimensions of things
     size_t m_x_rows = m_x->getNrows();
     size_t m_x_cols = m_x->getNcols();
@@ -172,7 +171,7 @@ int FBCache::update_forward_step(double gamma) {
     }
 
     if (m_prob.f2() != NULL) {
-        status = m_prob.f2()->call(*m_x, m_f2x, *m_gradf2x);
+        status = m_prob.f2()->call(*m_res2x, m_f2x, *m_gradf2x);
         if (!ForBESUtils::is_status_ok(status)) {
             return status;
         }
@@ -300,13 +299,14 @@ int FBCache::update_grad_FBE(double gamma) {
 
     if (m_prob.f1() != NULL) {
         if (m_prob.L1() != NULL) {
-            Matrix v1 = m_prob.L1()->call(*m_FPRx);
-            Matrix v2 = Matrix(m_prob.L1()->dimensionOut());
+            Matrix v1(m_prob.L1()->dimensionOut());
+            v1 = m_prob.L1()->call(*m_FPRx);
+            Matrix v2(m_prob.L1()->dimensionOut());
             m_prob.f1()->hessianProduct(*m_x, v1, v2);
             Matrix v3 = m_prob.L1()->callAdjoint(v2);
             Matrix::add(*m_gradFBEx, -1.0, v3, 1.0 / gamma);
         } else {
-            Matrix v1 = Matrix(m_x->getNrows(), m_x->getNcols());
+            Matrix v1(m_x->getNrows(), m_x->getNcols());
             m_prob.f1()->hessianProduct(*m_x, *m_FPRx, v1);
             Matrix::add(*m_gradFBEx, -1.0, v1, 1.0 / gamma);
         }
