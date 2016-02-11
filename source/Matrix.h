@@ -141,7 +141,7 @@ public:
     Matrix(size_t nr, size_t nc);
 
 
-    Matrix(std::pair<size_t,size_t> dimensions);
+    explicit Matrix(std::pair<size_t,size_t> dimensions);
 
     /**
      * Allocates a matrix of given dimensions and given type.
@@ -442,7 +442,7 @@ public:
      * result is stored in a given memory location specified by <code>mat</code>.
      * @param mat Matrix to be updated with the result
      */
-    void plusop(Matrix* mat);
+    void plusop(Matrix* mat) const;
 
 
     /* Operators */

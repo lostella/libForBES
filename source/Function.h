@@ -264,8 +264,17 @@ public:
      * is of incompatible dimensions.
      */
     // virtual int callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian); // Nabla^2 f*(x)
-    virtual int hessianProductConj(Matrix& x, Matrix& z, Matrix& Hz);
+    virtual int hessianProductConj(Matrix& x, Matrix& z, Matrix& Hz);        
 
+    /**
+     * Assignment operator throws a logic_error whenever it is invoked. The assignment
+     * operator is not supported and is not allowed on such objects.
+     * 
+     * @param right right-hand side
+     * @return Does not return anything
+     * @throws logic_error when it is invoked
+     */
+    Function& operator=(const Function& right);
 
 private:
 
@@ -279,9 +288,9 @@ protected:
      */
 
     Function(); /**< Default constructor */
+        
+        
     
-    
-
 };
 
 #endif	/* FUNCTION_H */

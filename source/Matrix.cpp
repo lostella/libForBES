@@ -454,7 +454,7 @@ void Matrix::plusop() {
     }
 }
 
-void Matrix::plusop(Matrix* mat) {
+void Matrix::plusop(Matrix* mat) const {
     if (m_type != Matrix::MATRIX_SPARSE) {
         if (length() != mat->length()) {
             throw std::invalid_argument("Input matrix allocation/size error");
@@ -1601,7 +1601,7 @@ int Matrix::multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matri
 int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     bool is_alpha_one = (std::abs(alpha - 1.0) < std::numeric_limits<double>::epsilon());
     bool is_gamma_zero = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
-    bool is_gamma_one = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
+//    bool is_gamma_one = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
     int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     if (B.m_type == MATRIX_SPARSE) {
         // RHS is sparse

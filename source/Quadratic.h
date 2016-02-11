@@ -91,10 +91,10 @@
  */
 class Quadratic : public Function {
 public:
-    
+
     using Function::callConj;
     using Function::callProx;
-    
+
     /**
      * Create a trivial quadratic function with zero Hessian and
      * zero linear term.
@@ -116,24 +116,20 @@ public:
      * @param q A vector
      */
     Quadratic(Matrix& Q, Matrix& q); // both Q and q    
-    
+
 
     virtual int callProx(Matrix& x, double gamma, Matrix& prox);
-
-
 
     /**
      * Destructor.
      */
     virtual ~Quadratic();
-    
 
     virtual FunctionOntologicalClass category();
 
-  
 
     void setQ(Matrix& Q);
-    
+
     void setq(Matrix& q);
 
     /**
@@ -155,21 +151,36 @@ public:
     virtual int call(Matrix& x, double& f);
 
     virtual int call(Matrix& x, double& f, Matrix& grad);
-    
+
+    /**
+     * Returns the product of the Hessian of this function \f$H(x)\f$, computed
+     * at a given point \f$x\f$ multiplied by a vector \f$z\f$. In fact, \f$H(x)\f$ does not
+     * depend on \f$x\f$.
+     * 
+     * @param x point where the Hessian should be computed (not used in this function)
+     * @param z vector \f$z\f$ with which the Hessian should be multiplied
+     * @param Hz The product \f$H(x)z\f$
+     * @return Status code which is equal to <code>STATUS_OK</code> if the computation
+     * has succeeded without any problems, <code>STATUS_UNDEFINED_FUNCTION</code> if
+     * this function is not defined by the derived class and <code>STATUS_NUMERICAL_PROBLEMS</code>
+     * if some numerical problems prevented the computation of a reliable result. 
+     * Custom implementations are allowed to return other non-zero error/warning
+     * status codes.
+     */
     virtual int hessianProduct(Matrix& x, Matrix& z, Matrix& Hz);
 
     virtual int callConj(Matrix& x, double& f_star);
 
-    virtual int callConj(Matrix& x, double& f_star, Matrix& grad);    
+    virtual int callConj(Matrix& x, double& f_star, Matrix& grad);
 
 
 private:
-    Matrix *m_Q;                  /**< Matrix Q */
-    Matrix *m_q;                  /**< Vector q*/
-    FactoredSolver *m_solver;     /**< Cholesky factor L */
-    bool m_is_Q_eye;              /**< TRUE if Q is the identity matrix */
-    bool m_is_q_zero;             /**< TRUE is q is the zero vector */
-    bool m_delete_Q;              /**< Whether to delete Q in the destructor */
+    Matrix *m_Q; /**< Matrix Q */
+    Matrix *m_q; /**< Vector q*/
+    FactoredSolver *m_solver; /**< Cholesky factor L */
+    bool m_is_Q_eye; /**< TRUE if Q is the identity matrix */
+    bool m_is_q_zero; /**< TRUE is q is the zero vector */
+    bool m_delete_Q; /**< Whether to delete Q in the destructor */
 
     /**
      * Computes the gradient of this function at a given vector x. 
