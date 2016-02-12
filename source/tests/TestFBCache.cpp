@@ -298,9 +298,11 @@ void TestFBCache::testSparseLogReg_small() {
 	double ref_y1_g1[] = {0.026894142137000, -0.200000000000000, 0.484846862904004, -0.511741005041004, 0.673105857863000};
 	double ref_z1_g1[] = {0, -0.100000000000000, 0.384846862904004, -0.411741005041004, 0.573105857863001};
 	double ref_FBEx1_g1 = -0.027393687107681;
+	double ref_gradFBEx1_g1[] = {1.058873063954829, -1.946791359162886, 2.494558854461880, -3.046918621337433, 3.497547480123079};
 	double ref_y1_g2[] = {0.013447071068500, -0.100000000000000, 0.242423431452002, -0.255870502520502, 0.336552928931500};
 	double ref_z1_g2[] = {0, -0.050000000000000, 0.192423431452002, -0.205870502520502, 0.286552928931500};
 	double ref_FBEx1_g2 = 1.612826531482605;
+	double ref_gradFBEx1_g2[] = {0.529436531977414, -0.473395679581443, -0.676954887289080, 0.535245714536301, -1.116755549253463};
 
 	Matrix * A = new Matrix(m, n, data_A);
 	Matrix * minusb = new Matrix(m, 1, data_minusb);
@@ -320,12 +322,13 @@ void TestFBCache::testSparseLogReg_small() {
 	y = cache->get_forward_step(gamma1);
 	z = cache->get_forward_backward_step(gamma1);
 	FBEx = cache->get_eval_FBE(gamma1);
-	// gradFBEx = cache->get_grad_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g1[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, DOUBLES_EQUAL_DELTA);
 	
@@ -333,17 +336,19 @@ void TestFBCache::testSparseLogReg_small() {
 	y = cache->get_forward_step(gamma2);
 	z = cache->get_forward_backward_step(gamma2);
 	FBEx = cache->get_eval_FBE(gamma2);
-	// gradFBEx = cache->get_grad_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
 	
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
 	for (int i=0; i < n; i++) {
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g2[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, DOUBLES_EQUAL_DELTA);
 	
 	delete x;
 	delete cache;
+
 	delete prob;
 	delete f;
 	delete g;

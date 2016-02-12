@@ -57,30 +57,33 @@ void TestFBSplitting::testBoxQP_small() {
 	FBSplitting * solver;
 	
 	// test FB operations starting from x1
-	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	// cout << "*** iters (slow) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
-	}
-	delete x0;
-	delete solver;
+	size_t repeat = 100;
+	for (size_t r = 0; r < repeat; r++) {
+		x0 = new Matrix(n, 1, data_x1);
+		solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		// cout << "*** iters (slow) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	
-	// test FB operations starting from x2
-	x0 = new Matrix(n, 1, data_x2);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	// cout << "*** iters (slow) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		// test FB operations starting from x2
+		x0 = new Matrix(n, 1, data_x2);
+		solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		// cout << "*** iters (slow) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	}
-	delete x0;
-	delete solver;
 
 	delete Q;
 	delete q;
@@ -123,17 +126,20 @@ void TestFBSplitting::testLasso_small() {
 	FBSplitting * solver;
 	
 	// test FB operations starting from x1
-	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	// cout << "*** iters (slow) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+	size_t repeat = 100;
+	for (size_t r = 0; r < repeat; r++) {
+		x0 = new Matrix(n, 1, data_x1);
+		solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		// cout << "*** iters (slow) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	}
-	delete x0;
-	delete solver;
 
 	delete A;
 	delete minusb;
@@ -174,17 +180,20 @@ void TestFBSplitting::testSparseLogReg_small() {
 	FBSplitting * solver;
 	
 	// test FB operations starting from x1
-	x0 = new Matrix(n, 1, data_x1);
-	solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
-	solver->run();
-	xstar = solver->getSolution();
-	// cout << "*** iters (slow) : " << solver->getIt() << endl;
-	_ASSERT(solver->getIt() < MAXIT);
-	for (int i=0; i < n; i++) {
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+	size_t repeat = 100;
+	for (size_t r = 0; r < repeat; r++) {
+		x0 = new Matrix(n, 1, data_x1);
+		solver = new FBSplitting(prob, *x0, gamma, sc, MAXIT);
+		solver->run();
+		xstar = solver->getSolution();
+		// cout << "*** iters (slow) : " << solver->getIt() << endl;
+		_ASSERT(solver->getIt() < MAXIT);
+		for (int i=0; i < n; i++) {
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
+		}
+		delete x0;
+		delete solver;
 	}
-	delete x0;
-	delete solver;
 
 	delete A;
 	delete minusb;

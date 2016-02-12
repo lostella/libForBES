@@ -75,46 +75,44 @@ diff = x1-z;
 FBEx1_gam2 = fx1 + gz - gradfx1'*diff + (0.5/gam2)*(diff'*diff);
 gradFBEx1_gam2 = diff/gam2 - A'*(A*diff);
 
-% resx2 = A*x2 - b;
-% gradfx2 = A'*resx2;
-% fx2 = 0.5*(resx2'*resx2);
-% y = x2 - gam1*gradfx2;
-% [z, gz] = proxg(y, gam1);
-% diff = x2-z;
-% FBEx2_gam1 = fx2 + gz - gradfx2'*diff + (0.5/gam1)*(diff'*diff);
-% gradFBEx2_gam1 = diff/gam1 - A'*(A*diff);
-% 
-% y = x2 - gam2*gradfx2;
-% [z, gz] = proxg(y, gam2);
-% diff = x2-z;
-% FBEx2_gam2 = fx2 + gz - gradfx2'*diff + (0.5/gam2)*(diff'*diff);
-% gradFBEx2_gam2 = diff/gam2 - A'*(A*diff);
+resx2 = A*x2 - b;
+gradfx2 = A'*resx2;
+fx2 = 0.5*(resx2'*resx2);
+y = x2 - gam1*gradfx2;
+[z, gz] = proxg(y, gam1);
+diff = x2-z;
+FBEx2_gam1 = fx2 + gz - gradfx2'*diff + (0.5/gam1)*(diff'*diff);
+gradFBEx2_gam1 = diff/gam1 - A'*(A*diff);
+
+y = x2 - gam2*gradfx2;
+[z, gz] = proxg(y, gam2);
+diff = x2-z;
+FBEx2_gam2 = fx2 + gz - gradfx2'*diff + (0.5/gam2)*(diff'*diff);
+gradFBEx2_gam2 = diff/gam2 - A'*(A*diff);
 
 %% sparselogreg
 
-% A = [1, -2, 3, -4, 5; 2, -1, 0, -1, 3; -1, 0, 4, -3, 2; -1, -1, -1, 1, 3];
-% b = [1, -1, 1, -1]';
-% gam1 = 0.1;
-% gam2 = 0.05;
-% x1 = zeros(5,1);
-% f = logLoss(1);
-% g = l1Norm(1);
-% callf = f.makef();
-% proxg = g.makeprox();
-% 
-% resx1 = A*x1-b;
-% [fx1, gradfresx1] = callf(resx1);
-% gradfx1 = A'*gradfresx1;
-% y = x1 - gam1*gradfx1;
-% [z, gz] = proxg(y, gam1);
-% diff = x1-z;
-% FBEx1_gam1 = fx1 + gz - gradfx1'*diff + (0.5/gam1)*(diff'*diff);
-% 
-% resx1 = A*x1-b;
-% [fx1, gradfresx1] = callf(resx1);
-% gradfx1 = A'*gradfresx1;
-% y = x1 - gam2*gradfx1;
-% [z, gz] = proxg(y, gam2);
-% diff = x1-z;
-% FBEx1_gam2 = fx1 + gz - gradfx1'*diff + (0.5/gam2)*(diff'*diff);
-% 
+A = [1, -2, 3, -4, 5; 2, -1, 0, -1, 3; -1, 0, 4, -3, 2; -1, -1, -1, 1, 3];
+b = [1, -1, 1, -1]';
+gam1 = 0.1;
+gam2 = 0.05;
+x1 = zeros(5,1);
+f = logLoss(1);
+g = l1Norm(1);
+callf = f.makef();
+proxg = g.makeprox();
+
+resx1 = A*x1-b;
+[fx1, gradfresx1, hessresx1] = callf(resx1);
+gradfx1 = A'*gradfresx1;
+y = x1 - gam1*gradfx1;
+[z, gz] = proxg(y, gam1);
+diff = x1-z;
+FBEx1_gam1 = fx1 + gz - gradfx1'*diff + (0.5/gam1)*(diff'*diff);
+gradFBEx1_gam1 = diff/gam1 - A'*(hessresx1*(A*diff));
+
+y = x1 - gam2*gradfx1;
+[z, gz] = proxg(y, gam2);
+diff = x1-z;
+FBEx1_gam2 = fx1 + gz - gradfx1'*diff + (0.5/gam2)*(diff'*diff);
+gradFBEx1_gam2 = diff/gam2 - A'*(hessresx1*(A*diff));
