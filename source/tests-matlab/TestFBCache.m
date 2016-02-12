@@ -116,3 +116,27 @@ y = x1 - gam2*gradfx1;
 diff = x1-z;
 FBEx1_gam2 = fx1 + gz - gradfx1'*diff + (0.5/gam2)*(diff'*diff);
 gradFBEx1_gam2 = diff/gam2 - A'*(hessresx1*(A*diff));
+
+%% logloss + l1 norm
+
+gam1 = 0.1;
+gam2 = 0.05;
+x1 = [1, -2, 3, -4, 5]';
+f = logLoss(1);
+g = l1Norm(1);
+callf = f.makef();
+proxg = g.makeprox();
+
+[fx1, gradfx1, hessx1] = callf(x1);
+gradfx1 = gradfx1;
+y = x1 - gam1*gradfx1;
+[z, gz] = proxg(y, gam1);
+diff = x1-z;
+FBEx1_gam1 = fx1 + gz - gradfx1'*diff + (0.5/gam1)*(diff'*diff);
+gradFBEx1_gam1 = diff/gam1 - hessx1*diff;
+
+y = x1 - gam2*gradfx1;
+[z, gz] = proxg(y, gam2);
+diff = x1-z;
+FBEx1_gam2 = fx1 + gz - gradfx1'*diff + (0.5/gam2)*(diff'*diff);
+gradFBEx1_gam2 = diff/gam2 - hessx1*diff;
