@@ -102,9 +102,6 @@ void TestFBSplitting::testLasso_small() {
 	double data_minusb[] = {
 		-1, -2, -3, -4
 	};
-	double data_w[] = {
-		1, 1, 1, 1
-	};
 	double gamma = 0.01;
 	// starting points
 	double data_x1[] = {0, 0, 0, 0, 0};
@@ -119,7 +116,7 @@ void TestFBSplitting::testLasso_small() {
 	LinearOperator * OpA = new MatrixOperator(*A);
 	Function * g = new Norm1(5.0);
 	FBProblem prob = FBProblem(*f, *OpA, *minusb, *g);
-	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
+	FBStoppingRelative sc(TOLERANCE);
 	FBSplitting * solver;
 	
 	// test FB operations starting from x1
@@ -169,8 +166,8 @@ void TestFBSplitting::testSparseLogReg_small() {
 	Function * f = new LogLogisticLoss();
 	LinearOperator * OpA = new MatrixOperator(*A);
 	Function * g = new Norm1(1.0);
-	FBProblem prob = FBProblem(*f, *OpA, *minusb, *g);
-	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
+	FBProblem prob(*f, *OpA, *minusb, *g);
+	FBStoppingRelative sc(TOLERANCE);
 	FBSplitting * solver;
 	
 	// test FB operations starting from x1

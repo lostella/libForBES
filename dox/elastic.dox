@@ -1,0 +1,23 @@
+/*! \page doc-elastic Elastic Net 
+ *  \brief Elastic Net Regularization Problems
+ *
+ *  The \link ElasticNet elastic net \endlink regularization consists in using the following regularization
+ *  function
+ *
+ * \f[
+ *  g(x) = \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
+ * \f]
+ *
+ * with \f$\mu, \lambda >0\f$.
+ * 
+ * This regularization technique is popular in statistics and regression analysis,
+ * for it overcomes certain limitations of the classical \f$\ell_1\f$-regularization
+ * approach.
+ * 
+ * Problems regularized with an elastic net, typically have the following form
+ * 
+ * \f[
+ *  \mathrm{minimize}_x \frac{1}{2}\|Ax-b\|^2 + \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
+ * \f]
+ * 
+ */

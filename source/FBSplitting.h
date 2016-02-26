@@ -21,7 +21,7 @@ class FBSplitting : public IterativeSolver {
 private:
 
     /**
-     * Specifications of the optimisation problem.
+     * Specifications of the optimization problem.
      */
     FBProblem * m_prob;
     /**

@@ -41,6 +41,18 @@ public:
      */
     explicit FunctionOntologicalClass(std::string name);
 
+    /**
+     * Full constructor
+     * @param does_define_conjugate whether the conjugate is defined
+     * @param does_define_conjugate_grad whether the conj. gradient is defined
+     * @param does_define_f whether f is defined
+     * @param does_define_grad whether the gradient is defined
+     * @param does_define_prox whether the proximal is defined
+     * @param does_define_hessian whether Hessian-vector products are defined
+     * @param does_define_hessian_conj whether conjugate Hessian-vector products are defined
+     * @param name name (identifier) of the %Function category
+     * @param super list of super-classes
+     */
     FunctionOntologicalClass(
             bool does_define_conjugate,
             bool does_define_conjugate_grad,
@@ -58,58 +70,73 @@ public:
     virtual ~FunctionOntologicalClass();
 
     /**
-     * Unique name of the ontological class.
+     * Unique name (identifier) of the ontological class, e.g., "Quadratic".
      * 
      * @return Unique name/identifier as a string
      */
     std::string getName() const;
 
     /** 
-     * Whether this function type defines f(x).
-     * @return <code>true</code> if f(x) is defined
+     * Whether this function type defines \f$f(x)\f$.
+     * @return <code>true</code> if \f$f\f$ is defined
      */
     bool defines_f() const;
 
     /** 
      * Whether this function type defines the gradient of 
-     * f at x, \f$\nabla f(x)\f$.
-     * @return <code>true</code> if grad[f](x) is defined
+     * \f$f\f$ at \f$x\f$, \f$\nabla f(x)\f$.
+     * @return <code>true</code> if the gradient of \f$f\f$ is defined
      */
     bool defines_grad() const;
 
     /**
      * Whether this function type defines a conjugate \f$f^*(y)\f$
-     * @return <code>true</code> if f*(y) is defined
+     * @return <code>true</code> if \f$f^*(y)\f$ is defined
      */
     bool defines_conjugate() const;
 
     /**
      * Whether this function type defines the gradient of its conjugate \f$\nabla f^*(y)\f$
-     * @return <code>true</code> if grad[f*](y) is defined
+     * @return <code>true</code> if \f$\nabla f^*(y)\f$ is defined
      */
     bool defines_conjugate_grad() const;
 
     /**
      * Whether this function defines a proximal \f$\mathrm{prox}_{\gamma f}(v)\f$
-     * @return <code>true</code> if f*(x) is defined
+     * @return <code>true</code> if the proximal is defined
      */
     bool defines_prox() const;
     
     /**
      * Whether this function defines the Hessian of f, \f$\nabla^2 f(x)\f$
+     * and allows the computation of products of the 
+     * form \f$\langle \nabla^2 f(x), z\rangle,\f$ via \c Function::hessianProduct
      */
     bool defines_hessian() const;
     
     /**
      * Whether this function defines the Hessian of the conjugate of f, 
-     * \f$\nabla^2 f^*(x)\f$
+     * \f$\nabla^2 f^*(x)\f$ and allows the computation of products of the 
+     * form \f$\langle \nabla^2 f^*(x), z\rangle,\f$ via \c Function::hessianProductConj
      */
     bool defines_hessian_conj() const;
 
+    /**
+     * Get the list of super-classes. Notice that the list is returned as an 
+     * object an not as a reference!
+     * 
+     * @return list of super-classes.
+     */
     std::list<FunctionOntologicalClass> getSuperclasses() const;
 
+    /**
+     * Add a super-class to the list of existing ones.
+     * 
+     * @param fun_ont_class super-class to be added as an instance of 
+     * \c FunctionOntologicalClass.
+     */
     void add_superclass(FunctionOntologicalClass fun_ont_class);
-    
+        
     friend std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj);
 
     void set_defines_conjugate(bool defines_conjugate);
@@ -131,7 +158,7 @@ private:
 
     friend class FunctionOntologyRegistry;
 
-    std::string m_name;                  /**< Identifier of the ontological class (as string)                                */
+    std::string m_name;             /**< Identifier of the ontological class (as string)                                */
     bool m_defines_f;               /**< Whether this function type defines f(x).                                       */
     bool m_defines_grad;            /**< Whether this function type defines the gradient of f at x, grad[f](x).         */
     bool m_defines_conjugate;       /**< Whether this function type defines a conjugate f*(x)                           */

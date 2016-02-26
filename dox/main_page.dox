@@ -1,30 +1,66 @@
 /*! \mainpage LibForBES documentation
  *
- * \section firstSteps Getting started
+ * \section firstSteps About LibForBES
  *
  * ForBES is a solver for smooth and non-smooth convex optimization problems. 
  *
  * LibForBES is a C++ implementation of ForBES powered the high-performance 
  * computational routines of BLAS, LAPACK and SuiteSparse.
  *
+ * \image html main-fig.png
+ * 
+ * LibForBES can be used to solve any convex problem using forward-backward 
+ * splitting methods. 
+ * 
+ * Examples of problems which can be used with libfores include, but are not 
+ * limited to
+ * 
+ * * Linear and \link doc-QP quadratic\endlink problems with polyhedral constraints
+ * * \f$\ell_1\f$-regularized least-squared problems (\link doc-LASSO LASSO\endlink)
+ * * Problems with \link doc-logit logistic losses\endlink
+ * * \link doc-elastic Elastic net regularization \endlink problems
+ * * Problems involving loss functions (Hinge, Huber functions, etc)
+ * * Optimal control problems with hard and/or soft constraints
+ * * Quadratically constrained problems 
+ * * Basic pursuit problems
+ * * Support vector machine training
+ * 
+ *
+ * and many more.
+ *
+ * \image html main-application.png
+ *
+ *
  * \section install_sec Installation
  *
- * You can download libforbes from our github page and build it on your system.
+ * You can download libforbes from our <a href="https://github.com/lostella/libForBES">github page</a> 
+ * and build it on your system.
  * 
  * Installing libforbes is very easy: just run the installation script \c install.sh.
  * 
  * If you are experiencing any trouble with the installation, contact the 
  * developers.
  *
- * See also our \ref doc-install "installation guide".
+ * Read also our \ref doc-install "detailed installation guide".
  * 
  * You can then use libforbes in your own C++ project:
  *
  * 1. Include the header file ForBES.h
  * 2. Link to the libforbes static library (libforbes.a)
  *
- * \section libforbes-api The libforbes API
- * The two cornerstones of the libforbes API are the \ref doc-functs "Functions API"
- * and the \ref doc-linops "Linear operators API".
- *  
+ *
+ * \section libforbes-start Getting started
+ *
+ *
+ * The main components of libforbes are the following classes:
+ *  1. The \link doc-functs Function API\endlink which provides access to a collection
+ *     of functions
+ *  2. The \link doc-linops Linear Operator API\endlink which defines generic 
+ *     linear operators
+ *  3. The \link FBProblem Forward-backward problem\endlink where the specifications
+ *     of an optimization problem are provided
+ *  4. The \link IterativeSolver Solver API\endlink with various solver implementations
+ *     such as \c FBSplitting.
+ *
+ * For a quick start check out our \link doc-examples list of examples\endlinks 
  */

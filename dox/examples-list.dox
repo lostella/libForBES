@@ -1,0 +1,10 @@
+/*! \page doc-examples List of examples
+ *  \brief Various examples
+ *
+ * List of examples:
+ * 
+ * 1. \link doc-QP QP problems\endlink
+ * 2. \link doc-LASSO LASSO problems\endlink
+ * 3. \link doc-logit Log-Logistic Loss\endlink
+ * 4. \link doc-elastic Elastic net regularization\endlink
+ */

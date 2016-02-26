@@ -52,11 +52,13 @@
  * 5. Compute the value of the proximal operator \f$\mathrm{prox}_{\gamma f}(v)\f$ 
  * 6. Compute the proximal operator and the value of the function at
  * the proximal point, that is \f$f(\mathrm{prox}_{\gamma f}(v))\f$.
- * 7. Compute the Hessian \f$\nabla^2 f(x)\f$,
- * 8. Compute the Hessian of the conjugate function \f$\nabla^2 f^*(x)\f$
+ * 7. Compute inner products with the Hessian, i.e.,  \f$\langle\nabla^2 f(x), z\rangle\f$,
+ * 8. Compute inner products with the Hessian of the conjugate function \f$\langle\nabla^2 f^*(x), z\rangle\f$
  * 
- * Not all of the above methods are always implemented. If a method is implemented
- * and the computation succeeds it returns the status code \link ForBESUtils::STATUS_OK STATUS_OK\endlink.
+ * Not all of the above methods are always implemented. 
+ *
+ * If a method is implemented and the computation succeeds it returns the status 
+ * code \link ForBESUtils::STATUS_OK STATUS_OK\endlink.
  *
  * If instead the method is not implemented, it will return a status code
  * \link ForBESUtils::STATUS_UNDEFINED_FUNCTION STATUS_UNDEFINED_FUNCTION\endlink. 

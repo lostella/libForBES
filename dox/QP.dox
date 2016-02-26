@@ -1,0 +1,113 @@
+/* Quadratic programs - documentation with examples */
+
+/*! \page doc-QP QP Problems
+ *  \brief %Quadratic programming with examples
+ *
+ * Let us here see how to formulate and solve a QP using libforbes. 
+ *
+ * First, define the cost function as 
+ * \f[
+ *  f(x) = \frac{1}{2}x'Qx + q'x.
+ * \f]
+ *
+ * Take for instance \f$Q\in\mathbb{R}^{4\times 4}\f$ and \f$q\in\mathbb{R}^{4}\f$
+ * to be
+ *
+ * \f[
+ *  Q = \begin{bmatrix}
+ *  7& 2& -2& -1\\2& 3& 0& -1\\-2& 0& 3& -1\\-1& -1& -1& 1
+ *  \end{bmatrix},
+ * \f]
+ * and
+ * \f[
+ *  q = \begin{bmatrix}
+ *  1&2&3&4
+ *  \end{bmatrix}^{\top}.
+ * \f]
+ *
+ * We may define function \f$f\f$ as follows
+ * \code{.cpp}
+ * const size_t n = 4;
+ * double data_Q[] = {
+ *  7,  2, -2, -1,
+ *  2,  3,  0, -1,
+ * -2,  0,  3, -1,
+ * -1, -1, -1,  1 };
+ * double data_q[] = {1, 2, 3, 4};
+ *
+ * Matrix * Q = new Matrix(n, n, data_Q);
+ * Matrix * q = new Matrix(n, 1, data_q);
+ *
+ * Function * f = new Quadratic(*Q, *q);
+ * \endcode
+ *
+ * Let us define the constraints using an indicator function as follows
+ * \f[
+ *  g(z) = \delta(z\mid C), \text{ where } C=\{z: -1\leq z\leq 1\}.
+ * \f]
+ *
+ *
+ * We can now simply define function \f$g\f$ as follows
+ * \code{.cpp}
+ * double lb = -1;
+ * double ub = +1;
+ * Function * g = new IndBox(lb, ub);
+ * \endcode
+ *
+ * Let us now define and solve the problem:
+ * \f[
+ *  \mathrm{minimize}_{x} f(x) + g(x).
+ * \f]
+ *
+ * Here is an example:
+ *
+ * \code{.cpp}
+ * // Define the forward-backward problem specifications
+ * FBProblem prob(*f, *g);
+ *
+ * // Introduce a stopping criterion:
+ * const double rel_tolerance = 1e-3;
+ * FBStoppingRelative sc(rel_tolerance);
+ *
+ * // Choose an initial guess
+ * Matrix x0(n, 1);
+ *
+ * // Construct an instance of a FB solver
+ * double gamma = 0.1;
+ * const int maxit = 100;
+ * FBSplitting * solver = new FBSplitting(prob, x0, gamma, sc, maxit);
+ *
+ * // Run the solver and get the minimizer
+ * int solver_status = solver->run();
+ * Matrix xstar = solver->getSolution();
+ * \endcode
+ *
+ * We chose \f$\gamma=0.1\f$ because \f$1/\|Q\|_2 \simeq 0.1163 > \gamma\f$.
+ * 
+ * In the end, do not forget to \c delete the various objects that were
+ * constructed.
+ * 
+ * \code{.cpp}
+ *  delete solver;
+ *  delete f;
+ *  delete g;
+ * \endcode
+ *
+ * The algorithm terminates in \c 15 iterations (this is returned by
+ * <code>solver->getIt()</code>) and the optimizer is
+ *
+ * \f[
+ * x^\star = \begin{bmatrix}-0.3529&-0.7647&-1&1\end{bmatrix}^{\top}
+ * \f]
+ *
+ * and the optimal value is \f$f(x^\star)+g(x^\star)=-7.853\f$.
+ *
+ * The Fast FBS method can be also used as follows
+ *
+ * \code
+ * FBSplittingFast * solver = new FBSplittingFast(prob, x0, gamma, sc, maxit);
+ * \endcode
+ *
+ * which converges within the required accuracy (specified by the termination
+ * criterion) in \c 11 iterations.
+ */
