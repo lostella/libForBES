@@ -302,7 +302,7 @@ int FBCache::update_grad_FBE(double gamma) {
             Matrix v1(m_prob.L1()->dimensionOut());
             v1 = m_prob.L1()->call(*m_FPRx);
             Matrix v2(m_prob.L1()->dimensionOut());
-            m_prob.f1()->hessianProduct(*m_x, v1, v2);
+            m_prob.f1()->hessianProduct(*m_res1x, v1, v2);
             Matrix v3 = m_prob.L1()->callAdjoint(v2);
             Matrix::add(*m_gradFBEx, -1.0, v3, 1.0 / gamma);
         } else {
@@ -313,7 +313,22 @@ int FBCache::update_grad_FBE(double gamma) {
     }
 
     if (m_prob.f2() != NULL) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+        if (m_prob.L2() != NULL) {
+            Matrix v1(m_prob.L2()->dimensionOut());
+            v1 = m_prob.L2()->call(*m_FPRx);
+            Matrix v2(m_prob.L2()->dimensionOut());
+            m_prob.f2()->hessianProduct(*m_res2x, v1, v2);
+            Matrix v3 = m_prob.L2()->callAdjoint(v2);
+            /* TODO: avoid this, make it simpler */
+            if (m_prob.f1() != NULL) Matrix::add(*m_gradFBEx, -1.0, v3, 1.0);
+            else Matrix::add(*m_gradFBEx, -1.0, v3, 1.0 / gamma);
+        } else {
+            Matrix v1(m_x->getNrows(), m_x->getNcols());
+            m_prob.f2()->hessianProduct(*m_x, *m_FPRx, v1);
+            /* TODO: avoid this, make it simpler */
+            if (m_prob.f1() != NULL) Matrix::add(*m_gradFBEx, -1.0, v1, 1.0);
+            else Matrix::add(*m_gradFBEx, -1.0, v1, 1.0 / gamma);
+        }
     }
 
     m_gamma = gamma;
