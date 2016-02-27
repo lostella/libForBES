@@ -5,6 +5,7 @@
  * 
  * 1. \link doc-QP QP problems\endlink
  * 2. \link doc-LASSO LASSO problems\endlink
- * 3. \link doc-logit Log-Logistic Loss\endlink
+ * 3. \link doc-logit Sparse Log-Logistic Regression\endlink
  * 4. \link doc-elastic Elastic net regularization\endlink
+ * 5. Projection onto polyhedral sets
  */

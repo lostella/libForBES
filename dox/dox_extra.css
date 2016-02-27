@@ -16,9 +16,9 @@ div.image img[src="main-fig.png"]
 { 
     width:450px; 
 }
-div.image img[src="main-application.png"]
+div.image img[src="applications.png"]
 { 
-    width:550px; 
+    width: 80%;    
 }
 
 div.line {

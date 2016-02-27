@@ -56,7 +56,7 @@
  *
  * Let us now define and solve the problem:
  * \f[
- *  \mathrm{minimize}_{x} f(x) + g(x).
+ *  \mathrm{minimize}\ f(x) + g(x).
  * \f]
  *
  * Here is an example:

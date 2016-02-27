@@ -1,5 +1,5 @@
-/*! \page doc-logit Log-logistic loss
- *  \brief Log-Logistic loss problems
+/*! \page doc-logit Log-logistic Regression
+ *  \brief Sparse Log-Logistic regression problems
  *
  * <a href="https://en.wikipedia.org/wiki/Loss_functions_for_classification#Logistic_loss">Log-logistic loss</a>
  * is a popular loss function used widely in classification problems in machine learning 
@@ -17,14 +17,33 @@
  * as follows
  *
  * \f[
- * \mathrm{minimize}_{x} L_1(Ax-b) + \lambda \|x\|_1,
+ * \mathrm{minimize}\ \ L_{1.0}(Ax-b) + \lambda \|x\|_1,
  * \f]
  *
  *
  * where \f$\lambda>0\f$ is a regularization parameter.
+ *
+ * The term \f$\lambda\|x\|_1\f$ is used to enforce sparsity in \f$x\f$.
  * 
  * Let us see how one can formulate such an optimization problem and solve it
- * using libforbes:
+ * using libforbes using 
+ * 
+ * \f[
+ *  A = \begin{bmatrix}
+ *   1& -2&  3& -4& 5\\
+ *   2& -1&  0& -1& 3\\
+ *  -1&  0&  4& -3& 2\\
+ *  -1& -1& -1&  1& 3 
+ * \end{bmatrix}
+ * \f]
+ *
+ * and
+ *
+ * \f[
+ *  b = \begin{bmatrix}
+ *   1&2&3&4
+ *  \end{bmatrix}^\top
+ * \f]
  * 
  * \code{.cpp}
  * const size_t n = 5;
@@ -40,7 +59,7 @@
  *   Matrix minus_b(m, 1, data_minus_b);
  * \endcode
  *
- * We should then define the problem's functions and linear operator \f$A\f$
+ * We should then define the problem's functions and linear operator \f$A:\mathbb{R}^5 \to \mathbb{R}^4\f$
  *
  * \code{.cpp}
  *  LinearOperator * OpA = new MatrixOperator(A);

@@ -51,9 +51,7 @@ private:
     FBProblem & m_prob;
     Matrix * m_x;
 
-
-        
-
+       
     /* Internal storage for computing proximal-gradient steps */
     Matrix * m_y;
     Matrix * m_z;
@@ -133,6 +131,9 @@ public:
      */
     FBCache(FBProblem & p, Matrix & x, double gamma);
 
+    /**
+     * Default destructor.
+     */
     virtual ~FBCache();
 
     /**
@@ -143,7 +144,7 @@ public:
     void set_point(Matrix& x);
 
     /**
-     * Gets (a pointer to) the point at which the FBCache object refers
+     * Gets (a pointer to) the point \f$x\f$ to which the FBCache object refer
      *
      * @return a pointer to Matrix containing the handled point
      */
@@ -159,7 +160,7 @@ public:
 
     /**
      * Gets the result of the forward-backward (proximal-gradient) with stepsize 
-     * \c gamma step at x
+     * \f$\gamma\f$ at \f$x\f$
      *
      * @param gamma stepsize parameter
      * @return a pointer to Matrix containing the forward-backward step
@@ -167,28 +168,34 @@ public:
     Matrix * get_forward_backward_step(double gamma);
 
     /**
-     * Gets the fixed-point residual at x with parameter gamma
+     * Gets the fixed-point residual at \f$x\f$ with parameter \f$\gamma\f$
      *
      * @return a pointer to Matrix containing the fixed-point residual
      */
     Matrix * get_fpr();
 
     /**
-     * Gets the norm of the fixed point residual
+     * Gets the norm of the fixed point residual (FPR) which is defined as
+     * \f[
+     *   R_{\gamma}(x) = x - \mathrm{prox}_{\gamma g}(x - \gamma \nabla f(x)),
+     * \f]
+     * where \f$f\f$ is assume to to differentiable and \f$g\f$ is such that it
+     * is possible to compute its proximal.
      *
-     * @return Euclidean norm of the fixed-point residual
+     * @return Euclidean norm of the fixed-point residual, that is \f$R_{\gamma}(x)\f$
      */
     double get_norm_fpr();
 
     /**
-     * Gets the value of f at x
+     * Gets the value of \f$f\f$ at \f\$x\f$
      *
-     * @return f(x)
+     * @return \f$f(x)\f$
      */
     double get_eval_f();
 
     /**
-     * Gets the value of the FBE at x with a given parameter gamma
+     * Gets the value of the forward-backward envelope function (FBE) 
+     * at the current value of \f$x\f$ with a given parameter \f$\gamma\f$
      *
      * @param gamma stepsize parameter
      * @return value of the FBE at x with parameter gamma

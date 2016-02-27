@@ -34,7 +34,20 @@
  *
  * where, here, \f$A\in\mathbb{R}^{m\times n}\f$ is treated as a linear operator.
  *
- * Let us see how we can construct and solve this problem:
+ * Let us see how we can construct and solve this problem using 
+ *
+ * \f[
+ *    A=\begin{bmatrix}
+ *   1&  -2& 3& -4&5\\
+ *   2& -1&  0& -1&3\\
+ *   -1&  0&  4& -3&2\\
+ *  -1& -1& -1&  1&3
+ * \end{bmatrix}
+ * \f]
+ * 
+ * and
+ * 
+ * \f[b=\begin{bmatrix}1&2&3&4\end{bmatrix}^{\top}\f]
  *
  * \code{.cpp}
  * /* Define the problem data */
@@ -51,7 +64,8 @@
  *  Matrix minus_b(m, 1, data_minus_b);
  * \endcode
  *
- * We now cast \c A[] as a linear operator
+ * We now cast <code>A[]</code> as a linear operator <code>OpA</code> and 
+ * define the problem data with \f$\lambda=5.0\f$
  *
  * \code{.cpp}
  *  LinearOperator * OpA = new MatrixOperator(A);

@@ -5,19 +5,101 @@
  *  function
  *
  * \f[
- *  g(x) = \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
+ *  g_{\mu,\lambda}(x) = \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
  * \f]
  *
  * with \f$\mu, \lambda >0\f$.
  * 
  * This regularization technique is popular in statistics and regression analysis,
- * for it overcomes certain limitations of the classical \f$\ell_1\f$-regularization
+ * for it overcomes <a hrerf="https://en.wikipedia.org/wiki/Elastic_net_regularization" 
+ * target="_blank">certain limitations</a> of the classical \f$\ell_1\f$-regularization
  * approach.
  * 
  * Problems regularized with an elastic net, typically have the following form
  * 
  * \f[
- *  \mathrm{minimize}_x \frac{1}{2}\|Ax-b\|^2 + \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
+ *  \mathrm{minimize}\ \frac{1}{2}\|Ax-b\|^2 + \mu \|x\|_1 + \frac{\lambda}{2}\|x\|_2^2.
+ * \f]
+ *
+ * The way we shall formulate this problem is reminiscent of the \link doc-LASSO LASSO
+ * problem\endlink.
+ *
+ * Here, we use the \link QuadraticLoss quadratic loss\endlink function 
+ *
+ * \f[
+ * f(x) = \frac{1}{2}\sum_{i=1}^{n}x_i^2,
  * \f]
  * 
+ * and the above convex function \f$g_{\mu,\lambda}\f$. Overall, the problem is written as
+ *
+ * \f[
+ *  \mathrm{minimize}\ f(Ax-b) + g_{\mu,\lambda}(x).
+ * \f]
+ * Let us see how we can construct and solve this problem using 
+ *
+ * \f[
+ *    A=\begin{bmatrix}
+ *   1&  -2& 3& -4&5\\
+ *   2& -1&  0& -1&3\\
+ *   -1&  0&  4& -3&2\\
+ *  -1& -1& -1&  1&3
+ * \end{bmatrix}
+ * \f]
+ * 
+ * and
+ * 
+ * \f[b=\begin{bmatrix}1&2&3&4\end{bmatrix}^{\top}\f]
+ *
+ * and parameters \f$\lambda = 1.5\f$, \f$\mu=5.0\f$ and \f$\gamma=0.01\f$.
+ *
+ * \code{.cpp}
+ *  const size_t n = 5;
+ *  const size_t m = 4;
+ *  double data_A[] = {
+ *     1,  2, -1, -1,
+ *    -2, -1,  0, -1,
+ *     3,  0,  4, -1,
+ *    -4, -1, -3,  1,
+ *     5,  3,  2,  3
+ *   };
+ *   double data_minus_b[] = {-1, -2, -3, -4};
+ *   Matrix A(m, n, data_A);
+ *   Matrix minus_b(m, 1, data_minus_b);
+ *
+ *   LinearOperator * OpA = new MatrixOperator(A);
+ *   Function * f = new QuadraticLoss();
+ *   double lambda = 1.5;
+ *   double mu = 5.0;
+ *   Function * g = new ElasticNet(lambda,mu);
+ *
+ *   // Define the FB problem
+ *   FBProblem prob = FBProblem(*f, *OpA, minus_b, *g);
+ *   
+ *   // Initial guess and gamma - Construct a new instance of FBSplitting
+ *   Matrix x0(n, 1);
+ *   double gamma = 0.01;
+ *   FBSplittingFast * solver = new FBSplittingFast(prob, x0, gamma);
+ *   
+ *   // Run the solver and get the solution
+ *   solver->run();
+ *   Matrix xstar = solver->getSolution();
+ * \endcode
+ *
+ * The solver computes the minimizer
+ *
+ * \f[ 
+ *  x^\star = \begin{bmatrix}
+ *    0 & 0& 0&  0& 0.4948
+ *  \end{bmatrix}^{\top}
+ * \f]
+ *
+ * in \f$27\f$ iterations.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
