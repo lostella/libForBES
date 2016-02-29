@@ -16,7 +16,7 @@
  * limited to
  * 
  * * Linear and \link doc-QP quadratic\endlink problems with polyhedral constraints
- * * \link doc-LASSO LASSO problems\endlink
+ * * \link doc-LASSO LASSO \endlink and \link group-LASSO group LASSO\endlink problems
  * * \link doc-logit Sparse log-logistic regression\endlink
  * * \link doc-elastic Elastic net regularization \endlink problems
  * * Problems involving loss functions (Hinge, Huber functions, etc)
@@ -24,6 +24,7 @@
  * * Quadratically constrained problems 
  * * Basic pursuit problems
  * * Support vector machine training
+ * * Problems involving the nuclear norm of a matrix
  * 
  *
  * and many more.

@@ -29,6 +29,41 @@
  * 
  * \brief Cholesky factorization and solver.
  * \ingroup LinSysSolver-group
+ * 
+ * CholeskyFactorization computes internally a Cholesky factorization of a given
+ * symmetric positive definite matrix \f$A\f$ which can then be used to solve linear
+ * systems. 
+ * 
+ * Here is an example of use:
+ * 
+ * \code{.cpp}
+ *  size_t n = 20;
+ * 
+ *  Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 0.1, Matrix::MATRIX_SYMMETRIC);
+ *  Matrix Y = MatrixFactory::MakeIdentity(n, 1.0);
+ *  A += Y;
+ * 
+ *  Matrix ID(n, n, Matrix::MATRIX_DIAGONAL);
+ *  for (size_t j = 0; j < n; ++j) {
+ *       ID.set(j, j, 1 / A.get(j, j));
+ *  }
+ *  MatrixOperator Aop(A);
+ *  MatrixOperator M(ID);
+ *
+ *  size_t max_iter = n;
+ *  FactoredSolver * cholesky = new CholeskyFactorization(A);
+ *  cholesky->factorize();
+ *   
+ *  Matrix b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 5.0);
+ *  Matrix sol(n,1);
+ *  int status = cholesky->solve(b, sol);
+ *   
+ *  std::cout << status << std::endl;    
+ *  double error = (A*sol-b).norm_fro_sq();
+ *  std::cout << error;
+ *   
+ *  delete cholesky;
+ * \endcode
  */
 class CholeskyFactorization : public FactoredSolver {
 public:
@@ -55,9 +90,9 @@ public:
     virtual int factorize();
 
     /**
-     * Solves the linear system <code>L*L'*x = b</code>, where <code>L</code> is the
-     * current factorization (implicitly), <code>b</code> is a given right-hand side vector or matrix
-     * (given as an instance of <code>Martrix</code>) and <code>x</code> is the
+     * Solves the linear system \f$LL^{\top}x = b\f$, where \f$L\f$ is the
+     * current factorization (implicitly), \f$b\f$ is a given right-hand side vector or matrix
+     * (given as an instance of <code>Martrix</code>) and \f$x\f$ is the
      * solution which is returned by this method.
      * 
      * Note that if this is a <code>MATRIX_DENSE</code> matrix, then it is assumed it is 

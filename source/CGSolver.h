@@ -28,7 +28,7 @@
 /**
  * \class CGSolver
  * \brief Conjugate gradient solver
- * \version 0.0
+ * \version 0.4
  * \author Pantelis Sopasakis
  * \ingroup LinSysSolver-group
  * \date November 11, 2015, 12:41 AM
@@ -36,7 +36,7 @@
  * A conjugate gradient solver which can be used to solver linear operator
  * equations of the form \f$T(x)=b\f$ for given \f$b\f$.
  * 
- * The conjugate gradient (CG) algorithm with a predonditioner \f$P\f$, which is
+ * The conjugate gradient (CG) algorithm with a preconditioner \f$P\f$, which is
  * itself a linear operator, is defined by the following iteration:
  * 
  * 1. \f$x\leftarrow x_0\f$
@@ -63,6 +63,29 @@
  * Systems of the form \f$Ax=b\f$, i.e., where \f$T(x)=Ax\f$ where \f$A\f$ is a 
  * Matrix can be solved using the linear operator MatrixOperator which wraps 
  * matrices as instances of LinearOperator.
+ *  
+ * Here is an example of use:
+ * 
+ * \code{.cpp}
+ * size_t n = 20;
+ * Matrix b = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 5.0);
+ * Matrix A = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 0.1, Matrix::MATRIX_SYMMETRIC);
+ * Matrix Y = MatrixFactory::MakeIdentity(n, 1.0);
+ * A += Y;
+ *
+ * Matrix ID(n, n, Matrix::MATRIX_DIAGONAL);
+ * for (size_t j = 0; j < n; ++j) {
+ *     ID.set(j, j, 1 / A.get(j, j));
+ * }
+ * MatrixOperator Aop(A);
+ * MatrixOperator M(ID);
+ * 
+ * size_t max_iter = n;
+ * CGSolver solver(Aop, M, 1e-4, max_iter);
+ * Matrix sol(n, 1);
+ * int status = solver.solve(b, sol);
+ * \endcode
+ * 
  */
 class CGSolver : public LinOpSolver {
 public:
@@ -86,7 +109,7 @@ public:
      * @param linop linear operator which defined the system \f$T(x) = b\f$
      * @param preconditioner preconditioner as a linear operator
      * @param tolerance tolerance (default value, when other constructors are
-     * used, is <code>1e-4</code>).
+     * used, is \f$10^{-4}\f$).
      * @param max_iterations maximum number of iterations after which the algorithm terminates
      * (the default value, when other constructors are used, is <code>500</code>).
      */

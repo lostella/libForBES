@@ -72,13 +72,19 @@ public:
 
     virtual int callConj(Matrix& x, double& f_star);
 
+    /**
+     * Norm category
+     * @return 
+     */
     virtual FunctionOntologicalClass category();
 
-
+    /**
+     * Default destructor of Norm
+     */
+    virtual ~Norm();
 protected:
     Norm();
 
-    virtual ~Norm();
 private:
 
 

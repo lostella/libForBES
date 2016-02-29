@@ -127,9 +127,16 @@ public:
 
     virtual FunctionOntologicalClass category();
 
-
+    /**
+     * Setter method for matrix \f$Q\f$
+     * @param Q %Matrix \c Q
+     */
     void setQ(Matrix& Q);
 
+    /**
+     * Setter method for vector \f$q\f$
+     * @param q Vector \c q
+     */
     void setq(Matrix& q);
 
     /**

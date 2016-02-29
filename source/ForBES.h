@@ -79,9 +79,10 @@
 #include "LogLogisticLoss.h"         /* Log-logistic function */
 #include "HingeLoss.h"               /* Hinge loss function */
 #include "HuberLoss.h"               /* Huber loss function */
-#include "Norm.h"                    /* Generic vector norm */
+#include "Norm.h"                    /* Generic vector norm (abstract) */
 #include "Norm1.h"                   /* Norm-1 */
 #include "Norm2.h"                   /* Norm-2 */
+#include "SumOfNorm2.h"              /* Sum of Norm-2 */
 #include "SeparableSum.h"            /* Separable sum of proximable functions */
 #include "ConjugateFunction.h"       /* Conjugate of a given function */
 

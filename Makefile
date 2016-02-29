@@ -34,8 +34,8 @@ ifeq ($(OS),Darwin) # Assume Mac OS X
   NPROCS:=$(shell sysctl -n hw.ncpu)
 endif
 NPROCS:=$$(($(NPROCS)-1))
-#MAKEFLAGS += -j $(NPROCS)
-#MAKEFLAGS += --no-print-directory
+MAKEFLAGS += -j $(NPROCS)
+MAKEFLAGS += --no-print-directory
 
 # C++ compiler
 CXX = g++
@@ -247,7 +247,8 @@ TESTS = \
 	TestFBCache.test \
 	TestFBSplitting.test \
 	TestFBSplittingFast.test \
-	TestLasso.test
+	TestLasso.test \
+	TestSumOfNorm2.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -285,6 +286,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestHingeLoss
 	${BIN_TEST_DIR}/TestHuber
 	${BIN_TEST_DIR}/TestSeparableSum
+	${BIN_TEST_DIR}/TestSumOfNorm2
 	@echo "\n*** UTILITIES ***"
 	${BIN_TEST_DIR}/TestMatrixFactory
 	${BIN_TEST_DIR}/TestMatrixExtras

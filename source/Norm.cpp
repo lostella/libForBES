@@ -29,6 +29,12 @@ int Norm::callConj(Matrix& x, double& f_star) {
 
 //LCOV_EXCL_START
 int Norm::dualNorm(Matrix& x, double& norm) {
+    /* 
+     * Method dualNorm is to be reimplemented in derived classes (if at all),
+     * otherwise, this method will return STATUS_UNDEFINED_FUNCTION.
+     * Use the class's #category to tell whether this is implemented.
+     * It is highly recommended to implement dualNorm for all Norms.
+     */
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
