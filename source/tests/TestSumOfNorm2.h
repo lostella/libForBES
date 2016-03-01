@@ -19,6 +19,9 @@ class TestSumOfNorm2 : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCall);
     CPPUNIT_TEST(testDualNorm);
     CPPUNIT_TEST(testProx);
+    CPPUNIT_TEST(testFaultyDims);
+    CPPUNIT_TEST(testFunAtProx);
+    CPPUNIT_TEST(testVerification);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -32,6 +35,9 @@ private:
     void testCall();
     void testDualNorm();
     void testProx();
+    void testFunAtProx();
+    void testFaultyDims();
+    void testVerification();
     
 };
 

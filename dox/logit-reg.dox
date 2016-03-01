@@ -1,6 +1,8 @@
 /*! \page doc-logit Log-logistic Regression
  *  \brief Sparse Log-Logistic regression problems
  *
+ * <div class="sec" id="l1-reg">\f$\ell_1\f$-regularized</div>
+ *
  * <a href="https://en.wikipedia.org/wiki/Loss_functions_for_classification#Logistic_loss">Log-logistic loss</a>
  * is a popular loss function used widely in classification problems in machine learning 
  * and statistics. 
@@ -95,4 +97,32 @@
  * \f]
  * 
  * in \f$29\f$ iterations.
+ *
+ *
+ * <div class="sec" id="l2-reg">\f$\ell_2\f$--regularized</div>
+ *
+ * Similarly, we may formulate a L2-regularized logistic regression problem.
+ *
+ * \f[
+ * \mathrm{minimize}\ \ \sum_{i=1}^{n} -\ln \sigma(z_i) + \frac{\lambda}{2} \|x\|_2,
+ * \f]
+ *
+ * subject to \f$z=Ax-b\f$.
+ * 
+ * The only necessary modification in the above code is
+ *
+ * \code{.cpp}
+ *  Function * g = new Norm2(lambda/2.0);
+ * \endcode
+ *
+ * for \f$\lambda=6.5\f$ and using the fast variant of %FBSplitting, 
+ * FBSplittingFast, we compute the minimizer
+ *
+ * \f[
+ * x^\star = \begin{bmatrix} -0.2037&-0.304&0.2162&-0.1751&1.135\end{bmatrix}^{\top}
+ * \f]
+ *
+ * in \f$53\f$ iterations, whereas, FBSplitting converges to the solution in 
+ * \f$41\f$ iterations.
+ *
  */

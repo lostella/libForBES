@@ -29,3 +29,16 @@ div.fragment {
     margin-left: 20px;
     margin-right: 30px;
 }
+
+div.sec {
+    font: 400 24px/22px Roboto,sans-serif;
+    font-weight: bold;
+}
+
+div.sec:not(:first-child) {
+    margin-top: 50px;
+}
+
+a.el {
+    font-weight: normal;
+}

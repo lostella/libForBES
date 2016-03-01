@@ -27,10 +27,16 @@
 
 /**
  * 
+ * \class CholeskyFactorization
  * \brief Cholesky factorization and solver.
  * \ingroup LinSysSolver-group
+ * \version 0.5
+ * \author Pantelis Sopasakis
+ * \date August 4, 2015, 8:14 PM
  * 
- * CholeskyFactorization computes internally a Cholesky factorization of a given
+ * 
+ * 
+ * This class computes internally a Cholesky factorization of a given
  * symmetric positive definite matrix \f$A\f$ which can then be used to solve linear
  * systems. 
  * 
