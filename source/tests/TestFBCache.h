@@ -14,6 +14,7 @@ class TestFBCache : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testBoxQP_small);
     CPPUNIT_TEST(testSparseLeastSquares_small);
     CPPUNIT_TEST(testSparseLogReg_small);
+    CPPUNIT_TEST(testLogLossPlusL1_small);
     
     CPPUNIT_TEST_SUITE_END();
 
@@ -27,6 +28,7 @@ private:
     void testBoxQP_small();
     void testSparseLeastSquares_small();
     void testSparseLogReg_small();
+    void testLogLossPlusL1_small();
 };
 
 #endif	/* TESTFBCACHE_H */
