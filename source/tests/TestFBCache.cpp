@@ -61,11 +61,11 @@ void TestFBCache::testBoxQP_small() {
 	double ref_FBEx2_g01 =  -7.450000000000000;
 	double ref_FBEx2_g02 =  -8.900000000000000;
 
-	Matrix Q = Matrix(n, n, data_Q);
-	Matrix q = Matrix(n, 1, data_q);
-	Quadratic f = Quadratic(Q, q);
-	IndBox g = IndBox(lb, ub);
-	FBProblem prob = FBProblem(f, g);
+	Matrix Q(n, n, data_Q);
+	Matrix q(n, 1, data_q);
+	Quadratic f(Q, q);
+	IndBox g(lb, ub);
+	FBProblem prob(f, g);
 	
 	FBCache * cache;
 	Matrix * x, * y, * z, * gradFBEx;
@@ -176,12 +176,12 @@ void TestFBCache::testSparseLeastSquares_small() {
 	double ref_FBEx2_g1 =  13.450436129999996;
 	double ref_FBEx2_g2 =  -2.445831616666666;
 
-	Matrix A = Matrix(m, n, data_A);
-	Matrix minusb = Matrix(m, 1, data_minusb);
-	MatrixOperator OpA = MatrixOperator(A);
-	QuadraticLoss f = QuadraticLoss();
-	Norm1 g = Norm1();
-	FBProblem prob = FBProblem(f, OpA, minusb, g);
+	Matrix A(m, n, data_A);
+	Matrix minusb(m, 1, data_minusb);
+	MatrixOperator OpA(A);
+	QuadraticLoss f();
+	Norm1 g();
+	FBProblem prob(f, OpA, minusb, g);
 	
 	FBCache * cache;
 	Matrix * x, * y, * z, * gradFBEx;
@@ -278,13 +278,13 @@ void TestFBCache::testSparseLogReg_small() {
 	double ref_z1_g2[] = {0, -0.050000000000000, 0.192423431452002, -0.205870502520502, 0.286552928931500};
 	double ref_FBEx1_g2 = 1.612826531482605;
 	
-	Matrix A = Matrix(m, n, data_A);
-	Matrix minusb = Matrix(m, 1, data_minusb);
+	Matrix A(m, n, data_A);
+	Matrix minusb(m, 1, data_minusb);
 	Matrix xstar;
-	LogLogisticLoss f = LogLogisticLoss(1.0);
-	MatrixOperator OpA = MatrixOperator(A);
-	Norm1 g = Norm1(1.0);
-	FBProblem prob = FBProblem(f, OpA, minusb, g);
+	LogLogisticLoss f(1.0);
+	MatrixOperator OpA(A);
+	Norm1 g(1.0);
+	FBProblem prob(f, OpA, minusb, g);
 
 	FBCache * cache;
 	Matrix * x, * y, * z, * gradFBEx;

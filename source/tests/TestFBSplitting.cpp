@@ -52,8 +52,8 @@ void TestFBSplitting::testBoxQP_small() {
 	Matrix xstar;
 	Function * f = new Quadratic(*Q, *q);
 	Function * g = new IndBox(lb, ub);
-	FBProblem prob = FBProblem(*f, *g);
-	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
+	FBProblem prob(*f, *g);
+	FBStoppingRelative sc(TOLERANCE);
 	FBSplitting * solver;
 	
 	// test FB operations starting from x1
@@ -102,9 +102,7 @@ void TestFBSplitting::testLasso_small() {
 		-4, -1, -3, 1,
 		5, 3, 2, 3
 	};
-	double data_minusb[] = {
-		-1, -2, -3, -4
-	};
+	double data_minusb[] = {-1, -2, -3, -4};
 	double gamma = 0.01;
 	// starting points
 	double data_x1[] = {0, 0, 0, 0, 0};
@@ -118,7 +116,7 @@ void TestFBSplitting::testLasso_small() {
 	Function * f = new QuadraticLoss();
 	LinearOperator * OpA = new MatrixOperator(*A);
 	Function * g = new Norm1(5.0);
-	FBProblem prob = FBProblem(*f, *OpA, *minusb, *g);
+	FBProblem prob(*f, *OpA, *minusb, *g);
 	FBStoppingRelative sc(TOLERANCE);
 	FBSplitting * solver;
 	
