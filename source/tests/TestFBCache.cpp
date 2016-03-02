@@ -179,8 +179,8 @@ void TestFBCache::testSparseLeastSquares_small() {
 	Matrix A(m, n, data_A);
 	Matrix minusb(m, 1, data_minusb);
 	MatrixOperator OpA(A);
-	QuadraticLoss f();
-	Norm1 g();
+	QuadraticLoss f;
+	Norm1 g;
 	FBProblem prob(f, OpA, minusb, g);
 	
 	FBCache * cache;
