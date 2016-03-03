@@ -95,4 +95,10 @@
  * \f[
  * x^\star = \begin{bmatrix}-0.010 & 0 & 0 & 0.512\end{bmatrix}^\top
  * \f]
+ *
+ *
+ *
+ * \sa \link doc-group-LASSO Group LASSO \endlink
+ * \sa \link doc-examples More Examples \endlink
+ *
  */

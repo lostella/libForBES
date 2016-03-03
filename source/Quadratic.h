@@ -41,13 +41,13 @@
  * A quadratic function is a function of the form
  * 
  * \f[
- * F(x) = \frac{1}{2}x'Qx + q'x,
+ * F(x) = \frac{1}{2}x^{\top}Qx + q^{\top}x,
  * \f]
  * 
  * where <code>Q</code> is a symmetric positive definite matrix whose conjugate is given by
  * 
  * \f[
- * F^*(x^*) = (x^*-q)'Q^{-1}(x^*-q).
+ * F^*(x^*) = (x^*-q)^{\top}Q^{-1}(x^*-q).
  * \f]
  * 
  * One can compute the proximal operator of a quadratic function by

@@ -1,0 +1,261 @@
+/*! \page doc-optimal-control Optimal control
+ *  \brief Optimal control problems
+ * 
+ * <div class="sec" id="problem-formulation">Problem formulation</div>
+ * 
+ * Before we give a code snippet for optimal control problems, we will formulate
+ * the problem and we will explain how the forward-backward splitting applies 
+ * to this class of problems.
+ *
+ * Optimal control problems can typically be written as optimization problems
+ * over the space of variables 
+ * \f[
+ *  x=(x_0, u_0, x_1, u_1, \ldots, x_{N-1}, u_{N-1}, x_{N}),
+ * \f]
+ * with \f$x_k\in\mathbb{R}^{n_x}\f$ and \f$u_k\in\mathbb{R}^{n_u}\f$, 
+ * \f$x\in\mathbb{R}^n\f$ (where \f$n=Nn_x + (N-1)n_u\f$)
+ * as follows
+ * \f[
+ * \mathbb{P}(p): V^\star(p) = \min_x V(x;p),
+ * \f]
+ * where \f$p\in\mathbb{R}^{n_x}\f$ is a given parameter, the initial state, and
+ * \f[
+ * V(x;p) = \sum_{k=0}^{N-1} \ell(x_k, u_k) + \delta(z|\mathcal{S}(p)) + \ell_N(x_N),
+ * \f]
+ *
+ * where the <em>stage cost</em> \f$\ell:\mathbb{R}^{n_x}\times \mathbb{R}^{n_u} \to (-\infty, \infty]\f$ 
+ * is given by
+ *
+ * \f[
+ *  \ell(x_k, u_k) = \phi(x_k, u_k) + \bar{\phi}(Fx_k + Gu_k),
+ * \f]
+ *
+ * with \f$\phi:\mathbb{R}^{n_x}\times \mathbb{R}^{n_u} \to \mathbb{R} \f$ being a 
+ * quadratic stage cost
+ *
+ * \f[
+ *  \phi(x_k, u_k) = \frac{1}{2}(x_{k}^{\top}Qx_{k} + u_{k}^{\top}Ru_{k}) + x_k^{\top} S u_k + q^{\top} x_k +r^{\top} u_k,
+ * \f]
+ *
+ * and \f$\bar{\phi}:\mathbb{R}^{n_c}\to (-\infty, \infty]\f$ is either 
+ * * the indicator of a set (in the case of hard constraints), or 
+ * * the distance from a set (in the case of soft constraints), or 
+ * * any other (possibly non-smooth) function for which the proximal operator can be easily computed. 
+ *
+ * %Function \f$\ell_N:\mathbb{R}^{n_x}\to (-\infty, \infty]\f$ above is 
+ * 
+ * \f[
+ * \ell_N(x_N) = \phi_N(x_N) + \bar\phi(F_N x_N),
+ * \f]
+ *
+ * with 
+ * \f[
+ *  \phi_N(x_N) = \frac{1}{2}x_N^{\top} Q_N x_N + q_N^{\top} x_N,
+ * \f]
+ *
+ * and \f$\bar\phi_N\f$ is, similarly to \f$\bar\phi\f$, a nonsmooth function;
+ * typically the indicator of a set. 
+ *
+ * We assume that \f$Q\f$ is a symmetric positive 
+ * semi-definite matrix, \f$R\f$ and \f$Q_N\f$ are symmetric positive definite.
+ *
+ * The set \f$\mathcal{S}(p)\subseteq \mathbb{R}^{n}\f$ encompasses the system 
+ * dynamics, that is, it is the following affine space:
+ *
+ * \f[
+ * \mathcal{S}(p) = \left\{ x: x_0 = p, x_{k+1}=Ax_k + Bu_k + f, k=0,\ldots, N-1\right\}.
+ * \f]
+ *
+ * We define a function \f$f:\mathbb{R}^n \to (-\infty, \infty]\f$ as follows
+ *
+ * \f[
+ *  f(x;p) = \sum_{k=0}^{N-1} \phi(x_k, u_k) + \delta(x| \mathcal{S}(p)) + \phi_N(x_N)
+ * \f]
+ *
+ * and \f$g:\mathbb{R}^{n_\Gamma}\to (-\infty, \infty]\f$ as follows
+ * 
+ * \f[
+ *  g(z) = \sum_{k=0}^{N-1} \bar\phi(z_k) + \bar\phi_N(z_N).
+ * \f]
+ *
+ *
+ * Then, \f$\mathbb{P}(p)\f$ can be written in the following form
+ *
+ * \f[
+ *  \begin{align*}
+ *   \mathbb{P}(p) : &\min_{x} f(x) + g(z)\\
+ *   &\Gamma x - z = 0
+ *  \end{align*}
+ * \f]
+ *
+ * where \f$\Gamma:\mathbb{R}^{n}\to\mathbb{R}^{n_\Gamma}\f$ is a linear operator which 
+ * maps \f$x\f$ to \f$z=\Gamma x\f$ so that \f$z_k = Fx_k + Gu_k\f$ for 
+ * \f$k=0,\ldots, N-1\f$ and \f$z_N=F_N x_N\f$. 
+ *
+ * Note here that we will treat \f$\Gamma\f$ as a \link LinearOperator linear operator \endlink (and not as a matrix)
+ * for which can compute its value \f$\Gamma(x)\f$ at a point \f$x\f$ and the value of its 
+ * <em>adjoint</em> \f$\Gamma^*(x^*)\f$ at a point \f$x^*\f$ using two algorithms 
+ * \f$\Phi_\Gamma\f$ and \f$\Phi_{\Gamma^*}\f$ respectively.
+ * 
+ * If \f$\Gamma\f$ were to be described using a matrix, then this would be
+ *
+ * \f[
+ *  \begin{align}
+ *   \Gamma = \begin{bmatrix}
+ *          F & G\\
+ *          & & F & G\\
+ *          &&&& \ddots\\
+ *          &&&&& F & G\\
+ *          &&&&&&& F_N
+ *         \end{bmatrix},
+ * \end{align}
+ * \f]
+ *
+ * and its adjoint would be described by \f$\Gamma^{\top}\f$.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * <div class="sec" id="opt-control-constraints">Imposition of constraints</div>
+ *
+ *Constraints, are they <em>hard</em> or <em>soft</em>, are encoded in the nonsmooth 
+ * function \f$g\f$ introduced previously. 
+ *
+ * In the former case, \f$g\f$ encodes constraints of the following form:
+ *
+ * \f[
+ *  \begin{align*}
+ *   z_k &\in \mathcal{Z}_k,\\
+ *   z_N &\in \mathcal{Z}_N,
+ *  \end{align*}
+ * \f]
+ *
+ * these correspond to the constraints
+ *
+ * \f[
+ *  \begin{align*}
+ *   F x_k + G u_k &\in \mathcal{Z}_k,\\
+ *   F_N x_N &\in \mathcal{Z}_N.
+ *  \end{align*}
+ * \f]
+ * 
+ * 
+ * Sets \f$\mathcal{Z}_k\f$ and \f$\mathcal{Z}_N\f$ are such that we can easily compute 
+ * their projection operator - that is, their proximal operator. 
+ *
+ * Without loss of generality we will assume that \f$\mathcal{Z}_k=\{z_k: z_{\min} \leq z_k \leq z_{\max}\}\f$
+ * and \f$\mathcal{Z}_N = \{z_N: z_N\leq 1\}\f$. 
+ * 
+ * Here is an example of how one can easily 
+ * construct such a \f$g\f$ in libForBES that corresponds to constraints of the form 
+ *
+ * \f[
+ * \begin{align*}
+ *  x_{\min} \leq x_k \leq &x_{\max}\\
+ *  u_{\min} \leq u_k \leq &u_{\max}\\
+ *  F_N x_N \leq &1
+ * \end{align*}
+ * \f]
+ *
+ * 
+ *
+ *
+ *
+ *
+ *
+ * 
+ * <div class="sec" id="nabla-f-algorithm">Algorithmic computation of \f$f^*\f$ and \f$\nabla f^*\f$</div>
+ *
+ * The convex conjugate of \f$f\f$ is, by definition, the function 
+ * \f$f^*:\mathbb{R}^n \to \mathbb{R}\f$ given by
+ *
+ * \f[
+ *  \begin{align*}
+ *   f^*(y) &= \sup_{x} \{y^{\top}x - f(x)\}\notag\\
+ *	    &= -\inf_{x} \{f(x) - y^{\top}x \}=-\min_{x} \{f(x) - y^{\top}x \}
+ * \end{align*}
+ * \f]
+ *
+ * Since \f$f\f$ is assumed to be strictly convex, \f$f^*\f$ is differentiable and its gradient
+ * is given by Theorem 23.5 in [1].
+ *
+ * \f[
+ * \begin{align*}
+ *  \nabla f^*(y) &= \mathrm{argmin}_{x} \{f(x) - y^{\top}x \}\\
+ * 		  &= \mathrm{argmin}_{x\in \mathcal{S}(p)} \left\{ \sum_{k=0}^{N-1} \phi(x_k, u_k) + \phi_N(x_N) -y^{\top}x \right\}\\
+ * 		  &= \mathrm{argmin}_{x\in \mathcal{S}(p)} \left\{ \sum_{k=0}^{N-1} \psi(x_k, u_k, y_k) + \psi_N(x_N,y_N) \right\},
+ *  \end{align*}
+ * \f]
+ *
+ * where \f$\psi(x_k, u_k, y_k) = \phi(x_k, u_k) - y_k^{\top}x_k\f$ and \f$\psi_N(x_N, y_N) = \phi_N(x_N) -y_N^{\top}x_N\f$.
+ *
+ * Notice that this problem is an equality-constrained optimization problem and has a 
+ * structure that allows the use of DP recursion for its solution.
+ *
+ * A <em>factor step</em> is performed once as shown in Algorithm 1 and the 
+ * value of \f$\nabla f^*(y; p)\f$ is returned by Algorithm 2.
+ *
+ * Notice that neither in neither of these algorithms do we need to invert \f$\bar{R}_k\f$; 
+ * these matrices are symmetric positive definite and we can computed their
+ * \link CholeskyFactorization Cholesky factorization\endlink. 
+ *
+ * Overall, both algorithms involve only matrix-vector products.
+ *
+ * These algorithms have been adapted from [2]
+ * using \f$F=-[I \ 0]^{\top}\f$, \f$G=-[0\ I]^{\top}\f$ and \f$F_N = -I\f$.
+ *
+ * Algorithms 3 and 4 in [2] return the value of \f$f^*(-\Gamma x)\f$, so with the 
+ * above choice of \f$F\f$, \f$G\f$ and \f$F_N\f$, these algorithms 
+ * return \f$f^*(y)\f$. 
+ * 
+ * We have 
+ *
+ * \f[
+ *  \begin{align*}
+ *    C_k &= \begin{bmatrix}
+ *	      -I & -K^{\top}
+ *           \end{bmatrix}\\
+ *    D_k &= \begin{bmatrix}
+ *	       0 \\ -\bar{R}_k^{-1} 
+ *            \end{bmatrix}
+ *  \end{align*} 
+ * \f]
+ *
+ *
+ * \image html Alg1.png
+ *
+ * In Algorithm 1 notice that in case \f$Q_N\f$ solves the matrix equation
+ *
+ * \f[
+ *  Q_N = Q + A^{\top}Q_N A - (S+B^{\top}Q_N A)^{\top}(R+B^{\top}Q_N B)^{-1}(S+B^{\top} Q_N A),
+ * \f]
+ *
+ * then \f$\bar{R}_k\f$, \f$\bar{S}_k\f$ and \f$P_k\f$ and all other outputs of Algorithm 1
+ * are independent of \f$k\f$.
+ *
+ *
+ * \image html Alg2.png
+ *
+ * In Algorithm 2,\f$y_k^x\f$ stands for the part of the dual vector \f$y_k\f$ which corresponds
+ * to the state vector \f$x_k\f$, that is, the first \f$n_x\f$ coordinates of \f$y_k\f$, whereas 
+ * \f$y_k^u\f$ corresponds to \f$u_k\f$, that is, it is the last \f$m\f$ entries of \f$y_k\f$.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * <div class="sec" id="refs">References</div>
+ * 
+ * 1. R. Rockafellar, Convex analysis. Princeton university press, 1972
+ * 2. P. Patrinos and A. Bemporad, "An accelerated dual gradient-projection algorithm for embedded linear model predictive control," IEEE Trans. Aut. Contr., vol. 59, no. 1, pp. 18–33, 2014.
+ *
+ */

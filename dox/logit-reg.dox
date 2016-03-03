@@ -125,4 +125,6 @@
  * in \f$53\f$ iterations, whereas, FBSplitting converges to the solution in 
  * \f$41\f$ iterations.
  *
+ * <br/>
+ * \sa \link doc-examples LibForBES Examples \endlink
  */

@@ -47,7 +47,7 @@ public:
     /**
      * Quadratic function, i.e., a function which can be written in the form
      * \f[
-     *   f(x) = \frac{1}{2}x'Qx + q'x
+     *   f(x) = \frac{1}{2}x^{\top}Qx + q^{\top}x
      * \f]
      * @return 
      */

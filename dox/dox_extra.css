@@ -12,6 +12,11 @@ h2:not(:first-child)
     margin-top: 25px;
 }
 
+
+div.image img[src="Alg1.png"],div.image img[src="Alg2.png"]
+{ 
+    width: 45%;    
+}
 div.image img[src="main-fig.png"]
 { 
     width:450px; 
@@ -42,3 +47,4 @@ div.sec:not(:first-child) {
 a.el {
     font-weight: normal;
 }
+

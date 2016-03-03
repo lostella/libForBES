@@ -194,7 +194,8 @@ SOURCES += Function.cpp \
 	SeparableSum.cpp \
 	IndBall2.cpp \
 	QuadraticLossOverAffine.cpp \
-	SumOfNorm2.cpp
+	SumOfNorm2.cpp \
+	LQCost.cpp
 	
 # CORE
 SOURCES += FBProblem.cpp \

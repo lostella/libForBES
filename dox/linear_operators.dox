@@ -6,7 +6,7 @@
  * 
  * \tableofcontents 
  * 
- * \section linop-sec The Linear Operator API
+ * <div class="sec">The Linear Operator API</div>
  * 
  * A linear operator \f$T:\mathbb{R}^n \to \mathbb{R}^m\f$ may not always be 
  * available in the explicit form of a 
@@ -40,6 +40,10 @@
  *
  * \include matop_example.cpp
  *
+ * <br/>
  * \sa LinearOperator
+ * \sa \link doc-functs Functions API \endlink
+ * \sa \link doc-examples LibForBES Examples \endlink
+ *
  *
  */

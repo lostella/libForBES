@@ -76,7 +76,7 @@
  * This is given by
  * 
  * \f[
- *  g(\mathrm{prox}_{\gamma g}(v)) = \mu 1' \frac{t(v)}{1+\lambda \gamma} + \frac{\lambda}{2}\|\frac{t(v)}{1+\lambda \gamma}\|_2^2.
+ *  g(\mathrm{prox}_{\gamma g}(v)) = \mu 1^{\top} \frac{t(v)}{1+\lambda \gamma} + \frac{\lambda}{2}\|\frac{t(v)}{1+\lambda \gamma}\|_2^2.
  * \f]
  * 
  * This a simple MATLAB implementation of this function:

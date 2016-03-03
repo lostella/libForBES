@@ -55,7 +55,7 @@
  * while the conjugate is computed as
  * 
  * \f[
- * f^*(y) = \frac{1}{2} y' (\nabla f^*(y) + p).
+ *  f^*(y) = \frac{1}{2} y^{\top} (\nabla f^*(y) + p).
  * \f]
  * 
  * 

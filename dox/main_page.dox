@@ -19,8 +19,8 @@
  * * \link doc-LASSO LASSO \endlink and \link doc-group-LASSO group LASSO\endlink problems
  * * \link doc-logit Sparse log-logistic regression\endlink
  * * \link doc-elastic Elastic net regularization \endlink problems
+ * * \link doc-optimal-control Optimal control problems \endlink
  * * Problems involving loss functions (Hinge, Huber functions, etc)
- * * Optimal control problems with hard and/or soft constraints
  * * Quadratically constrained problems 
  * * Basic pursuit problems
  * * Support vector machine training

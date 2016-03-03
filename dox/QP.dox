@@ -3,11 +3,14 @@
 /*! \page doc-QP QP Problems
  *  \brief %Quadratic programming with examples
  *
+ *
+ *
+ * <div class="sec">Box-constrained QP</div>
  * Let us here see how to formulate and solve a QP using libforbes. 
  *
  * First, define the cost function as 
  * \f[
- *  f(x) = \frac{1}{2}x'Qx + q'x.
+ *  f(x) = \frac{1}{2}x^{\top}Qx + q^{\top}x.
  * \f]
  *
  * Take for instance \f$Q\in\mathbb{R}^{4\times 4}\f$ and \f$q\in\mathbb{R}^{4}\f$
@@ -35,8 +38,8 @@
  * -1, -1, -1,  1 };
  * double data_q[] = {1, 2, 3, 4};
  *
- * Matrix * Q = new Matrix(n, n, data_Q);
- * Matrix * q = new Matrix(n, 1, data_q);
+ * Matrix Q(n, n, data_Q);
+ * Matrix q(n, 1, data_q);
  *
  * Function * f = new Quadratic(*Q, *q);
  * \endcode
@@ -110,4 +113,43 @@
  *
  * which converges within the required accuracy (specified by the termination
  * criterion) in \c 11 iterations.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * <div class="sec">Inequality constrained QP</div>
+ * 
+ * Let us now solve an inequality constrained problem which have the following form
+ *
+ * \f[
+ * \mathrm{minimize}\ \frac{1}{2}x^{\top}Qx  + q^{\top} x + \delta(Hx\mid C),
+ * \f]
+ * 
+ * where \f$Q\f$ is a symmetric positive definite matrix,  \f$H:\mathbb{R}^n\to\mathbb{R}^s\f$
+ * is a linear operator and \f$C\f$ is a set which is easy to project on; here, let us take
+ *
+ * \f[
+ *  C = \{z \in \mathbb{R}^s: -1 \leq z \leq 1\}.
+ * \f]
+ *
+ * Using the splitting \f$f(x) = \frac{1}{2}x^{\top}Qx + q^{\top}x\f$, \f$g(z) = \delta(z\mid C)\f$
+ * and \f$z=Hx\f$, we need to formulate and solve the dual optimization problem which is simply
+ *
+ * \f[
+ *  \mathrm{minimize}\ f^*(-H^* y) + g^*(y),
+ * \f]
+ *
+ * for the dual variable \f$y\in\mathbb{R}^s\f$.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
