@@ -32,6 +32,22 @@ LogLogisticLoss::LogLogisticLoss(double mu) :
 Function(), m_mu(mu) {
 }
 
+int LogLogisticLoss::call(Matrix& x, double& f) {
+    //LCOV_EXCL_START
+    if (!x.isColumnVector()) {
+        throw std::invalid_argument("x must be a column-vector");
+    }
+    //LCOV_EXCL_STOP
+    f = 0.0;
+    for (size_t i = 0; i < x.getNrows(); i++) {
+        double si = std::exp(x[i]);
+        si /= (1.0 + si);
+        f -= std::log(si);
+    }
+    f *= m_mu;
+    return ForBESUtils::STATUS_OK;
+}
+
 int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
@@ -56,20 +72,25 @@ int LogLogisticLoss::call(Matrix& x, double& f, Matrix& grad) {
     return status;
 }
 
-int LogLogisticLoss::call(Matrix& x, double& f) {
+int LogLogisticLoss::hessianProduct(Matrix& x, Matrix& z, Matrix& Hz) {
     //LCOV_EXCL_START
     if (!x.isColumnVector()) {
         throw std::invalid_argument("x must be a column-vector");
     }
     //LCOV_EXCL_STOP
-    f = 0.0;
-    for (size_t i = 0; i < x.getNrows(); i++) {
-        double si = std::exp(x[i]);
-        si /= (1.0 + si);
-        f -= std::log(si);
+    int status = ForBESUtils::STATUS_OK;
+    for (size_t i = 0; i < x.getNrows(); i++) {        
+        double xi = x[i];
+        if (xi < 33) {                      /* because for values higher than 33, 
+                                             * s1 is practically equal to 1. 
+                                             * This saves the computational burden for
+                                             * high values of x_i */
+            double si = std::exp(xi);       /* si = e^xi              */
+            si = si / (1 + si);             /* si = e^xi / (1+e^xi)   */
+            Hz[i] = m_mu * z[i] * si * (1 - si);
+        }
     }
-    f *= m_mu;
-    return ForBESUtils::STATUS_OK;
+    return status;
 }
 
 FunctionOntologicalClass LogLogisticLoss::category() {

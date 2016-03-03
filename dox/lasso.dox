@@ -1,0 +1,104 @@
+/* LASSO programs - documentation with examples */
+
+/*! \page doc-LASSO LASSO Problems
+ *  \brief LASSO problems
+ *
+ * LASSO problems are \f$\ell_1\f$-regularized least-squares problems of the form
+ *
+ * \f[
+ * \mathrm{minimize}\quad \frac{1}{2}\|Ax-b\|^2 + \lambda\|x\|_1,
+ * \f]
+ *
+ * for some regularization parameter \f$\lambda\geq 0\f$.
+ *
+ * The standard splitting of the above problem involves the following function
+ * \f$f\f$ which is implemented by QuadraticLoss
+ *
+ * \f[
+ * f(x) = \frac{1}{2}\sum_{i=1}^{n}x_i^2,
+ * \f]
+ *
+ * and function \f$g\f$ is given by
+ *
+ * \f[
+ * g(z) = \lambda\|z\|_1.
+ * \f]
+ *
+ * and is implemented by Norm1.
+ *
+ * The above optimization problem is now written as (see FBProblem for details)
+ *
+ * \f[
+ * \mathrm{minimize}\quad f(Ax-b) + g(x),
+ * \f]
+ *
+ * where, here, \f$A\in\mathbb{R}^{m\times n}\f$ is treated as a linear operator.
+ *
+ * Let us see how we can construct and solve this problem using 
+ *
+ * \f[
+ *    A=\begin{bmatrix}
+ *   1&  -2& 3& -4&5\\
+ *   2& -1&  0& -1&3\\
+ *   -1&  0&  4& -3&2\\
+ *  -1& -1& -1&  1&3
+ * \end{bmatrix}
+ * \f]
+ * 
+ * and
+ * 
+ * \f[b=\begin{bmatrix}1&2&3&4\end{bmatrix}^{\top}\f]
+ *
+ * \code{.cpp}
+ * /* Define the problem data */
+ *  const size_t n = 5;
+ *  const size_t m = 4;
+ *  double data_A[] = {
+ *    1,  2, -1, -1,
+ *   -2, -1,  0, -1,
+ *    3,  0,  4, -1,
+ *   -4, -1, -3,  1,
+ *    5,  3,  2,  3 };
+ *  double data_minus_b[] = {-1, -2, -3, -4};
+ *  Matrix A(m, n, data_A);
+ *  Matrix minus_b(m, 1, data_minus_b);
+ * \endcode
+ *
+ * We now cast <code>A[]</code> as a linear operator <code>OpA</code> and 
+ * define the problem data with \f$\lambda=5.0\f$
+ *
+ * \code{.cpp}
+ *  LinearOperator * OpA = new MatrixOperator(A);
+ *  Function * f = new QuadraticLoss();
+ *  double lambda = 5.0;
+ *  Function * g = new Norm1(lambda);
+ * \endcode
+ *
+ * We can now define the FB problem and solve it
+ *
+ * \code{.cpp}
+ *  // Define the FB problem
+ *  FBProblem prob = FBProblem(*f, *OpA, minus_b, *g);
+ *
+ *  // Initial guess and gamma - Construct a new instance of FBSplitting
+ *  Matrix x0(n, 1);
+ *  double gamma = 1e-2;
+ *  FBSplitting * solver = new FBSplitting(prob, x0, gamma);
+ *
+ * // Run the solver and get the solution
+ *  solver->run();
+ *  Matrix xstar = solver->getSolution();
+ * \endcode
+ *
+ * The obtained solution is
+ *
+ * \f[
+ * x^\star = \begin{bmatrix}-0.010 & 0 & 0 & 0.512\end{bmatrix}^\top
+ * \f]
+ *
+ *
+ *
+ * \sa \link doc-group-LASSO Group LASSO \endlink
+ * \sa \link doc-examples More Examples \endlink
+ *
+ */

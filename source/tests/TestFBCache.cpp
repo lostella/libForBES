@@ -61,11 +61,11 @@ void TestFBCache::testBoxQP_small() {
 	double ref_FBEx2_g01 =  -7.450000000000000;
 	double ref_FBEx2_g02 =  -8.900000000000000;
 
-	Matrix Q = Matrix(n, n, data_Q);
-	Matrix q = Matrix(n, 1, data_q);
-	Quadratic f = Quadratic(Q, q);
-	IndBox g = IndBox(lb, ub);
-	FBProblem prob = FBProblem(f, g);
+	Matrix Q(n, n, data_Q);
+	Matrix q(n, 1, data_q);
+	Quadratic f(Q, q);
+	IndBox g(lb, ub);
+	FBProblem prob(f, g);
 	
 	FBCache * cache;
 	Matrix * x, * y, * z, * gradFBEx;
@@ -176,12 +176,12 @@ void TestFBCache::testSparseLeastSquares_small() {
 	double ref_FBEx2_g1 =  13.450436129999996;
 	double ref_FBEx2_g2 =  -2.445831616666666;
 
-	Matrix A = Matrix(m, n, data_A);
-	Matrix minusb = Matrix(m, 1, data_minusb);
-	MatrixOperator OpA = MatrixOperator(A);
-	QuadraticLoss f = QuadraticLoss();
-	Norm1 g = Norm1();
-	FBProblem prob = FBProblem(f, OpA, minusb, g);
+	Matrix A(m, n, data_A);
+	Matrix minusb(m, 1, data_minusb);
+	MatrixOperator OpA(A);
+	QuadraticLoss f;
+	Norm1 g;
+	FBProblem prob(f, OpA, minusb, g);
 	
 	FBCache * cache;
 	Matrix * x, * y, * z, * gradFBEx;
@@ -278,13 +278,13 @@ void TestFBCache::testSparseLogReg_small() {
 	double ref_z1_g2[] = {0, -0.050000000000000, 0.192423431452002, -0.205870502520502, 0.286552928931500};
 	double ref_FBEx1_g2 = 1.612826531482605;
 	
-	Matrix A = Matrix(m, n, data_A);
-	Matrix minusb = Matrix(m, 1, data_minusb);
+	Matrix A(m, n, data_A);
+	Matrix minusb(m, 1, data_minusb);
 	Matrix xstar;
-	LogLogisticLoss f = LogLogisticLoss(1.0);
-	MatrixOperator OpA = MatrixOperator(A);
-	Norm1 g = Norm1(1.0);
-	FBProblem prob = FBProblem(f, OpA, minusb, g);
+	LogLogisticLoss f(1.0);
+	MatrixOperator OpA(A);
+	Norm1 g(1.0);
+	FBProblem prob(f, OpA, minusb, g);
 
 	FBCache * cache;
 	Matrix * x, * y, * z, * gradFBEx;
@@ -323,3 +323,69 @@ void TestFBCache::testSparseLogReg_small() {
 
 	delete cache;
 }
+
+void TestFBCache::testLogLossPlusL1_small() {
+	size_t n = 5;
+	size_t m = 5;
+	double gamma1 = 0.1;
+	double gamma2 = 0.05;
+	// starting points
+	double data_x1[] = {1, -2, 3, -4, 5};
+	// reference results
+	double ref_fx1 = 6.513642326541865;
+	double ref_y1_g1[] = {1.026894142136999, -1.911920292202212, 3.004742587317756, -3.901798620996209, 5.000669285092428};
+	double ref_z1_g1[] = {0.926894142136999, -1.811920292202212, 2.904742587317756, -3.801798620996209, 4.900669285092428};
+	double ref_FBEx1_g1 = 21.018928350676088;
+	double ref_gradFBEx1_g1[] = {0.716685094584284, -1.861049915114549, 0.948270715102844, -1.978513017309498, 0.992646792853859};
+	double ref_y1_g2[] = {1.013447071068500, -1.955960146101106, 3.002371293658878, -3.950899310498105, 5.000334642546214};
+	double ref_z1_g2[] = {0.963447071068500, -1.905960146101106, 2.952371293658878, -3.900899310498105, 4.950334642546214};
+	double ref_FBEx1_g2 = 21.266285338608977;
+	double ref_gradFBEx1_g2[] = {0.723871836607145, -1.870923496546218, 0.950422420962636, -1.980263403673695, 0.992976970964787};
+
+	Function * f = new LogLogisticLoss(1.0);
+	Function * g = new Norm1(1.0);
+	FBProblem * prob = new FBProblem(*f, *g);
+
+	FBCache * cache;
+	Matrix * x, * y, * z, * gradFBEx;
+	double fx, FBEx;
+	
+	// test FB operations starting from x1
+	x = new Matrix(n, 1, data_x1);
+	cache = new FBCache(*prob, *x, 1.0);
+	fx = cache->get_eval_f();
+	y = cache->get_forward_step(gamma1);
+	z = cache->get_forward_backward_step(gamma1);
+	FBEx = cache->get_eval_FBE(gamma1);
+	gradFBEx = cache->get_grad_FBE(gamma1);
+	
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
+	for (int i=0; i < n; i++) {
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g1[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g1[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g1[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
+	}
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g1, FBEx, DOUBLES_EQUAL_DELTA);
+	
+	// change gamma
+	y = cache->get_forward_step(gamma2);
+	z = cache->get_forward_backward_step(gamma2);
+	FBEx = cache->get_eval_FBE(gamma2);
+	gradFBEx = cache->get_grad_FBE(gamma2);
+	
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_fx1, fx, DOUBLES_EQUAL_DELTA);
+	for (int i=0; i < n; i++) {
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_y1_g2[i], y->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_z1_g2[i], z->get(i, 0), DOUBLES_EQUAL_DELTA);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_gradFBEx1_g2[i], gradFBEx->get(i, 0), DOUBLES_EQUAL_DELTA);
+	}
+	CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_FBEx1_g2, FBEx, DOUBLES_EQUAL_DELTA);
+	
+	delete x;
+	delete cache;
+
+	delete prob;
+	delete f;
+	delete g;
+}
+

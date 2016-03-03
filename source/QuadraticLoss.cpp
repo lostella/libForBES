@@ -125,6 +125,17 @@ int QuadraticLoss::callConj(Matrix& x, double& f_star, Matrix& grad) {
     return ForBESUtils::STATUS_OK;
 }
 
+int QuadraticLoss::hessianProduct(Matrix& x, Matrix& z, Matrix& Hz) {
+    if (m_is_uniform_weights) {
+        Hz = m_uniform_w * z;
+    } else {
+        m_w->toggle_diagonal();
+        Hz = (*m_w)*z;
+        m_w->toggle_diagonal();
+    }
+    return ForBESUtils::STATUS_OK;
+}
+
 FunctionOntologicalClass QuadraticLoss::category() {
     FunctionOntologicalClass quadLoss("QuadraticLoss");
     quadLoss.set_defines_f(true);
@@ -135,7 +146,3 @@ FunctionOntologicalClass QuadraticLoss::category() {
     quadLoss.add_superclass(FunctionOntologyRegistry::quadratic());
     return quadLoss;
 }
-
-
-
-

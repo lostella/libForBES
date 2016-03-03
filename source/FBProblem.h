@@ -36,10 +36,34 @@ private:
 
     void init();
 
+    /**
+     * @brief Checks whether the argument Function object defines a function
+     * of category "Quadratic"
+     * 
+     * @param fun_f Reference to Function object to check
+     * @return true if the argument defines a function of category "Quadratic", false otherwise
+     */
+    static bool isQuadratic(Function& fun_f);
+
 public:
 
     /**
      * Allocates an FBProblem given all the details. 
+     * 
+     * Defines the optimization problem
+     * 
+     * \f[
+     *  \mathrm{minimize}\  f_1(L_1 x + d_1) + f_2(L_2 x + d_2) + \langle l,x \rangle + g(x),
+     * \f]
+     * 
+     * @param fun_f1 %Quadratic function \f$f_1\f$
+     * @param L_1 Linear operator \f$L_1\f$
+     * @param d_1 Constant matrix/vector \f$d_1\f$
+     * @param fun_f2 Smooth %function \f$f_2\f$
+     * @param L_2 Linear operator \f$L_2\f$
+     * @param d_2 Constant matrix/vector \f$d_2\f$ 
+     * @param linear Constant \f$l\f$
+     * @param fun_g Closed proper convex function \f$g\f$
      *
      * \todo Test for "quadraticness" of fun_f1 and fun_f2, and appropriately assign
      * internally all the input arguments internally. If, for example, they are both
@@ -58,9 +82,20 @@ public:
     /**
      * Allocates an FBProblem given only one smooth term and the affine
      * map composed with it. 
+     * 
+     * Defines the optimization problem
+     * 
+     * \f[
+     *  \mathrm{minimize}\  f(Lx + d) + g(x)
+     * \f]
      *
      * \todo Test for "quadraticness" of fun_f, and appropriately assign internally
      * all the input arguments.
+     * 
+     * @param fun_f Function \f$f\f$
+     * @param L linear operator \f$L\f$
+     * @param d constant matrix/vector \f$d\f$
+     * @param fun_g Closed proper convex function \f$g\f$
      */
     FBProblem(
             Function& fun_f,
@@ -71,6 +106,16 @@ public:
     /**
      * Allocates an FBProblem given only one smooth term and the linear map
      * composed with it.
+     * 
+     * Defines the optimization problem
+     * 
+     * \f[
+     *  \mathrm{minimize}\  f(Lx) + g(x)
+     * \f]
+     * 
+     * @param fun_f Function \f$f\f$
+     * @param L Linear operator \f$L\f$
+     * @param fun_g Closed proper convex function \f$g\f$
      *
      * \todo Test for "quadraticness" of fun_f, and appropriately assign internally
      * all the input arguments.
@@ -82,6 +127,13 @@ public:
 
     /**
      * Allocates an FBProblem given only one smooth term.
+     * 
+     * \f[
+     *  \mathrm{minimize}\ f(x) + g(x)
+     * \f]
+     * 
+     * @param fun_f Function \f$f\f$
+     * @param fun_g Closed proper convex function \f$g\f$
      *
      * \todo Test for "quadraticness" of fun_f, and appropriately assign internally
      * all the input arguments.
@@ -103,7 +155,7 @@ public:
      * @return Pointer to the non-quadratic Function in the problem.
      */
     Function * f2();
-    
+
     /**
      * Linear operator composed with the quadratic function.
      *
@@ -117,7 +169,7 @@ public:
      * @return Pointer to the linear operator.
      */
     LinearOperator * L2();
-    
+
     /**
      * Affine term composed with the quadratic function.
      *
@@ -138,7 +190,7 @@ public:
      * @return Pointer to Matrix.
      */
     Matrix * lin();
-    
+
     /**
      * The proper, closed, convex function g in the cost.
      *

@@ -55,7 +55,7 @@
  * while the conjugate is computed as
  * 
  * \f[
- * f^*(y) = \frac{1}{2} y' (\nabla f^*(y) + p).
+ *  f^*(y) = \frac{1}{2} y^{\top} (\nabla f^*(y) + p).
  * \f]
  * 
  * 
@@ -104,10 +104,9 @@ public:
 
     virtual int callConj(Matrix& x, double& f_star, Matrix& grad);
 
+    virtual int hessianProduct(Matrix& x, Matrix& z, Matrix& Hz);
+
     virtual FunctionOntologicalClass category();
-
-
-
 
 private:
 

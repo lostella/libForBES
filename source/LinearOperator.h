@@ -84,8 +84,9 @@ public:
      *  \langle y, T(x) \rangle_{Y} = \langle T^*(y), x \rangle_{X}
      * \f]
      * For a matrix \f$M\in\mathbb{R}^{m\times n}\f$ its adjoint is its transpose,
-     * that is \f$M^* = M'\f$ and, indeed, for all \f$x\in\mathbb{R}^n\f$ 
-     * and \f$y\in\mathbb{R}^m\f$ it is \f$\langle y, Mx \rangle = y'Mx = (M'y)'x = \langle M'y, x \rangle = 
+     * that is \f$M^* = M^{\top}\f$ and, indeed, for all \f$x\in\mathbb{R}^n\f$ 
+     * and \f$y\in\mathbb{R}^m\f$ it is \f$\langle y, Mx \rangle = 
+     * y^{\top}Mx = (M^{\top}y)^{\top}x = \langle M^{\top}y, x \rangle = 
      * \langle M^*(y), x \rangle\f$.    
      * 
      * This method updates a given vector or matrix \f$y\f$ as

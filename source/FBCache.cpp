@@ -24,7 +24,6 @@
 // #include <iostream>
 #include <cmath>
 #include <limits>
-#include <iostream>
 
 void FBCache::reset(int status) {
     if (status < m_status) m_status = status;
@@ -38,7 +37,6 @@ void FBCache::reset() {
 
 FBCache::FBCache(FBProblem & p, Matrix & x, double gamma) : m_prob(p), m_x(&x), m_gamma(gamma) {
     reset(FBCache::STATUS_NONE);
-
 
     // get dimensions of things
     size_t m_x_rows = m_x->getNrows();
@@ -173,7 +171,7 @@ int FBCache::update_forward_step(double gamma) {
     }
 
     if (m_prob.f2() != NULL) {
-        status = m_prob.f2()->call(*m_x, m_f2x, *m_gradf2x);
+        status = m_prob.f2()->call(*m_res2x, m_f2x, *m_gradf2x);
         if (!ForBESUtils::is_status_ok(status)) {
             return status;
         }
@@ -285,18 +283,52 @@ int FBCache::update_grad_FBE(double gamma) {
 
     *m_gradFBEx = *m_FPRx;
 
+    // gradFBE(x) = (I-gamma*H(x))*FPR(x)/gamma
+    // if the smooth term is f(Lx+d) then H(x) = L'*hessf(x)*L
+    // so in general the way to compute gradFBE(x) should be:
+    //
+    //  v1 <- L*FPR(x)
+    //  v2 <- H(x)*v1
+    //  v3 <- L'*v2
+    //  gradFBE(x) <- FPR(x)/gamma - v3
+    //
+    // and when L is not present (that is L = Identity):
+    //
+    //  v1 <- H(x)*FPR(x)
+    //  gradFBE(x) <- FPR(x)/gamma - v1
+
     if (m_prob.f1() != NULL) {
         if (m_prob.L1() != NULL) {
-            Matrix gradf1_L1diff = Matrix(m_prob.L1()->dimensionOut());
-            Matrix gradf1_diff = m_prob.L1()->callAdjoint(gradf1_L1diff);
-            Matrix::add(*m_gradFBEx, -1.0, gradf1_diff, 1.0 / gamma);
+            Matrix v1(m_prob.L1()->dimensionOut());
+            v1 = m_prob.L1()->call(*m_FPRx);
+            Matrix v2(m_prob.L1()->dimensionOut());
+            m_prob.f1()->hessianProduct(*m_res1x, v1, v2);
+            Matrix v3 = m_prob.L1()->callAdjoint(v2);
+            Matrix::add(*m_gradFBEx, -1.0, v3, 1.0 / gamma);
         } else {
-
+            Matrix v1(m_x->getNrows(), m_x->getNcols());
+            m_prob.f1()->hessianProduct(*m_x, *m_FPRx, v1);
+            Matrix::add(*m_gradFBEx, -1.0, v1, 1.0 / gamma);
         }
     }
 
     if (m_prob.f2() != NULL) {
-        return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
+        if (m_prob.L2() != NULL) {
+            Matrix v1(m_prob.L2()->dimensionOut());
+            v1 = m_prob.L2()->call(*m_FPRx);
+            Matrix v2(m_prob.L2()->dimensionOut());
+            m_prob.f2()->hessianProduct(*m_res2x, v1, v2);
+            Matrix v3 = m_prob.L2()->callAdjoint(v2);
+            /* TODO: avoid this, make it simpler */
+            if (m_prob.f1() != NULL) Matrix::add(*m_gradFBEx, -1.0, v3, 1.0);
+            else Matrix::add(*m_gradFBEx, -1.0, v3, 1.0 / gamma);
+        } else {
+            Matrix v1(m_x->getNrows(), m_x->getNcols());
+            m_prob.f2()->hessianProduct(*m_x, *m_FPRx, v1);
+            /* TODO: avoid this, make it simpler */
+            if (m_prob.f1() != NULL) Matrix::add(*m_gradFBEx, -1.0, v1, 1.0);
+            else Matrix::add(*m_gradFBEx, -1.0, v1, 1.0 / gamma);
+        }
     }
 
     m_gamma = gamma;

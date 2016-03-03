@@ -177,6 +177,7 @@ void TestQuadraticLoss::testCallConj() {
     _ASSERT_EQ(grad_expected, grad);
 
     double f_star2;
+    _ASSERT(quadLoss->category().defines_conjugate());
     status = quadLoss->callConj(x, f_star2);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
     _ASSERT_NUM_EQ(f_star, f_star2, tol);
@@ -192,12 +193,17 @@ void TestQuadraticLoss::testCategory() {
     bool loss_found = false;
     bool quad_found = false;
     for (std::list<FunctionOntologicalClass>::iterator it = list.begin(); it != list.end(); ++it) {
-        FunctionOntologicalClass entry = *it;
         loss_found = loss_found || it->getName().compare("LossFunction") == 0;
         quad_found = quad_found || it->getName().compare("Quadratic") == 0;
     }
     _ASSERT(loss_found);
     _ASSERT(quad_found);
-    
+    _ASSERT(ql->category().defines_f());
+    _ASSERT(ql->category().defines_grad());
+    _ASSERT(ql->category().defines_conjugate());
+    _ASSERT(ql->category().defines_conjugate_grad());
+    _ASSERT_NOT(ql->category().defines_hessian());
+    _ASSERT_NOT(ql->category().defines_hessian_conj());
+    _ASSERT_NOT(ql->category().defines_prox());
     delete ql;
 }

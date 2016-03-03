@@ -19,6 +19,8 @@
 
 #include "FBProblem.h"
 
+#define QUADRATIC_NAME "Quadratic"
+
 void FBProblem::init() {
     m_f1 = NULL;
     m_f2 = NULL;
@@ -28,6 +30,23 @@ void FBProblem::init() {
     m_d1 = NULL;
     m_d2 = NULL;
     m_lin = NULL;
+}
+
+bool FBProblem::isQuadratic(Function& fun_f) {
+    FunctionOntologicalClass foc = fun_f.category();
+    if (foc.getName().compare(QUADRATIC_NAME) == 0) return true;
+    
+    bool gauge = false;    
+    std::list<FunctionOntologicalClass> superclasses = foc.getSuperclasses();
+    for (std::list<FunctionOntologicalClass>::iterator cl = superclasses.begin(); 
+            cl != superclasses.end(); 
+            ++cl) {
+        if ((*cl).getName().compare(QUADRATIC_NAME) == 0) {
+            gauge = true;
+            break;
+        }
+    }
+    return gauge;
 }
 
 FBProblem::FBProblem(
@@ -55,9 +74,15 @@ FBProblem::FBProblem(
         Matrix& d,
         Function& fun_g) {
 	init();
-	m_f1 = &fun_f;
-	m_L1 = &L;
-	m_d1 = &d;
+    if (isQuadratic(fun_f)) {
+        m_f1 = &fun_f;
+        m_L1 = &L;
+        m_d1 = &d;
+    } else {
+        m_f2 = &fun_f;
+        m_L2 = &L;
+        m_d2 = &d;
+    }
 	m_g = &fun_g;
 }
 
@@ -66,8 +91,13 @@ FBProblem::FBProblem(
         LinearOperator& L,
         Function& fun_g) {
     init();
-    m_f1 = &fun_f;
-    m_L1 = &L;
+    if (isQuadratic(fun_f)) {
+        m_f1 = &fun_f;
+        m_L1 = &L;
+    } else {
+        m_f2 = &fun_f;
+        m_L2 = &L;
+    }
     m_g = &fun_g;
 }
 
@@ -75,7 +105,11 @@ FBProblem::FBProblem(
         Function& fun_f,
         Function& fun_g) {
 	init();
-	m_f1 = &fun_f;
+	if (isQuadratic(fun_f)) {
+        m_f1 = &fun_f;
+    } else {
+        m_f2 = &fun_f;
+    }
 	m_g = &fun_g;
 }
 

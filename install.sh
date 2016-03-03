@@ -97,6 +97,7 @@ function install_libforbes {
   # Install lapack
   sudo apt-get -y install libblas-dev checkinstall
   sudo apt-get -y install liblapack-dev checkinstall
+  sudo apt-get -y install libcppunit-dev checkinstall
 
   # Check whether liblapacke exists
   if [ ! -e /usr/lib/liblapacke.a ]; then

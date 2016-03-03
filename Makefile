@@ -34,8 +34,8 @@ ifeq ($(OS),Darwin) # Assume Mac OS X
   NPROCS:=$(shell sysctl -n hw.ncpu)
 endif
 NPROCS:=$$(($(NPROCS)-1))
-#MAKEFLAGS += -j $(NPROCS)
-#MAKEFLAGS += --no-print-directory
+MAKEFLAGS += -j $(NPROCS)
+MAKEFLAGS += --no-print-directory
 
 # C++ compiler
 CXX = g++
@@ -194,7 +194,8 @@ SOURCES += Function.cpp \
 	SeparableSum.cpp \
 	IndBall2.cpp \
 	QuadraticLossOverAffine.cpp \
-	SumOfNorm2.cpp
+	SumOfNorm2.cpp \
+	LQCost.cpp
 	
 # CORE
 SOURCES += FBProblem.cpp \
@@ -246,7 +247,9 @@ TESTS = \
 	TestMatrixExtras.test \
 	TestFBCache.test \
 	TestFBSplitting.test \
-	TestFBSplittingFast.test
+	TestFBSplittingFast.test \
+	TestLasso.test \
+	TestSumOfNorm2.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -284,6 +287,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestHingeLoss
 	${BIN_TEST_DIR}/TestHuber
 	${BIN_TEST_DIR}/TestSeparableSum
+	${BIN_TEST_DIR}/TestSumOfNorm2
 	@echo "\n*** UTILITIES ***"
 	${BIN_TEST_DIR}/TestMatrixFactory
 	${BIN_TEST_DIR}/TestMatrixExtras
@@ -303,6 +307,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestFBCache
 	${BIN_TEST_DIR}/TestFBSplitting
 	${BIN_TEST_DIR}/TestFBSplittingFast
+	${BIN_TEST_DIR}/TestLasso
 
 $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_DIR)/%.h
 	@echo

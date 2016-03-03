@@ -43,7 +43,7 @@
  * where \f$P\f$ is the set
  * 
  * \f[
- * P = \{x\in\mathbb{R}^n: x\geq 0, 1'x = 1\}.
+ * P = \{x\in\mathbb{R}^n: x\geq 0, 1^{\top}x = 1\}.
  * \f]
  * 
  * The projection on this set, that is the proximal mapping of the indicator,
@@ -57,7 +57,7 @@
  * is a scalar such that
  * 
  * \f[
- * 1'(x-t1)_+ = 1 \Leftrightarrow \sum_{i=1}^{n}(x_i-t)_+ = 1.
+ * 1^{\top}(x-t1)_+ = 1 \Leftrightarrow \sum_{i=1}^{n}(x_i-t)_+ = 1.
  * \f]
  * 
  * This can be determined by bisection.

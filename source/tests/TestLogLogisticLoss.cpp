@@ -52,9 +52,25 @@ void TestLogLogisticLoss::testCall() {
         3.578396939725760,
         2.769437029884877
     };
+    const double ddata[n] = {
+        -0.013569096140251,
+        -0.333434615170239,
+        -0.431122888787024,
+        0.407923343445659,
+        0.404836067818807,
+        -0.257685527804887,
+         -0.057441551301617,
+         -0.101942255039910,
+         -0.226500118101661,
+          0.490999700556483
+    };
+
     Matrix x(n, 1, xdata);
+    Matrix d(n, 1, ddata);
+
     double f;
     Matrix grad(n, 1);
+    Matrix Hd(n, 1);
 
     const double tol = 1e-12;
     const double f_expected = 10.455339600285200;
@@ -72,7 +88,21 @@ void TestLogLogisticLoss::testCall() {
         -0.088497390570449
     };
 
+    const double Hd_expected_data[n] = {
+        -0.004737683170800,
+        -0.059414973349659,
+        -0.055383330523630,
+         0.127727625721715,
+         0.148021416496942,
+        -0.064766147765657,
+        -0.020559061512420,
+        -0.037128015811522,
+        -0.008977649776764,
+         0.040888588516473,
+    };
+
     Matrix grad_expected(n, 1, grad_expected_data);
+    Matrix Hd_expected(n, 1, Hd_expected_data);
 
     _ASSERT(logLogisticLoss->category().defines_f());
     int status = logLogisticLoss->call(x, f, grad);
@@ -80,6 +110,9 @@ void TestLogLogisticLoss::testCall() {
     _ASSERT_NUM_EQ(f_expected, f, tol);
     _ASSERT_EQ(grad_expected, grad);
 
+    status = logLogisticLoss->hessianProduct(x, d, Hd);
+    _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
+    _ASSERT_EQ(Hd_expected, Hd);
 
     double f2;
     status = logLogisticLoss->call(x, f2);

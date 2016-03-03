@@ -332,11 +332,21 @@ void Matrix::set(size_t i, size_t j, double v) {
 }
 
 double Matrix::norm_fro_sq() {
-    if (m_type == Matrix::MATRIX_DENSE || m_type == Matrix::MATRIX_DIAGONAL || m_type == Matrix::MATRIX_LOWERTR) {
+    if (m_type == Matrix::MATRIX_DENSE
+            || m_type == Matrix::MATRIX_DIAGONAL
+            || m_type == Matrix::MATRIX_LOWERTR) {
         return cblas_dnrm2(m_dataLength, m_data, 1);
     } else if (m_type == Matrix::MATRIX_SYMMETRIC) {
-        // double t;        
-        throw std::logic_error("Frobenius norm of symmetric matrices is not implemented yet.");
+        double t = 0.0;
+        for (size_t i = 0; i < m_nrows; i++) {
+            /* do for all i > j */
+            for (size_t j = 0; j < i; j++) {
+                t += 2.0 * std::pow(m_data[i + m_nrows * j - j * (j + 1) / 2], 2);
+            }
+            /* and now for j = i */
+            t += std::pow(m_data[i + m_nrows * i - i * (i + 1) / 2], 2);
+        }
+        return std::sqrt(t);
     } else {
         double * sparse_data = static_cast<double*> (m_triplet->x);
         return cblas_dnrm2(m_triplet->nnz, sparse_data, 1);
@@ -454,7 +464,7 @@ void Matrix::plusop() {
     }
 }
 
-void Matrix::plusop(Matrix* mat) {
+void Matrix::plusop(Matrix* mat) const {
     if (m_type != Matrix::MATRIX_SPARSE) {
         if (length() != mat->length()) {
             throw std::invalid_argument("Input matrix allocation/size error");
@@ -1601,7 +1611,7 @@ int Matrix::multiply_helper_left_dense(Matrix& C, double alpha, Matrix& A, Matri
 int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matrix& B, double gamma) {
     bool is_alpha_one = (std::abs(alpha - 1.0) < std::numeric_limits<double>::epsilon());
     bool is_gamma_zero = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
-    bool is_gamma_one = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
+    //    bool is_gamma_one = (std::abs(gamma) < std::numeric_limits<double>::epsilon());
     int status = ForBESUtils::STATUS_UNDEFINED_FUNCTION;
     if (B.m_type == MATRIX_SPARSE) {
         // RHS is sparse
@@ -1657,7 +1667,7 @@ int Matrix::multiply_helper_left_sparse(Matrix& C, double alpha, Matrix& A, Matr
             add(C, 1.0, temp_r, gamma);
             status = ForBESUtils::STATUS_OK;
         }
-    } else if (B.m_type == MATRIX_DENSE) { /* C = gamma * C + alpha * SPRASE * DENSE */
+    } else if (B.m_type == MATRIX_DENSE) { /* C = gamma * C + alpha * SPARSE * DENSE */
 
 
         // RHS is dense

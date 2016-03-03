@@ -52,7 +52,7 @@ FunctionOntologicalClass::FunctionOntologicalClass(std::string name) : m_name(na
     m_defines_conjugate = false;
     m_defines_conjugate_grad = false;
     m_defines_hessian = false;
-    m_defines_hessian_conj = false;   
+    m_defines_hessian_conj = false;
 }
 
 //LCOV_EXCL_START
@@ -70,8 +70,7 @@ std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) 
     std::list<FunctionOntologicalClass> li = obj.superClasses;
     size_t i = 1;
     for (std::list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); ++it) {
-        FunctionOntologicalClass entry = *it;
-        std::cout << " " << i << entry.getName() << "\n";
+        std::cout << " " << i << ". "<< it->getName() << "\n";
         i++;
     }
     return os;
@@ -102,7 +101,7 @@ std::list<FunctionOntologicalClass> FunctionOntologicalClass::getSuperclasses() 
     return superClasses;
 }
 
-void FunctionOntologicalClass::add_superclass(FunctionOntologicalClass fun_ont_class){    
+void FunctionOntologicalClass::add_superclass(FunctionOntologicalClass fun_ont_class) {
     superClasses.push_back(fun_ont_class);
 }
 

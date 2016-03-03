@@ -59,11 +59,11 @@
  * F = A \cdot \mathrm{diag}(1/\sqrt{w_i})_i,
  * \f]
  * 
- * and we perform once and store the LDL-factorization of \f$FF' + \epsilon I\f$
+ * and we perform once and store the LDL-factorization of \f$FF^{\top} + \epsilon I\f$
  * for a small \f$\epsilon>0\f$, that is
  * 
  * \f[
- *  FF' + \epsilon I = LDL'.
+ *  FF^{\top} + \epsilon I = LDL^{\top}.
  * \f]
  * 
  * For a given \f$y\f$ we define the vector \f$\sigma=\sigma(y)\f$ as
@@ -75,7 +75,7 @@
  * and let \f$q=q(y)\f$ be the solution of the linear system
  * 
  * \f[
- *  (FF' + \epsilon I)q = A\sigma - b.
+ *  (FF^{\top} + \epsilon I)q = A\sigma - b.
  * \f]
  * 
  * We solve this system using the above LDL-factorization.
@@ -83,13 +83,13 @@
  * Now the gradient of the conjugate function is given by
  * 
  * \f[
- *  \nabla f^*(y)_i = \sigma_i  - \frac{(A'q)_i}{w_i}.
+ *  \nabla f^*(y)_i = \sigma_i  - \frac{(A^{\top}q)_i}{w_i}.
  * \f]
  * 
  * and \f$f^*(y)\f$ is given by
  * 
  * \f[
- * f^*(y) = y'\nabla f^*(y) - \frac{1}{2}\bar{g}'\mathrm{diag}(w_i)\bar{g},
+ * f^*(y) = y^{\top}\nabla f^*(y) - \frac{1}{2}\bar{g}^{\top}\mathrm{diag}(w_i)\bar{g},
  * \f]
  * 
  * with \f$\bar{g} = \nabla f^*(y) - p\f$.
@@ -119,7 +119,7 @@ public:
      * \exception std::invalid_argument if the parameters have incompatible
      * dimensions.
      * 
-     * \exception std::invalid_argument in case the matrix F = AA' + epsilon I
+     * \exception std::invalid_argument in case the matrix \f$F = AA^{\top} + epsilon I\f$
      * cannot be factorized.
      */
     QuadraticLossOverAffine(Matrix& A, Matrix& b, Matrix& w, Matrix& p);

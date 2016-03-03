@@ -27,7 +27,6 @@ Function::~Function() {
 }
 
 //LCOV_EXCL_START
-
 int Function::call(Matrix& x, double& f) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
@@ -37,7 +36,8 @@ int Function::call(Matrix& x, double& f, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int Function::call(Matrix& x, double& f, Matrix& grad, Matrix& hessian) {
+
+int Function::hessianProduct(Matrix& x, Matrix& z, Matrix& Hz) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
@@ -49,7 +49,8 @@ int Function::callConj(Matrix& x, double& f_star, Matrix& grad) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
-int Function::callConj(Matrix& x, double& f_star, Matrix& grad, Matrix& hessian) {
+
+int Function::hessianProductConj(Matrix& x, Matrix& z, Matrix& Hz) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 
@@ -58,8 +59,17 @@ int Function::callProx(Matrix& x, double gamma, Matrix& prox) {
 }
 
 //LCOV_EXCL_START
-
 int Function::callProx(Matrix& x, double gamma, Matrix& prox, double& f_at_prox) {
     return ForBESUtils::STATUS_UNDEFINED_FUNCTION;
 }
 //LCOV_EXCL_STOP
+
+Function& Function::operator=(const Function& right) {
+    if (this == &right) { // Check for self-assignment!
+        return *this;
+    } else {
+        // otherwise it should not be allowed to use operator= on Functions!
+        // an error should be thrown
+        throw logic_error("It is not allowed to copy Function objects; operator= is not supported.");
+    }
+}

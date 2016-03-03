@@ -32,20 +32,56 @@
 class FunctionOntologyRegistry {
 public:
 
+    /**
+     * Generic namespace of the libforbes function ontology
+     * @return 
+     */
     static std::string nameSpace();
 
+    /**
+     * Any proper convex closed extended real valued function \f$f:X\to\bar{\mathbb{R}}\f$
+     * @return 
+     */
     static FunctionOntologicalClass function();
 
+    /**
+     * Quadratic function, i.e., a function which can be written in the form
+     * \f[
+     *   f(x) = \frac{1}{2}x^{\top}Qx + q^{\top}x
+     * \f]
+     * @return 
+     */
     static FunctionOntologicalClass quadratic();
     
+    /**
+     * Conjugate quadratic function, i.e., a function whose convex conjugate
+     * is a quadratic function.
+     * @return 
+     */
     static FunctionOntologicalClass conj_quadratic();
 
+    /**
+     * A norm-distance from a nonempty convex closed set
+     * @return 
+     */
     static FunctionOntologicalClass distance();
 
+    /**
+     * Indicator of a nonempty convex closed set
+     * @return 
+     */
     static FunctionOntologicalClass indicator();
 
+    /**
+     * A loss function
+     * @return 
+     */
     static FunctionOntologicalClass loss();
 
+    /**
+     * A vector norm
+     * @return 
+     */
     static FunctionOntologicalClass norm();
 
 

@@ -38,25 +38,25 @@
  * 
  * Let \f$A\in\mathbb{R}^{n\times m}\f$ be a non necessarily square matrix. This 
  * class, which is derived from the abstract class FactoredSolver, decomposes the
- * matrix \f$F=AA'+\beta I\f$ for a given scalar \f$\beta\f$ without the need to 
+ * matrix \f$F=AA^{\top}+\beta I\f$ for a given scalar \f$\beta\f$ without the need to 
  * pre-compute \f$F\f$. 
  * 
  * In case \f$A\f$ is a short matrix (it has more columns than rows), then we compute
- * \f$AA'+\beta I\f$ and we delegate its factorization to LDLFactorization.
+ * \f$AA^{\top}+\beta I\f$ and we delegate its factorization to LDLFactorization.
  * 
  * If \f$A\f$ is a tall matrix (it has more rows than columns) then, using the 
  * <a href="https://en.wikipedia.org/wiki/Woodbury_matrix_identity">Woodbury matrix identity</a> 
  * we have
  * 
  * \f[
- *  (AA'+\beta I)^{-1} = \beta^{-1}I - \beta^{-1}A(\beta I + A'A)^{-1}A'.
+ *  (AA^{\top}+\beta I)^{-1} = \beta^{-1}I - \beta^{-1}A(\beta I + A^{\top}A)^{-1}A^{\top}.
  * \f]
  * 
- * Notice that matrix \f$\tilde{F}=\beta I + A'A\f$ is of smaller size than \f$F\f$.
+ * Notice that matrix \f$\tilde{F}=\beta I + A^{\top}A\f$ is of smaller size than \f$F\f$.
  * The above can be concisely written as 
  * 
  * \f[
- * F^{-1} = \beta^{-1}(I-A\tilde{F}^{-1}A')
+ * F^{-1} = \beta^{-1}(I-A\tilde{F}^{-1}A^{\top})
  * \f]
  * 
  * Then, to compute a \f$z\in\mathbb{R}^{n}\f$ which solves
@@ -65,7 +65,7 @@
  *  Fz = t,
  * \f]
  * 
- * we simply do \f$z=\beta^{-1}(I-A\tilde{F}^{-1}A')t\f$ or
+ * we simply do \f$z=\beta^{-1}(I-A\tilde{F}^{-1}A^{\top})t\f$ or
  * 
  * \f[
  *  z = \beta^{-1}(t+Ac),
@@ -73,7 +73,7 @@
  * 
  * where \f$c\f$ is the solution of the following system
  * \f[
- *  \tilde{F} c  = A't,
+ *  \tilde{F} c  = A^{\top} t,
  * \f]
  * which is determined using the LDL factorization of \f$\tilde{F}\f$.
  * 
@@ -99,7 +99,7 @@ public:
      * Computes the solution of the linear system
      * 
      * \f[
-     *  (AA' + \beta I) x = b,
+     *  (AA^{\top} + \beta I) x = b,
      * \f]
      * 
      * for a given \f$b\f$.
@@ -109,9 +109,9 @@ public:
      * it is neither of \link Matrix::MATRIX_SPARSE sparse\endlink nor
      * \link Matrix::MATRIX_DENSE dense\endlink type.
      * 
-     * @param rhs the right-hand side of the linear equation \f$(AA'+ \beta I) x = b\f$
+     * @param rhs the right-hand side of the linear equation \f$(AA^{\top}+ \beta I) x = b\f$
      * 
-     * @param solution the solution of the linear system \f$(AA'+\beta I) x = b\f$ 
+     * @param solution the solution of the linear system \f$(AA^{\top}+\beta I) x = b\f$ 
      * which is computed using this matrix factorization.
      * 
      * @return status code. The method returns \link ForBESUtils::STATUS_OK STATUS_OK\endlink 

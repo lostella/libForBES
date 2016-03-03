@@ -79,15 +79,26 @@
 #include "LogLogisticLoss.h"         /* Log-logistic function */
 #include "HingeLoss.h"               /* Hinge loss function */
 #include "HuberLoss.h"               /* Huber loss function */
-#include "Norm.h"                    /* Generic vector norm */
+#include "Norm.h"                    /* Generic vector norm (abstract) */
 #include "Norm1.h"                   /* Norm-1 */
 #include "Norm2.h"                   /* Norm-2 */
+#include "SumOfNorm2.h"              /* Sum of Norm-2 */
 #include "SeparableSum.h"            /* Separable sum of proximable functions */
 #include "ConjugateFunction.h"       /* Conjugate of a given function */
 
+/*
+ * FORBES SOLVER
+ */
+#include "IterativeSolver.h"         /* Generic iterative solver */
+#include "FBCache.h"                 /* Low-level component of the libForBES engine */
+#include "FBStopping.h"              /* Stopping criterion */
+#include "FBStoppingRelative.h"      /* Stopping criterion using relative tolerance */
+#include "FBProblem.h"               /* FB problem specifications */
+#include "FBSplitting.h"             /* FB spliting algorithm */
+#include "FBSplittingFast.h"         /* Accelerated FB splitting algorithm */
 
 
-#ifdef FORBES_TEST_UTILS            /* Define FORBES_TEST_UTILS in tests */
+#ifdef FORBES_TEST_UTILS             /* Define FORBES_TEST_UTILS in tests */
 
 #ifndef TEST_UTILS_DEFINED
 #define TEST_UTILS_DEFINED
