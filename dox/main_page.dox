@@ -75,4 +75,19 @@
  *
  * 1. Include the header file ForBES.h
  * 2. Link to the libforbes static library (libforbes.a) 
+ * 
+ *
+ *
+ * 
+ * \section main_useful_links Useful links
+ *
+ * * <a href="https://github.com/lostella/libForBES">Source code on github.com</a> 
+ * * <a href="http://dysco.imtlucca.it/sopasakis/software/libforbes/coverage/source/index-sort-l.html">Code coverage report </a> 
+ * * <a href="http://dysco.imtlucca.it/sopasakis/software/libforbes/cppcheck">Cppcheck report</a>
+ *
+ *
+ *
+ *
+ *
+ *
  */

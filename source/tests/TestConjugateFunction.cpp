@@ -181,17 +181,36 @@ void TestConjugateFunction::testCallProx() {
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
 
     Matrix prox_conj(n, 1);
+    _ASSERT(elastic_conj->category().defines_prox());
     status = elastic_conj -> callProx(x, gamma, prox_conj);
     _ASSERT_EQ(ForBESUtils::STATUS_OK, status);
-    
-    
-    
+
+
+
     delete elastic;
     delete elastic_conj;
 }
 
 void TestConjugateFunction::testCategory() {
+    int n = 8;
+    int s = 4;
+    Matrix Q = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix A = MatrixFactory::MakeRandomMatrix(s, n, 0.0, -5.0, Matrix::MATRIX_DENSE);
 
+    Matrix q = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix b = MatrixFactory::MakeRandomMatrix(s, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+
+    QuadOverAffine * qoa = new QuadOverAffine(Q, q, A, b);
+    ConjugateFunction * qoa_conj = new ConjugateFunction(*qoa);
+    
+    
+    FunctionOntologicalClass meta = qoa_conj->category();
+    _ASSERT(meta.defines_f());
+    _ASSERT(meta.defines_grad());
+    _ASSERT_NOT(meta.defines_prox());
+    
+    delete qoa;
+    delete qoa_conj;
 }
 
 

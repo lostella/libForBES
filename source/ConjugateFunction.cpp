@@ -70,7 +70,7 @@ FunctionOntologicalClass ConjugateFunction::category() {
     meta.set_defines_grad(orig_meta.defines_conjugate_grad());
     meta.set_defines_conjugate(orig_meta.defines_f());
     meta.set_defines_conjugate_grad(orig_meta.defines_grad());
-
+    meta.set_defines_prox(orig_meta.defines_prox());
     return meta;
 }
 
