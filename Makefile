@@ -200,7 +200,6 @@ SOURCES += Function.cpp \
 # CORE
 SOURCES += FBProblem.cpp \
 	FBCache.cpp \
-	IterativeSolver.cpp \
 	FBSplitting.cpp \
 	FBSplittingFast.cpp \
 	FBStopping.cpp \

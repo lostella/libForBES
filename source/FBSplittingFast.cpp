@@ -47,9 +47,6 @@ int FBSplittingFast::stop() {
     return FBSplitting::stop();
 }
 
-Matrix& FBSplittingFast::getSolution() {
-    return FBSplitting::getSolution();
-}
 
 FBSplittingFast::~FBSplittingFast() {
     if (m_previous != NULL) {

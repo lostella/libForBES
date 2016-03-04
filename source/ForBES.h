@@ -89,7 +89,6 @@
 /*
  * FORBES SOLVER
  */
-#include "IterativeSolver.h"         /* Generic iterative solver */
 #include "FBCache.h"                 /* Low-level component of the libForBES engine */
 #include "FBStopping.h"              /* Stopping criterion */
 #include "FBStoppingRelative.h"      /* Stopping criterion using relative tolerance */

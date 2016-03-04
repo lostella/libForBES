@@ -178,8 +178,8 @@ void TestFBSplittingFast::testSparseLogReg_small() {
 	Function * f = new LogLogisticLoss();
 	LinearOperator * OpA = new MatrixOperator(*A);
 	Function * g = new Norm1(1.0);
-	FBProblem prob = FBProblem(*f, *OpA, *minusb, *g);
-	FBStoppingRelative sc = FBStoppingRelative(TOLERANCE);
+	FBProblem prob(*f, *OpA, *minusb, *g);
+	FBStoppingRelative sc(TOLERANCE);
 	FBSplitting * solver;
 	
 	size_t repeat = 100;

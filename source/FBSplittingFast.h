@@ -3,7 +3,6 @@
 
 #include "FBProblem.h"
 #include "FBCache.h"
-#include "IterativeSolver.h"
 #include "FBSplitting.h"
 #include "FBStopping.h"
 
@@ -28,7 +27,9 @@ protected:
 public:
 
     virtual int iterate();
-    virtual int stop();
+    virtual int stop();    
+
+
 
     /**
      * Initialize an FBSplittingFast object. By default, the maximum number
@@ -74,12 +75,7 @@ public:
      */
     FBSplittingFast(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc, int maxit);
 
-    /**
-     * Gets the solution point computed by the algorithm.
-     *
-     * @return reference to a Matrix object, containing the problem solution
-     */
-    Matrix& getSolution();
+    
 
     virtual ~FBSplittingFast();
 

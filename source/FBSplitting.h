@@ -3,7 +3,6 @@
 
 #include "FBProblem.h"
 #include "FBCache.h"
-#include "IterativeSolver.h"
 #include "FBStopping.h"
 
 /**
@@ -17,7 +16,7 @@
  * iterate as the forward-backward (or proximal gradient) step
  * at the current point.
  */
-class FBSplitting : public IterativeSolver {
+class FBSplitting  {
 private:
 
     /**
@@ -35,15 +34,19 @@ private:
      */
     bool delete_sc; 
     double m_gamma;
-
+        
 protected:
 
     FBCache m_cache;
+    size_t m_it;
+    size_t m_maxit;
 
 public:
 
     virtual int iterate();
     virtual int stop();
+    virtual int run();
+    virtual size_t getIt();
 
 
 public:
@@ -97,7 +100,7 @@ public:
      *
      * @return reference to a Matrix object, containing the problem solution
      */
-    Matrix& getSolution();
+    virtual Matrix& getSolution();
 
     virtual ~FBSplitting();
 

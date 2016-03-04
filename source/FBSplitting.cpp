@@ -8,7 +8,8 @@
 #define DEFAULT_TOL 1e-6
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma) :
-IterativeSolver(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
+m_maxit(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {    
+    m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
     m_sc = new FBStopping(DEFAULT_TOL);
@@ -16,7 +17,8 @@ IterativeSolver(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
 }
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc) :
-IterativeSolver(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
+m_maxit(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
+    m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
     m_sc = &sc;
@@ -24,7 +26,8 @@ IterativeSolver(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
 }
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, int maxit) :
-IterativeSolver(maxit), m_cache(FBCache(prob, x0, gamma)) {
+m_maxit(maxit), m_cache(FBCache(prob, x0, gamma)) {
+    m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
     m_sc = new FBStopping(DEFAULT_TOL);
@@ -32,7 +35,8 @@ IterativeSolver(maxit), m_cache(FBCache(prob, x0, gamma)) {
 }
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc, int maxit) :
-IterativeSolver(maxit), m_cache(FBCache(prob, x0, gamma)) {
+m_maxit(maxit), m_cache(FBCache(prob, x0, gamma)) {
+    m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
     m_sc = &sc;
@@ -58,3 +62,17 @@ FBSplitting::~FBSplitting() {
         m_sc = NULL;
     }
 }
+
+int FBSplitting::run() {
+    int status = ForBESUtils::STATUS_OK;
+    while (m_it < m_maxit && !stop() && !ForBESUtils::is_status_error(status)) {
+        status = iterate();
+        m_it++;
+    }
+    return status;
+}
+
+size_t FBSplitting::getIt() {
+    return m_it;
+}
+
