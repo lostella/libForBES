@@ -3,6 +3,8 @@
 #include "TestLasso.h"
 
 #define DOUBLES_EQUAL_DELTA 1e-8
+#define MAXIT 1000
+#define TOLERANCE 1e-12
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestLasso);
 
@@ -19,31 +21,39 @@ void TestLasso::tearDown() {
 }
 
 void TestLasso::runTest() {
-	size_t n = 10;
-	size_t m = 5;
-	// problem data
+	/* Define the problem data */
+	const size_t n = 5;
+	const size_t m = 4;
 	double data_A[] = {
-  		 4,    -5,     0,    -3,     1,
-		-4,     2,     3,     8,    -1,
-	   -11,    -5,     6,    -6,     4,
-		 0,     7,   -10,    -1,    -7,
-		14,     4,     6,    -6,    -3,
-		-2,     5,    -2,     3,   -11,
-		-2,    -5,    -8,     2,     1,
-		 0,    -7,     5,     1,    -2,
-		 0,    -2,    -9,    -2,    -5,
-		-5,    -6,    -3,   -11,     4
-	};
-	double data_minusb[] = {1, 4, -6, 2, 3};
-
+		1,  2, -1, -1,
+		-2, -1,  0, -1,
+		3,  0,  4, -1,
+		-4, -1, -3,  1,
+		5,  3,  2,  3 };
+	double data_minus_b[] = {-1, -2, -3, -4};
 	Matrix A(m, n, data_A);
-	Matrix minusb(m, 1, data_minusb);
-	MatrixOperator OpA(A);
-	QuadraticLoss f;
-	Norm1 g;
+	Matrix minus_b(m, 1, data_minus_b);
 
-	size_t n_tests = 100;
-	for (int i_loop=0; i_loop<n_tests; i_loop++) {
-		FBProblem prob(f, OpA, minusb, g);
+	double ref_xstar[] = {-0.010238907850120, 0.0, 0.0, 0.0, 0.511945392491510};
+
+	LinearOperator * OpA = new MatrixOperator(A);
+	Function * f = new QuadraticLoss();
+	double lambda = 5.0;
+	Function * g = new Norm1(lambda);
+
+	FBStoppingRelative sc(TOLERANCE);
+
+	// Define the FB problem
+	FBProblem prob = FBProblem(*f, *OpA, minus_b, *g);
+	// Initial guess and gamma - Construct a new instance of FBSplitting
+	Matrix x0(n, 1);
+	double gamma = 1e-2;
+	FBSplitting * solver = new FBSplitting(prob, x0, gamma, sc, MAXIT);
+	// Run the solver and get the solution
+	solver->run();
+	Matrix xstar = solver->getSolution();
+
+	for (int i=0; i < n; i++) {
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_xstar[i], xstar.get(i, 0), DOUBLES_EQUAL_DELTA);
 	}
 }

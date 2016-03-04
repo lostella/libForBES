@@ -34,14 +34,14 @@
  * \date Created on September 21, 2015, 10:07 AM
  * 
  * This class implements the indicator function of second order cones (SOC).
- * If \c  n is the dimension of the considered space, then the SOC is the set:
+ * If \f$n\f$ is the dimension of the considered space, then this is the set
  *
  * \f[
  *    \mathrm{SOC}(n) = \left\{(x, t) \in \mathbb{R}^n : 
- *      x \in \mathbb{R}^{n-1}, \text{and } \|x\| \leq  t\right\}
+ *      x \in \mathbb{R}^{n-1} \text{and } \|x\| \leq  t\right\}
  * \f]
  *
- * The dimension \c n must be given to the constructor.
+ * The dimension \f$n\f$ must be provided to the constructor.
  * 
  * \ingroup Functions
  */
@@ -50,6 +50,13 @@ public:
     
     using Function::call;
 
+    /**
+     * Constructor for instances of IndSOC given the dimension \f$n\f$
+     * of the cone.
+     * 
+     * @param n dimension of the space in which the second-order cone is
+     * embedded. 
+     */
     explicit IndSOC(int n);
 
     virtual ~IndSOC();
