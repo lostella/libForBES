@@ -4,7 +4,6 @@
  *  \brief %Quadratic programming with examples
  *
  *
- *
  * <div class="sec">Box-constrained QP</div>
  * Let us here see how to formulate and solve a QP using libforbes. 
  *
@@ -41,7 +40,7 @@
  * Matrix Q(n, n, data_Q);
  * Matrix q(n, 1, data_q);
  *
- * Function * f = new Quadratic(*Q, *q);
+ * Function * f = new Quadratic(Q, q);
  * \endcode
  *
  * Let us define the constraints using an indicator function as follows
@@ -114,8 +113,7 @@
  * which converges within the required accuracy (specified by the termination
  * criterion) in \c 11 iterations.
  *
- *
- *
+ * 
  *
  *
  *
@@ -203,4 +201,37 @@
  * \f[
  *  x^\star = \begin{bmatrix}0.5&-0.5&-0.5&-0.5\end{bmatrix}^{\top}.
  * \f]
+ *
+ *
+ *
+ * 
+ *
+ * 
+ *
+ *
+ * <div class="sec">Inequality and Equality Constrained QP</div>
+ *
+ * Let us study the case where where we have both equality and inequality
+ * constraints. The problem can then be written as
+ *
+ * \f[
+ *  \mathrm{minimize}\ \frac{1}{2}x^{\top}Qx + q^{\top}x + \delta(x\mid E) + \delta(Hx \mid C),
+ * \f]
+ *
+ * where \f$E\f$ is an affine space given by \f$E = \{x: Ax = b\}\f$ and \f$C\f$
+ * is a box.
+ *
+ * We may then define
+ *
+ * \f[
+ *  f(x) = \frac{1}{2}x^{\top}Qx + q^{\top}x + \delta(x\mid E),
+ * \f]
+ *
+ * which is a \link QuadOverAffine quadratic function over an affine space\endlink and 
+ * 
+ * \f[
+ *  g(z) = \delta(z\mid C),
+ * \f]
+ * 
+ * where \f$z=Hx\f$.
  */

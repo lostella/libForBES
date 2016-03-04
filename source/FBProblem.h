@@ -22,6 +22,9 @@
  * \f$L_1, L_2\f$ are linear operators and \f$d_1, d_2\f$ are elements of the
  * respective target spaces, \f$l\in X\f$ and \f$g\f$ is a closed, proper, convex
  * function over X.
+ * 
+ * 
+ * \example qp_box.cpp
  */
 class FBProblem {
 private:

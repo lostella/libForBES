@@ -208,7 +208,7 @@
  * These algorithms have been adapted from [2]
  * using \f$F=-[I \ 0]^{\top}\f$, \f$G=-[0\ I]^{\top}\f$ and \f$F_N = -I\f$.
  *
- * Algorithms 3 and 4 in [2] return the value of \f$f^*(-\Gamma x)\f$, so with the 
+ * Algorithms 3 and 4 in [2] return the value of \f$f^*(-\Gamma^{\top} y)\f$, so with the 
  * above choice of \f$F\f$, \f$G\f$ and \f$F_N\f$, these algorithms 
  * return \f$f^*(y)\f$. 
  * 
