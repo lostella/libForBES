@@ -143,14 +143,36 @@ public:
 
     void set_defines_conjugate_grad(bool defines_conjugate_grad);
 
+    /**
+     * Set whether \f$f\f$ is defined
+     * @param defines_f
+     */
     void set_defines_f(bool defines_f);
 
+    /**
+     * Set whether \f$\nabla f\f$ is defined
+     * @param defines_grad
+     */
     void set_defines_grad(bool defines_grad);
 
+    /**
+     * Set whether \f$\mathrm{prox}_{\gamma f}\f$ is defined
+     * @param defines_prox
+     */
     void set_defines_prox(bool defines_prox);
     
+    /**
+     * Specify whether products of the form \f$\langle \nabla^2 f(x), \cdot \rangle\f$
+     * are defined
+     * @param defines_hessian
+     */
     void set_defines_hessian(bool defines_hessian);
     
+    /**
+     * Specify whether products of the form \f$\langle \nabla^2 f^*(x), \cdot \rangle\f$
+     * are defined
+     * @param defines_hessian_conj
+     */
     void set_defines_hessian_conj(bool defines_hessian_conj);
 
 

@@ -283,20 +283,6 @@ int FBCache::update_grad_FBE(double gamma) {
 
     *m_gradFBEx = *m_FPRx;
 
-    // gradFBE(x) = (I-gamma*H(x))*FPR(x)/gamma
-    // if the smooth term is f(Lx+d) then H(x) = L'*hessf(x)*L
-    // so in general the way to compute gradFBE(x) should be:
-    //
-    //  v1 <- L*FPR(x)
-    //  v2 <- H(x)*v1
-    //  v3 <- L'*v2
-    //  gradFBE(x) <- FPR(x)/gamma - v3
-    //
-    // and when L is not present (that is L = Identity):
-    //
-    //  v1 <- H(x)*FPR(x)
-    //  gradFBE(x) <- FPR(x)/gamma - v1
-
     if (m_prob.f1() != NULL) {
         if (m_prob.L1() != NULL) {
             Matrix v1(m_prob.L1()->dimensionOut());

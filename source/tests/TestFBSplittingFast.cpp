@@ -173,8 +173,7 @@ void TestFBSplittingFast::testSparseLogReg_small() {
 
 	Matrix * A = new Matrix(m, n, data_A);
 	Matrix * minusb = new Matrix(m, 1, data_minusb);
-	Matrix * x0;
-	Matrix xstar;
+
 	Function * f = new LogLogisticLoss();
 	LinearOperator * OpA = new MatrixOperator(*A);
 	Function * g = new Norm1(1.0);
@@ -188,7 +187,7 @@ void TestFBSplittingFast::testSparseLogReg_small() {
 		Matrix * x0 = new Matrix(n, 1, data_x1);
 		solver = new FBSplittingFast(prob, *x0, gamma, sc, MAXIT);
 		solver->run();
-		xstar = solver->getSolution();
+		Matrix xstar = solver->getSolution();
 		//cout << "*** iters (fast) : " << solver->getIt() << endl << flush;
 		_ASSERT(solver->getIt() < MAXIT);
 		for (int i=0; i < n; i++) {

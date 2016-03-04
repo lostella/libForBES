@@ -24,7 +24,7 @@
 class LQCost : public Function {
 public:
 
-    LQCost();;
+    LQCost();
 
     virtual ~LQCost();
 

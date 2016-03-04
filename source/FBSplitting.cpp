@@ -8,7 +8,7 @@
 #define DEFAULT_TOL 1e-6
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma) :
-m_maxit(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {    
+m_cache(FBCache(prob, x0, gamma)), m_maxit(DEFAULT_MAXIT) {    
     m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
@@ -17,7 +17,7 @@ m_maxit(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
 }
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc) :
-m_maxit(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
+m_cache(FBCache(prob, x0, gamma)), m_maxit(DEFAULT_MAXIT) {
     m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
@@ -26,7 +26,7 @@ m_maxit(DEFAULT_MAXIT), m_cache(FBCache(prob, x0, gamma)) {
 }
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, int maxit) :
-m_maxit(maxit), m_cache(FBCache(prob, x0, gamma)) {
+m_cache(FBCache(prob, x0, gamma)), m_maxit(maxit) {
     m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;
@@ -35,7 +35,7 @@ m_maxit(maxit), m_cache(FBCache(prob, x0, gamma)) {
 }
 
 FBSplitting::FBSplitting(FBProblem & prob, Matrix & x0, double gamma, FBStopping & sc, int maxit) :
-m_maxit(maxit), m_cache(FBCache(prob, x0, gamma)) {
+m_cache(FBCache(prob, x0, gamma)), m_maxit(maxit) {
     m_it = 0;
     m_prob = &prob;
     m_gamma = gamma;

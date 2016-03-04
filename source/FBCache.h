@@ -38,11 +38,7 @@
  * with p.
  */
 class FBCache {
-private:
-    static const int STATUS_NONE = 0;
-    static const int STATUS_EVALF = 1;
-    static const int STATUS_FORWARD = 2;
-    static const int STATUS_FORWARDBACKWARD = 3;
+private:    
 
     int m_status;
     int m_flag_evalFBE;
@@ -53,23 +49,23 @@ private:
 
        
     /* Internal storage for computing proximal-gradient steps */
-    Matrix * m_y;
-    Matrix * m_z;
-    Matrix * m_FPRx;
-    Matrix * m_res1x;
-    Matrix * m_gradf1x;
+    Matrix * m_y; /**< x-gamma nabla f(x) */
+    Matrix * m_z; /**< prox_{gamma g} (y) */
+    Matrix * m_FPRx; /**< x-z */
+    Matrix * m_res1x;  /**< L1*x + d1 */
+    Matrix * m_gradf1x; /**< nabla f_1 (res1x)*/
     Matrix * m_res2x;
     Matrix * m_gradf2x;
-    Matrix * m_gradfx;
-    Matrix * m_gradFBEx;    
-    double m_f1x;
+    Matrix * m_gradfx; /**< f(x) = f1(L1*x+d1) + f2(L2*x+d2); gradfx = nabla f(x) */
+    Matrix * m_gradFBEx; /** gradient of the FB envelope */    
+    double m_f1x; /**< f1(res1x) */
     double m_f2x;
-    double m_linx;
-    double m_fx;
-    double m_gz;
+    double m_linx; /**< l'*x */
+    double m_fx; /**< f(x) */
+    double m_gz; 
     double m_gamma;
-    double m_FBEx;
-    double m_sqnormFPRx;
+    double m_FBEx; /**< FBE(x) */
+    double m_sqnormFPRx; /**< ||x-z||^2 */
 
     /**
      * Evaluates \f$f(x)\f$ and updates the internal status of FBCache.
@@ -122,6 +118,47 @@ private:
     void reset(int status);
 
 public:
+    
+    /**
+     * 
+     * 
+     * The internal state of FBCache is stale, or it has not been updated.
+     */
+    static const int STATUS_NONE = 0; 
+    /**
+     * 
+     * 
+     * The following are available:
+     * * The <em>residuals</em> \f$ r_1(x)=L_1 x + d_1 \f$ and \f$ r_2(x)=L_2 x + d_2 \f$
+     * * The product \f$ \langle l, x \rangle \f$
+     * * The values \f$ f_1(r_1(x)) \f$ and \f$ f_2(r_2(x)) \f$
+     * * The value of \f$ f(x) = f_1(r_1(x)) + f_2(r_2(x))\f$
+     * * The gradient of \f$f_1\f$ at the corresponding residual, \f$ \nabla f_1( r_1(x) ) \f$
+     * 
+     */
+    static const int STATUS_EVALF = 1;
+    
+    /**
+     * 
+     * 
+     * The data which correspond to #STATUS_EVALF are available and, additionally,
+     * the following are available
+     * * The gradient of \f$f_2\f$ at the corresponding residual, \f$ \nabla f_2( r_2(x) ) \f$
+     * * The gradient of \f$f\f$ at \f$x\f$, that is \f$\nabla f(x)\f$
+     * * The value of \f$y = x - \gamma \nabla f(x)\f$
+     */
+    static const int STATUS_FORWARD = 2;
+    /**
+     * 
+     * Everything has been computed and is available, that is, all data which 
+     * correspond to #STATUS_FORWARD (and #STATUS_EVALF) and, additionally,
+     * * The proximal \f$z=\mathrm{prox}_{\gamma g}(y)\f$ where \f$y = x - \gamma \nabla f(x)\f$     
+     * * The value \f$g(x)\f$
+     * * The square norm \f$\|x-z\|^2\f$
+     */
+    static const int STATUS_FORWARDBACKWARD = 3; /** everything */
+    
+    
     /**
      * Initialize an FBCache object
      *
@@ -151,7 +188,7 @@ public:
     Matrix * get_point();
     
     /**
-     * Gets the result of the forward (gradient) step, with stepsize gamma, at x
+     * Gets the result of the forward (gradient) step, with step-size \f$\gamma\f$, at \f$x\f$
      *
      * @param gamma stepsize parameter
      * @return a pointer to Matrix containing the forward step
@@ -159,10 +196,10 @@ public:
     Matrix * get_forward_step(double gamma);
 
     /**
-     * Gets the result of the forward-backward (proximal-gradient) with stepsize 
-     * \f$\gamma\f$ at \f$x\f$
+     * Gets the result of the forward-backward (proximal-gradient) with step-size 
+     * \f$\gamma\f$ at \f$x\f$, that is \f$z=\mathrm{prox}_{\gamma g}(y)\f$ where \f$y = x - \gamma \nabla f(x)\f$ 
      *
-     * @param gamma stepsize parameter
+     * @param gamma step-size parameter
      * @return a pointer to Matrix containing the forward-backward step
      */
     Matrix * get_forward_backward_step(double gamma);
@@ -187,7 +224,7 @@ public:
     double get_norm_fpr();
 
     /**
-     * Gets the value of \f$f\f$ at \f\$x\f$
+     * Gets the value of \f$f\f$ at \f$x\f$
      *
      * @return \f$f(x)\f$
      */
@@ -212,7 +249,7 @@ public:
 
     /**
      * Erases the internal status of the cache, i.e., sets its status to
-     * \c STATUS_NONE. This means that any getter will require to recompute all 
+     * STATUS_NONE. This means that any getter will require to recompute all 
      * steps.
      */
     void reset();
