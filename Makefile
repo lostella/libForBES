@@ -158,7 +158,8 @@ SOURCES += CGSolver.cpp \
 	S_LDLFactorization.cpp \
 	CholeskyFactorization.cpp \
 	FactoredSolver.cpp \
-	LDLFactorization.cpp 
+	LDLFactorization.cpp \
+	FBStats.cpp
 
 # FORBES UTILITIES	
 SOURCES += ForBESUtils.cpp \
@@ -248,7 +249,8 @@ TESTS = \
 	TestFBSplitting.test \
 	TestFBSplittingFast.test \
 	TestLasso.test \
-	TestSumOfNorm2.test
+	TestSumOfNorm2.test \
+	TestFBStats.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -294,6 +296,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOntRegistry
 	${BIN_TEST_DIR}/TestFunctionOntologicalClass
 	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
+	${BIN_TEST_DIR}/TestFBStats
 	@echo "\n*** LINEAR OPERATORS ***"
 	${BIN_TEST_DIR}/TestMatrixOperator
 	${BIN_TEST_DIR}/TestOpAdjoint

@@ -57,7 +57,10 @@ public:
      * of numerical errors.
      */
     const static int STATUS_NUMERICAL_PROBLEMS;
-    
+    /**
+     * The maximum number of iterations was reached. 
+     * Solution may be unreliable.
+     */
     const static int STATUS_MAX_ITERATIONS_REACHED;
 
     static bool is_status_ok(int status);

@@ -3,8 +3,17 @@
 /*! \page doc-QP QP Problems
  *  \brief %Quadratic programming with examples
  *
+ * Here we will present various formulations of QP problems:
+ * * <a href="#box-qp">Problems with box constraints</a>
+ * * <a href="#ineq-qp">with general inequality constraints</a>
+ * * <a href="#ineq-eq-qp">with both inequality and equality constraints</a>
+ * * <a href="#qc-qp">quadratically constrained problems</a>
  *
- * <div class="sec">Box-constrained QP</div>
+ *
+ *
+ *
+ *
+ * <div class="sec" id="box-qp">Box-constrained QP</div>
  * Let us here see how to formulate and solve a QP using libforbes. 
  *
  * First, define the cost function as 
@@ -118,7 +127,10 @@
  *
  *
  *
- * <div class="sec">Inequality constrained QP</div>
+ *
+ *
+ *
+ * <div class="sec" id="ineq-qp">Inequality constrained QP</div>
  * 
  * Let us now solve step-by-step an inequality constrained problem which has the following form
  *
@@ -134,6 +146,18 @@
  * \f]
  *
  * We will use the following values of <code>Q</code> and <code>q</code>:
+ *
+* \f[
+ *  Q = \begin{bmatrix}
+ *  3& 1& 1& 0\\1& 3& 0& -1\\1& 0& 3& 1\\0& -1& -1& 5
+ *  \end{bmatrix},
+ * \f]
+ * and
+ * \f[
+ *  q = \begin{bmatrix}
+ *  1&2&3&4
+ *  \end{bmatrix}^{\top}.
+ * \f]
  *
  * \code{.cpp}
  *  const size_t n = 4;
@@ -157,7 +181,13 @@
  * for the dual variable \f$y\in\mathbb{R}^s\f$.
  *
  * We may now define functions \f$f\f$, \f$f^*\f$, \f$g\f$ and \f$g^*\f$ and the
- * linear operator \f$H\f$
+ * linear operator \f$H:\mathbb{R}^4\to\mathbb{R}\f$
+ *
+ * \f[
+ *  H = \begin{bmatrix}
+ *  1&1&1&1
+ *  \end{bmatrix}.
+ * \f]
  *
  * \code{.cpp}
  *  // Define f and f*
@@ -190,10 +220,11 @@
  * and we obtain the dual and primal optimal solutions
  *
  * \code{.cpp}
- *  Matrix ystar = fbs->getSolution();
+ *  Matrix ystar = fbs.getSolution();
+ *  Matrix H_ystar = H*ystar;
  *  double f_conj_star;
- *  Matrix xstar(n,1);
- *  f_conj.call(H_tr_minus_y, f_conj_star, xstar);
+ *  Matrix xstar(n, 1);
+ *  f_conj.call(H_ystar, f_conj_star, xstar);
  * \endcode
  *
  * The algorithm converges in \f$34\f$ iterations and yields the optimizer
@@ -209,7 +240,7 @@
  * 
  *
  *
- * <div class="sec">Inequality and Equality Constrained QP</div>
+ * <div class="sec" id="ineq-eq-qp">Inequality and Equality Constrained QP</div>
  *
  * Let us study the case where where we have both equality and inequality
  * constraints. The problem can then be written as
@@ -234,4 +265,38 @@
  * \f]
  * 
  * where \f$z=Hx\f$.
+ *
+ * In this example we define
+ * \f[
+ * A = \begin{bmatrix}1&1&0&0\\0&0&1&1\end{bmatrix},
+ * \f]
+ * and
+ * \f[
+ * b = \begin{bmatrix}0.1\\0.2\end{bmatrix}.
+ * \f]
+ * And \f$H\f$, \f$Q\f$ and \f$q\f$ will be as in the <a href="#ineq-qp">previous example</a> where we 
+ * had only inequality constraints.
+ *
+ * The only difference from the previous example is that here we need to 
+ * use the function QuadOverAffine.
+ *
+ * \code{.cpp}
+ *  const size_t p = 2;
+ *  double data_A[] = {
+ *     1, 0,
+ *     1, 0,
+ *     0, 1,
+ *     0, 1 };
+ *  double data_b[] = {
+ *     0.1,
+ *     0.2  };
+ *
+ *  Matrix A(p, n, data_A);
+ *  Matrix b(p, 1, data_b);
+ *
+ *  // Define f and f*
+ *  QuadOverAffine f(Q, q, A, b);
+ *  ConjugateFunction f_conj(f);
+ * \endcode
+ *
  */
