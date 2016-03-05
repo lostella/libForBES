@@ -1,8 +1,8 @@
 /*
- * File:   TestFBStatsRunner.cpp
+ * File:   TestLeastSquaresRunner.cpp
  * Author: chung
  *
- * Created on Mar 5, 2016, 4:53:48 PM
+ * Created on Mar 3, 2016, 2:47:16 PM
  */
 
 #include <cppunit/BriefTestProgressListener.h>

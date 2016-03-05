@@ -23,22 +23,30 @@
 
 include config.mk
 
+DO_PROFILE := 0
+DO_PARALLEL := 1
 	
 # Enable parallel make on N-1 processors	
-NPROCS := 1
-OS:=$(shell uname -s)
-ifeq ($(OS),Linux)
-  NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+ifeq (1, $(DO_PARALLEL))
+	NPROCS := 1
+	OS:=$(shell uname -s)
+	ifeq ($(OS),Linux)
+	    NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+	endif
+	ifeq ($(OS),Darwin) # Assume Mac OS X
+	    NPROCS:=$(shell sysctl -n hw.ncpu)
+	endif
+	NPROCS:=$$(($(NPROCS)-1))
+	MAKEFLAGS += -j $(NPROCS)
+	MAKEFLAGS += --no-print-directory
 endif
-ifeq ($(OS),Darwin) # Assume Mac OS X
-  NPROCS:=$(shell sysctl -n hw.ncpu)
-endif
-NPROCS:=$$(($(NPROCS)-1))
-MAKEFLAGS += -j $(NPROCS)
-MAKEFLAGS += --no-print-directory
 
 # C++ compiler
-CXX = g++
+ifeq (1, $(DO_PROFILE))
+    CXX = g++-4.9
+else
+    CXX = g++
+endif
 
 # Enable CCACHE
 ifneq (, $(shell which ccache))
@@ -48,8 +56,10 @@ endif
 # Additional compiler flags (e.g., -O2 or -O3 optimization flags, etc)
 # To create a test coverage report add: -fprofile-arcs -ftest-coverage
 CFLAGS_ADDITIONAL = -O3
-#CFLAGS_ADDITIONAL += -fprofile-arcs
-#CFLAGS_ADDITIONAL += -ftest-coverage
+ifeq (1, $(DO_PROFILE))
+	CFLAGS_ADDITIONAL += -fprofile-arcs 
+	CFLAGS_ADDITIONAL += -ftest-coverage
+endif
 
 CFLAGS_WARNINGS = \
 	-pedantic \
@@ -82,7 +92,10 @@ CFLAGS_ADDITIONAL += ${CFLAGS_WARNINGS}
 
 # Additional link flags
 # To create a test coverage report add: -fprofile-arcs
-#LFLAGS_ADDITIONAL = -fprofile-arcs
+ifeq (1, $(DO_PROFILE))
+    LFLAGS_ADDITIONAL = -fprofile-arcs
+endif
+
 
 OBJ_DIR = build/Debug
 BIN_DIR = dist/Debug
@@ -124,8 +137,11 @@ lFLAGS = \
 	-lopenblas \
 	-lm \
 	-lcppunit \
-	-lgfortran \
 	$(LFLAGS_ADDITIONAL)
+
+ifeq (0, $(DO_PROFILE))
+    lFLAGS += -lgfortran
+endif
 
 LFLAGS = \
 	-L$(SS_DIR)/CHOLMOD/Lib \
@@ -159,7 +175,7 @@ SOURCES += CGSolver.cpp \
 	CholeskyFactorization.cpp \
 	FactoredSolver.cpp \
 	LDLFactorization.cpp \
-	FBStats.cpp
+	Properties.cpp
 
 # FORBES UTILITIES	
 SOURCES += ForBESUtils.cpp \
@@ -250,7 +266,7 @@ TESTS = \
 	TestFBSplittingFast.test \
 	TestLasso.test \
 	TestSumOfNorm2.test \
-	TestFBStats.test
+	TestProperties.test
 
 TEST_BINS = $(TESTS:%.test=$(BIN_TEST_DIR)/%)
 
@@ -296,7 +312,7 @@ test: build-tests
 	${BIN_TEST_DIR}/TestOntRegistry
 	${BIN_TEST_DIR}/TestFunctionOntologicalClass
 	${BIN_TEST_DIR}/TestFunctionOntologyRegistry
-	${BIN_TEST_DIR}/TestFBStats
+	${BIN_TEST_DIR}/TestProperties
 	@echo "\n*** LINEAR OPERATORS ***"
 	${BIN_TEST_DIR}/TestMatrixOperator
 	${BIN_TEST_DIR}/TestOpAdjoint
@@ -323,7 +339,7 @@ $(BIN_TEST_DIR)/%: $(OBJECTS) $(TEST_DIR)/%.cpp $(TEST_DIR)/%Runner.cpp $(TEST_D
 
 main:
 	$(CXX) $(CFLAGS) $(IFLAGS) source/main.cpp 
-	$(CXX) $(LFLAGS) -L./dist/Debug main.o -lforbes $(lFLAGS)
+	$(CXX) $(LFLAGS) -L./dist/Debug main.o -lforbes $(lFLAGS) -o main_run
 
 $(OBJ_DIR)/%.o: source/%.cpp
 	@echo 
@@ -353,13 +369,14 @@ clean:
 
 help:
 	@echo "Makefile targets for libforbes:\n"
-	@echo "make				    - Compiles, links and archives [creates libforbes.a]"
-	@echo "make clean			    - Cleans all previously built files"
-	@echo "make all				    - Same as make (tests are not built)"
-	@echo "make build-tests			    - Compiles and links the tests"
-	@echo "make test			    - Compiles [if necessary] and runs all tests"
-	@echo "make docs			    - Used doxygen to build documentation"
-	@echo "make help			    - This help message\n"
+	@echo "make                        - Compiles, links and archives [creates libforbes.a]"
+	@echo "make clean                  - Cleans all previously built files"
+	@echo "make al                     - Same as make (tests are not built)"
+	@echo "make build-tests            - Compiles and links the tests"
+	@echo "make test                   - Compiles [if necessary] and runs all tests"
+	@echo "make docs                   - Used doxygen to build documentation"
+	@echo "make main                   - Compiles and links source/main.cpp (for testing only)"
+	@echo "make help                   - This help message\n"
 
 docs:
 	doxygen forbes.doxygen

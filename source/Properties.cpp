@@ -1,5 +1,5 @@
 /* 
- * File:   FBStats.h
+ * File:   Properties.cpp
  * Author: Pantelis Sopasakis
  *
  * Created on March 4, 2016, 4:07 PM
@@ -19,33 +19,33 @@
  */
 
 
-#include "FBStats.h"
+#include "Properties.h"
 
-const int FBStats::DOUBLE_TYPE = 1;
-const int FBStats::INT_TYPE = 2;
-const int FBStats::SIZE_T_TYPE = 3;
-const int FBStats::STRING_TYPE = 4;
-const int FBStats::CUSTOM_TYPE = 666;
-const int FBStats::VECTOR_TYPE = 100;
+const int Properties::DOUBLE_TYPE = 1;
+const int Properties::INT_TYPE = 2;
+const int Properties::SIZE_T_TYPE = 3;
+const int Properties::STRING_TYPE = 4;
+const int Properties::VECTOR_TYPE = 100;
+const int Properties::CUSTOM_TYPE = 666;
 
-FBStats::FBStats() {
+Properties::Properties() {
     init();
 }
 
-FBStats::~FBStats() {
+Properties::~Properties() {
     if (m_map != NULL) {
         delete m_map;
         m_map = NULL;
     }
 }
 
-void FBStats::init() {
-    m_map = new FBStatsMap;
+void Properties::init() {
+    m_map = new PropertiesMap;
 }
 
 
-bool FBStats::get_typed_property(std::string key, int& type, void*& value) {
-    FBStatsMap::iterator value_it = m_map->find(key);
+bool Properties::get_typed_property(std::string key, int& type, void*& value) {
+    PropertiesMap::iterator value_it = m_map->find(key);
     if (value_it != m_map->end()) {
         TypedPair value_found = value_it->second;
         type = value_found.first;
@@ -55,7 +55,7 @@ bool FBStats::get_typed_property(std::string key, int& type, void*& value) {
     return false;
 }
 
-size_t FBStats::size() {
+size_t Properties::size() {
     return m_map->size();
 }
 
