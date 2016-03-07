@@ -174,6 +174,9 @@ public:
      * @param defines_hessian_conj
      */
     void set_defines_hessian_conj(bool defines_hessian_conj);
+    
+    bool is_quadratic();
+    bool is_conjugate_quadratic();
 
 
 private:

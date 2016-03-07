@@ -19,6 +19,7 @@ class TestConjugateFunction : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCallConj2);
     CPPUNIT_TEST(testCallProx);
     CPPUNIT_TEST(testCategory);
+    CPPUNIT_TEST(testCategory2);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -35,6 +36,7 @@ private:
     void testCallConj2();
     void testCallProx();
     void testCategory();
+    void testCategory2();
 
 };
 

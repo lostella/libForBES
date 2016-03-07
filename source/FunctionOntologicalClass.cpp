@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& os, const FunctionOntologicalClass& obj) 
     std::list<FunctionOntologicalClass> li = obj.superClasses;
     size_t i = 1;
     for (std::list<FunctionOntologicalClass>::iterator it = li.begin(); it != li.end(); ++it) {
-        std::cout << " " << i << ". "<< it->getName() << "\n";
+        std::cout << " " << i << ". " << it->getName() << "\n";
         i++;
     }
     return os;
@@ -144,4 +144,37 @@ void FunctionOntologicalClass::set_defines_hessian_conj(bool define_hessian_conj
 std::string FunctionOntologicalClass::getName() const {
     return this -> m_name;
 }
+
+bool FunctionOntologicalClass::is_quadratic() {
+    string quad_name = FunctionOntologyRegistry::quadratic().getName();
+    if (getName().compare(quad_name) == 0) return true;
+    bool gauge = false;
+    std::list<FunctionOntologicalClass> superclasses = getSuperclasses();
+    for (std::list<FunctionOntologicalClass>::iterator cl = superclasses.begin();
+            cl != superclasses.end();
+            ++cl) {
+        if ((*cl).getName().compare(quad_name) == 0) {
+            gauge = true;
+            break;
+        }
+    }
+    return gauge;
+}
+
+bool FunctionOntologicalClass::is_conjugate_quadratic() {
+    string conj_quad_name = FunctionOntologyRegistry::conj_quadratic().getName();
+    if (getName().compare(conj_quad_name) == 0) return true;
+    bool gauge = false;
+    std::list<FunctionOntologicalClass> superclasses = getSuperclasses();
+    for (std::list<FunctionOntologicalClass>::iterator cl = superclasses.begin();
+            cl != superclasses.end();
+            ++cl) {
+        if ((*cl).getName().compare(conj_quad_name) == 0) {
+            gauge = true;
+            break;
+        }
+    }
+    return gauge;
+}
+
 

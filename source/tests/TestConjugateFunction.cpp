@@ -202,15 +202,33 @@ void TestConjugateFunction::testCategory() {
 
     QuadOverAffine * qoa = new QuadOverAffine(Q, q, A, b);
     ConjugateFunction * qoa_conj = new ConjugateFunction(*qoa);
-    
-    
+
+
     FunctionOntologicalClass meta = qoa_conj->category();
     _ASSERT(meta.defines_f());
     _ASSERT(meta.defines_grad());
     _ASSERT_NOT(meta.defines_prox());
-    
+
     delete qoa;
     delete qoa_conj;
 }
 
+void TestConjugateFunction::testCategory2() {
+    Quadratic f;
+    ConjugateFunction f_star(f);
+    _ASSERT(f_star.category().is_conjugate_quadratic());
+
+    // and now the converse...
+    int n = 8;
+    int s = 4;
+    Matrix Q = MatrixFactory::MakeRandomMatrix(n, n, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix A = MatrixFactory::MakeRandomMatrix(s, n, 0.0, -5.0, Matrix::MATRIX_DENSE);
+
+    Matrix q = MatrixFactory::MakeRandomMatrix(n, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+    Matrix b = MatrixFactory::MakeRandomMatrix(s, 1, 0.0, 1.0, Matrix::MATRIX_DENSE);
+
+    QuadOverAffine g(Q, q, A, b);
+    ConjugateFunction g_star(g);
+    _ASSERT(g_star.category().is_quadratic());
+}
 

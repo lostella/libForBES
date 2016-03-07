@@ -38,15 +38,7 @@ private:
     Matrix * m_lin;
 
     void init();
-
-    /**
-     * @brief Checks whether the argument Function object defines a function
-     * of category "Quadratic"
-     * 
-     * @param fun_f Reference to Function object to check
-     * @return true if the argument defines a function of category "Quadratic", false otherwise
-     */
-    static bool isQuadratic(Function& fun_f);
+    
 
 public:
 
@@ -81,7 +73,7 @@ public:
             Matrix& d_2,
             Matrix& linear,
             Function& fun_g);
-
+    
     /**
      * Allocates an FBProblem given only one smooth term and the affine
      * map composed with it. 

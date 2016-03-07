@@ -66,6 +66,17 @@ int ConjugateFunction::callProx(Matrix& x, double gamma, Matrix& prox, double& f
 FunctionOntologicalClass ConjugateFunction::category() {
     FunctionOntologicalClass meta("Conjugate");
     FunctionOntologicalClass orig_meta = m_function.category();
+    
+    if (orig_meta.is_quadratic()){
+        FunctionOntologicalClass conj_quad_meta(FunctionOntologyRegistry::conj_quadratic().getName());
+        meta.add_superclass(conj_quad_meta);
+    }
+    
+    if (orig_meta.is_conjugate_quadratic()){
+        FunctionOntologicalClass quad_meta(FunctionOntologyRegistry::quadratic().getName());
+        meta.add_superclass(quad_meta);
+    }
+    
     meta.set_defines_f(orig_meta.defines_conjugate());
     meta.set_defines_grad(orig_meta.defines_conjugate_grad());
     meta.set_defines_conjugate(orig_meta.defines_f());
