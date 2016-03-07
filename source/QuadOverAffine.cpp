@@ -113,6 +113,11 @@ QuadOverAffine::QuadOverAffine(Matrix& Q, Matrix& q, Matrix& A, Matrix& b) {
     }
 }
 
+int QuadOverAffine::callConj(Matrix& y, double& f_star) {
+    Matrix grad(y.getNrows(), y.getNcols());
+    return callConj(y, f_star, grad);
+}
+
 int QuadOverAffine::callConj(Matrix& y, double& f_star, Matrix& grad) {
     /* Update sigma(x) */
     for (size_t i = 0; i < m_Q->getNrows(); i++) {
